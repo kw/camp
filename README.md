@@ -14,7 +14,7 @@ Specifically:
 
 ### Can I use this? Should I?
 
-Camp is in extremely early development and doesn't actually boast any of 
+Camp is in extremely early development and doesn't actually boast any of
 the features described above and is not yet suitable for any use.
 
 ### Can I contribute?

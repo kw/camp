@@ -26,4 +26,5 @@ jobs:
           pipenv install -d --system
       - name: Django Tests
         run: |
+          python manage.py collectstatic
           python manage.py test

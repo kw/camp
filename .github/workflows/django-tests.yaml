@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m ensurepip --upgrade
-          pip install pipenv@2022.3.28
+          pip install pipenv==2022.3.28
           pipenv install -g
       - name: Django Tests
         run: |

@@ -195,4 +195,4 @@ ACCOUNT_RATE_LIMITS = {
 }
 ACCOUNT_SIGNUP_ENABLED = env.bool("SIGNUP_ENABLED", default=True)
 
-django_heroku.settings(locals())
+django_heroku.settings(locals(), test_runner=False)

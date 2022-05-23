@@ -3,7 +3,7 @@ orbs:
   python: circleci/python@2.0.3
 jobs:
   build:
-    executor: 
+    executor:
       name: python/default
       tag: "3.10"
     steps:

@@ -9,10 +9,11 @@ jobs:
     steps:
       - checkout
       - python/install-packages:
-          args: pytest
+          args: -d
           pkg-manager: pipenv
       - run:
           command: |
+            pipenv run python manage.py collectstatic
             pipenv run python manage.py test
           name: Django Test
 workflows:

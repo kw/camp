@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 ipython = "~=8.2"
 pre-commit = "*"
+pytest = "==7.1.2"
+pytest-django = "==4.5.2"
 
 [packages]
 crispy-bootstrap5 = "==0.6"

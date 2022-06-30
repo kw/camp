@@ -1,6 +1,7 @@
 from django.views.generic import ListView
 
 from .models import Game
+from .models import GameRole
 
 
 class HomePageView(ListView):
@@ -19,3 +20,10 @@ class HomePageView(ListView):
             return ["game/game_home.html"]
         else:
             return ["game/hub_home.html"]
+
+
+class GameRolesListView(ListView):
+    model = GameRole
+
+    def get_queryset(self):
+        return GameRole.objects.filter(game=self.request.site.game)

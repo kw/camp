@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "debug_toolbar",
+    "rules.apps.AutodiscoverRulesConfig",
     # Social auth providers. See here for the full available list:
     # https://django-allauth.readthedocs.io/en/latest/installation.html
     "allauth.socialaccount.providers.discord",
@@ -112,6 +113,7 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
+    "rules.permissions.ObjectPermissionBackend",
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )

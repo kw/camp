@@ -25,4 +25,4 @@ jobs:
       - name: Django Tests
         run: |
           pipenv run python manage.py collectstatic
-          pytest
+          pipenv run pytest

@@ -56,10 +56,6 @@ def is_game_manager(user: User, obj) -> bool:
 
 
 can_manage_game = is_game_owner | is_game_manager
-# The user is either an owner or a manager, but if they're a manager the
-# object can't belong to them. Mainly used to prevent managers from managing
-# their own roles. Note that game owners can still grant themselves roles.
-can_manage_game_not_self = is_game_owner | (is_game_manager & ~self)
 
 
 @rules.predicate

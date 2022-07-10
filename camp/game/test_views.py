@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
 
+from .models import Chapter
 from .models import Game
 
 
@@ -23,6 +24,18 @@ class HomePageTests(TestCase):
         self.game2 = Game.objects.create(
             site=self.game2_site,
             description="The second game, which is closed.",
+            is_open=False,
+        )
+        self.chapter1 = Chapter.objects.create(
+            game=self.game1,
+            slug="denver",
+            name="Denver",
+            is_open=True,
+        )
+        self.chapter2 = Chapter.objects.create(
+            game=self.game1,
+            slug="kansas",
+            name="Kansas",
             is_open=False,
         )
         self.url = reverse("home")
@@ -56,3 +69,6 @@ class HomePageTests(TestCase):
         self.assertTemplateUsed(response, "game/game_home.html")
         self.assertContains(response, "Game 1")
         self.assertContains(response, self.game1.description)
+        # Only open chapters are listed.
+        self.assertContains(response, "Denver")
+        self.assertNotContains(response, "Kansas")

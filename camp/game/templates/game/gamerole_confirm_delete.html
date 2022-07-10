@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% block head_title %}Delete Role{% endblock %}
+
+{% block content %}
+<h1>Confirm Role Deletion</h1>
+<form method="post">{% csrf_token %}
+    <p>Are you sure you want to delete game role "{{ gamerole }}"?</p>
+    {{ form | crispy }}
+    <input type="submit" value="Confirm">
+</form>
+{% endblock content %}

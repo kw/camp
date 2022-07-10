@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% block head_title %}Assign New Role{% endblock %}
+
+{% block content %}
+<h1>Assign New Role</h1>
+<form method="post">{% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" value="Save">
+</form>
+{% endblock content %}

@@ -8,13 +8,11 @@
 
 {% block content %}
 <h2>Games</h2>
-{% if object_list %}
 <ul>
 {% for game in object_list %}
     <li><a href="{% gamelink game %}">{{game}}</a>
+{% empty %}
+    <li>No games currently open.</li>
 {% endfor %}
 </ul>
-{% else %}
-<p>No games currently open.</p>
-{% endif %}
 {% endblock content %}

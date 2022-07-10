@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load rules %}
 {% block head_title %}Home{% endblock %}
 
 {% block body_title %}
@@ -6,5 +7,20 @@
 {% endblock body_title %}
 
 {% block content %}
+{% has_perm 'game.change_game' user game as can_change_game %}
+
+{% if can_change_game %}
+<p><a href="{% url 'manage-game' %}">Manage {{ game.name }}</a></p>
+{% endif %}
+
 {{ game.description }}
+
+<h2>Chapters</h2>
+<ul>
+{% for chapter in chapter_list %}
+    <li>{{chapter}}</li>
+{% empty %}
+    <li>This game currently has no open chapters.</li>
+{% endfor %}
+</ul>
 {% endblock content %}

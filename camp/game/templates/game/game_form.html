@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% block head_title %}Manage Game{% endblock %}
+
+{% block content %}
+<h1>Details</h1>
+<form method="post">{% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" value="Update">
+</form>
+
+<h1>Roles</h1>
+<ul>
+{% for role in game.roles.all %}
+    {% has_perm 'game.change_gamerole' user role as can_change_role %}
+    {% has_perm 'game.delete_gamerole' user role as can_delete_role %}
+    <li>{{role.title}} - {{role.user.get_full_name}} ({{ role.user.username }})
+        {% if can_change_role %}
+            <a href="{% url 'change-gamerole' role.user.username %}">📝</a>
+        {% endif %}
+        {% if can_delete_role %}
+            <a href="{% url 'delete-gamerole' role.user.username %}">❌</a>
+        {% endif %}
+    </li>
+{% endfor %}
+{% has_perm 'game.change_game' user game as can_add_role %}
+{% if can_add_role %}
+    <p><a href="{% url 'add-gamerole' %}">Add Role</a></p>
+{% endif %}
+</ul>
+
+<h1>Owners</h1>
+<ul>
+{% for owner in game.owners.all %}
+    <li>{{owner.get_full_name}} ({{owner}})
+        {% if owner == user %}
+        [This is you!]
+        {% endif %}
+    </li>
+{% empty %}
+    <p>This game has no listed ownership, so the server owner probably runs it.</p>
+{% endfor %}
+{% if is_owner %}
+    {# Owner management to be implemented later. #}
+    <p><strong>To change game ownership, contact the site owner.</strong></p>
+{% endif %}
+</ul>
+{% endblock content %}

@@ -32,8 +32,17 @@ class Game(RulesModel):
     # Owners can't be banned from their own games.
     owners: set[User] = models.ManyToManyField(User)
 
-    def __str__(self) -> str:
+    @property
+    def name(self) -> str:
         return self.site.name
+
+    @name.setter
+    def name(self, value: str):
+        self.site.name = value
+        self.site.save()
+
+    def __str__(self) -> str:
+        return self.name
 
     def get_absolute_url(self, request=None) -> str:
         """Produces a fully-qualified URL.
@@ -76,6 +85,8 @@ class Game(RulesModel):
         rules_staff: bool = False,
     ) -> GameRole:
         """Sets game role permissions for the given user.
+
+        This is primarily for use in testing or shell use.
 
         If the user has existing role permissions for this game, they will
         be replaced with those specified. Any unset/unspecified roles will
@@ -132,7 +143,9 @@ class Chapter(RulesModel):
     If a game only has a single chapter, some UI may be simplified.
     """
 
-    game: Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game: Game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, related_name="chapters"
+    )
     slug: str = models.SlugField()
     name: str = models.CharField(max_length=50)
     description: str = models.TextField(blank=True)
@@ -179,6 +192,8 @@ class Chapter(RulesModel):
     ) -> ChapterRole:
         """Sets chapter role permissions for the given user.
 
+        This is primarily for use in testing or shell use.
+
         If the user has existing role permissions for this chapter, they will
         be replaced with those specified. Any unset/unspecified roles will
         be removed if already in place. If no roles are specified, the user's
@@ -222,7 +237,6 @@ class Chapter(RulesModel):
     class Meta:
         unique_together = [["game", "slug"]]
         rules_permissions = {
-            "add": rules.can_manage_game,
             "view": rules.always_allow,
             "change": rules.can_manage_chapter | rules.can_manage_game,
         }
@@ -263,8 +277,7 @@ class GameRole(RulesModel):
     class Meta:
         unique_together = [["game", "user"]]
         rules_permissions = {
-            "add": rules.can_manage_game_not_self,
-            "change": rules.can_manage_game_not_self,
+            "change": rules.can_manage_game,
             "view": rules.can_manage_game,
             "delete": rules.can_manage_game,
         }
@@ -309,8 +322,7 @@ class ChapterRole(RulesModel):
     class Meta:
         unique_together = [["chapter", "user"]]
         rules_permissions = {
-            "add": rules.can_manage_chapter_not_self,
-            "change": rules.can_manage_chapter_not_self,
+            "change": rules.can_manage_chapter,
             "view": rules.can_manage_chapter | rules.can_manage_game,
             "delete": rules.can_manage_chapter,
         }

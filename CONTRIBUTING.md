@@ -30,9 +30,9 @@ If you have concerns, please send them to <contact@wizardstower.dev>.
 ## I have a question or request
 
 Before asking questions, please look through our existing documentation and
-the [Issues](/issues) list for answers. If you still have questions:
+the [Issues](https://github.com/kw/camp/issues) list for answers. If you still have questions:
 
-1. Open a [new issue](/issues/new).
+1. Open a [new issue](https://github.com/kw/camp/issues/new).
 2. Include as much relevant context about the problem as you can.
 3. If you're having problems running the project, include information about
    where and how you're trying to run it (on Windows 95, in Amazon AWS)

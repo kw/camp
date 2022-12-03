@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.test import TestCase
 
 from camp.game.models import Chapter
@@ -35,21 +34,15 @@ class GamePermissionsTest(TestCase):
         self.volunteer: User = User.objects.create_user("volunteer")
         self.player: User = User.objects.create_user("player")
 
-        self.game_site: Site = Site.objects.create(
-            domain="game.camp.internal", name="Tempest"
-        )
-        self.other_site: Site = Site.objects.create(
-            domain="other.camp.internal", name="Other Game"
-        )
         self.game: Game = Game.objects.create(
-            site=self.game_site,
+            name="Tempest",
             description="The first game",
             is_open=True,
         )
         self.game.owners.add(self.owner)
 
         self.other_game: Game = Game.objects.create(
-            site=self.other_site,
+            name="Other",
             description="Some other game",
         )
 
@@ -180,21 +173,14 @@ class ChapterPermissionsTest(TestCase):
         self.volunteer: User = User.objects.create_user("volunteer")
         self.player: User = User.objects.create_user("player")
 
-        self.game_site: Site = Site.objects.create(
-            domain="game.camp.internal", name="Tempest"
-        )
-        self.other_site: Site = Site.objects.create(
-            domain="other.camp.internal", name="Other"
-        )
         self.game: Game = Game.objects.create(
-            site=self.game_site,
+            name="Tempest",
             description="The first game",
             is_open=True,
         )
         self.game.owners.add(self.game_owner)
 
         self.other_game: Game = Game.objects.create(
-            site=self.other_site,
             description="Some other game",
             is_open=True,
         )

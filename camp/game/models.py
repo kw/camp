@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
-from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
@@ -20,7 +19,7 @@ class Game(RulesModel):
     Each game is associated with a particular subdomain.
     """
 
-    site: Site = models.OneToOneField(Site, on_delete=models.CASCADE)
+    name: str = models.CharField(blank=False, max_length=100, default="Game")
     description: str = models.TextField(blank=True)
     is_open: bool = models.BooleanField(default=False)
     # If a user is set as a game owner, they are always considered to have
@@ -33,31 +32,11 @@ class Game(RulesModel):
     owners: set[User] = models.ManyToManyField(User)
 
     @property
-    def name(self) -> str:
-        return self.site.name
-
-    @name.setter
-    def name(self, value: str):
-        self.site.name = value
-        self.site.save()
+    def open_chapters(self):
+        return self.chapters.filter(is_open=True)
 
     def __str__(self) -> str:
         return self.name
-
-    def get_absolute_url(self, request=None) -> str:
-        """Produces a fully-qualified URL.
-
-        It's easier to fill in if a request is provided. Otherwise,
-        we try to infer from settings.
-        """
-        if request:
-            scheme = request.scheme
-        elif _settings.HOST_PORT == "443" or not _settings.HOST_PORT:
-            scheme = "https"
-        else:
-            scheme = "http"
-        port_str = f":{_settings.HOST_PORT}" if _settings.HOST_PORT else ""
-        return f"{scheme}://{self.site.domain}{port_str}/"
 
     def role_title(self, user: User, prefix: bool = False) -> str | None:
         """Calculate a display title for a user wrt this game.

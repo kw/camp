@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>
     {% block entire_title %}
-    {% block head_title %}Untitled{% endblock head_title %} - {{ request.site.name }}
+    {% block head_title %}Untitled{% endblock head_title %} - {{ site_title }}
     {% endblock entire_title %}</title>
   {% block extra_head %}
   {% endblock extra_head %}
@@ -21,7 +21,7 @@
 
   <header>
     <h1>
-      {% block body_title %}{{ request.site.name }} - {{ site_title }}{% endblock %}</h1>
+      {% block body_title %}{{ request.game.name }} - {{ site_title }}{% endblock %}</h1>
     <div>
       <strong>Menu:</strong>
       <menu>

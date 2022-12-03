@@ -17,7 +17,7 @@
 
 <h2>Chapters</h2>
 <ul>
-{% for chapter in chapter_list %}
+{% for chapter in game.open_chapters %}
     <li>{{chapter}}</li>
 {% empty %}
     <li>This game currently has no open chapters.</li>

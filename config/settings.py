@@ -26,10 +26,9 @@ if DEBUG:
 
 # In production we may use a different URL for the admin interface.
 ADMIN_URL = env.str("ADMIN_URL", default="admin/")
-
-USE_MULTIPLE_SITES = env.bool("USE_MULTIPLE_SITES", default=False)
+SITE_ID = 1
 SITE_TITLE = env.str("SITE_TITLE", default="Campaign Manager")
-SITE_ID = env.int("SITE_ID", default=None if USE_MULTIPLE_SITES else 1)
+GAME_ID = env.int("GAME_ID", default=1)
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = env.str("TIME_ZONE", default="UTC")
 USE_TZ = True
@@ -75,7 +74,6 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "camp.context.CurrentGameMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

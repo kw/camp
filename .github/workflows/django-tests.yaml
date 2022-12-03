@@ -25,4 +25,5 @@ jobs:
       - name: Django Tests
         run: |
           pipenv run python manage.py collectstatic
+          pipenv run python manage.py migrate
           pipenv run pytest

@@ -3,7 +3,7 @@ from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
-from django.views.generic import ListView
+from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from rules.contrib.views import AutoPermissionRequiredMixin
 
@@ -11,23 +11,18 @@ from .models import Game
 from .models import GameRole
 
 
-class HomePageView(ListView):
-    def get_queryset(self, **kwargs):
-        if self.request.game:
-            return self.request.game.chapters.filter(is_open=True)
-        else:
-            return Game.objects.filter(is_open=True)
+class HomePageView(DetailView):
+    model = Game
+    template_name_suffix = "_home"
 
-    def get_template_names(self):
-        if self.request.game:
-            return ["game/game_home.html"]
-        else:
-            return ["game/hub_home.html"]
+    def get_object(self):
+        return self.request.game
 
 
 class ManageGameView(AutoPermissionRequiredMixin, UpdateView):
     model = Game
-    fields = ["description", "is_open"]
+    fields = ["name", "description", "is_open"]
+    success_url = "/"
 
     def get_object(self):
         return self.request.game
@@ -65,7 +60,7 @@ class UpdateGameRoleView(AutoPermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy("manage-game")
     fields = ["title", "manager", "auditor", "rules_staff"]
     template_name_suffix = "_update_form"
-    queryset = GameRole.objects.select_related("user", "game", "game__site")
+    queryset = GameRole.objects.select_related("user", "game")
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -80,7 +75,7 @@ class UpdateGameRoleView(AutoPermissionRequiredMixin, UpdateView):
 class DeleteGameRoleView(AutoPermissionRequiredMixin, DeleteView):
     model = GameRole
     success_url = reverse_lazy("manage-game")
-    queryset = GameRole.objects.select_related("user", "game", "game__site")
+    queryset = GameRole.objects.select_related("user", "game")
 
     def get_object(self):
         queryset = self.get_queryset()

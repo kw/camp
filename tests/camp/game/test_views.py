@@ -1,4 +1,3 @@
-from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
@@ -9,20 +8,13 @@ from camp.game.models import Game
 
 class HomePageTests(TestCase):
     def setUp(self):
-        self.home_site = Site.objects.create(domain="www.camp.internal", name="Home")
-        self.game1_site = Site.objects.create(
-            domain="game1.camp.internal", name="Game 1"
-        )
         self.game1 = Game.objects.create(
-            site=self.game1_site,
+            name="Game 1",
             description="The first game, which is open.",
             is_open=True,
         )
-        self.game2_site = Site.objects.create(
-            domain="game2.camp.internal", name="Game 2"
-        )
         self.game2 = Game.objects.create(
-            site=self.game2_site,
+            name="Game 2",
             description="The second game, which is closed.",
             is_open=False,
         )
@@ -38,33 +30,17 @@ class HomePageTests(TestCase):
             name="Kansas",
             is_open=False,
         )
+        self.chapter3 = Chapter.objects.create(
+            game=self.game2,
+            slug="hawaii",
+            name="Hawaii",
+            is_open=True,
+        )
         self.url = reverse("home")
 
-    def test_get_hub_home(self):
-        """When the current site has no associated game, render the hub page."""
-        with override_settings(SITE_ID=self.home_site.id):
-            response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "game/hub_home.html")
-        self.assertContains(response, "Games")
-        self.assertContains(response, self.game1.site.name)
-        # This game isn't open, so it does not appear in the list.
-        self.assertNotContains(response, self.game2.site.name)
-
-    def test_get_hub_home_no_games_open(self):
-        """When no games are open, the hub displays a message."""
-        self.game1.is_open = False
-        self.game1.save()
-        with override_settings(SITE_ID=self.home_site.id):
-            response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "game/hub_home.html")
-        self.assertContains(response, "Games")
-        self.assertContains(response, "No games currently open.")
-        self.assertNotContains(response, self.game1.site.name)
-        self.assertNotContains(response, self.game2.site.name)
-
-    def test_get_game(self):
+    def test_get_game_one(self):
         """When the current site has a game attached, render the game home page."""
-        with override_settings(SITE_ID=self.game1_site.id):
+        with override_settings(GAME_ID=self.game1.id):
             response = self.client.get(self.url)
         self.assertTemplateUsed(response, "game/game_home.html")
         self.assertContains(response, "Game 1")
@@ -72,3 +48,13 @@ class HomePageTests(TestCase):
         # Only open chapters are listed.
         self.assertContains(response, "Denver")
         self.assertNotContains(response, "Kansas")
+
+    def test_get_game_two(self):
+        with override_settings(GAME_ID=self.game2.id):
+            response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "game/game_home.html")
+        self.assertContains(response, "Game 2")
+        self.assertContains(response, self.game2.description)
+        # Only open chapters are listed.
+        self.assertNotContains(response, "Denver")
+        self.assertContains(response, "Hawaii")

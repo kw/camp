@@ -1,7 +1,11 @@
 {% extends "account/base.html" %}
 {% load account %}
 
-{% block head_title %}{% user_display object %}{% endblock %}
+{% if object %}
+{% block head_title %}
+    {% user_display object %}
+{% endblock %}
+{% endif %}
 
 {% block content %}
 <p>User: {{ object }}</p>

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import django_heroku
 import environs
 
 env = environs.Env()
@@ -192,4 +191,9 @@ ACCOUNT_RATE_LIMITS = {
 }
 ACCOUNT_SIGNUP_ENABLED = env.bool("SIGNUP_ENABLED", default=True)
 
-django_heroku.settings(locals(), test_runner=False)
+try:
+    import django_heroku
+
+    django_heroku.settings(locals(), test_runner=False)
+except ImportError:
+    pass

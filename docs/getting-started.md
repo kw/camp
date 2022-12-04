@@ -8,9 +8,12 @@ should get your up and running.
 
 ### Requirements
 
-* Python 3.10
-* [Pipenv](https://pypi.org/project/pipenv/)
-  * The recommended command to install this is `pip install --user pipenv`
+* Python 3.11
+* [Poetry](https://python-poetry.org/docs/#installation) package manager
+* **Mac**
+  * X Code, possibly Homebrew
+* **Windows**
+  * [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 
 ### Setup
 
@@ -18,28 +21,28 @@ To install the project's development requirements, visit this repo in
 your shell and run:
 
 ```sh
-pipenv install -d
+poetry install
 ```
 
-Or, if there's a problem finding the pipenv executable, you could try:
+Or, if there's a problem finding the poetry executable, you could try:
 
 ```sh
-python3 -m pipenv install -d
+python3 -m poetry install
 ```
 
-Once your pipenv environment is installed, use:
+Once your poetry environment is installed, use:
 
 ```sh
-pipenv shell
+poetry shell
 ```
 
 To work inside the virtual environment. For more information on what this means,
-see https://pipenv.pypa.io.
+see https://python-poetry.org/docs/cli/#shell.
 
 #### Pre-commit
 
 Pre-commit checks are handles by the [`pre-commit`](https://pre-commit.com/)
-tool. The tool should already be installed in your pipenv environment, but to
+tool. The tool should already be installed in your poetry environment, but to
 automatically run it on commit, you must hook it into your local repository:
 
 ```sh
@@ -63,7 +66,7 @@ to start. The rest of this document assumes some familiarity.
 
 #### Create or upgrade the database
 
-Once inside your `pipenv shell`, you should be able to perform the initial Django
+Once inside your `poetry shell`, you should be able to perform the initial Django
 migration to create a local database file by running:
 
 ```sh

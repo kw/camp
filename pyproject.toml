@@ -25,6 +25,7 @@ whitenoise = "==6.0.0"
 environs = {extras = ["django"], version = "==9.5.0"}
 gunicorn = "==20.1.0"
 rules = "==3.3"
+camp-engine = {git = "https://github.com/kw/camp-engine.git", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 ipython = "~=8.2"

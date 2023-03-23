@@ -6,6 +6,7 @@ from camp.game.models import Chapter
 from camp.game.models import ChapterRole
 from camp.game.models import Game
 from camp.game.models import GameRole
+from camp.game.models import Ruleset
 
 VIEW_GAME = "game.view_game"
 CHANGE_GAME = "game.change_game"
@@ -22,6 +23,29 @@ DELETE_GAME_ROLE = "game.delete_gamerole"
 VIEW_CHAPTER_ROLE = "game.view_chapterrole"
 CHANGE_CHAPTER_ROLE = "game.change_chapterrole"
 DELETE_CHAPTER_ROLE = "game.delete_chapterrole"
+
+
+class RulesetTest(TestCase):
+    """Rulesets and engines from camp.engine can be loaded."""
+
+    def setUp(self):
+        self.game: Game = Game.objects.create(
+            name="Tempest",
+            description="The game",
+            is_open=True,
+        )
+
+    def test_load_tempest_test(self):
+        ruleset = Ruleset.objects.create(game=self.game, package="camp.tempest.test")
+        self.assertEqual(ruleset.ruleset_id, "temptest")
+        self.assertGreater(len(ruleset.ruleset.features), 0)
+        self.assertIsNotNone(ruleset.engine)
+
+    def test_load_tempest_v1(self):
+        ruleset = Ruleset.objects.create(game=self.game, package="camp.tempest.v1")
+        self.assertEqual(ruleset.ruleset_id, "tempest")
+        self.assertGreater(len(ruleset.ruleset.features), 0)
+        self.assertIsNotNone(ruleset.engine)
 
 
 class GamePermissionsTest(TestCase):

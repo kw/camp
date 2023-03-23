@@ -10,6 +10,24 @@
     <input type="submit" value="Update">
 </form>
 
+<h1>Rulesets</h1>
+<ul>
+{% for ruleset in game.rulesets.all %}
+    {% has_perm 'game.change_ruleset' user ruleset as can_change_ruleset %}
+    {% has_perm 'game.delete_ruleset' user ruleset as can_delete_ruleset %}
+    <li>{{ruleset.name}} [{{ruleset.ruleset_id}} {{ruleset.version}}]: {{ruleset.ruleset.features | length}} features loaded.
+        {% if can_delete_ruleset %}
+            <a href="{% url 'delete-ruleset' ruleset.id %}">❌</a>
+        {% endif %}
+    </li>
+
+{% endfor %}
+{% has_perm 'game.change_game' user game as can_add_ruleset %}
+{% if can_add_ruleset %}
+    <p><a href="{% url 'add-ruleset' %}">Add Ruleset</a></p>
+{% endif %}
+</ul>
+
 <h1>Roles</h1>
 <ul>
 {% for role in game.roles.all %}

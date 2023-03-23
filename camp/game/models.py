@@ -1,14 +1,26 @@
 from __future__ import annotations
 
+from functools import cached_property
+from functools import lru_cache
+
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
 
+import camp.engine.loader
+import camp.engine.rules.base_engine
+import camp.engine.rules.base_models
+
 from . import rules
 
 User = get_user_model()
+
+
+@lru_cache
+def load_ruleset(path: str) -> camp.engine.rules.base_models.BaseRuleset:
+    return camp.engine.loader.load_ruleset(path, with_bad_defs=False)
 
 
 class Game(RulesModel):
@@ -108,6 +120,69 @@ class Game(RulesModel):
         rules_permissions = {
             "view": rules.always_allow,
             "change": rules.can_manage_game,
+        }
+
+
+class Ruleset(RulesModel):
+    """Represents a ruleset within a game.
+
+    A ruleset is a set of game data (a list of skills, classes, etc)
+    that specifies a game engine to run it. Rulesets may come from
+    directories, archives, python packages, etc. The game engine
+    specified in the ruleset must be installed in the server at
+    a high enough version number to support the ruleset.
+
+    While a rules engine can theoretically load data from anywhere,
+    we don't want users of the service to try loading arbitrary
+    disk locations. We'll only support python package names to start
+    with, and later add support for ruleset uploads.
+    """
+
+    game: Game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, related_name="rulesets"
+    )
+    package: str = models.CharField(blank=True, null=True, max_length=100)
+
+    @cached_property
+    def ruleset(self) -> camp.engine.rules.base_models.BaseRuleset:
+        if not self.package:
+            raise ValueError(f"No package specified for ruleset {self.name}")
+        # Package loading behavior is triggered by prefixing a package with a $ character.
+        return load_ruleset(f"${self.package}")
+
+    @cached_property
+    def engine(self) -> camp.engine.rules.base_engine.Engine:
+        return self.ruleset.engine
+
+    @property
+    def ruleset_id(self) -> str:
+        return self.ruleset.id
+
+    @property
+    def name(self) -> str:
+        return self.ruleset.name
+
+    @property
+    def version(self) -> str:
+        return self.ruleset.version
+
+    def __str__(self) -> str:
+        try:
+            ruleset = self.ruleset
+        except Exception:
+            ruleset = None
+        if ruleset:
+            return f"{ruleset.name} [{ruleset.id} {ruleset.version}]"
+        return f"Unreadable Ruleset [{self.package}]"
+
+    def __repr__(self) -> str:
+        return f"Ruleset(package={self.package})"
+
+    class Meta:
+        rules_permissions = {
+            "change": rules.can_manage_game | rules.is_game_rules_staff,
+            "view": rules.always_allow,
+            "delete": rules.can_manage_game | rules.is_game_rules_staff,
         }
 
 

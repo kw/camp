@@ -7,8 +7,11 @@ from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from rules.contrib.views import AutoPermissionRequiredMixin
 
+from camp.engine.rules.base_engine import Engine
+
 from .models import Game
 from .models import GameRole
+from .models import Ruleset
 
 
 class HomePageView(DetailView):
@@ -26,6 +29,39 @@ class ManageGameView(AutoPermissionRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.game
+
+
+class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):
+    model = Ruleset
+    fields = ["package"]
+    success_url = reverse_lazy("manage-game")
+    template_name_suffix = "_add_form"
+    permission_required = "game.change_game"
+
+    def get_permission_object(self):
+        return self.request.game
+
+    def get_object(self):
+        return Ruleset(game=self.request.game)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.game = self.request.game
+        try:
+            engine: Engine = self.object.engine
+            if engine.ruleset.bad_defs:
+                form.add_error(
+                    "package",
+                    f"Bad definitions exist in ruleset: {engine.ruleset.bad_defs}",
+                )
+        except Exception as exc:
+            form.add_error("package", f"Error loading ruleset: {exc}")
+        return super().form_valid(form)
+
+
+class DeleteRulesetView(AutoPermissionRequiredMixin, DeleteView):
+    model = Ruleset
+    success_url = reverse_lazy("manage-game")
 
 
 class CreateGameRoleView(AutoPermissionRequiredMixin, CreateView):

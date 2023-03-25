@@ -296,8 +296,6 @@ class TempestCharacter(base_engine.CharacterController):
         if isinstance(expr, str):
             expr = PropExpression.parse(expr)
         if expr.prop in self.ruleset.features:
-            # if expr.slot:
-            #     return self.get_choice_controller(repr(expr))
             return self._controller_for_feature(expr, create=create)
         elif expr.prop in self.ruleset.attribute_map:
             controller = self.get_attribute(expr)

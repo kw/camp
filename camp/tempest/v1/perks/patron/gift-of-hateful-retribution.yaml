@@ -1,0 +1,32 @@
+name: Gift of Hateful Retribution
+requires: patron
+cost:
+  ranks:
+    1: 2
+    2: 3
+    3: 4
+    4: 5
+    5: 6
+rank_labels:
+  1: 10/-
+  2: 15/-
+  3: 25/5
+  4: 50/10
+  5: 100/20
+description: >
+  The character’s patron, often a war or death deity, or some other similar greater power,
+  has given the character the ability to destroy those who would end the patron’s beloved pet.
+  Once per Event, when the character is Deathblowed or killed with a melee attack, she can do
+  damage to the one who attacked her. The cost of this Perk depends on the amount of damage the
+  character does when killed. At higher power levels, this Perk can do damage “By My Voice”
+  instead. Whether the individual or By My Voice damage is done is up to the character at the
+  time it is used. The Accent on the damage is “by Spite”. Note that in the case of a Deathblow,
+  the Hateful Retribution will go off before the character actually dies.
+
+  | Dmg | BMV Dmg | Cost |
+  | :-: | :-----: | :--: |
+  | 10  | -       | 2    |
+  | 15  | -       | 3    |
+  | 25  | 5       | 4    |
+  | 50  | 10      | 5    |
+  | 100 | 20      | 6    |

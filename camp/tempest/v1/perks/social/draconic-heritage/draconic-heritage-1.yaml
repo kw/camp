@@ -1,0 +1,11 @@
+name: Draconic Heritage
+cost: 2
+creation_only: true
+description: >
+  The character has dragon ancestors. This manifests in a number of ways and the character’s
+  draconic blood can express itself more as the character rises in level. The character should
+  choose from Lightning, Flame, Ice, or Acid. In addition to the following benefits, dragons
+  can sense the character’s blood as can, occasionally, dragon-related creatures such as kobolds.
+
+  The character can counter one attack of the appropriate Accent by calling “Counter”. She can do
+  this once per Short Rest. The character is affected by Powers that affect Dragons.

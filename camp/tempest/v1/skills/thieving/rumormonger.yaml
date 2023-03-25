@@ -1,0 +1,6 @@
+name: Rumormonger
+cost: 2
+description: >
+  At the beginning of each Event, the player will be provided with a write-up of local rumors.
+  These are rumors, so while some may be extremely informative, others may not reflect reality,
+  or may reflect a distorted view of the facts.

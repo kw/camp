@@ -1,0 +1,12 @@
+name: Basic Medicine
+cost: 2
+description: >
+  The character has some basic understanding of the way living creatures work
+  and has some minor skill in the healing arts. By spending a Quick 100 tending
+  to an individual, that individual, if dying, will become stable. The character’s
+  death-count will not stop or pause while being tended to, so the target may die
+  during the count. The character using this skill should role-play checking and
+  binding wounds, and overall treating the character (please remember not to touch
+  other players without explicit previous consent). The character using Basic Medicine
+  may use any of the following at-will delivered by Touch: “Discern: Are you currently
+  at max Life Points?”, “Discern: Are you Dying?” or “Discern: Are you Dead?”

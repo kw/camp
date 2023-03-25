@@ -1,0 +1,8 @@
+name: Arcane Hearth
+cost: 5
+requires: hearth
+description: >
+  When the character creates a Hearth, she may spend an additional minute or so on the rite,
+  drawing in the magical weave to create a nexus of arcane energy. The Hearth will act as an
+  Arcane Locus for the purposes of magical study until the end of the Event. The Hearth cannot
+  also be designated as a Consecrated Hearth.

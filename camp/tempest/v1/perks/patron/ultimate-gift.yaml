@@ -1,0 +1,14 @@
+name: Ultimate Gift
+cost: 1
+requires: patron
+description: >
+  Once, the character can call out a final prayer to her Patron to save those around her.
+  She should call out “[Patron’s name], I give the Ultimate Gift!”. She can now use three
+  separate powers, at her discretion. She can call out “By My Voice Grant Life to [Names]”
+  and give the names of any number of individuals, bringing them all back to life. She may
+  call “By My Voice Heal 10 to [Names]” and heal all the named characters. She may also call
+  out “By My Voice Short Grant _insubstantial_ to [Names]” When these things are complete,
+  the character herself will die, immediately dissipate, taking Spirit form and heading for
+  the Spirit Well. She will not return from the Well. This is a permanent and unavoidable
+  death for that character. The character need not give a list of names and may just affect
+  everyone within range.

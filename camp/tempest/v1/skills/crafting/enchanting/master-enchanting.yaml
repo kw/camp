@@ -1,0 +1,7 @@
+name: Master Enchanting
+cost: 6
+requires:
+  - greater-enchanting
+  - level:16
+description: >
+  This skill allows the character the ability to create powerful enchanted objects.

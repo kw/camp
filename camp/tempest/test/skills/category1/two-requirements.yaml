@@ -1,0 +1,7 @@
+name: Two Requirements
+cost: 5
+requires:
+  - basic-skill
+  - granted-skill
+description: >
+  Requires two skills at the same time.

@@ -1,0 +1,7 @@
+name: Two Weapon Style
+cost: 2
+requires: short-weapons
+description: >
+  The character can wield two melee weapons at once and be
+  considered proficient with both. Only one of the two weapons
+  can be over 36” long and neither can be longer than 48”.

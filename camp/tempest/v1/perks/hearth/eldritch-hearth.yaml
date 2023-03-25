@@ -1,0 +1,8 @@
+name: Eldritch Hearth
+cost: 3
+requires: arcane-hearth
+description: >
+  When the character creates an Arcane Hearth, she may spend an additional minute or so
+  on the rite, constructing or assembling a simple crystal focus that must produce light.
+  If a named member of the Hearth conducts an Arcane Ritual within the confines of the Hearth,
+  the amount of Dark Territory is reduced by one.

@@ -1,0 +1,12 @@
+name: Great Weapons
+cost: 5
+requires: basic-martial-weapons
+description: >
+  The character has proficiency with great weapons (48”-90”).
+  When a character uses a great weapon to perform a Spike,
+  the wielder may choose to either do 1 additional point of
+  base damage, or use the “Shield-Breaking” Effect.
+  Remember to use any powers or deal damage, it must be held
+  in both hands; the great weapon can still be used to block in
+  a single hand. If the character is strengthened they can perform
+  Spikes and use powers without holding the great weapon in both hands.

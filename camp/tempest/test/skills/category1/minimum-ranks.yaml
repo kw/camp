@@ -1,0 +1,5 @@
+name: Minimum Ranks
+cost: 2
+requires: basic-skill:3
+description: >
+  Depends on three ranks of one skill.

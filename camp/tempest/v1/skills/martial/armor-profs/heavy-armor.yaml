@@ -1,0 +1,5 @@
+name: Heavy Armor
+cost: 3
+requires: medium-armor
+description: >
+  The character can gain up to eight armor points after hit location calculations.

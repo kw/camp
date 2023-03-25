@@ -1,0 +1,7 @@
+name: Shield Expertise
+cost: 5
+requires: basic-shields
+description: >
+  The character can Counter one weapon attack that hits her shield.
+  She should call “Shield Expertise” when she uses the Counter.
+  This will refresh after the character completes a Short Rest.

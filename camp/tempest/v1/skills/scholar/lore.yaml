@@ -1,0 +1,12 @@
+name: Lore
+cost: 2
+option:
+  values:
+    - Arcane
+    - Historical
+    - Nature
+    - Noble
+    - Planar
+    - Religious
+    - Shadow
+    - Undead

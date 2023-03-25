@@ -1,0 +1,7 @@
+name: Journeyman Alchemy
+cost: 4
+requires:
+  - apprentice-alchemy
+  - level:4
+description: >
+  The character can craft potions, poisons, drugs and other alchemical items of intermediate difficulty.

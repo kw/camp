@@ -1,0 +1,9 @@
+name: Soothing Touch
+cost: 1
+requires: -disquieting-aura
+description: >
+  The character has a soul rooted in calm solemnity. At-will, the character can reach out
+  to another, speaking soothing words and narrating images of placidity and tranquility.
+  After doing this for a few moments, the character may call “Cure Madness”, curing the
+  character of any Conditions that were applied with the Madness Accent. This cannot be
+  taken along with Disquieting Aura.

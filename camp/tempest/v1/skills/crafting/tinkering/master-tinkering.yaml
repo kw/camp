@@ -1,0 +1,7 @@
+name: Master Tinkering
+cost: 6
+requires:
+  - greater-tinkering
+  - level:16
+description: >
+  The character can craft Master tier engineering and tinkering items.

@@ -1,0 +1,22 @@
+name: Severe Allergy
+award:
+  $Uncommon Allergens: 2
+  $Common Allergens: 3
+description: >
+  The character has a supernatural allergy to gold, silver, iron, magic, or other substances which must
+  be approved by Staff. Each time the character goes from not touching an object made of the material to
+  touching it with skin, it will cause Piercing 1 by Agony (even cloth will prevent this damage). So a
+  character with a gold ring would take the damage each time it was put on, as well as each time she touched
+  a gold coin (even if the ring remained on).
+
+  While in contact with the substance, even through cloth, the character cannot benefit from a Short or Long
+  Rest or Healing and will have the drained Condition. The character will feel severely ill, feel burning pain,
+  or have severe migraines and difficulty thinking (or any combination of these) while touching the material in
+  question and should role play it as such. Cloth will not stop these symptoms but leather or thicker substances
+  will. Weapons that are not obviously made of some other material are considered to be iron, and attacks from
+  are considered to be “hitting skin” if they damage Life Points.
+
+  3 points are awarded for materials that are likely to be very common such as leather, iron, and materia.
+  2 points are awarded for materials that are less likely to be common or a hindrance, such as gold, silver, or
+  any of the Resources. No points will be awarded for materials that are unlikely to be encountered, or will rarely
+  cause a hindrance such as butter, horse hair, or werewolf skin.

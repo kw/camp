@@ -1,0 +1,13 @@
+name: Archer's Expertise
+cost: 4
+requires:
+  - projectile-weapons
+  - any:
+    - weapon-specialization#Bow
+    - weapon-specialization#Crossbow
+description: >
+  When using the weapon with which the character has Weapon Specialization,
+  the character, if she misses with a projectile while using a Power, can immediately
+  (before making any other attacks or using other Powers) retry the same Power with a
+  second shot without expending additional uses. The second attempt need not have the same target.
+  If the retry misses, the Power is expended.

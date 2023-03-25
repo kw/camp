@@ -1,0 +1,5 @@
+name: Great Shields
+cost: 2
+requires: advanced-shields
+description: >
+  The character has proficiency with Great shields (125” perimeter max).

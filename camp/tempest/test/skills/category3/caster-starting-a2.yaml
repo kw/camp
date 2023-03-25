@@ -1,0 +1,6 @@
+name: Arcane Multiclass Feature
+cost: 6
+requires: arcane
+description: >
+  This skill is a starting feature for arcane casters, including
+  multiclass characters.

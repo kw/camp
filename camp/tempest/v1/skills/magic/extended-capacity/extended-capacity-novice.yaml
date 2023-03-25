@@ -1,0 +1,11 @@
+name: Extended Capacity (Novice)
+cost: 2
+ranks: 3
+requires:
+  any:
+    - basic-arcane
+    - basic-faith
+# TODO(#15): Implement spell slots
+description: >
+  The character chooses one Sphere of magic and gains one additional Novice
+  spell-slot in that Sphere and can use it to cast a Prepared spell.

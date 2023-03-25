@@ -1,0 +1,11 @@
+name: Advanced Great Weapon Style
+cost: 3
+requires: great-weapons
+description: >
+  The character has trained significantly with great weapons and can hold a second weapon
+  in the same hand as a great weapon without impeding the effectiveness of the great weapon.
+  For example, a character could hold a polearm and one hand could also hold a short sword,
+  and the polearm would still be usable and would be able to do Spikes, do Shield-Breaking
+  damage, etc. if both hands are on the polearm. Note that although the effectiveness of
+  the great weapon is unaffected, the second weapon cannot be used to do damage or block
+  attacks if it is held in the same hand as the great weapon.

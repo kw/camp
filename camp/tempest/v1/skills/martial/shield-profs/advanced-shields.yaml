@@ -1,0 +1,5 @@
+name: Advanced Shields
+cost: 2
+requires: basic-shields
+description: >
+  The character has proficiency with Medium (94” perimeter max) and Large shields (106” perimeter max).

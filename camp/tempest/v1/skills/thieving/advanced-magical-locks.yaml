@@ -1,0 +1,7 @@
+name: Advanced Magical Locks
+cost: 2
+requires: basic-locks
+description: >
+  Allows the character to retry picking a magical lock. Each time they fail,
+  the character must restart from the beginning, but may try the lock as often as desired.
+  This will not prevent any negative effects from failure to pick the magical lock.

@@ -1,0 +1,12 @@
+name: Advanced Medicine
+cost: 4
+requires: basic-medicine
+description: >
+  The character has a number of techniques at her disposal to help those around her.
+  The character can perform any of the following actions by spending a Slow 60 out of
+  combat tending to another (these cannot be performed on the character herself).
+  These can be done as part of a Short Rest.
+
+  * Cure Disabled [one limb]
+  * Cure Weakened
+  * Cure Slept

@@ -1,0 +1,7 @@
+name: Master Alchemy
+cost: 6
+requires:
+  - greater-alchemy
+  - level:16
+description: >
+  The character can craft potions, poisons, drugs and other alchemical items of advanced difficulty.

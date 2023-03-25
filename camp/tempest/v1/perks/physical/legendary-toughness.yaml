@@ -1,0 +1,6 @@
+name: Legendary Toughness
+cost: 6
+requires: level:20
+grants: lp:1
+description: >
+  The character is harder to kill and adds 1 Life Point to her maximum.

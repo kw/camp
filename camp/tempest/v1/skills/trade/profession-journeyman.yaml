@@ -1,0 +1,18 @@
+name: Profession - Journeyman
+cost: 1
+# TODO(#16): Add tracking to record the income
+requires: profession-apprentice
+option:
+  multiple: false
+  inherit: profession-apprentice
+description: >
+  The character has functional knowledge in a profession.
+  The character can perform all normal functions of the chosen
+  profession and she will show solid knowledge related to it.
+  Most tasks associated with that profession can be performed
+  without aid or supervision. The character earns income as a member of
+  the profession, represented by earning 4 Wealth at the beginning of
+  each game, in addition to what they earn from their Apprentice skill.
+  In addition, the character can choose one Profession-related Discern
+  question and can ask it at-will (such as “Discern: Which civilization
+  built this?” for a mason). This question should be approved by Staff (between games).

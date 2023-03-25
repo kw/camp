@@ -1,0 +1,10 @@
+name: Diagnose
+cost: 1
+requires: basic-medicine
+description: >
+  With only a glance, the trained character can tell the extent of someone’s wounds.
+  At-will the character can give a person a quick look over while within Touch range
+  and then ask “Discern: How many Life Points are you down?” Additionally, after a
+  thorough examination (please remember not to touch other players without explicit
+  previous consent) you can determine what Conditions the character has. To do this
+  use the call “Discern: What Conditions do you have currently?” This is delivered by Touch.

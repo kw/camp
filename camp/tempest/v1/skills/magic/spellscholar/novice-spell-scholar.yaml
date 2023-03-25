@@ -1,0 +1,11 @@
+name: Novice Spell-Scholar
+cost: 2
+ranks: unlimited
+requires:
+  any:
+    - basic-arcane
+    - basic-faith
+# TODO(#15): Track spellbook
+description: >
+  The character can add two Novice spells from a spell-casting class she has levels in and add them to her spellbook.
+  If the character does not have a class spell-list, they may pick spells from any class’ spell list.

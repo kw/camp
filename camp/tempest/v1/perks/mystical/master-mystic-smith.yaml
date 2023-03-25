@@ -1,0 +1,5 @@
+name: Master Mystic Smith
+cost: 1
+requires: mystic-smith
+description: >
+  The character can spend a Focus Quick 100 to Mend 1 point of summoned armor that anyone is wearing. This can be done at-will.

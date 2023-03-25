@@ -1,0 +1,7 @@
+name: Extensive Training
+cost: 6
+requires: martial
+# TODO(#13): Implement bonus utility powers
+description: >
+  The character may choose an additional Utility Power from a non-casting class that she has levels in.
+  This is just like an additional Power from the class. The Power must be at a level she could normally take.

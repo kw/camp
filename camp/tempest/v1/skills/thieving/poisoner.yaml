@@ -1,0 +1,6 @@
+name: Poisoner
+cost: 1
+description: >
+  This skill allows the character to apply poisons to weapons or other implements.
+  Similarly, the poisoner can add poison chits to food. Without this skill, a character
+  attempting to apply poison to food or to an implement will also take the effects of the poison.

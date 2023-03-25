@@ -1,0 +1,8 @@
+name: Basic Faith
+cost: 4
+# TODO(#14): Support spellbook bonuses.
+description: >
+  The character learns how to record Divine spells into a spellbook and Prepare them.
+  She can add four Novice-tier Divine spells into her spellbook. If the character has
+  levels in a Divine spell-casting class, these spells must all be spells from one of those classes.
+  This skill confers no actual spell-slots or preparation slots.

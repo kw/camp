@@ -1,0 +1,13 @@
+name: Profession - Apprentice
+cost: 1
+# TODO(#16): Add tracking to record the income
+option:
+  freeform: true
+  multiple: false
+  values: [$Professions]
+description: >
+  The character has some basic knowledge in a profession and can generally perform in that
+  profession on basic tasks without journeyman or master supervision. More complex tasks may
+  require guidance. The character can perform the basic functions of the chosen profession and
+  will have corollary knowledge of lore and procedures related to it. The character earns some
+  basic income from their profession, represented by earning 2 Wealth at the beginning of each game.

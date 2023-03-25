@@ -1,0 +1,17 @@
+name: Hearth
+cost: 1
+description: >
+  The character can perform an easy rite, taking only a few seconds, which will sanctify a particular room.
+  The character should pick a special item like a horseshoe, banner, or other significant, meaningful item,
+  and place it inside the room to designate it as a Hearth. If the item is removed from the room for any
+  reason, the Hearth Perks are lost until it is returned. Otherwise a new rite can be performed after the
+  next Long Rest on a new item. The character can only perform a new rite on a new item once per Event.
+
+  The room becomes the character’s Hearth and she can develop certain powers that are only effective when
+  in her Hearth by taking additional Hearth Perks. In order for a room to become a Hearth, it must be the
+  room the character intends to sleep the next time she sleeps. In addition, the room cannot be a public or
+  multi-use room such as a Tavern. If the room is normally public but is closed off for sleeping, that is
+  acceptable (such as a small shop that is closed and used as living quarters). While performing the rite,
+  the character can name five additional people who also intend to sleep in that room and the area will
+  count as a Hearth for them as well. Those others count this as their Hearth and can purchase and use other
+  Hearth Perks even if they have no ability to make the Hearth in the first place.

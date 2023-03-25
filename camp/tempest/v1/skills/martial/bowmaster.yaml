@@ -1,0 +1,16 @@
+name: Bowmaster
+cost: 4
+requires:
+  - projectile-weapons
+  - quick-shot
+  - any:
+    - weapon-specialization#Bow
+    - weapon-specialization#Crossbow
+description: >
+  When the character spends a Quick 10 aiming with a weapon in which she has Weapon Specialization, she may choose to do one of the following:
+
+  * One additional point of damage.
+  * Expend a Spike to deliver a Shield-Breaking Effect. This is called as “Shield Breaking”.
+  * Expend a Spike to deliver a Disable Effect. This is called as “Disable [Limb]” where the
+    limb called must be the one struck by the projectile. In the case of held objects, the limb
+    holding the object must be called. Torso hits will allow the character to call any limb she wishes.

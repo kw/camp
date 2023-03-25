@@ -1,0 +1,21 @@
+name: Elemental Affinity
+cost: 4
+option:
+  multiple: 2
+  values:
+    - Flame
+    - Ice
+    - Lightning
+    - Acid
+description: >
+  Once per Long Rest, the character can focus for a Quick 100 to infuse herself with elemental energy.
+  The element she can attune to is determined when the Perk is taken and must be chosen from Flame,
+  Ice, Lightning, or Acid. The attunement only lasts until the end of the next Short Rest. While attuned,
+  the character may resist a number of elemental effects of their chosen element equal to their Life
+  Point Maximum per Event. In addition, they are able to alter the Accent of any elemental power she uses
+  to the chosen accent. However, they are unable to use powers with the opposition Accent.
+
+  She also becomes vulnerable to the opposite element, and takes Effects from that element as Final.
+  Flame and Ice are opposites, as are Lightning is the opposite of Acid. This Perk can be taken up to
+  twice, and each time the character may choose any element they desire, although she may not to attune
+  to more than one element at a time.

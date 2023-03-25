@@ -1,0 +1,30 @@
+type: class
+name: Fighter
+sphere: martial
+starting_features:
+  - martial-starting-a1
+  - martial-starting-a2
+  - fighter-starting-feature-a
+multiclass_features:
+  - martial-starting-a2
+  - fighter-multiclass-feature-a
+level_table_columns:
+  powers: {name: "Maximum Powers in each Fighter Tier\n(Basic/Advanced/Veteran/Champion)", type: power_slots}
+levels:
+  1: {powers: [1]}
+  2: {powers: [2]}
+  3: {powers: [3]}
+  4: {powers: [4]}
+  5: {powers: [5]}
+  6: {powers: [6]}
+  7: {powers: [6, 1]}
+---
+id: fighter-starting-feature-a
+type: subfeature
+name: Fighter Starting Feature
+description: It's a cool feature.
+---
+id: fighter-multiclass-feature-a
+type: subfeature
+name: Fighter Multiclass Feature
+description: It's a less cool feature.

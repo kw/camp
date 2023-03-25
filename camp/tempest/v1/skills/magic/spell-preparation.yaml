@@ -1,0 +1,11 @@
+name: Spell Preparation
+cost: 6
+requires:
+  any:
+    - basic-arcane
+    - basic-faith
+# TODO(#13) - Track spell preparation slots.
+description: >
+  The character chooses one Sphere of magic and gains the ability to Prepare
+  one additional spell from that Sphere. In conjunction with Extended Capacity,
+  this will allow a non-spellcasting character to cast a spell.

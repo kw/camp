@@ -1,0 +1,10 @@
+name: Library Use
+cost: 1
+requires: basic-scholarship
+description: >
+  The character knows her way around a library and can find tomes, discover ancient texts,
+  and generally learn things that are unavailable to the normal folk. This allows the
+  character to discover additional information above and beyond what is normally available
+  in Between Game Events, as long as a library is available and the information would be
+  discoverable in books. If a Library exists in-game, the character may spend a 4-hour NPC
+  shift researching any one question and will get an answer from Staff.

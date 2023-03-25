@@ -1,0 +1,16 @@
+name: Insight
+cost: 3
+ranks: 2
+description: >
+  The character gets flashes of help from the beyond that can help in times of need.
+  The character can call out to some great power, such as the Gods, the Light, or any
+  other greater or divine creature, and ask for a flash of insight to help with a mental
+  puzzle or riddle. If there is an NPC nearby who can be briefly possessed by the power
+  called for, she will blurt out a short hint or helpful piece of advice, but be totally
+  unaware that they have done so.
+
+  The insight cannot talk about the future, nor speculate about actions. The incantation
+  for this should be along the lines of “Hear me O Light, and grant me the boon of Insight!”
+  This can be done once per Long Rest for each time this Perk is purchased. Regardless of
+  how many times Insight has been purchased, it cannot be used more than once per Short Rest.
+  All uses return after a Long Rest.

@@ -1,0 +1,12 @@
+name: Minor Nobility
+cost: 4
+discounts:
+  income: 1
+  manse: 1
+  famous: 1
+description: >
+  The character has a minor title such as Lord/Lady/Liege or Sir/Dame/Soren. This title has certain benefits and
+  rights that come with it, but most only apply while the character is in their own demesne. The character does
+  have the right to be called by her title and crimes against the character will be taken more seriously.
+  Additionally, she will often be believed by local authorities or soldiers. This reduces the cost of the
+  Income, Manse, Connections, and Famous Perks by 1.

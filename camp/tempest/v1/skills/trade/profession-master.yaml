@@ -1,0 +1,15 @@
+name: Profession - Master
+cost: 1
+# TODO(#16): Add tracking to record the income
+requires: profession-journeyman
+option:
+  multiple: false
+  inherit: profession-journeyman
+description: >
+  The character has mastered her chosen profession. She can perform the most
+  complicated tasks and has a deep knowledge of lore associated with that mastery.
+  The character’s mastery earns income represented by earning 6 Wealth at the beginning
+  of each game, in addition to what they earn from their Apprentice and Journeyman skills.
+  In addition, the character can choose one additional Profession-related Discern question
+  and can ask it at-will (such as “Discern: Does this stone wall seem to be moveable?” for a mason).
+  This question should be approved by Staff (between games).

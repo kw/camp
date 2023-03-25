@@ -1,0 +1,24 @@
+name: Patron
+cost: 4
+choices:
+  discount:
+    name: Patron Discount
+    limit: unlimited
+    description: >
+      Perks purchased with this slot cost -1 CP (minimum 1) per rank. If Patron is revoked, any
+      perks purchased with this discount are suppressed.
+    discount: 1
+    matcher:
+      type: perk
+      tags: -no-patron
+description: >
+  The character is under the patronage of a powerful supernatural creature.
+  This may be a Fae Lady, a god or goddess, a Great Power, an elder demon, or any
+  other creature of significant mystical strength. The character has some sort of
+  relationship with her Patron, whether it be servile, romantic, or purely business.
+  The character can never refuse a request by that patron without losing this Perk.
+  The character has a relationship with this patron and can make requests or prayers
+  to it, although there is no necessity that they be answered or honored. Most other
+  Perks can be purchased more cheaply if they are granted (and thus revocable) by the Patron.
+  Any Perk that doesn’t have the Patron prerequisite that is going to be considered a
+  gift from the Patron costs 1 CP less (to a minimum of 1).

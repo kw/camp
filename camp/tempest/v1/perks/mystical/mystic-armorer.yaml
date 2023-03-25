@@ -1,0 +1,8 @@
+name: Mystic Armorer
+cost: 4
+description: >
+  The character was born with a special ability to create summoned armors.
+  For every 2 points of summoned armor that the character creates with a Power
+  (including Spells), the armor has one additional point. For example, if a 2
+  point armoring Power were used (such as Mage Armor), it would make 3 points of Armor.
+  Note that this has no effect on Powers that add to existing armor.

@@ -1,0 +1,6 @@
+name: Gift of Recognition
+cost: 1
+requires: patron
+description: >
+  The character can sense others who also give homage to her same Patron.
+  She can ask at-will “Divine: Is [Patron’s Name] your Patron?”

@@ -1,0 +1,7 @@
+name: Journeyman Enchanting
+cost: 4
+requires:
+  - apprentice-enchanting
+  - level:4
+description: >
+  The character can pull multiple pieces of foundational energy from the ether and enchant more advanced items for a period of time.

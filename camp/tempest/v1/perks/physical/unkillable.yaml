@@ -1,0 +1,6 @@
+name: Unkillable
+cost: 4
+requires: holding-on
+description: >
+  Once per Long Rest, when the character has finished a death-count (including a shortened
+  one after a Deathblow) and should die, she will instead stabilize at zero Life Points.

@@ -1,0 +1,8 @@
+name: Specific Options
+option:
+  values: [One, Two, Three, $More Specific Options]
+ranks: 10
+cost: 1
+description: >
+  This skill can be purchased multiple times, each with a different
+  text option from a specific list.

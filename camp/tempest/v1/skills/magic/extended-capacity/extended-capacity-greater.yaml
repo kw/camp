@@ -1,0 +1,10 @@
+name: Extended Capacity (Greater)
+cost: 4
+ranks: 3
+# TODO(#15): Actual requirement is "One greater spell-slot"
+requires: extended-capacity-adept
+# TODO(#15): Implement spell slots
+description: >
+  The character chooses one Sphere of magic she has a Greater Spell slot
+  for and gains one additional Greater spell-slot in that Sphere and can
+  use it to cast a Prepared spell.

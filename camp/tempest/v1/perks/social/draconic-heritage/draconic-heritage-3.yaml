@@ -1,0 +1,7 @@
+name: Draconic Heritage III
+cost: 2
+requires:
+  - level:10
+  - draconic-heritage-2
+description: >
+  The character may choose to Resist effects from their chosen Element. They may do this at will.

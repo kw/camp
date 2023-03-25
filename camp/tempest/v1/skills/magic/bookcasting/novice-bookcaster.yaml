@@ -1,0 +1,14 @@
+name: Novice Bookcaster
+cost: 1
+requires:
+  any:
+    - basic-arcane
+    - basic-faith
+description: >
+  The character can cast Novice level spells directly from her spellbook.
+  Although the spell will still exhaust a Novice Magic Spell-Slot, it need not
+  be Prepared (although it must be a spell the caster could Prepare).
+  To bookcast a spell, the character must be out of combat, then character must
+  either read the full incant five times from her spell-book, or must study her
+  spellbook for a full minute before reading the incantation directly from the book.
+  All other requirements and components will remain the same.

@@ -1,0 +1,5 @@
+name: Long Weapons
+cost: 7
+requires: short-weapons
+description: >
+  The character has proficiency with long weapons (36”-48”).

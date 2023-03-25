@@ -1,0 +1,8 @@
+name: Quick Shot
+cost: 4
+requires:
+  - projectile-weapons
+  - level:10
+description: >
+  The character may do her Spike damage with bows, without any aim time a
+  number of times per Long Rest equal to her Maximum Spikes.

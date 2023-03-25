@@ -1,0 +1,26 @@
+name: Gift of Unbreakable Flesh
+requires: patron
+cost:
+  ranks:
+    1: 2
+    2: 3
+    3: 5
+    4: 5
+description: >
+  The character is beloved by a deity or greater supernatural power of some kind,
+  who grants a number of points of Natural Armor (armor that need not have a prop and
+  can be both Mended and Healed). The cost of this Perk is dependent on the number of
+  Armor Points the character has been granted. If this Perk is upgraded after character
+  creation, only the difference between the old level and the new level needs to be paid.
+  (i.e. 3 points to get 2 points of armor, if the character already paid 2 Character Points
+  to get 1 point of armor).
+
+  **Note**: This armor works just like created armor in that choosing armor from another source
+  will immediately exhaust these points.
+
+  | Armor Points | Cost |
+  | :----------: | :--: |
+  | 1            | 2    |
+  | 2            | 5    |
+  | 3            | 10   |
+  | 4            | 15   |

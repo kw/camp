@@ -1,0 +1,6 @@
+name: Basic Locks
+cost: 5
+description: >
+  The character can attempt to pick mundane and magical locks. See the Traps and Locks chapter for details.
+  Without this skill, characters will always fail to pick locks of all kinds. This skill allows the character
+  one attempt on each magical lock. Generally, a character must carry her own lockpicks and lock wands.

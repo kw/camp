@@ -1,0 +1,7 @@
+name: Axecraft
+cost: 4
+requires: basic-martial-weapons
+description: >
+  The character has a special skill with an axe and does +1 damage when she expends a Spike with an axe.
+  Note that this skill does not impart proficiency of any sort, only an extra ability when using axes.
+  The character must be proficient with the appropriate weapon length/type in order to effectively use an axe.

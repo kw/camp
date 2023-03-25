@@ -1,0 +1,15 @@
+name: Basic Traps
+cost: 5
+description: >
+  This skill allows a character to attempt to disarm traps.
+  See the Traps and Locks chapter for details.
+  Without this skill any attempt to manipulate a triggered trap, including moving it,
+  cutting wires, or anything else (other than simply avoiding it) will set the trap off,
+  even if the trigger is not activated. The character with this skill may use props at
+  hand, tools, or in-game items to stop the trap from going off. If the trap does go off,
+  making its noise or performing whatever action indicates that it has been sprung, then
+  the trap has gone off normally. There is no default prohibition about what can be done
+  to the trap (i.e. wires can be cut, mechanisms jammed, etc.). A character with the Basic
+  Traps will also automatically disarm latch traps by opening the protected object
+  (lock, chest, etc.) but must rip up the Latch Trap card after disarming it
+  (unless they have the Advanced Traps).

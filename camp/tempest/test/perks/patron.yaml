@@ -1,0 +1,14 @@
+name: Patron
+cost: 4
+tags: [no-patron]
+choices:
+  discount:
+    name: Patron Discount
+    limit: unlimited
+    description: >
+      Perks purchased with this slot cost -1 CP (minimum 1) per rank. If Patron is revoked, any
+      perks purchased with this discount are lost.
+    discount: 1
+    matcher:
+      type: perk
+      tags: -no-patron

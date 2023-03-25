@@ -1,0 +1,5 @@
+name: Adept Bookcaster
+cost: 2
+requires:
+  # TODO(#15) - add "one adept spellslot" requirement.
+  - novice-bookcaster

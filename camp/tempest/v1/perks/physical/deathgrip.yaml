@@ -1,0 +1,7 @@
+name: Deathgrip
+cost: 1
+requires: -dies-alone
+description: >
+  When the character has the Dying Condition, she can crawl slowly, and even hold objects.
+  Normally characters who are dying can perform no actions other than calling out for help.
+  This cannot be taken along with Dies Alone.

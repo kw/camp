@@ -1,0 +1,10 @@
+name: Extended Capacity (Adept)
+cost: 3
+ranks: 3
+# TODO(#15): Actual requirement is "One adept spell-slot"
+requires: extended-capacity-novice
+# TODO(#15): Implement spell slots
+description: >
+  The character chooses one Sphere of magic she has an Adept Spell slot
+  for and gains one additional Adept spell-slot in that Sphere and can use
+  it to cast a Prepared spell.

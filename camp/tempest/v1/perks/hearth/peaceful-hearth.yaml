@@ -1,0 +1,8 @@
+name: Peaceful Hearth
+cost: 3
+description: >
+  The character’s Hearth brings her peace and a centered state of mind.
+  Whenever she completes a Short Rest in a room designated as her Hearth, she
+  gains one Protect against Fear or can grant one to one other person also
+  taking a Short Rest in the same Hearth. If used on another, it is Delivered
+  as a Verbal with the Call, “[Name or Description] Grant Protect from Fear”.

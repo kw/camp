@@ -1,0 +1,7 @@
+name: Apprentice Alchemy
+cost: 3
+description: >
+  The character can craft potions, poisons, drugs and other alchemical items
+  of basic difficulty. These can include healing potions, mana potions, and alcohol.
+  The character can also safely poison objects. Without this skill, a character attempting
+  to apply poison to an item will also take the effects of the poison.

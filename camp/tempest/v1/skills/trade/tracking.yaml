@@ -1,0 +1,12 @@
+name: Tracking
+cost: 4
+description: >
+  A character with the Tracking skill can follow a trail.
+  Tracking trails will be marked with green flags marked
+  with a white circle (called a “Halo”), and these flags must
+  be ignored by anyone without tracking, just as all players
+  ignore anything marked with the Halo sigil. If there is a card
+  attached to a green flag with a Halo (a tracking flag), or if
+  there is information on the back of the flag, a Tracker can
+  read that information, which will usually give clues about the
+  creatures leaving the tracks.

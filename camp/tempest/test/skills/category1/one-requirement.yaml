@@ -1,0 +1,5 @@
+name: One Requirement
+cost: 2
+requires: basic-skill
+description: >
+  Depends on exactly one simple skill

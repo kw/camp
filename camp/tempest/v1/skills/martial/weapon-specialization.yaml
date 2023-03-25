@@ -1,0 +1,26 @@
+name: Weapon Specialization
+cost: 4
+requires: basic-martial-weapons
+option:
+  values:
+    - Shortsword
+    - Longsword
+    - Mace
+    - Flail
+    - Axe
+    - Great Sword
+    - Great Mace
+    - Great Axe
+    - Polearm
+    - Bow
+    - Crossbow
+    - Thrown Weapon
+    - Staff
+    - Dagger
+description: >
+  The character must choose from the following list: Shortsword, Longsword, Mace,
+  Flail, Axe, Great Sword, Great Mace, Great Axe, Polearm, Bow, Crossbow, Thrown Weapon,
+  Staff, or Dagger. After each Short Rest, the character gains one additional Spike that
+  can only be used while the character is wielding a weapon of that type (although the
+  actual attack need not come from that weapon). A character may only have Weapon
+  Specialization with one weapon type.

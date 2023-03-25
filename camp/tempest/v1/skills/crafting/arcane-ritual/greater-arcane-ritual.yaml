@@ -1,0 +1,8 @@
+name: Greater Arcane Ritual Magic
+cost: 5
+requires:
+  - journeyman-arcane-ritual
+  - level:10
+description: >
+  The character can perform any Ritualist-tier Arcane rituals.
+  To learn how to cast a Arcane ritual, see the Arcane Ritual Magic chapter.

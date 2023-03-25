@@ -1,0 +1,12 @@
+name: Ancestral Weapon
+cost: 4
+requires: ancestral-relic
+description: >
+  The item that the character has chosen as her Ancestral Relic is a weapon that is
+  bonded to the soul of the character. The arm holding the item is immune to Disable
+  (“No Effect” should be called) and the weapon cannot be physically taken from the
+  character, even if the character is unconscious or dead. The character can treat the
+  item as if she had the Cold Dead Hands Perk. A Shatter Effect will destroy the Ancestral
+  Weapon as per normal, and immediately drop the character to 0 Life Points and dying, but
+  the weapon will reappear and reform in the character’s hand during the next Long Rest.
+  Similarly, if lost, the weapon will return at the next Long Rest.

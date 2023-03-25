@@ -1,0 +1,7 @@
+name: Greater Tinkering
+cost: 5
+requires:
+  - journeyman-tinkering
+  - level:10
+description: >
+  The character can craft Greater tier engineering and tinkering items.

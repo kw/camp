@@ -1,0 +1,11 @@
+name: Concurrent Meditation
+cost: 3
+# TODO(#15): The skill's actual requirements are based on spell slots, fix this when we're tracking them.
+requires:
+  - arcane
+  - divine
+description: >
+  The character has learned how to pair the meditative cycles of arcane re-attunement and
+  the prayers of divine refreshment. When the character would use a Short Rest power that
+  refreshes her spell slots (ex: Arcane Study, Refreshing Prayer, etc.) she may refresh
+  both Arcane and Divine spell slots with the same Short Rest.

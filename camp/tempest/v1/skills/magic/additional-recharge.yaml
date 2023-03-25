@@ -1,0 +1,14 @@
+name: Additional Recharge
+cost: 5
+ranks: 4
+requires:
+  any:
+    - basic-arcane
+    - basic-faith
+description: >
+  The character is adept at tapping into her power source.
+  Once per Long Rest she can perform a small personal centering ceremony
+  (the details of which are up to the caster) which should take about five minutes.
+  At the end of this ceremony she can refresh four Novice spell-slots from any one
+  Sphere (although they do not have to be from the same class). These Novice spell-slots
+  can be traded in for higher tier slots (two for Adept, three for Greater, and four for Master).

@@ -1,0 +1,7 @@
+name: Greater Alchemy
+cost: 5
+requires:
+  - journeyman-alchemy
+  - level:10
+description: >
+  The character can craft potions, poisons, drugs and other alchemical items of third-tier difficulty.

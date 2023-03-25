@@ -15,6 +15,7 @@ repos:
     - id: check-json
     - id: check-toml
     - id: check-yaml
+      args: [--allow-multiple-documents]
     - id: check-added-large-files
     - id: check-case-conflict
     - id: check-merge-conflict
@@ -38,6 +39,13 @@ repos:
   rev: 1.7.5
   hooks:
   - id: bandit
+    args: ['-c', 'bandit.yaml']
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.1.1
+  hooks:
+  - id: mypy
+    args: [--namespace-packages, --explicit-package-bases, --no-strict-optional, --ignore-missing-imports, --show-error-codes]
+    additional_dependencies: ['types-PyYAML']
 - repo: https://github.com/python-poetry/poetry
   rev: '1.4.0'
   hooks:

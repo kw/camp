@@ -1,0 +1,23 @@
+name: Mastercrafter
+cost: 6
+requires:
+  - profession-apprentice
+  - any:
+    - master-alchemy
+    - master-arcane-ritual
+    - master-divine-ritual
+    - master-enchanting
+    - master-tinkering
+option:
+  values:
+    - Alchemy
+    - Arcane Ritual
+    - Divine Ritual
+    - Enchanting
+    - Tinkering
+  requires:
+    Alchemy: master-alchemy
+    Arcane Ritual: master-arcane-ritual
+    Divine Ritual: master-divine-ritual
+    Enchanting: master-enchanting
+    Tinkering: master-tinkering

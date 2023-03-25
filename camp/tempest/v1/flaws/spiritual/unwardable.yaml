@@ -1,0 +1,10 @@
+name: Unwardable
+award: 5
+requires: -othersleep
+description: >
+  Whether it is due to a curse, a bloodline corrupted by dark powers, or some more mysterious magic,
+  the character cannot be at ease inside a Ward spell or a Haven Ritual. While the character is inside
+  an area protected by a Ward spell or Haven Ritual, she is inherently drained and cannot benefit from
+  Hearth-granted benefits, Long or Short Rests. In fact, if the character spends more than two
+  contiguous hours inside a Haven-protected building, she will lose her ability to recharge spell-slots,
+  Powers, etc. at the next Long Rest. The character cannot take Othersleep Perk.

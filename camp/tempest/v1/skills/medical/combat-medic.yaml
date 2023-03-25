@@ -1,0 +1,10 @@
+name: Combat Medic
+cost: 1
+requires:
+  - basic-medicine
+  - diagnose
+description: >
+  Those trained in combat situations to help others have a few benefits.
+  First, they need only have one hand free to pick up a helpless or unconscious
+  person, and can move at a jog while carrying a person. In addition, she requires
+  only a Quick 30 to stabilize another character when using Basic Medicine.

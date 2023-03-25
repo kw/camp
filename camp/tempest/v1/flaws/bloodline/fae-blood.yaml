@@ -1,0 +1,9 @@
+name: Fae Blood
+award: 2
+award_mods:
+  truthbound: -1
+description: >
+  Usually as the result of a dalliance with a member of the fair folk, the character
+  is affected by Powers that have the “to Fae/Fairy” qualifier. In addition, the character
+  takes 1 point of damage by Agony every time she speaks a statement she believes to be
+  false and treats all Powers that require or detect truth as Final.

@@ -1,0 +1,5 @@
+name: Medium Armor
+cost: 4
+requires: light-armor
+description: >
+  The character can gain up to six armor points after hit location calculations.

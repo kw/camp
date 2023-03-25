@@ -25,7 +25,7 @@ whitenoise = "==6.0.0"
 environs = {extras = ["django"], version = "==9.5.0"}
 gunicorn = "==20.1.0"
 rules = "==3.3"
-camp-engine = {git = "https://github.com/kw/camp-engine.git", develop = true}
+pydantic = ">=1.10,<2.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "~=8.2"
@@ -38,3 +38,8 @@ optional = true
 
 [tool.poetry.group.postgres.dependencies]
 psycopg2-binary = "^2.9"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = 'config.settings'
+python_files = ["tests.py", "test_*.py", "*_tests.py", "*_test.py"]
+testpaths = ["tests"]

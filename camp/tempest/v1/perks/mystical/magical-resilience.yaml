@@ -1,0 +1,6 @@
+name: Magical Resilience
+cost: 6
+description: >
+  The character is naturally repellant to magic. After completing a Short Rest, the
+  character automatically gains a Protect vs Packets. This Protect lasts until it is
+  used or until the character completes a Short Rest.

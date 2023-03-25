@@ -1,0 +1,13 @@
+name: Greater Bookcaster
+cost: 3
+# TODO(#15): Add "one greater spell-slot" requirement... if the skill actually develops one.
+requires:
+  - adept-bookcaster
+description: >
+  The character can cast Greater spells directly from her spellbook.
+  Although the spell will still exhaust a Greater Spell-Slot, it need not
+  be Prepared (although it must be a spell the caster could Prepare).
+  To bookcast a spell, the character must be out of combat, then character
+  must either read the full incant five times from her spell-book, or must study
+  her spellbook for a full minute before reading the incantation directly from the book.
+  All other requirements and components will remain the same.

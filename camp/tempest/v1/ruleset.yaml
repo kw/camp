@@ -1,0 +1,76 @@
+name: Tempest
+id: tempest
+version: 0.1a
+ruleset: camp.engine.rules.tempest
+
+xp_table:
+  0: 2
+  9: 3
+  18: 4
+  28: 5
+  38: 6
+  49: 7
+  60: 8
+  72: 9
+  84: 10
+  97: 11
+  110: 12
+  124: 13
+  138: 14
+  153: 15
+  168: 16
+  184: 17
+  200: 18
+  217: 19
+  234: 20
+
+lp:
+  base: 2
+  factor: 10
+  rounding: up
+
+spikes:
+  base: 2
+  factor: 8
+  rounding: down
+
+default_flags:
+  # Used in Mild Allergy and Severe Allergy
+  Uncommon Allergens:
+    - Gold
+    - Silver
+    - Copper
+    - Ingot
+    - Rare Minerals
+    - Harvest
+    - Hide
+    - Scale
+    - Bloom
+    - Night Prize
+  Common Allergens:
+    - Iron
+    - Leather
+    - Cloth
+    - Magic
+    - Materia
+  # Used in Profession - Apprentice
+  Professions:
+    - Soldier
+    - Hunter
+    - Sailor
+    - Wagoneer
+    - Factor
+    - Mercenary
+    - Builder
+    - Fisher
+    - Scribe
+    - Herbalist
+    - Undertaker
+    - Executioner
+    - Merchant
+    - Charlatan
+    - Chiurgion
+    - Teacher
+    - Demon Hunter
+    - Famulus
+    - Magistrate

@@ -1,0 +1,6 @@
+name: Martial Starting A1
+cost: 6
+requires: martial
+description: >
+  This skill is a starting feature for martial characters, but only
+  if taken as a starting class.

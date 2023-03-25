@@ -1,0 +1,12 @@
+name: Boon Bonds
+cost: 2
+description: >
+  Some bonds are not love, or even a bond-pair but are, instead, a group of people who
+  share some common purpose or mystical link. When a character takes this Perk, she names
+  up to three other characters. She gets the benefits of this Perk only with those named members.
+  They should be confirmed during game to avoid mistakes. With those individuals, the character
+  gain certain benefits:
+
+  * This Character can use “Discern: How many Life Points are you down?” to any other member of the group at-will.
+  * This Character can do 1 point of Healing (“Heal 1 by Bond”) by touch to any other member. This may be used once per Long Rest per named member.
+  * This Character may Cure any one of the following Conditions: Berserk, Charmed, or Dominated, with the call “Cure [Condition] by Bond.” This may be used once per Long Rest per named member.

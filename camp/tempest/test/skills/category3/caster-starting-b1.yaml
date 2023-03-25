@@ -1,0 +1,6 @@
+name: Divine Starting Feature
+cost: 6
+requires: divine
+description: >
+  This skill is a starting feature for divine casters, but only
+  if taken as a starting class.

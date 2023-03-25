@@ -1,0 +1,9 @@
+name: Cold Dead Hands
+cost: 3
+description: >
+  The character will not involuntarily let go of their own possessions at any time,
+  even when Slept, Dying, or even Dead. The player should call “Cold Dead Hands” whenever
+  someone tries to remove a possession from the character's hand. If the character’s arm is
+  Disabled, she will not release her possessions (although she cannot use them or block with them).
+  If the character’s weapon is Disarmed, the character will take a Disable Effect to that limb
+  instead of the same Duration as was Called for the Disarm (or a Quick Count of 30 if no duration is Called)

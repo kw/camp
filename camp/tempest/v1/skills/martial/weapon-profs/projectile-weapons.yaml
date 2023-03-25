@@ -1,0 +1,11 @@
+name: Projectile Weapons
+cost: 3
+requires: basic-martial-weapons
+description: >
+  The character has proficiency with projectile weapons.
+  By aiming (Focusing) for a Quick 10 with their projectile weapon,
+  the character can add their Spike damage without expending a Spike.
+  If the character moves her right foot, or lowers her draw, the aiming
+  will have to be done again to get the benefit. The character may not
+  expend a Spike to further enhance her damage. By default, bows and
+  crossbows take any damaging attack as a Shatter effect.

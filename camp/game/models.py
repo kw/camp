@@ -200,7 +200,7 @@ class Chapter(RulesModel):
     game: Game = models.ForeignKey(
         Game, on_delete=models.CASCADE, related_name="chapters"
     )
-    slug: str = models.SlugField()
+    slug: str = models.SlugField(unique=True)
     name: str = models.CharField(max_length=50)
     description: str = models.TextField(blank=True)
     is_open: bool = models.BooleanField(default=True)
@@ -289,7 +289,6 @@ class Chapter(RulesModel):
         return role
 
     class Meta:
-        unique_together = [["game", "slug"]]
         rules_permissions = {
             "view": rules.always_allow,
             "change": rules.can_manage_chapter | rules.can_manage_game,

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+{% if object %}
+Update Role for {{ object.user }}
+{% else %}
+Assign New Role
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if object %}
+<h1>Update role for {{ object.user }}</h1>
+{% else %}
+<h1>Assign New Role</h1>
+{% endif %}
+<form method="post">{% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" value="Save">
+</form>
+
+{% if object %}
+    {% has_perm 'game.delete_chapterrole' user object as can_delete_role %}
+    {% if can_delete_role %}
+    <a href="{% url 'chapterrole-delete' object.chapter.slug object.user.username %}">Delete Role</a>
+    {% endif %}
+{% endif %}
+{% endblock content %}

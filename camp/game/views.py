@@ -1,5 +1,7 @@
 from django.db import IntegrityError
 from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
@@ -9,6 +11,8 @@ from rules.contrib.views import AutoPermissionRequiredMixin
 
 from camp.engine.rules.base_engine import Engine
 
+from .models import Chapter
+from .models import ChapterRole
 from .models import Game
 from .models import GameRole
 from .models import Ruleset
@@ -29,6 +33,114 @@ class ManageGameView(AutoPermissionRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.game
+
+
+class ChapterView(DetailView):
+    model = Chapter
+
+
+class ChapterManageView(AutoPermissionRequiredMixin, UpdateView):
+    model = Chapter
+    fields = ["name", "description", "is_open"]
+    template_name_suffix = "_manage"
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("chapter-detail", args=[self.object.slug])
+        return "/"
+
+
+class CreateChapterRoleView(AutoPermissionRequiredMixin, CreateView):
+    model = ChapterRole
+
+    fields = [
+        "user",
+        "title",
+        "manager",
+        "logistics_staff",
+        "plot_staff",
+        "tavern_staff",
+    ]
+    permission_required = "game.change_chapter"
+    # template_name_suffix = "_add_form"
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("chapter-manage", args=[self.object.chapter.slug])
+        return "/"
+
+    @property
+    def chapter(self):
+        chapter_slug = self.kwargs.get("slug")
+        return get_object_or_404(Chapter, slug=chapter_slug)
+
+    def get_permission_object(self):
+        return self.chapter
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        # You don't get to choose which Game the role applies to.
+        # Intercept the model to set the Game manually before saving.
+        self.object = form.save(commit=False)
+        self.object.chapter = self.chapter
+        try:
+            self.object.save()
+        except IntegrityError:
+            form.add_error("user", "User already has a role for this game.")
+            return super().form_invalid(form)
+        return super().form_valid(form)
+
+
+class UpdateChapterRoleView(AutoPermissionRequiredMixin, UpdateView):
+    model = ChapterRole
+    fields = ["title", "manager", "logistics_staff", "plot_staff", "tavern_staff"]
+
+    @property
+    def chapter(self):
+        chapter_slug = self.kwargs.get("slug")
+        return get_object_or_404(Chapter, slug=chapter_slug)
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("chapter-manage", args=[self.object.chapter.slug])
+        return "/"
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        username = self.kwargs.get("username")
+        try:
+            return queryset.filter(user__username=username, chapter=self.chapter).get()
+        except queryset.model.DoesNotExist:
+            raise Http404("No ChapterRole found matching the query")
+
+
+class DeleteChapterRoleView(AutoPermissionRequiredMixin, DeleteView):
+    model = ChapterRole
+    queryset = ChapterRole.objects.select_related("user", "chapter")
+
+    @property
+    def chapter(self):
+        chapter_slug = self.kwargs.get("slug")
+        return get_object_or_404(Chapter, slug=chapter_slug)
+
+    @property
+    def success_url(self):
+        chapter_slug = self.kwargs.get("slug")
+        return reverse("chapter-manage", args=[chapter_slug])
+
+    def get_permission_object(self):
+        return self.chapter
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        username = self.kwargs.get("username")
+        try:
+            return queryset.filter(user__username=username, chapter=self.chapter).get()
+        except queryset.model.DoesNotExist:
+            raise Http404("No GameRole found matching the query")
 
 
 class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):

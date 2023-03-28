@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load rules %}
+{% block head_title %}{{chapter.name}}{% endblock %}
+
+{% block body_title %}
+{{ chapter.name }} - {{ site_title }}
+{% endblock body_title %}
+
+{% block content %}
+{% has_perm 'game.change_chapter' user chapter as can_change_chapter %}
+
+{% if can_change_chapter %}
+<p><a href="{% url 'chapter-manage' chapter.slug %}">Manage {{ chapter.name }}</a></p>
+{% endif %}
+
+<p>{{chapter.description}}</p>
+
+
+{% endblock content %}

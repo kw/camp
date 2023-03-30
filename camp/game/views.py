@@ -62,8 +62,6 @@ class CreateChapterRoleView(AutoPermissionRequiredMixin, CreateView):
         "plot_staff",
         "tavern_staff",
     ]
-    permission_required = "game.change_chapter"
-    # template_name_suffix = "_add_form"
 
     @property
     def success_url(self):
@@ -185,9 +183,6 @@ class CreateGameRoleView(AutoPermissionRequiredMixin, CreateView):
 
     def get_permission_object(self):
         return self.request.game
-
-    def get_object(self):
-        return GameRole(game=self.request.game)
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""

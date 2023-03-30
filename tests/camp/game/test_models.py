@@ -16,10 +16,12 @@ VIEW_CHAPTER = "game.view_chapter"
 CHANGE_CHAPTER = "game.change_chapter"
 DELETE_CHAPTER = "game.delete_chapter"
 
+ADD_GAME_ROLE = "game.add_gamerole"
 VIEW_GAME_ROLE = "game.view_gamerole"
 CHANGE_GAME_ROLE = "game.change_gamerole"
 DELETE_GAME_ROLE = "game.delete_gamerole"
 
+ADD_CHAPTER_ROLE = "game.add_chapterrole"
 VIEW_CHAPTER_ROLE = "game.view_chapterrole"
 CHANGE_CHAPTER_ROLE = "game.change_chapterrole"
 DELETE_CHAPTER_ROLE = "game.delete_chapterrole"
@@ -169,17 +171,20 @@ class GamePermissionsTest(TestCase):
         """Permissions for working with GameRoles themselves."""
 
         # Owners can do anything with a GameRole
+        self.assertTrue(self.owner.has_perm(ADD_GAME_ROLE, self.game))
         self.assertTrue(self.owner.has_perm(VIEW_GAME_ROLE, self.role))
         self.assertTrue(self.owner.has_perm(CHANGE_GAME_ROLE, self.role))
         self.assertTrue(self.owner.has_perm(DELETE_GAME_ROLE, self.role))
 
         # Managers can generally also do anything with roles.
         # Note here that self.role is the role for self.manager.
+        self.assertTrue(self.manager.has_perm(ADD_GAME_ROLE, self.game))
         self.assertTrue(self.manager.has_perm(VIEW_GAME_ROLE, self.role))
         self.assertTrue(self.manager.has_perm(CHANGE_GAME_ROLE, self.role))
         self.assertTrue(self.manager.has_perm(DELETE_GAME_ROLE, self.role))
 
         # Others can't do anything with it.
+        self.assertFalse(self.player.has_perm(ADD_GAME_ROLE, self.game))
         self.assertFalse(self.player.has_perm(VIEW_GAME_ROLE, self.role))
         self.assertFalse(self.player.has_perm(CHANGE_GAME_ROLE, self.role))
         self.assertFalse(self.player.has_perm(DELETE_GAME_ROLE, self.role))
@@ -362,23 +367,27 @@ class ChapterPermissionsTest(TestCase):
         """Permissions for working with ChapterRoles themselves."""
 
         # Owners can do anything with a ChapterRole
+        self.assertTrue(self.chapter_owner.has_perm(ADD_CHAPTER_ROLE, self.chapter))
         self.assertTrue(self.chapter_owner.has_perm(VIEW_CHAPTER_ROLE, self.role))
         self.assertTrue(self.chapter_owner.has_perm(CHANGE_CHAPTER_ROLE, self.role))
         self.assertTrue(self.chapter_owner.has_perm(DELETE_CHAPTER_ROLE, self.role))
 
         # Managers can generally also do anything with roles.
         # Note here that self.role is the role for self.manager.
+        self.assertTrue(self.chapter_manager.has_perm(ADD_CHAPTER_ROLE, self.chapter))
         self.assertTrue(self.chapter_manager.has_perm(VIEW_CHAPTER_ROLE, self.role))
         self.assertTrue(self.chapter_manager.has_perm(CHANGE_CHAPTER_ROLE, self.role))
         self.assertTrue(self.chapter_manager.has_perm(DELETE_CHAPTER_ROLE, self.role))
 
         # Just because you're a game manager doesn't mean you get to muck around in
         # chapter roles, but you can at least _see_ them.
+        self.assertFalse(self.game_manager.has_perm(ADD_CHAPTER_ROLE, self.chapter))
         self.assertTrue(self.game_manager.has_perm(VIEW_CHAPTER_ROLE, self.role))
         self.assertFalse(self.game_manager.has_perm(CHANGE_CHAPTER_ROLE, self.role))
         self.assertFalse(self.game_manager.has_perm(DELETE_CHAPTER_ROLE, self.role))
 
         # Others can't do anything with it.
+        self.assertFalse(self.player.has_perm(ADD_CHAPTER_ROLE, self.chapter))
         self.assertFalse(self.player.has_perm(VIEW_CHAPTER_ROLE, self.role))
         self.assertFalse(self.player.has_perm(CHANGE_CHAPTER_ROLE, self.role))
         self.assertFalse(self.player.has_perm(DELETE_CHAPTER_ROLE, self.role))

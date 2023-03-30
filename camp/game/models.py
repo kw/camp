@@ -291,6 +291,7 @@ class Chapter(RulesModel):
     class Meta:
         rules_permissions = {
             "view": rules.always_allow,
+            "add": rules.can_manage_chapter | rules.can_manage_game,
             "change": rules.can_manage_chapter | rules.can_manage_game,
         }
 
@@ -330,6 +331,7 @@ class GameRole(RulesModel):
     class Meta:
         unique_together = [["game", "user"]]
         rules_permissions = {
+            "add": rules.can_manage_game,
             "change": rules.can_manage_game,
             "view": rules.can_manage_game,
             "delete": rules.can_manage_game,
@@ -375,6 +377,7 @@ class ChapterRole(RulesModel):
     class Meta:
         unique_together = [["chapter", "user"]]
         rules_permissions = {
+            "add": rules.can_manage_chapter,
             "change": rules.can_manage_chapter,
             "view": rules.can_manage_chapter | rules.can_manage_game,
             "delete": rules.can_manage_chapter,

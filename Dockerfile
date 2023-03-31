@@ -14,4 +14,4 @@ RUN poetry install -n --no-cache --no-root --with=postgres
 
 COPY . .
 
-CMD ["gunicorn", "config.wsgi"]
+RUN python manage.py collectstatic --no-input

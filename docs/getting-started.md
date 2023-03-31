@@ -6,14 +6,14 @@ Unless you're just editing documentation, your first step to contributing is
 likely getting the project to run on your machine. Hopefully, the following steps
 should get your up and running.
 
+The easiest setup is probably using Docker, which will smooth out most configuration issues.
+The instructions below assume you're using this method. If you would prefer to run without
+docker, see [Getting Started without Docker](./getting-started-non-docker.md)
+
 ### Requirements
 
-* Python 3.11
-* [Poetry](https://python-poetry.org/docs/#installation) package manager
-* **Mac**
-  * X Code, possibly Homebrew
-* **Windows**
-  * [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+* [`pre-commit`](https://pre-commit.com/)
+* [Docker for Desktop](https://www.docker.com/products/docker-desktop/)
 
 ### Setup
 
@@ -21,41 +21,39 @@ To install the project's development requirements, visit this repo in
 your shell and run:
 
 ```sh
-poetry install
+docker-compose up -d --build
 ```
 
-Or, if there's a problem finding the poetry executable, you could try:
+This will build and start the container. It may take a while on the first run.
+
+Now, try browsing to http://localhost:8000. If you get an error screen saying
+
+  OperationalError at /
+  no such table: game_game
+
+then so far, so good! We just need to populate the database.
+
+You can send commands directly to the container. To run tests, try:
 
 ```sh
-python3 -m poetry install
+docker-compose exec web pytest
 ```
 
-Once your poetry environment is installed, use:
+Alternatively, if you plan on issuing several commands, start a shell
+directly within the container:
 
 ```sh
-poetry shell
+docker-compose exec web bash
 ```
 
-To work inside the virtual environment. For more information on what this means,
-see https://python-poetry.org/docs/cli/#shell.
+#### Stopping the container
 
-#### Pre-commit
-
-Pre-commit checks are handles by the [`pre-commit`](https://pre-commit.com/)
-tool. The tool should already be installed in your poetry environment, but to
-automatically run it on commit, you must hook it into your local repository:
-
+Later, when you want to stop the container:
 ```sh
-pre-commit install
+docker-compose down
 ```
 
-You can then manually run pre-commit checks with `pre-commit run`, or just
-attempt to commit changes. Pre-commit hooks check for various issues and
-in some cases automatically fix them (for example, the Black linter). If
-a hook changes any files, your commit will fail and will need to be tried again.
-
-If you fail to install the pre-commit hooks, the CI system will run it for you
-in pull requests.
+And repeat `docker-compose up -d --build` to start it back up.
 
 ### Django
 
@@ -64,28 +62,9 @@ If you haven't used Django before, the tutorial on their website, or the
 [Django Girls tutorial](https://tutorial.djangogirls.org/) are good places
 to start. The rest of this document assumes some familiarity.
 
-#### Create or upgrade the database
-
-Once inside your `poetry shell`, you should be able to perform the initial Django
-migration to create a local database file by running:
-
-```sh
-./manage.py migrate
-```
-
-This will create a local SQLite3 database called `db.sqlite3`. You can delete
-this to completely reset the state of your database, though this also includes
-any user accounts you've created locally.
-
-#### Collect Static Assets
-
-Before running tests, you may need to run collectstatic. This will
-compile static assets from around the project into a `staticfiles`
-directory.
-
-```sh
-./manage.py collectstatic
-```
+The command below are all to be run **inside** the container. Either start
+a shell in the container using `docker-compose exec web shell` or send them
+individually.
 
 #### Run Tests
 
@@ -111,22 +90,29 @@ To create an admin user:
 
 Should you forget the password you created, use `./manage.py changepassword`.
 
-#### Run the server!
-
-To run a local development server:
-
-```sh
-./manage.py runserver
-```
-
-This should print out a URL to visit. Do so, and you should be greeted with
-a simple homepage with at least a menu for logging in. While the app supports
-social auth with (at time of writing) Google and Discord accounts, this requires
-some setup to enable, so these will not function locally by default. Instead,
-you should be able to user the admin user you created earlier, or sign up to
-create another user.
-
 #### Access the admin panel
 
 By default, the admin panel should be accessible at `/admin` on the server,
 so most likely http://127.0.0.1:8000/admin.
+
+### Pre-commit
+
+When it comes time to commit your work, we'll want to check for and automatically
+correct some formatting and other issues.
+
+Pre-commit checks are handles by the [`pre-commit`](https://pre-commit.com/)
+tool. This will be run outside of your Docker environment.
+
+```sh
+pre-commit install
+```
+
+You can then manually run pre-commit checks with `pre-commit run`, or just
+attempt to commit changes. Pre-commit hooks check for various issues and
+in some cases automatically fix them (for example, the Black linter). If
+a hook changes any files, your commit will fail. You'll then need to add the
+changes to the CL and try committing again.
+
+If you fail to install the pre-commit hooks, the CI system will run it for you
+in pull requests. Depending on the failure, it may update the PR for you or
+simply provide a failure notice.

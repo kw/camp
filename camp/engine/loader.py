@@ -12,14 +12,10 @@ try:
 except ImportError:
     from importlib.abc import Traversable
 
+import tomllib
+
 import pydantic
 import yaml
-
-try:
-    # TOML parser is part of the standard library starting at 3.11
-    import tomllib  # type: ignore[reportMissingImports]
-except ImportError:
-    import tomli as tomllib  # type: ignore[no-redef]
 
 from . import utils
 from .rules import base_models

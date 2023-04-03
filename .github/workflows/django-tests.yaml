@@ -22,9 +22,5 @@ jobs:
         run: |
           pip install poetry
           poetry install
-      - name: Django Setup
-        run: |
-          poetry run python manage.py collectstatic
-          poetry run python manage.py migrate
       - name: pytest
         run: poetry run pytest

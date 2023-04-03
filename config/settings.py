@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.contrib.flatpages",
@@ -133,7 +132,8 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [str(BASE_DIR / "static")]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Parse email URLs, e.g. "smtp://"
 # See https://github.com/migonzalvar/dj-email-url/blob/master/README.rst for syntax

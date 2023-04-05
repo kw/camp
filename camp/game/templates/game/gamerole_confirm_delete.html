@@ -8,6 +8,6 @@
 <form method="post">{% csrf_token %}
     <p>Are you sure you want to delete role "{{ object }}"?</p>
     {{ form | crispy }}
-    <input type="submit" value="Confirm">
+    <input type="submit" class="btn btn-danger" value="Delete game role {{object}}">
 </form>
 {% endblock content %}

@@ -7,6 +7,6 @@
 <h1>Define Ruleset</h1>
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
-    <input type="submit" value="Save">
+    <input type="submit" class="btn btn-primary" value="Save">
 </form>
 {% endblock content %}

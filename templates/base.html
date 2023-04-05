@@ -1,6 +1,7 @@
 {% load static %}
+{% load rules %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,23 +20,50 @@
 
 <body>
   {% block body %}
-
-  <header>
-    <h1>
-      {% block body_title %}{{ request.game.name }} - {{ site_title }}{% endblock %}</h1>
-    <div>
-      <strong>Menu:</strong>
-      <menu>
+  {% has_perm 'game.change_game' user game as can_change_game %}
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'images/favicon.png' %}" width=32 height=32>
+        {% block body_title %}{{ request.game.name }}{% endblock %}
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a
+            {% if request.resolver_match.url_name == 'home' %}
+            class="nav-link active"
+            {% else %}
+            class="nav-link"
+            {% endif %}
+            href="{% url 'home' %}">Home</a>
+        </ul>
         {% if user.is_authenticated %}
-        <li><a href="{% url 'account_profile' %}">Account</a></li>
-        <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+        <span class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.username }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'account_profile' %}">Account</a></li>
+            {% if can_change_game %}
+            <li><a class="dropdown-item" href="{% url 'manage-game' %}">Manage {{ game.name }}</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
+          </ul>
+        </span>
         {% else %}
-        <li><a href="{% url 'account_login' %}">Sign In</a></li>
-        <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+        <span class="d-flex">
+          <a class="btn btn-outline-primary me-2" href="{% url 'account_login' %}">Login</a>
+          <a class="btn btn-outline-secondary" href="{% url 'account_signup' %}">Sign Up</a>
+        </span>
         {% endif %}
-      </menu>
+      </div>
     </div>
-  </header>
+  </nav>
 
   {% if messages %}
   <div>

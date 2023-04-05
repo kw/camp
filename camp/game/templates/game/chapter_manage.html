@@ -4,14 +4,14 @@
 {% block head_title %}Manage {{chapter.name}}{% endblock %}
 
 {% block body_title %}
-{{ chapter.name }} - {{ site_title }}
+{{ chapter.name }}
 {% endblock body_title %}
 
 {% block content %}
 <h1>Details</h1>
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
-    <input type="submit" value="Update">
+    <input type="submit" class="btn btn-primary" value="Update">
 </form>
 
 <h1>Roles</h1>

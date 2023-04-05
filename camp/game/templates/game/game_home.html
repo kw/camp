@@ -3,15 +3,10 @@
 {% block head_title %}Home{% endblock %}
 
 {% block body_title %}
-{{ game }} - {{ site_title }}
+{{ game }}
 {% endblock body_title %}
 
 {% block content %}
-{% has_perm 'game.change_game' user game as can_change_game %}
-
-{% if can_change_game %}
-<p><a href="{% url 'manage-game' %}">Manage {{ game.name }}</a></p>
-{% endif %}
 
 {{ game.description }}
 

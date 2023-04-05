@@ -17,7 +17,7 @@ Assign New Role
 {% endif %}
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
-    <input type="submit" value="Save">
+    <input type="submit" class="btn btn-primary" value="Save">
 </form>
 
 {% if object %}

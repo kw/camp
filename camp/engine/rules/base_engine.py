@@ -21,6 +21,7 @@ from .decision import Decision
 class CharacterController(ABC):
     model: base_models.CharacterModel
     engine: Engine
+    mutated: bool = False
 
     # Copy of the model for use when the model is mutated by fails validation.
     _dumped_model: base_models.CharacterModel
@@ -90,6 +91,7 @@ class CharacterController(ABC):
             self._reload_dump()
         else:
             self._save_dump()
+            self.mutated = True
         return rd
 
     def validate(self) -> Decision:

@@ -1,3 +1,13 @@
-# from django.contrib import admin
+from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+
+@admin.register(models.Character)
+class CharacterAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Sheet)
+class SheetAdmin(admin.ModelAdmin):
+    list_filter = ("character", "ruleset", "primary")

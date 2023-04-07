@@ -173,11 +173,13 @@ class Ruleset(RulesModel):
         except Exception:
             ruleset = None
         if ruleset:
-            return f"{ruleset.name} [{ruleset.id} {ruleset.version}]"
+            return f"{ruleset.name} [{ruleset.id} {ruleset.version}]" + (
+                " (disabled)" if not self.enabled else ""
+            )
         return f"Unreadable Ruleset [{self.package}]"
 
     def __repr__(self) -> str:
-        return f"Ruleset(package={self.package})"
+        return f"Ruleset(package={self.package}, enabled={self.enabled})"
 
     class Meta:
         rules_permissions = {

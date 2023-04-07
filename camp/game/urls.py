@@ -5,18 +5,18 @@ from . import views
 urlpatterns = [
     # Home / Game Views
     path("", views.HomePageView.as_view(), name="home"),
-    path("manage/", views.ManageGameView.as_view(), name="manage-game"),
+    path("manage/", views.ManageGameView.as_view(), name="game-manage"),
     # Game Roles
-    path("manage/roles/add/", views.CreateGameRoleView.as_view(), name="add-gamerole"),
+    path("manage/roles/new/", views.CreateGameRoleView.as_view(), name="gamerole-add"),
     path(
         "manage/roles/<str:username>",
         views.UpdateGameRoleView.as_view(),
-        name="change-gamerole",
+        name="gamerole-update",
     ),
     path(
         "manage/roles/<str:username>/delete/",
         views.DeleteGameRoleView.as_view(),
-        name="delete-gamerole",
+        name="gamerole-delete",
     ),
     # Chapter
     path("chapters/<slug:slug>/", views.ChapterView.as_view(), name="chapter-detail"),
@@ -27,7 +27,7 @@ urlpatterns = [
     ),
     # Chapter Roles
     path(
-        "chapters/<slug:slug>/roles/add",
+        "chapters/<slug:slug>/roles/new",
         views.CreateChapterRoleView.as_view(),
         name="chapterrole-add",
     ),
@@ -42,10 +42,15 @@ urlpatterns = [
         name="chapterrole-delete",
     ),
     # Ruleset management
-    path("manage/rulesets/add/", views.CreateRulesetView.as_view(), name="add-ruleset"),
+    path("manage/rulesets/new/", views.CreateRulesetView.as_view(), name="ruleset-add"),
+    path(
+        "manage/rulesets/<int:pk>/edit/",
+        views.UpdateRulesetView.as_view(),
+        name="ruleset-update",
+    ),
     path(
         "manage/rulesets/<int:pk>/delete/",
         views.DeleteRulesetView.as_view(),
-        name="delete-ruleset",
+        name="ruleset-delete",
     ),
 ]

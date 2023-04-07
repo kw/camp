@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 {% load rules %}
 {% load crispy_forms_tags %}
-{% block head_title %}Edit Role{% endblock %}
+{% block head_title %}
+{% block body_title %}
+{% if object %}
+Update {{ object }}
+{% else %}
+Define Ruleset
+{% endif %}
+{% endblock %}{% endblock %}
 
 {% block content %}
-<h1>Edit role for {{ object.user }}</h1>
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
     <input type="submit" class="btn btn-primary" value="Save">

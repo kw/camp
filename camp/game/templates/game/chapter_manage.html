@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load rules %}
-{% block head_title %}Manage {{chapter.name}}{% endblock %}
 
-{% block body_title %}
-{{ chapter.name }}
-{% endblock body_title %}
+{% block head_title %}{% block body_title %}
+Manage {{chapter}}
+{% endblock %}{% endblock %}
 
 {% block content %}
-<h1>Details</h1>
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
     <input type="submit" class="btn btn-primary" value="Update">

@@ -11,9 +11,13 @@ class ChapterRoleInline(admin.TabularInline):
     model = models.ChapterRole
 
 
+class RulesetInline(admin.TabularInline):
+    model = models.Ruleset
+
+
 @admin.register(models.Game)
 class GameAdmin(admin.ModelAdmin):
-    inlines = [GameRoleInline]
+    inlines = [GameRoleInline, RulesetInline]
 
 
 @admin.register(models.Chapter)

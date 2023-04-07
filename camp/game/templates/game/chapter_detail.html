@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load rules %}
-{% block head_title %}{{chapter.name}}{% endblock %}
+
+{% block head_title %}{% block body_title %}
+{{chapter}}
+{% endblock %}{% endblock %}
 
 {% block body_title %}
 {{ chapter.name }}

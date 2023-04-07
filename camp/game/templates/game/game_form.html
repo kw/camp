@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load rules %}
 {% load crispy_forms_tags %}
-{% block head_title %}Manage Game{% endblock %}
+{% block head_title %}{% block body_title %}Manage {{game}}{% endblock %}{% endblock %}
 
 {% block content %}
-<h1>Details</h1>
 <form method="post">{% csrf_token %}
     {{ form | crispy }}
     <input type="submit" class="btn btn-primary" value="Update">
@@ -15,16 +14,24 @@
 {% for ruleset in game.rulesets.all %}
     {% has_perm 'game.change_ruleset' user ruleset as can_change_ruleset %}
     {% has_perm 'game.delete_ruleset' user ruleset as can_delete_ruleset %}
-    <li>{{ruleset.name}} [{{ruleset.ruleset_id}} {{ruleset.version}}]: {{ruleset.ruleset.features | length}} features loaded.
-        {% if can_delete_ruleset %}
-            <a href="{% url 'delete-ruleset' ruleset.id %}">❌</a>
+    <li>
+        {% if ruleset.enabled %}
+            {{ruleset.name}} [{{ruleset.ruleset_id}} {{ruleset.version}}]: {{ruleset.ruleset.features | length}} features loaded.
+        {% else %}
+            {{ruleset.name}} [{{ruleset.ruleset_id}} {{ruleset.version}}]: Disabled.
         {% endif %}
+            {% if can_change_ruleset %}
+                <a href="{% url 'ruleset-update' ruleset.id %}">📝</a>
+            {% endif %}
+            {% if can_delete_ruleset %}
+                <a href="{% url 'ruleset-delete' ruleset.id %}">❌</a>
+            {% endif %}
     </li>
 
 {% endfor %}
 {% has_perm 'game.change_game' user game as can_add_ruleset %}
 {% if can_add_ruleset %}
-    <p><a href="{% url 'add-ruleset' %}">Add Ruleset</a></p>
+    <p><a href="{% url 'ruleset-add' %}">Add Ruleset</a></p>
 {% endif %}
 </ul>
 
@@ -44,7 +51,7 @@
 {% endfor %}
 {% has_perm 'game.change_game' user game as can_add_role %}
 {% if can_add_role %}
-    <p><a href="{% url 'add-gamerole' %}">Add Role</a></p>
+    <p><a href="{% url 'gamerole-add' %}">Add Role</a></p>
 {% endif %}
 </ul>
 

@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load rules %}
 {% load crispy_forms_tags %}
-{% block head_title %}Delete Ruleset{% endblock %}
+{% block head_title %}{% block body_title %}Delete Ruleset?{% endblock %}{% endblock %}
 
 {% block content %}
-<h1>Confirm Ruleset Deletion</h1>
 <form method="post">{% csrf_token %}
     <p>Are you sure you want to delete ruleset "{{ ruleset }}"?</p>
     {{ form | crispy }}

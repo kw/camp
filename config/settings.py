@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     # Local
     "camp.accounts",
     "camp.game",
+    "camp.character",
 ]
 
 MIDDLEWARE = [

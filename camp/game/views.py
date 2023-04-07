@@ -9,6 +9,7 @@ from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from rules.contrib.views import AutoPermissionRequiredMixin
 
+from camp.character.models import Character
 from camp.engine.rules.base_engine import Engine
 
 from .models import Chapter
@@ -24,6 +25,11 @@ class HomePageView(DetailView):
 
     def get_object(self):
         return self.request.game
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character_list"] = Character.objects.filter(owner=self.request.user)
+        return context
 
 
 class ManageGameView(AutoPermissionRequiredMixin, UpdateView):
@@ -143,9 +149,8 @@ class DeleteChapterRoleView(AutoPermissionRequiredMixin, DeleteView):
 
 class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):
     model = Ruleset
-    fields = ["package"]
-    success_url = reverse_lazy("manage-game")
-    template_name_suffix = "_add_form"
+    fields = ["package", "enabled"]
+    success_url = reverse_lazy("game-manage")
     permission_required = "game.change_game"
 
     def get_permission_object(self):
@@ -169,16 +174,21 @@ class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class UpdateRulesetView(AutoPermissionRequiredMixin, UpdateView):
+    model = Ruleset
+    fields = ["package", "enabled"]
+    success_url = reverse_lazy("game-manage")
+
+
 class DeleteRulesetView(AutoPermissionRequiredMixin, DeleteView):
     model = Ruleset
-    success_url = reverse_lazy("manage-game")
+    success_url = reverse_lazy("game-manage")
 
 
 class CreateGameRoleView(AutoPermissionRequiredMixin, CreateView):
     model = GameRole
-    success_url = reverse_lazy("manage-game")
+    success_url = reverse_lazy("game-manage")
     fields = ["user", "title", "manager", "auditor", "rules_staff"]
-    template_name_suffix = "_add_form"
     permission_required = "game.change_game"
 
     def get_permission_object(self):
@@ -202,7 +212,6 @@ class UpdateGameRoleView(AutoPermissionRequiredMixin, UpdateView):
     model = GameRole
     success_url = reverse_lazy("manage-game")
     fields = ["title", "manager", "auditor", "rules_staff"]
-    template_name_suffix = "_update_form"
     queryset = GameRole.objects.select_related("user", "game")
 
     def get_object(self):

@@ -7,8 +7,6 @@
 
 {% block content %}
 
-{{ game.name }} ({{character.chapter.name}})
-
 <ul>
 {% for sheet in character.sheets.all %}
 <li>{{ sheet.name }}: {{ sheet.data }}</li>

@@ -28,7 +28,12 @@ class HomePageView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character_list"] = Character.objects.filter(owner=self.request.user)
+        if self.request.user.is_authenticated:
+            context["character_list"] = Character.objects.filter(
+                owner=self.request.user
+            )
+        else:
+            context["character_list"] = self.model.objects.none()
         return context
 
 

@@ -1,10 +1,21 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.urls import reverse
 from django.views.generic import CreateView
 from django.views.generic import DetailView
+from django.views.generic import ListView
 from rules.contrib.views import AutoPermissionRequiredMixin
 
 from camp.character.models import Character
+
+
+class CharacterListView(LoginRequiredMixin, ListView):
+    model = Character
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.model.objects.filter(owner=self.request.user)
+        return self.model.objects.none()
 
 
 class CharacterView(AutoPermissionRequiredMixin, DetailView):
@@ -13,7 +24,7 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
 
 class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
     model = Character
-    fields = ["name", "chapter"]
+    fields = ["name"]
 
     @property
     def success_url(self):
@@ -25,6 +36,7 @@ class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
         """If the form is valid, save the associated model."""
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
+        self.object.game = self.request.game
         try:
             self.object.save()
         except IntegrityError:

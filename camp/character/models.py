@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import cast
 
+import rules
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -18,6 +19,12 @@ User = get_user_model()
 
 class Character(RulesModel):
     name: str = models.CharField(max_length=255, help_text="Name of the character.")
+    game: camp.game.models.Game = models.ForeignKey(
+        camp.game.models.Game,
+        on_delete=models.CASCADE,
+        related_name="characters",
+        help_text="The game this character belongs to.",
+    )
     player_name: str = models.CharField(
         max_length=255,
         blank=True,
@@ -30,12 +37,6 @@ class Character(RulesModel):
         related_name="characters",
         help_text="The user who owns this character. Not necessarily the character's portrayer.",
     )
-    chapter: camp.game.models.Chapter = models.ForeignKey(
-        camp.game.models.Chapter,
-        on_delete=models.PROTECT,
-        related_name="characters",
-        help_text="The chapter this character belongs to.",
-    )
 
     @property
     def primary_sheet(self) -> Sheet:
@@ -45,7 +46,7 @@ class Character(RulesModel):
             first.primary = True
             first.save()
             return first
-        if ruleset := self.chapter.game.rulesets.filter(enabled=True).first():
+        if ruleset := self.game.rulesets.filter(enabled=True).first():
             engine: Engine = cast(Engine, ruleset.engine)
             sheet = Sheet.objects.create(
                 character=self,
@@ -61,7 +62,7 @@ class Character(RulesModel):
             sheet.controller = engine.new_character(id=sheet.id, metadata=metadata)
             sheet.save()
             return sheet
-        raise ValueError(f"No enabled ruleset found for chapter {self.chapter.id}.")
+        raise ValueError(f"No enabled ruleset found for {self.game}.")
 
     @property
     def secondary_sheets(self) -> models.QuerySet[Sheet]:
@@ -72,6 +73,12 @@ class Character(RulesModel):
 
     def __repr__(self) -> str:
         return f"<Character {self.id} {self.name}>"
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_authenticated,
+            "list": rules.is_authenticated,
+        }
 
 
 class Sheet(RulesModel):

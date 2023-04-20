@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load rules %}
+
+{% block head_title %}{% block body_title %}
+{{ character }}
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+<ul>
+{% for character in character_list %}
+<li><a href="{% url 'character-detail' character.id %}">{{ character }}</a></li>
+{% empty %}
+<li>No characters yet, create one!</li>
+{% endfor %}
+<ul>
+
+<a href="{% url 'character-add' %}">Create a new character</a>
+
+{% endblock %}

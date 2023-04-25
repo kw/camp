@@ -44,6 +44,7 @@ class Attribute(BaseModel):
     id: str
     name: str
     abbrev: str | None = None
+    description: str | None = None
     default_value: int = 0
     hidden: bool = False
     scoped: bool = False

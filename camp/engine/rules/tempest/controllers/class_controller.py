@@ -31,8 +31,8 @@ class ClassController(feature_controller.FeatureController):
         self.model.primary = value
         if value:
             # There can be only one primary class
-            for id, controller in self.character.classes.items():
-                if id != self.full_id:
+            for controller in self.character.classes:
+                if controller.id != self.full_id:
                     controller.is_primary = False
 
     @property
@@ -44,8 +44,8 @@ class ClassController(feature_controller.FeatureController):
         self.model.starting = value
         if value:
             # There can be only one starting class
-            for id, controller in self.character.classes.items():
-                if id != self.full_id:
+            for controller in self.character.classes:
+                if controller.id != self.full_id:
                     controller.is_starting = False
 
     @property
@@ -83,7 +83,7 @@ class ClassController(feature_controller.FeatureController):
             return rd
         if (
             not self.is_primary
-            and max((c.value for c in self.character.classes.values()), default=0)
+            and max((c.value for c in self.character.classes), default=0)
             < self.purchased_ranks
         ):
             self.is_primary = True
@@ -119,10 +119,13 @@ class ClassController(feature_controller.FeatureController):
             self.model.primary = False
         if (
             self.is_primary
-            and max((c.value for c in self.character.classes.values()), default=0)
+            and max((c.value for c in self.character.classes), default=0)
             > self.purchased_ranks
         ):
             # TODO: Auto-set to the new highest
             pass
         self.reconcile()
         return Decision(success=True, amount=self.value)
+
+    def __str__(self) -> str:
+        return f"{self.definition.name} {self.value}"

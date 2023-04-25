@@ -1,6 +1,8 @@
 type: class
 name: Fighter
 sphere: martial
+description: >
+  User of swordchucks, doesn't really do magic, will still pummel you.
 starting_features:
   - martial-starting-a1
   - martial-starting-a2

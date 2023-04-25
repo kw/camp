@@ -31,6 +31,9 @@ def test_grants_bonus_lp(character: TempestCharacter):
     starting_lp = character.lp.value
     assert character.apply("grants-bonus-lp-perk")
     assert character.lp.value == starting_lp + 3
+    # Stable if we call reconcile?
+    character.reconcile()
+    assert character.lp.value == starting_lp + 3
 
 
 def test_skill_discount(character: TempestCharacter):

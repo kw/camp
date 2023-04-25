@@ -1,6 +1,8 @@
 type: class
 name: Druid
 sphere: divine
+description: >
+  Caster of divine magic, healer of wounds, tree hugger.
 starting_features:
   - caster-starting-b1
   - caster-starting-b2

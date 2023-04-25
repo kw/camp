@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from functools import total_ordering
 from typing import Any
+from typing import Iterable
 from typing import Type
 
 import pydantic
@@ -29,6 +30,10 @@ class CharacterController(ABC):
     @property
     def ruleset(self):
         return self.engine.ruleset
+
+    @abstractproperty
+    def features(self) -> dict[str, BaseFeatureController]:
+        ...
 
     def __init__(self, engine: Engine, model: base_models.CharacterModel):
         self.model = model
@@ -61,9 +66,46 @@ class CharacterController(ABC):
         """Returns a copy of the current model."""
         return self.model.copy(deep=True)
 
+    def display_name(self, id: str) -> str:
+        """Returns the display name of the given feature."""
+        if id in self.ruleset.display_names:
+            return self.ruleset.display_names[id]
+        if id in self.ruleset.features:
+            return self.ruleset.features[id].name
+        if id in self.ruleset.attribute_map:
+            return self.ruleset.attribute_map[id].name
+        return id.replace("_", " ").title()
+
+    def list_features(
+        self, type: str | None = None, taken: bool = True, available: bool = True
+    ) -> Iterable[BaseFeatureController]:
+        """List all features of the given type."""
+        if taken:
+            for id, fc in self.features.items():
+                if type and fc.definition.type != type:
+                    continue
+                if available and not fc.can_increase():
+                    continue
+                yield fc
+        else:
+            for id, definition in self.ruleset.features.items():
+                if id in self.features:
+                    continue
+                if type and definition.type != type:
+                    continue
+                fc = self.feature_controller(id)
+                if available and not fc.can_increase():
+                    continue
+                yield fc
+
     @abstractmethod
     def clear_caches(self):
         """Clear any cached data that might need to be recomputed upon mutating the character model."""
+
+    def reconcile(self):
+        """Perform any necessary reconciliation of the character model."""
+        for feat in self.features.values():
+            feat.reconcile()
 
     def apply(self, mutation: base_models.Mutation | str) -> Decision:
         rd: Decision
@@ -77,6 +119,8 @@ class CharacterController(ABC):
                     rd = Decision(
                         success=False, reason=f"Mutation {mutation} unsupported."
                     )
+        except AttributeError:
+            raise
         except Exception as exc:
             rd = Decision(
                 success=False,
@@ -315,6 +359,7 @@ class PropertyController(ABC):
     full_id: str
     expression: base_models.PropExpression
     character: CharacterController
+    description: str | None
     _propagation_data: dict[str, PropagationData]
 
     def __init__(self, full_id: str, character: CharacterController):
@@ -323,6 +368,12 @@ class PropertyController(ABC):
         self.full_id = full_id
         self.id = self.expression.prop
         self.character = character
+
+    def display_name(self) -> str:
+        name = self.character.display_name(self.expression.prop)
+        if self.expression.option:
+            name += f" [{self.expression.option}]"
+        return name
 
     @abstractproperty
     def value(self) -> int:
@@ -370,6 +421,10 @@ class BaseFeatureController(PropertyController):
     @cached_property
     def definition(self) -> base_models.BaseFeatureDef:
         return self.character.engine.feature_defs[self.expr.prop]
+
+    @property
+    def description(self) -> str | None:
+        return self.definition.description
 
     @property
     def max_ranks(self) -> int:
@@ -425,7 +480,7 @@ class BaseFeatureController(PropertyController):
         else:
             name = f"{self.definition.name}"
         if isinstance(self.definition.ranks, str) or self.definition.ranks > 1:
-            name += f": x{self.value}"
+            name += f" x{self.value}"
         return name
 
 
@@ -484,7 +539,9 @@ class Engine(ABC):
         """
         updated_data = self.update_data(data)
         model = pydantic.parse_obj_as(self.sheet_type, updated_data)
-        return self.character_controller(self, model)
+        c = self.character_controller(self, model)
+        c.reconcile()
+        return c
 
     def update_data(self, data: dict) -> dict:
         """If the data is from a different but compatible rules version, update it.

@@ -8,9 +8,43 @@
 {% block content %}
 
 <ul>
-{% for sheet in character.sheets.all %}
-<li>{{ sheet.name }}: {{ sheet.data }}</li>
-{% endfor %}
+    <li>Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
+    <li>LP: {{ controller.lp.value }}</li>
+    <li>CP: {{ controller.cp.value }}</li>
+</ul>
+
+<h2>Classes</h2>
 <ul>
+{% for c in controller.classes %}
+    <li>
+        {{ c }}
+        {% if c.can_increase %}
+            <a href="">Level up!</a>
+        {% endif %}
+    </li>
+{% endfor %}
+{% if controller.level < controller.xp_level %}
+    <li>
+        <a href="{% url 'character-new-feature' character.id 'class' %}">Add new class!</a>
+    </li>
+{% endif %}
+</ul>
+
+<h2>Skills</h2>
+<ul>
+{% for s in controller.skills %}
+    <li>
+        {{ s }}
+        {% if s.can_increase %}
+            <a href="">Rank Up!</a>
+        {% endif %}
+    </li>
+{% endfor %}
+{% if controller.cp > 0 %}
+    <li>
+        <a href="{% url 'character-new-feature' character.id 'skill' %}">Add new skill!</a>
+    </li>
+{% endif %}
+</ul>
 
 {% endblock %}

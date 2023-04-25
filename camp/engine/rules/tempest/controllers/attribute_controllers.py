@@ -7,17 +7,13 @@ from . import character_controller
 
 class AttributeController(base_engine.AttributeController):
     character: character_controller.TempestCharacter
-    _granted_ranks: int = 0
 
     def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
         super().__init__(prop_id, character)
 
-    def propagate(self, data: base_engine.PropagationData):
-        self._granted_ranks += data.grants
-
     @property
     def value(self):
-        return self._granted_ranks
+        return sum(p.grants for p in self._propagation_data.values())
 
 
 class LifePointController(AttributeController):

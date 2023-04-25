@@ -1,6 +1,8 @@
 type: class
 name: Wizard
 sphere: arcane
+description: >
+  Caster of arcane magic, causer of wounds, better than you.
 starting_features:
   - caster-starting-a1
   - caster-starting-a2

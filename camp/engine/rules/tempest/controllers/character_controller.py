@@ -127,14 +127,14 @@ class TempestCharacter(base_engine.CharacterController):
 
     @property
     def primary_class(self) -> class_controller.ClassController | None:
-        for controller in self.classes.values():
+        for controller in self.classes:
             if controller.is_primary:
                 return controller
         return None
 
     @property
     def starting_class(self) -> class_controller.ClassController | None:
-        for controller in self.classes.values():
+        for controller in self.classes:
             if controller.is_starting:
                 return controller
         return None
@@ -151,13 +151,21 @@ class TempestCharacter(base_engine.CharacterController):
         return feats
 
     @property
-    def classes(self) -> dict[str, class_controller.ClassController]:
-        """Dict of the character's class controllers."""
-        return {
-            id: feat
-            for (id, feat) in self.features.items()
-            if isinstance(feat, class_controller.ClassController)
-        }
+    def classes(self) -> list[class_controller.ClassController]:
+        """List of the character's class controllers."""
+        classes = [
+            feat for (feat) in self.features.values() if feat.feature_type == "class"
+        ]
+        classes.sort(key=lambda c: c.value, reverse=True)
+        return classes
+
+    @property
+    def skills(self) -> list[feature_controller.FeatureController]:
+        skills = [
+            feat for (feat) in self.features.values() if feat.feature_type == "skill"
+        ]
+        skills.sort(key=lambda s: s.display_name())
+        return skills
 
     def feature_def(self, feature_id: str) -> defs.FeatureDefinitions | None:
         expr = PropExpression.parse(feature_id)

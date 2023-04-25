@@ -348,11 +348,11 @@ if __name__ == "__main__":
             print(f"Ruleset {ruleset.name} parsed successfully.")
             print("Features:")
             current_type = None
-            for id, feature in sorted(
+            for id, fc in sorted(
                 ruleset.features.items(), key=lambda item: item[1].type
             ):
-                if current_type != feature.type:
-                    current_type = feature.type
+                if current_type != fc.type:
+                    current_type = fc.type
                     friendly_type = ruleset.type_names.get(current_type, current_type)
                     print(f"Type: {friendly_type}")
-                print(f"- {id}: {feature.name}")
+                print(f"- {id}: {fc.name}")

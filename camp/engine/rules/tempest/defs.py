@@ -232,9 +232,21 @@ class Ruleset(base_models.BaseRuleset):
     spikes: AttributeScaling = AttributeScaling(base=2, factor=8, rounding="down")
 
     attributes: ClassVar[Iterable[Attribute]] = [
-        Attribute(id="xp", name="Experience Points", abbrev="XP", default_value=0),
-        Attribute(id="xp_level", name="Experience Level", hidden=True, default_value=2),
-        Attribute(id="level", name="Character Level", is_tag=True),
+        Attribute(
+            id="xp",
+            name="Experience Points",
+            abbrev="XP",
+            description="You earn 2 XP per half-day game, or 8 per normal weekend game.",
+            default_value=0,
+        ),
+        Attribute(
+            id="xp_level",
+            name="Experience Level",
+            abbrev="Level",
+            default_value=2,
+            description="Your level, determined by your XP total.",
+        ),
+        Attribute(id="level", name="Character Level", hidden=True, is_tag=True),
         Attribute(id="lp", name="Life Points", abbrev="LP", default_value=2),
         Attribute(id="cp", name="Character Points", abbrev="CP", default_value=0),
         Attribute(id="breedcap", name="Max Breeds", default_value=2, hidden=True),

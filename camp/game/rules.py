@@ -1,6 +1,7 @@
 """Rule predicates for use in game permissions."""
 from __future__ import annotations
 
+import django.db.models
 import rules
 from django.contrib.auth import get_user_model
 
@@ -120,6 +121,45 @@ def is_chapter_tavernkeep(user: User, obj):
     """Is this user a member of the chapter's tavern staff?"""
     if role := get_chapter_role(user, obj):
         return role.tavern_staff
+    return False
+
+
+@rules.predicate
+def is_logistics(user: User, obj):
+    """For an object associated with a game, is this user a logistics staff member in any chapter in that game?"""
+    game = _get_game(obj)
+    if game is None:
+        return False
+    return any(is_chapter_logistics(user, chapter) for chapter in game.chapters.all())
+
+
+@rules.predicate
+def is_plot(user: User, obj):
+    """For an object associated with a game, is this user a plot staff member in any chapter in that game?"""
+    game = _get_game(obj)
+    if game is None:
+        return False
+    return any(is_chapter_plot(user, chapter) for chapter in game.chapters.all())
+
+
+# Generic predicates
+
+
+@rules.predicate
+def is_owner(user: User, obj):
+    """Is this user an owner of the object?"""
+    if user.is_anonymous:
+        return False
+    if hasattr(obj, "owner"):
+        if user == obj.owner:
+            return True
+        # Fall through, the object could also have an owners list
+    if hasattr(obj, "owners"):
+        # The owners attribute could be a QuerySet or some other container
+        if isinstance(obj.owners, django.db.models.QuerySet):
+            return obj.owners.contains(user)
+        else:
+            return user in obj.owners
     return False
 
 

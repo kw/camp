@@ -7,10 +7,17 @@
 
 {% block content %}
 
-<ul>
-    <li>Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
-    <li>LP: {{ controller.lp.value }}</li>
-    <li>CP: {{ controller.cp.value }}</li>
+<ul class="list-group list-group-horizontal">
+    <li class="list-group-item">Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
+    <li class="list-group-item">CP: {{ controller.cp.value }}</li>
+    <li class="list-group-item">LP: {{ controller.lp.value }}</li>
+    <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
+    <li class="list-group-item">
+        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#setAttrsModal">
+            {# TODO: Limit this to freeplay or logistics #}
+            Set Attributes
+        </button>
+    </li>
 </ul>
 
 {% for group in feature_groups %}
@@ -37,8 +44,8 @@
     {% if group.available %}
     <div class="card">
         <div class="card-header">
-            <a class="btn" role="button" data-bs-toggle="collapse" data-bs-target="#collapse_available_{{group.type}}" aria-expanded="false" aria-controls="collapse_available_{{group.type}}">
-                New {{ group.name }}
+            <a class="btn btn-outline-secondary" role="button" data-bs-toggle="collapse" data-bs-target="#collapse_available_{{group.type}}" aria-expanded="false" aria-controls="collapse_available_{{group.type}}">
+                Add new {{ group.name }}
             </a>
         </div>
 
@@ -52,5 +59,35 @@
     </div>
     {% endif %}
 {% endfor %}
+
+
+<!-- Set XP/CP Modal -->
+<div class="modal fade" id="setAttrsModal" tabindex="-1" aria-labelledby="setAttrsLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="setAttrsLabel">Set Attributes</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id='set-attr' action="{% url 'character-set-attr' character.id %}" method='POST'>
+        {% csrf_token %}
+        <div>
+            <label for="level" class="form-label">Level</label>
+            <input type="number" class="form-control" id="set-level" name="level" value="{{ controller.xp_level }}">
+        </div>
+        <div>
+            <label for="cp" class="form-label">Awarded CP</label>
+            <input type="number" class="form-control" id="set-cp" name="cp" value="{{ controller.awarded_cp }}">
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form='set-attr'>Apply</button>
+    </div>
+    </div>
+</div>
+</div>
 
 {% endblock %}

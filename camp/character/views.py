@@ -16,6 +16,8 @@ from django.views.generic import CreateView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from rules.contrib.views import AutoPermissionRequiredMixin
+from rules.contrib.views import objectgetter
+from rules.contrib.views import permission_required
 
 from camp.character.models import Character
 from camp.character.models import Sheet
@@ -78,8 +80,45 @@ class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-def new_feature(request, id, feature_type):
-    character = get_object_or_404(Character, id=id)
+@permission_required("character.change_character", fn=objectgetter(Character))
+def set_attr(request, pk):
+    """Set the character's Level or CP to an arbitrary value."""
+    # TODO: Restrict this to either freeplay mode or maybe logistics action.
+    character = get_object_or_404(Character, id=pk)
+    if request.POST:
+        sheet = character.primary_sheet
+        controller = sheet.controller
+        if "level" in request.POST:
+            level = request.POST["level"]
+            try:
+                level = int(level)
+            except ValueError:
+                messages.error(request, "Level must be an integer.")
+                return redirect("character-detail", pk=pk)
+            if controller.xp_level != level:
+                controller.xp_level = level
+                messages.success(request, f"Level set to {level}.")
+        if "cp" in request.POST:
+            cp = request.POST["cp"]
+            try:
+                cp = int(cp)
+            except ValueError:
+                messages.error(request, "Awarded CP must be an integer.")
+                return redirect("character-detail", pk=pk)
+            if controller.awarded_cp != cp:
+                controller.awarded_cp = cp
+                messages.success(request, f"Awarded CP set to {cp}.")
+
+        if d := controller.validate():
+            sheet.save()
+        else:
+            messages.error(request, "Error validating character: %s" % d.reason)
+    return redirect("character-detail", pk=pk)
+
+
+@permission_required("character.change_character", fn=objectgetter(Character))
+def new_feature(request, pk, feature_type):
+    character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
     controller = sheet.controller
 

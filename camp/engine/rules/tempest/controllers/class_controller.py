@@ -136,4 +136,6 @@ class ClassController(feature_controller.FeatureController):
             return self._gather_grants(self.definition.multiclass_features)
 
     def __str__(self) -> str:
-        return f"{self.definition.name} {self.value}"
+        if self.value > 0:
+            return f"{self.definition.name} {self.value}"
+        return self.definition.name

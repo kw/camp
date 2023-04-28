@@ -59,6 +59,7 @@ class TempestCharacter(base_engine.CharacterController):
         self.model.metadata.awards["xp"] = utils.table_reverse_lookup(
             self.ruleset.xp_table, value
         )
+        self.mutated = True
 
     @property
     def base_cp(self) -> int:
@@ -76,6 +77,7 @@ class TempestCharacter(base_engine.CharacterController):
     @awarded_cp.setter
     def awarded_cp(self, value: int) -> None:
         self.model.metadata.awards["cp"] = value
+        self.mutated = True
 
     @property
     def base_lp(self) -> int:

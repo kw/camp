@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import cast
 
-import rules
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -13,6 +12,7 @@ import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 import camp.game.models
 from camp.engine.rules.base_engine import Engine
+from camp.game import rules
 
 User = get_user_model()
 
@@ -76,8 +76,10 @@ class Character(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": rules.is_authenticated,
-            "list": rules.is_authenticated,
+            "view": rules.is_owner | rules.is_logistics | rules.is_plot,
+            "change": rules.is_owner | rules.is_logistics | rules.is_plot,
+            "delete": rules.is_owner | rules.is_logistics,
+            "add": rules.is_owner | rules.is_logistics,
         }
 
 
@@ -115,6 +117,14 @@ class Sheet(RulesModel):
     _controller: camp.engine.rules.base_engine.CharacterController | None = None
 
     @property
+    def game(self) -> camp.game.models.Game:
+        return self.character.game
+
+    @property
+    def owner(self) -> User:
+        return self.character.owner
+
+    @property
     def controller(self) -> camp.engine.rules.base_engine.CharacterController:
         if self._controller is None:
             self._controller = self.ruleset.engine.load_character(self.data)
@@ -137,3 +147,11 @@ class Sheet(RulesModel):
 
     def __repr__(self) -> str:
         return f"<Sheet {self.id} {self.character} [{self.label}] {'(primary)' if self.primary else ''}>"
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_owner | rules.is_logistics | rules.is_plot,
+            "change": rules.is_owner | rules.is_logistics | rules.is_plot,
+            "delete": rules.is_owner | rules.is_logistics,
+            "add": rules.is_owner | rules.is_logistics,
+        }

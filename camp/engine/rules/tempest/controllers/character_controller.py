@@ -18,6 +18,7 @@ from . import attribute_controllers
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
+from . import subfeature_controller
 
 
 class TempestCharacter(base_engine.CharacterController):
@@ -154,7 +155,9 @@ class TempestCharacter(base_engine.CharacterController):
     def classes(self) -> list[class_controller.ClassController]:
         """List of the character's class controllers."""
         classes = [
-            feat for (feat) in self.features.values() if feat.feature_type == "class"
+            feat
+            for (feat) in self.features.values()
+            if feat.feature_type == "class" and feat.value > 0
         ]
         classes.sort(key=lambda c: c.value, reverse=True)
         return classes
@@ -162,7 +165,9 @@ class TempestCharacter(base_engine.CharacterController):
     @property
     def skills(self) -> list[feature_controller.FeatureController]:
         skills = [
-            feat for (feat) in self.features.values() if feat.feature_type == "skill"
+            feat
+            for (feat) in self.features.values()
+            if feat.feature_type == "skill" and feat.value > 0
         ]
         skills.sort(key=lambda s: s.display_name())
         return skills
@@ -277,6 +282,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return class_controller.ClassController(id, self)
             case "flaw":
                 return flaw_controller.FlawController(id, self)
+            case "subfeature":
+                return subfeature_controller.SubfeatureController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

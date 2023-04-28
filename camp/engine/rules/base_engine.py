@@ -104,7 +104,7 @@ class CharacterController(ABC):
 
     def reconcile(self):
         """Perform any necessary reconciliation of the character model."""
-        for feat in self.features.values():
+        for feat in list(self.features.values()):
             feat.reconcile()
 
     def apply(self, mutation: base_models.Mutation | str) -> Decision:
@@ -479,7 +479,11 @@ class BaseFeatureController(PropertyController):
             name = f"{self.definition.name} [{self.expr.option}]"
         else:
             name = f"{self.definition.name}"
-        if isinstance(self.definition.ranks, str) or self.definition.ranks > 1:
+        if (
+            isinstance(self.definition.ranks, str)
+            or self.definition.ranks > 1
+            and self.value > 0
+        ):
             name += f" x{self.value}"
         return name
 

@@ -10,24 +10,15 @@ starting_features:
 multiclass_features:
   - caster-starting-b2
   - cleric-multiclass-feature-b
-level_table_columns:
-  prepared: {name: Prepared Spells, type: local}
-  spells: {name: "Total Spell-Slots per Tier\n(Novice/Intermediate/Adept/Master)", type: power_slots}
-levels:
-  1: {prepared: 1, spells: [1]}
-  2: {prepared: 2, spells: [2]}
-  3: {prepared: 3, spells: [3]}
-  4: {prepared: 4, spells: [4]}
-  5: {prepared: 5, spells: [5]}
-  6: {prepared: 6, spells: [6]}
-  7: {prepared: 7, spells: [6, 1]}
 ---
 name: Cleric Starting Feature B
 type: subfeature
+parent: cleric
 id: cleric-starting-feature-b
 description: It's a cool feature, but for divine casters
 ---
 name: Cleric Multiclass Feature B
 type: subfeature
+parent: cleric
 id: cleric-multiclass-feature-b
 description: It's a less cool feature, but for divine casters

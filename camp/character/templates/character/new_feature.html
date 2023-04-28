@@ -8,12 +8,23 @@
 {% block content %}
 <h2>Add New {{ feature_type_name }}</h2>
 
+<ul>
+{% for c, v in currencies.items %}
+<li>Available {{ c }}: {{ v }}</li>
+{% endfor %}
+</ul>
+
+{% for f in features %}
 <form method="post">{% csrf_token %}
-    {% for f in features %}
-    <h3>{{ f.display_name }}</h3>
-    <p>{{ f.description }}</p>
-    <button type="submit" name="feature" value="{{ f.id }}" class="btn btn-primary">Add {{f.display_name}}</button>
-    {% endfor %}
+{% if f.next_cost > 0 %}
+<h3>{{ f.display_name }} ({{ f.purchase_cost_string }})</h3>
+{% else %}
+<h3>{{ f.display_name }}</h3>
+{% endif %}
+<p>{{ f.description }}</p>
+<button type="submit" name="feature" value="{{ f.id }}" class="btn btn-primary">Add "{{f.display_name}}"</button>
 </form>
+<hr/>
+{% endfor %}
 
 {% endblock %}

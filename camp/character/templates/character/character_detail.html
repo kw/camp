@@ -13,38 +13,44 @@
     <li>CP: {{ controller.cp.value }}</li>
 </ul>
 
-<h2>Classes</h2>
-<ul>
-{% for c in controller.classes %}
-    <li>
-        {{ c }}
-        {% if c.can_increase %}
-            <a href="">Level up!</a>
-        {% endif %}
-    </li>
-{% endfor %}
-{% if controller.level < controller.xp_level %}
-    <li>
-        <a href="{% url 'character-new-feature' character.id 'class' %}">Add new class!</a>
-    </li>
-{% endif %}
-</ul>
+{% for group in feature_groups %}
+    <div class="card">
+        <h2 class="card-title">{{ group.name }}</h2>
+        <ul class="list-group list-group-flush">
+            {% for f in group.taken %}
+                <li class="list-group-item">
+                    {{ f }}
+                    {% if f.subfeatures %}
+                    <ul>
+                        {% for sf in f.subfeatures %}
+                        <li>
+                            {{ sf }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+    </div>
 
-<h2>Skills</h2>
-<ul>
-{% for s in controller.skills %}
-    <li>
-        {{ s }}
-        {% if s.can_increase %}
-            <a href="">Rank Up!</a>
-        {% endif %}
-    </li>
+    {% if group.available %}
+    <div class="card">
+        <div class="card-header">
+            <a class="btn" role="button" data-bs-toggle="collapse" data-bs-target="#collapse_available_{{group.type}}" aria-expanded="false" aria-controls="collapse_available_{{group.type}}">
+                New {{ group.name }}
+            </a>
+        </div>
+
+        <ul class="list-group list-group-flush collapse" id="collapse_available_{{group.type}}">
+        {% for f in group.available %}
+            <li class="list-group-item">
+                {{ f }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 {% endfor %}
-{% if controller.cp > 0 %}
-    <li>
-        <a href="{% url 'character-new-feature' character.id 'skill' %}">Add new skill!</a>
-    </li>
-{% endif %}
-</ul>
 
 {% endblock %}

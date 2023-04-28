@@ -23,6 +23,7 @@ class FeatureController(base_engine.BaseFeatureController):
     character: character_controller.TempestCharacter
     model_type: Type[models.FeatureModel] = models.FeatureModel
     _effective_ranks: int | None
+    _subfeatures: set[str]
 
     # Subclasses can change the currency used, but CP is the default.
     # Note that no currency display will be shown if the feature has no cost model.
@@ -31,6 +32,14 @@ class FeatureController(base_engine.BaseFeatureController):
     def __init__(self, full_id: str, character: character_controller.TempestCharacter):
         super().__init__(full_id, character)
         self._effective_ranks = None
+        self._subfeatures = set()
+
+    @property
+    def subfeatures(self) -> Iterable[FeatureController]:
+        for id in self._subfeatures:
+            subfeature = self.character.features.get(id)
+            if subfeature is not None and subfeature.value > 0:
+                yield subfeature
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -51,6 +60,22 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def cost(self) -> int:
         return self._cost_for(self.paid_ranks)
+
+    @property
+    def next_cost(self) -> int:
+        return self._cost_for(self.paid_ranks + 1)
+
+    @property
+    def currency_name(self) -> str | None:
+        if self.currency:
+            return self.character.display_name(self.currency)
+        return None
+
+    @property
+    def purchase_cost_string(self) -> str | None:
+        if self.currency and self.cost_def:
+            return f"{self.next_cost} {self.currency_name}"
+        return None
 
     @cached_property
     def model(self) -> models.FeatureModel:
@@ -289,8 +314,16 @@ class FeatureController(base_engine.BaseFeatureController):
             if controller := self.character._controller_for_property(id):
                 controller.propagate(data)
 
+    def extra_grants(self) -> dict[str, int]:
+        """Return any extra grants that should be applied for this feature.
+
+        This is used for features that grant other features, such as a class granting a skill.
+        """
+        return {}
+
     def _gather_propagation(self) -> dict[str, engine.PropagationData]:
         grants = self._gather_grants(self.definition.grants)
+        grants.update(self.extra_grants())
         discounts = self._gather_discounts(self.definition.discounts)
         # Choices may also affect grants/discounts.
         if self.choices:

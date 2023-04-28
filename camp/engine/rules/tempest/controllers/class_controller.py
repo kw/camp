@@ -14,6 +14,7 @@ class ClassController(feature_controller.FeatureController):
     definition: defs.ClassDef
     model_type = models.ClassModel
     model: models.ClassModel
+    currency = None
 
     def __init__(self, id: str, character: character_controller.TempestCharacter):
         super().__init__(id, character)
@@ -126,6 +127,13 @@ class ClassController(feature_controller.FeatureController):
             pass
         self.reconcile()
         return Decision(success=True, amount=self.value)
+
+    def extra_grants(self) -> dict[str, int]:
+        # Base classes grant different starting features based on whether it's your starting class.
+        if self.is_starting:
+            return self._gather_grants(self.definition.starting_features)
+        else:
+            return self._gather_grants(self.definition.multiclass_features)
 
     def __str__(self) -> str:
         return f"{self.definition.name} {self.value}"

@@ -81,8 +81,6 @@ class ClassDef(BaseFeatureDef):
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
     bonus_features: dict[int, Grantable] | None = None
-    level_table_columns: dict[str, dict]
-    levels: dict[int, dict]
     # By default, classes have 10 levels.
     ranks: int = 10
 

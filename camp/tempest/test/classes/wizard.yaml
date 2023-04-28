@@ -10,27 +10,15 @@ starting_features:
 multiclass_features:
   - caster-starting-a2
   - wizard-multiclass-feature-a
-level_table_columns:
-  spikes: {name: Spikes, type: attribute}
-  prepared: {name: Prepared Spells, type: local}
-  cantrips: {name: Cantrips, type: local}
-  spells: {name: "Total Spell-Slots per Tier\n(Novice/Intermediate/Adept/Master)", type: power_slots}
-  cp: {name: CP, type: currency}
-levels:
-  1: {spikes: 0, prepared: 2, cantrips: 1, spells: [1], cp: 0}
-  2: {spikes: 0, prepared: 3, cantrips: 2, spells: [2], cp: 2}
-  3: {spikes: 0, prepared: 4, cantrips: 2, spells: [3], cp: 4}
-  4: {spikes: 0, prepared: 5, cantrips: 2, spells: [4], cp: 6}
-  5: {spikes: 1, prepared: 6, cantrips: 2, spells: [5], cp: 8}
-  6: {spikes: 1, prepared: 7, cantrips: 2, spells: [6], cp: 10}
-  7: {spikes: 1, prepared: 8, cantrips: 2, spells: [6, 1], cp: 12}
 ---
 id: wizard-starting-feature-a
 type: subfeature
+parent: wizard
 name: Wizard Starting Feature
 description: It's a cool feature, but for arcane casters
 ---
 id: wizard-multiclass-feature-a
 type: subfeature
+parent: wizard
 name: Wizard Multiclass Feature
 description: It's a less cool feature, but for arcane casters

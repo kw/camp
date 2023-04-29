@@ -7,22 +7,33 @@
 
 {% block content %}
 
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Manage
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setAttrsModal">Set Attributes</a></li>
+        <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#deleteCharacterModal">Delete Character</a></li>
+    </ul>
+  </div>
+
 <ul class="list-group list-group-horizontal">
     <li class="list-group-item">Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
     <li class="list-group-item">CP: {{ controller.cp.value }}</li>
     <li class="list-group-item">LP: {{ controller.lp.value }}</li>
     <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
-    <li class="list-group-item">
-        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#setAttrsModal">
-            {# TODO: Limit this to freeplay or logistics #}
-            Set Attributes
-        </button>
-    </li>
 </ul>
 
 {% for group in feature_groups %}
     <div class="card">
-        <h2 class="card-title">{{ group.name }}</h2>
+        <h2 class="card-title">
+            {{ group.name }}
+            {% if group.available %}
+                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type}}" aria-expanded="false" aria-controls="newFeatureModal_{{group.type}}">
+                    Add New
+                </button>
+            {% endif %}
+        </h2>
         <ul class="list-group list-group-flush">
             {% for f in group.taken %}
                 <li class="list-group-item">
@@ -40,54 +51,83 @@
             {% endfor %}
             </ul>
     </div>
-
-    {% if group.available %}
-    <div class="card">
-        <div class="card-header">
-            <a class="btn btn-outline-secondary" role="button" data-bs-toggle="collapse" data-bs-target="#collapse_available_{{group.type}}" aria-expanded="false" aria-controls="collapse_available_{{group.type}}">
-                Add new {{ group.name }}
-            </a>
-        </div>
-
-        <ul class="list-group list-group-flush collapse" id="collapse_available_{{group.type}}">
-        {% for f in group.available %}
-            <li class="list-group-item">
-                {{ f }}
-            </li>
-        {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
 {% endfor %}
 
 
 <!-- Set XP/CP Modal -->
 <div class="modal fade" id="setAttrsModal" tabindex="-1" aria-labelledby="setAttrsLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-    <div class="modal-header">
-        <h1 class="modal-title fs-5" id="setAttrsLabel">Set Attributes</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <form id='set-attr' action="{% url 'character-set-attr' character.id %}" method='POST'>
-        {% csrf_token %}
-        <div>
-            <label for="level" class="form-label">Level</label>
-            <input type="number" class="form-control" id="set-level" name="level" value="{{ controller.xp_level }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="setAttrsLabel">Set Attributes</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id='set-attr' action="{% url 'character-set-attr' character.id %}" method='POST'>
+                {% csrf_token %}
+                <div>
+                    <label for="level" class="form-label">Level</label>
+                    <input type="number" class="form-control" id="set-level" name="level"
+                        value="{{ controller.xp_level }}" min="2" max="20">
+                </div>
+                <div>
+                    <label for="cp" class="form-label">Awarded CP</label>
+                    <input type="number" class="form-control" id="set-cp" name="cp"
+                        value="{{ controller.awarded_cp }}" min="0" max="999">
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form='set-attr'>Apply</button>
+            </div>
         </div>
-        <div>
-            <label for="cp" class="form-label">Awarded CP</label>
-            <input type="number" class="form-control" id="set-cp" name="cp" value="{{ controller.awarded_cp }}">
-        </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" form='set-attr'>Apply</button>
-    </div>
     </div>
 </div>
+
+<!-- Delete Character Modal -->
+<div class="modal fade" id="deleteCharacterModal" tabindex="-1" aria-labelledby="deleteCharacterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteCharacterLabel">Delete Character</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                The character "{{ character }}" will be permanently deleted. This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'character-delete' character.id %}">{% csrf_token %}
+                    <button id='deleteCharacterButton' type="submit" class="btn btn-danger">Permanently Delete "{{ character }}"</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Add Feature Modals -->
+{% for group in feature_groups %}
+<div class="modal fade" id="newFeatureModal_{{group.type}}" tabindex="-1" aria-labelledby="newFeatureModalLabel_{{group.type}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="newFeatureModalLabel_{{group.type}}">Add New {{group.name}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    {% for f in group.available %}
+                        <li class="list-group-item">{{ f }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock %}

@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import CreateView
+from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from rules.contrib.views import AutoPermissionRequiredMixin
@@ -78,6 +79,13 @@ class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
         # This has a side effect of creating a primary sheet if one doesn't exist.
         _ = self.object.primary_sheet
         return super().form_valid(form)
+
+
+class DeleteCharacterView(AutoPermissionRequiredMixin, DeleteView):
+    model = Character
+
+    def get_success_url(self):
+        return reverse("character-list")
 
 
 @permission_required("character.change_character", fn=objectgetter(Character))
@@ -165,7 +173,11 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
             group.taken.append(feat)
         else:
             group.available.append(feat)
-    return list(by_type.values())
+    groups: list[FeatureGroup] = list(by_type.values())
+    for group in groups:
+        group.taken.sort(key=lambda f: f.display_name())
+        group.available.sort(key=lambda f: f.display_name())
+    return groups
 
 
 @dataclasses.dataclass

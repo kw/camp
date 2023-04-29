@@ -5,10 +5,6 @@
 {{chapter}}
 {% endblock %}{% endblock %}
 
-{% block body_title %}
-{{ chapter.name }}
-{% endblock body_title %}
-
 {% block content %}
 {% has_perm 'game.change_chapter' user chapter as can_change_chapter %}
 

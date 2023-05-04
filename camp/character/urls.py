@@ -12,8 +12,8 @@ urlpatterns = [
     ),
     path("<int:pk>/set/", views.set_attr, name="character-set-attr"),
     path(
-        "<int:pk>/new/<str:feature_type>/",
-        views.new_feature,
-        name="character-new-feature",
+        "<int:pk>/f/<str:feature_id>/",
+        views.feature_view,
+        name="character-feature-view",
     ),
 ]

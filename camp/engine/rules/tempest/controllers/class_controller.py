@@ -15,6 +15,7 @@ class ClassController(feature_controller.FeatureController):
     model_type = models.ClassModel
     model: models.ClassModel
     currency = None
+    rank_name_labels: tuple[str, str] = ("level", "levels")
 
     def __init__(self, id: str, character: character_controller.TempestCharacter):
         super().__init__(id, character)

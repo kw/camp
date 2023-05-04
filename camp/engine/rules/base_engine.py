@@ -84,17 +84,20 @@ class CharacterController(ABC):
             for id, fc in self.features.items():
                 if type and fc.definition.type != type:
                     continue
+                if fc.value <= 0:
+                    continue
                 if available and not fc.can_increase():
                     continue
                 yield fc
         else:
             for id, definition in self.ruleset.features.items():
-                if id in self.features:
+                if id in self.features and self.get_prop(id) > 0:
                     continue
                 if type and definition.type != type:
                     continue
                 fc = self.feature_controller(id)
-                if available and not fc.can_increase():
+                rd = fc.can_increase()
+                if available and not (rd or rd.needs_option):
                     continue
                 yield fc
 
@@ -414,6 +417,8 @@ class PropertyController(ABC):
 
 
 class BaseFeatureController(PropertyController):
+    rank_name_labels: tuple[str, str] = ("rank", "ranks")
+
     @cached_property
     def expr(self) -> base_models.PropExpression:
         return base_models.PropExpression.parse(self.id)
@@ -442,6 +447,10 @@ class BaseFeatureController(PropertyController):
         return self.definition.option
 
     @property
+    def purchase_cost_string(self) -> str | None:
+        return None
+
+    @property
     def is_taken(self) -> bool:
         if self.option_def and not self.option:
             # The "core" controller for an option feature is never
@@ -457,6 +466,61 @@ class BaseFeatureController(PropertyController):
     @property
     def taken_options(self) -> dict[str, int]:
         return {}
+
+    @property
+    def available_options(self) -> list[str] | None:
+        if not self.option_def:
+            return None
+        return self.character.options_values_for_feature(self.id, exclude_taken=True)
+
+    @property
+    def available_ranks(self) -> int:
+        """How many ranks are available to be taken?
+
+        This isn't just the number of ranks left, but the number of ranks that
+        the character could buy right now. For example, if the character has
+        3 ranks in a feature that has a max of 5, then they have 2 ranks available,
+        but only if they have enough CP to buy them and they meet any other requirements.
+        """
+        theoretical_max = self.max_ranks - self.value
+        if theoretical_max <= 0:
+            return 0
+        if rd := self.can_increase(theoretical_max):
+            return theoretical_max
+        return rd.amount or 0
+
+    @property
+    def purchased_ranks(self) -> int:
+        return self.value
+
+    @property
+    def granted_ranks(self) -> int:
+        return 0
+
+    def rank_name(self, value: int | None = None):
+        if value is None:
+            value = self.value
+        if value == 1:
+            return self.rank_name_labels[0]
+        else:
+            return self.rank_name_labels[1]
+
+    def explain_ranks(self) -> list[str]:
+        """Returns a list of strings explaining how the ranks were obtained."""
+        if self.value <= 0:
+            return []
+        if self.definition.ranks == 1 and self.purchased_ranks == 1:
+            return ["You have taken this feature."]
+        reasons = []
+        if self.purchased_ranks > 0:
+            reasons.append(
+                f"You have taken {self.purchased_ranks} {self.rank_name(self.purchased_ranks)}."
+            )
+        if self.granted_ranks > 0:
+            reasons.append(
+                f"You have been granted {self.granted_ranks} {self.rank_name(self.granted_ranks)}."
+            )
+        return reasons
 
     def can_increase(self, value: int = 1) -> Decision:
         return Decision(success=False, reason=f"Increase unsupported for {type(self)}")

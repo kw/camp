@@ -24,9 +24,12 @@ from camp.character.models import Character
 from camp.character.models import Sheet
 from camp.engine.rules.base_engine import BaseFeatureController
 from camp.engine.rules.base_engine import CharacterController
+from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.tempest.controllers.subfeature_controller import (
     SubfeatureController,
 )
+
+from . import forms
 
 
 class CharacterListView(LoginRequiredMixin, ListView):
@@ -125,35 +128,58 @@ def set_attr(request, pk):
 
 
 @permission_required("character.change_character", fn=objectgetter(Character))
-def new_feature(request, pk, feature_type):
+def feature_view(request, pk, feature_id):
     character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
     controller = sheet.controller
-
-    if "feature" in request.POST:
-        feature = request.POST["feature"]
-        try:
-            controller.apply(feature)
-            sheet.save()
-            messages.success(request, f"{feature} applied.")
-            return redirect("character-detail", pk=id)
-        except Exception as exc:
-            messages.error(request, "Error applying feature: %s" % exc)
-    features = list(
-        controller.list_features(type=feature_type, taken=False, available=True)
-    )
-    currencies_present = {f.currency for f in features if f.currency}
-    currencies: dict[str, int] = {}
-    for c in currencies_present:
-        currencies[controller.display_name(c)] = controller.get_prop(c)
+    feature_controller = controller.feature_controller(feature_id)
+    currencies: dict[str, str] = {}
+    if feature_controller.currency:
+        currencies[
+            controller.display_name(feature_controller.currency)
+        ] = controller.get_prop(feature_controller.currency)
     context = {
-        "feature_type_name": controller.display_name(feature_type),
         "character": character,
         "controller": controller,
-        "features": features,
+        "feature": feature_controller,
         "currencies": currencies,
+        "explain_ranks": feature_controller.explain_ranks(),
     }
-    return render(request, "character/new_feature.html", context)
+
+    if (rd := feature_controller.can_increase()) or rd.needs_option:
+        if request.POST and "purchase" in request.POST:
+            pf = forms.FeatureForm(feature_controller, request.POST)
+            if pf.is_valid():
+                ranks = pf.cleaned_data.get("ranks")
+                rm = RankMutation(
+                    id=feature_id,
+                    option=pf.cleaned_data.get("option"),
+                    ranks=int(ranks) if ranks else 1,
+                )
+                try:
+                    result = controller.apply(rm)
+                    if result.success:
+                        sheet.save()
+                        feature_controller = controller.feature_controller(rm.full_id)
+                        messages.success(
+                            request, f"{feature_controller.display_name()} applied."
+                        )
+                        return redirect("character-detail", pk=character.id)
+                    elif result.reason:
+                        messages.error(request, result.reason)
+                    else:
+                        messages.error(
+                            request, "Could not apply purchase for unspecified reasons."
+                        )
+                except Exception as exc:
+                    messages.error(request, "Error applying feature: %s" % exc)
+        else:
+            pf = forms.FeatureForm(feature_controller)
+        context["purchase_form"] = pf
+    else:
+        context["no_purchase_reason"] = rd.reason
+
+    return render(request, "character/feature_form.html", context)
 
 
 def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:

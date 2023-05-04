@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load rules %}
+
+{% block head_title %}{% block body_title %}
+{{ character }}
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+{% if currencies %}
+<ul>
+{% for c, v in currencies.items %}
+<li>Available {{ c }}: {{ v }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+<h2>{{ feature.display_name }}
+    {% if feature.purchase_cost_string %} ({{ feature.purchase_cost_string }}){% endif %}
+</h2>
+
+{# TODO: Render markdown #}
+{% if feature.description %}
+<p>{{ feature.description }}</p>
+{% endif %}
+
+{% if feature.parent %}
+<p>Parent: <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
+{% endif %}
+
+{% if feature.subfeatures %}
+<h3>Features</h3>
+<ul>
+{% for subfeature in feature.subfeatures %}
+<li><a href="{% url 'character-feature-view' character.id subfeature.id %}">{{ subfeature.display_name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% for explanation in explain_ranks %}
+<p>{{ explanation }}</p>
+{% endfor %}
+
+{% if purchase_form %}
+<form method="post">
+{% csrf_token %}
+{{ purchase_form | crispy }}
+<button type="submit" name="purchase" value="{{ feature.id }}" class="btn btn-primary">Purchase</button>
+</form>
+{% elif no_purchase_reason %}
+<p>You can not currently purchase this because:</p>
+<p>{{ no_purchase_reason }}</p>
+{% endif %}
+
+<a href="{% url 'character-detail' character.id %}">Back</a>
+
+{% endblock %}

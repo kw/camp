@@ -19,7 +19,15 @@
 
 <ul class="list-group list-group-horizontal">
     <li class="list-group-item">Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
-    <li class="list-group-item">CP: {{ controller.cp.value }}</li>
+    <li class="list-group-item"
+        data-bs-toggle="tooltip" data-bs-html="true"
+        data-bs-placement="bottom"
+        data-bs-title="
+        <p>Base: {{ controller.base_cp }}</p>
+        <p>Awarded: {{ controller.awarded_cp }}</p>
+        <p>Flaw Awards: {{ controller.cp.flaw_award_cp}}</p>
+        <p>Spent: {{ controller.cp.spent_cp }}</p>">
+        CP: {{ controller.cp.value }}</li>
     <li class="list-group-item">LP: {{ controller.lp.value }}</li>
     <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
 </ul>
@@ -37,12 +45,28 @@
         <ul class="list-group list-group-flush">
             {% for f in group.taken %}
                 <li class="list-group-item">
-                    {{ f }}
+                    <a href="{% url 'character-feature-view' character.id f.id%}">
+                        {{ f }}
+                        {% if f.can_increase %}
+                        ⇧
+                          {% if f.purchase_cost_string %}
+                            ({{ f.purchase_cost_string }})
+                          {% endif %}
+                        {% endif %}
+                    </a>
                     {% if f.subfeatures %}
                     <ul>
                         {% for sf in f.subfeatures %}
                         <li>
-                            {{ sf }}
+                            <a href="{% url 'character-feature-view' character.id sf.id%}">
+                                {{ sf }}
+                                {% if sff.can_increase %}
+                                ⇧
+                                  {% if sf.purchase_cost_string %}
+                                    ({{ sf.purchase_cost_string }})
+                                  {% endif %}
+                                {% endif %}
+                            </a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -118,7 +142,17 @@
             <div class="modal-body">
                 <ul class="list-group list-group-flush">
                     {% for f in group.available %}
-                        <li class="list-group-item">{{ f }}</li>
+                        <li class="list-group-item">
+                            <a href="{% url 'character-feature-view' character.id f.id%}">
+                                {{ f }}
+                                {% if f.can_increase %}
+                                ⇧
+                                  {% if f.purchase_cost_string %}
+                                    ({{ f.purchase_cost_string }})
+                                  {% endif %}
+                                {% endif %}
+                            </a>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>

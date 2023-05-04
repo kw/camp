@@ -7,7 +7,7 @@ from .. import models
 from . import character_controller
 from . import feature_controller
 
-_NO_PURCHASE = Decision(success=False, reason="Cannot purchase subfeatures manually.")
+_NO_PURCHASE = Decision(success=False)
 
 
 class SubfeatureController(feature_controller.FeatureController):

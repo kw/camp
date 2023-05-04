@@ -35,11 +35,19 @@ class FeatureController(base_engine.BaseFeatureController):
         self._subfeatures = set()
 
     @property
-    def subfeatures(self) -> Iterable[FeatureController]:
+    def subfeatures(self) -> list[FeatureController]:
+        subfeatures = []
         for id in self._subfeatures:
             subfeature = self.character.features.get(id)
             if subfeature is not None and subfeature.value > 0:
-                yield subfeature
+                subfeatures.append(subfeature)
+        return subfeatures
+
+    @property
+    def parent(self) -> FeatureController | None:
+        if not hasattr(self.definition, "parent") or self.definition.parent is None:
+            return None
+        return self.character.controller(self.definition.parent)
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -63,7 +71,7 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def next_cost(self) -> int:
-        return self._cost_for(self.paid_ranks + 1)
+        return self._cost_for(self.paid_ranks + 1) - self._cost_for(self.paid_ranks)
 
     @property
     def currency_name(self) -> str | None:
@@ -71,10 +79,15 @@ class FeatureController(base_engine.BaseFeatureController):
             return self.character.display_name(self.currency)
         return None
 
-    @property
-    def purchase_cost_string(self) -> str | None:
+    def purchase_cost_string(
+        self, ranks: int = 1, cost: int | None = None
+    ) -> str | None:
         if self.currency and self.cost_def:
-            return f"{self.next_cost} {self.currency_name}"
+            if cost is None:
+                cost = self._cost_for(self.paid_ranks + ranks) - self._cost_for(
+                    self.paid_ranks
+                )
+            return f"{cost} {self.currency_name}"
         return None
 
     @cached_property
@@ -107,6 +120,45 @@ class FeatureController(base_engine.BaseFeatureController):
             self.character.model.features[self.full_id] = model
         elif not model.should_keep() and saved:
             del self.character.model.features[self.full_id]
+
+    def explain_ranks(self) -> list[str]:
+        """Returns a list of strings explaining how the ranks were obtained."""
+        if self.model.plot_suppressed:
+            return ["This feature was suppressed by a plot member."]
+
+        if self.value <= 0:
+            return []
+
+        reasons = []
+        if self.model.plot_added:
+            reasons.append("This feature was added by a plot member.")
+        if self.model.plot_free:
+            reasons.append("This feature is free for plot reasons.")
+
+        if self.definition.ranks == 1 and self.purchased_ranks == 1:
+            reasons.append("You have taken this feature.")
+
+        if self.definition.ranks != 1 and self.purchased_ranks > 0:
+            reasons.append(
+                f"You have taken {self.purchased_ranks} {self.rank_name(self.purchased_ranks)}."
+            )
+
+        if self.purchased_ranks > 0 and self.currency_name:
+            reasons.append(
+                f"You have spent {self.cost} {self.currency_name} on this feature."
+            )
+
+        if self.granted_ranks > 0:
+            for source_id, data in self._propagation_data.items():
+                if data.grants > 0:
+                    source = self.character.display_name(source_id)
+                    if data.grants == 1:
+                        reasons.append(f"Granted by {source}.")
+                    else:
+                        reasons.append(
+                            f"Granted {data.grants} {self.rank_name(data.grants)} from {source}."
+                        )
+        return reasons
 
     @property
     def granted_ranks(self) -> int:
@@ -249,7 +301,7 @@ class FeatureController(base_engine.BaseFeatureController):
             return Decision(
                 success=False,
                 need_currency={"cp": cp_delta},
-                reason=f"Need {cp_delta} CP to purchase, but only have {current_cp}",
+                reason=f"Need {cp_delta} CP to purchase, but only have {current_cp.value}",
                 amount=self._max_rank_increase(current_cp.value),
             )
         return Decision.OK

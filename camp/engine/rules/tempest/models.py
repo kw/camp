@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Literal
-
 from pydantic import Field
 
 from .. import base_models
@@ -37,7 +35,6 @@ class FeatureModel(base_models.BaseModel):
             becomes suppressed or otherwise removed).
     """
 
-    type: str
     ranks: int = 0
     notes: str | None = None
     choices: dict[str, list[str]] | None = None
@@ -45,6 +42,15 @@ class FeatureModel(base_models.BaseModel):
     plot_notes: str | None = None
     plot_free: bool = False
     plot_suppressed: bool = False
+
+    # Flaw-specific attributes
+    overcome: bool = False
+    plot_disable_overcome: bool = False
+    overcome_award_override: int | None = None
+
+    # Class-specific attributes
+    is_archetype_class: bool = False
+    is_starting_class: bool = False
 
     def should_keep(self) -> bool:
         """Should return True if the model has been populated with something worth saving."""
@@ -56,48 +62,13 @@ class FeatureModel(base_models.BaseModel):
             or self.plot_notes
             or self.plot_free
             or self.plot_suppressed
-        )
-
-
-class FlawModel(FeatureModel):
-    """
-    Flaws need extra state for their overcome status and extra flags for plot override behavior.
-
-    Attributes:
-        overcome: Records whether the flaw has been overcome. The price is usually the
-            original award price +2, but see overcome_award_override.
-        plot_disable_overcome: Plot may prevent a flaw from being overcome. Usually this happens
-            when the flaw is added as a penalty by plot that must be resolved through gameplay.
-        overcome_award_override: Used when plot wants to change the cost of overriding a flaw.
-            If the flaw was added by plot
-    """
-
-    type: Literal["flaw"] = "flaw"
-    overcome: bool = False
-    plot_disable_overcome: bool = False
-    overcome_award_override: int | None = None
-
-    def should_keep(self) -> bool:
-        return (
-            super().should_keep()
             or self.overcome
             or self.plot_disable_overcome
             or self.overcome_award_override is not None
+            or self.is_archetype_class
+            or self.is_starting_class
         )
 
 
-class ClassModel(FeatureModel):
-    type: Literal["class"] = "class"
-    primary: bool = False
-    starting: bool = False
-
-    def should_keep(self) -> bool:
-        return super().should_keep() or self.primary or self.starting
-
-
-# Subclass models must be added here ahead of FeatureModel to deserialize properly.
-FeatureModelTypes = ClassModel | FlawModel | FeatureModel
-
-
 class CharacterModel(base_models.CharacterModel):
-    features: dict[str, FeatureModelTypes] = Field(default_factory=dict)
+    features: dict[str, FeatureModel] = Field(default_factory=dict)

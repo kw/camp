@@ -3,8 +3,8 @@ cost: 4
 requires:
   - projectile-weapons
   - any:
-    - weapon-specialization#Bow
-    - weapon-specialization#Crossbow
+    - weapon-specialization+Bow
+    - weapon-specialization+Crossbow
 description: >
   When using the weapon with which the character has Weapon Specialization,
   the character, if she misses with a projectile while using a Power, can immediately

@@ -14,8 +14,8 @@ def test_serialization_flow(engine: TempestEngine, character: TempestCharacter):
     assert character.apply("basic-skill")
     assert character.apply("basic-flaw")
     assert character.apply("basic-perk")
-    assert character.apply("specific-options#One")
-    assert character.apply("inherited-option#One")
+    assert character.apply("specific-options+One")
+    assert character.apply("inherited-option+One")
     assert character.meets_requirements("martial:5")
     assert character.meets_requirements("divine:5")
 
@@ -34,7 +34,7 @@ def test_serialization_flow(engine: TempestEngine, character: TempestCharacter):
     assert loaded.meets_requirements("basic-skill")
     assert loaded.meets_requirements("basic-flaw")
     assert loaded.meets_requirements("basic-perk")
-    assert loaded.meets_requirements("specific-options#One")
-    assert loaded.meets_requirements("inherited-option#One")
+    assert loaded.meets_requirements("specific-options+One")
+    assert loaded.meets_requirements("inherited-option+One")
 
     assert data == loaded.dump_dict()

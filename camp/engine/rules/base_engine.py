@@ -57,7 +57,7 @@ class CharacterController(ABC):
         # exclude_unset is useful here because, for example, writing into a
         # dict on a model won't mark that field as set as far as the model is
         # concerned.
-        data = dump_dict(self.model, exclude_unset=False)
+        data = dump_dict(self.model, exclude_unset=False, exclude_defaults=True)
         if not isinstance(data, dict):
             pass
         return data

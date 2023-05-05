@@ -4,8 +4,8 @@ requires:
   - projectile-weapons
   - quick-shot
   - any:
-    - weapon-specialization#Bow
-    - weapon-specialization#Crossbow
+    - weapon-specialization+Bow
+    - weapon-specialization+Crossbow
 description: >
   When the character spends a Quick 10 aiming with a weapon in which she has Weapon Specialization, she may choose to do one of the following:
 

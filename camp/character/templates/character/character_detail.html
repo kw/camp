@@ -34,18 +34,14 @@
 
 {% for group in feature_groups %}
     <div class="card">
+        <div class="card-body">
         <h2 class="card-title">
             {{ group.name }}
-            {% if group.available %}
-                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type}}" aria-expanded="false" aria-controls="newFeatureModal_{{group.type}}">
-                    Add New
-                </button>
-            {% endif %}
         </h2>
         <ul class="list-group list-group-flush">
             {% for f in group.taken %}
                 <li class="list-group-item">
-                    <a href="{% url 'character-feature-view' character.id f.id%}">
+                    <a href="{% url 'character-feature-view' character.id f.id %}">
                         {{ f }}
                         {% if f.can_increase %}
                         ⇧
@@ -73,7 +69,15 @@
                     {% endif %}
                 </li>
             {% endfor %}
+            {% if group.available %}
+            <li class="list-group-item">
+                <a href="#" role="button" data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type}}" aria-expanded="false" aria-controls="newFeatureModal_{{group.type}}">
+                    Add New {{ group.name }}
+                </a>
+            </li>
+            {% endif %}
             </ul>
+        </div>
     </div>
 {% endfor %}
 
@@ -140,6 +144,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                {% if group.type == "flaw" and controller.cp.flaw_cp_available <= 0 %}
+                <p>You have reached the maximum Flaw CP award ({{ controller.cp.flaw_cp_cap }}).
+                    You can still take new flaws, but you will not receive any more CP for them.</p>
+                </p>
+                {% elif group.type == "flaw" %}
+                <p>You may take an additional {{ controller.cp.flaw_cp_available }} CP
+                    worth of flaws. Any flaws taken beyond this limit will not award CP.</p>
+                </p>
+                {% endif %}
+                {% if group.available %}
+                {% endif %}
                 <ul class="list-group list-group-flush">
                     {% for f in group.available %}
                         <li class="list-group-item">

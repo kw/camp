@@ -13,14 +13,14 @@ from camp.engine.rules.base_models import parse_req
     "req",
     [
         "feature-id",
-        "feature-id#Text",
+        "feature-id+Text",
         "feature-id:5",
         "feature-id@5",
         "feature-id<5",
-        "feature-id#Text:5",
+        "feature-id+Text:5",
         "feature-id@4:5",
-        "feature-id#Undead_Lore",
-        "feature-id@1#My_Option:2$3<4",
+        "feature-id+Undead_Lore",
+        "feature-id@1+My_Option:2$3<4",
     ],
 )
 def test_parse_propreq(req):
@@ -33,9 +33,9 @@ def test_parse_propreq(req):
     assert repr(p) == req
 
 
-def test_prarse_propreq_values():
+def test_parse_propreq_values():
     """Test that, when parsed, the PropReq has the expected values."""
-    p = PropExpression.parse("feature-id@1#My_Option:23$34<450")
+    p = PropExpression.parse("feature-id@1+My_Option:23$34<450")
     assert p.prop == "feature-id"
     assert p.slot == "1"
     assert p.option == "My Option"
@@ -46,7 +46,7 @@ def test_prarse_propreq_values():
 
 def test_parse_req():
     req = [
-        "feature-id#Text",
+        "feature-id+Text",
         AllOf(
             all=[
                 "one",
@@ -63,7 +63,7 @@ def test_parse_req():
         ),
         NoneOf(
             none=[
-                "seven#?",
+                "seven+?",
                 "eight<8",
             ]
         ),

@@ -88,6 +88,10 @@ class CharacterPointController(AttributeController):
         return spent
 
     @property
+    def flaw_cp_cap(self) -> int:
+        return self.character.ruleset.flaw_cp_cap
+
+    @property
     def flaw_award_cp(self) -> int:
         # If a flaw was elected by the player, there is a cap
         # to the amount of points they can gain from it.
@@ -100,7 +104,11 @@ class CharacterPointController(AttributeController):
                 plot_total += flaw.award_cp
             else:
                 player_total += flaw.award_cp
-        return min(player_total, self.character.ruleset.flaw_cp_cap) + plot_total
+        return min(player_total, self.flaw_cp_cap) + plot_total
+
+    @property
+    def flaw_cp_available(self) -> int:
+        return self.flaw_cp_cap - self.flaw_award_cp
 
     @property
     def flaw_overcome_cp(self) -> int:

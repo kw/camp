@@ -92,9 +92,7 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @cached_property
     def model(self) -> models.FeatureModel:
-        return self.character.model.features.get(self.full_id) or self.model_type(
-            type=self.definition.type, ranks=0
-        )
+        return self.character.model.features.get(self.full_id) or self.model_type()
 
     @property
     def free(self) -> bool:
@@ -143,7 +141,7 @@ class FeatureController(base_engine.BaseFeatureController):
                 f"You have taken {self.purchased_ranks} {self.rank_name(self.purchased_ranks)}."
             )
 
-        if self.purchased_ranks > 0 and self.currency_name:
+        if self.purchased_ranks > 0 and self.currency_name and self.cost > 0:
             reasons.append(
                 f"You have spent {self.cost} {self.currency_name} on this feature."
             )
@@ -208,7 +206,7 @@ class FeatureController(base_engine.BaseFeatureController):
             for feat, controller in self.character.controllers_for_type(
                 self.feature_type
             ).items():
-                if feat.startswith(f"{self.id}#"):
+                if feat.startswith(f"{self.id}+"):
                     total += controller.value
             return total
         if self._effective_ranks is None:
@@ -226,7 +224,7 @@ class FeatureController(base_engine.BaseFeatureController):
             for feat, controller in self.character.controllers_for_type(
                 self.feature_type
             ).items():
-                if feat.startswith(f"{self.id}#"):
+                if feat.startswith(f"{self.id}+"):
                     new_value = controller.value
                     if new_value > current:
                         current = new_value

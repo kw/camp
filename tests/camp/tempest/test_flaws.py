@@ -32,8 +32,8 @@ def test_option_award_1(character: TempestCharacter):
     rd = character.can_purchase("option-award-flaw")
     assert rd.needs_option
 
-    assert character.can_purchase("option-award-flaw#Something")
-    assert character.apply("option-award-flaw#Something")
+    assert character.can_purchase("option-award-flaw+Something")
+    assert character.apply("option-award-flaw+Something")
     assert character.cp.flaw_award_cp == 1
 
 
@@ -41,8 +41,8 @@ def test_option_award_2(character: TempestCharacter):
     rd = character.can_purchase("option-award-flaw")
     assert rd.needs_option
 
-    assert character.can_purchase("option-award-flaw#Something_Else")
-    assert character.apply("option-award-flaw#Something_Else")
+    assert character.can_purchase("option-award-flaw+Something_Else")
+    assert character.apply("option-award-flaw+Something_Else")
     assert character.cp.flaw_award_cp == 2
 
 
@@ -50,8 +50,8 @@ def test_option_flag_1(character: TempestCharacter):
     rd = character.can_purchase("option-flag-flaw")
     assert rd.needs_option
 
-    assert character.can_purchase("option-flag-flaw#Foo")
-    assert character.apply("option-flag-flaw#Foo")
+    assert character.can_purchase("option-flag-flaw+Foo")
+    assert character.apply("option-flag-flaw+Foo")
     assert character.cp.flaw_award_cp == 1
 
 
@@ -59,8 +59,8 @@ def test_option_flag_2(character: TempestCharacter):
     rd = character.can_purchase("option-flag-flaw")
     assert rd.needs_option
 
-    assert character.can_purchase("option-flag-flaw#Xyzzy")
-    assert character.apply("option-flag-flaw#Xyzzy")
+    assert character.can_purchase("option-flag-flaw+Xyzzy")
+    assert character.apply("option-flag-flaw+Xyzzy")
     assert character.cp.flaw_award_cp == 2
 
 

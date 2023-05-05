@@ -3,7 +3,6 @@ from __future__ import annotations
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from .. import models
 from . import character_controller
 from . import feature_controller
 
@@ -12,8 +11,6 @@ _MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 
 class ClassController(feature_controller.FeatureController):
     definition: defs.ClassDef
-    model_type = models.ClassModel
-    model: models.ClassModel
     currency = None
     rank_name_labels: tuple[str, str] = ("level", "levels")
 
@@ -26,11 +23,11 @@ class ClassController(feature_controller.FeatureController):
 
     @property
     def is_primary(self) -> bool:
-        return self.model.primary
+        return self.model.is_archetype_class
 
     @is_primary.setter
     def is_primary(self, value: bool) -> None:
-        self.model.primary = value
+        self.model.is_archetype_class = value
         if value:
             # There can be only one primary class
             for controller in self.character.classes:
@@ -39,11 +36,11 @@ class ClassController(feature_controller.FeatureController):
 
     @property
     def is_starting(self) -> bool:
-        return self.model.starting
+        return self.model.is_starting_class
 
     @is_starting.setter
     def is_starting(self, value: bool) -> None:
-        self.model.starting = value
+        self.model.is_starting_class = value
         if value:
             # There can be only one starting class
             for controller in self.character.classes:
@@ -117,8 +114,8 @@ class ClassController(feature_controller.FeatureController):
         if not (rd := super().decrease(value)):
             return rd
         if self.model.ranks <= 0:
-            self.model.starting = False
-            self.model.primary = False
+            self.model.is_starting_class = False
+            self.model.is_archetype_class = False
         if (
             self.is_primary
             and max((c.value for c in self.character.classes), default=0)

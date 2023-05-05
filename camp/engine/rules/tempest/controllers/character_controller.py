@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Iterable
 from typing import Mapping
 from typing import cast
 
@@ -116,18 +115,6 @@ class TempestCharacter(base_engine.CharacterController):
     def levels_available(self) -> int:
         return self.xp_level - self.level.value
 
-    def _feature_models(
-        self, types: str | set[str] | None = None
-    ) -> Iterable[tuple[str, models.FeatureModel]]:
-        is_set = isinstance(types, set)
-        for id, model in self.model.features.items():
-            if (
-                types is None
-                or (is_set and model.type in types)
-                or (not is_set and model.type == types)
-            ):
-                yield id, model
-
     @property
     def primary_class(self) -> class_controller.ClassController | None:
         for controller in self.classes:
@@ -148,7 +135,7 @@ class TempestCharacter(base_engine.CharacterController):
             return self._features
         feats: dict[str, feature_controller.FeatureController] = {}
         for id, model in self.model.features.items():
-            controller = self._new_controller_for_type(model.type, id)
+            controller = self._new_controller_for_type(id)
             feats[id] = controller
         self._features = feats
         return feats
@@ -276,10 +263,8 @@ class TempestCharacter(base_engine.CharacterController):
     def divine(self) -> base_engine.AttributeController:
         return attribute_controllers.SumAttribute("divine", self, "class", "divine")
 
-    def _new_controller_for_type(
-        self, feature_type: str, id: str
-    ) -> feature_controller.FeatureController:
-        match feature_type:
+    def _new_controller_for_type(self, id: str) -> feature_controller.FeatureController:
+        match self._feature_type(id):
             case "class":
                 return class_controller.ClassController(id, self)
             case "flaw":
@@ -304,7 +289,7 @@ class TempestCharacter(base_engine.CharacterController):
             return controller
         # Otherwise, create a controller and ask it.
         if create:
-            return self._new_controller_for_type(feature_def.type, expr.full_id)
+            return self._new_controller_for_type(expr.full_id)
         return None
 
     def _controller_for_property(

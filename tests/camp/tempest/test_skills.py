@@ -114,7 +114,7 @@ def test_option_single_allowed(character: TempestCharacter):
     assert character.can_purchase(entry)
     assert character.apply(entry)
     assert not character.can_purchase("single-option")
-    assert not character.can_purchase("single-option#Paper")
+    assert not character.can_purchase("single-option+Paper")
 
 
 def test_option_values_flag(character: TempestCharacter):
@@ -158,21 +158,21 @@ def test_inherited_option_skill(character: TempestCharacter):
     i.e. you can't take "Profession - Journeyman [Fisherman]" without having taken
     "Profession - Apprentice [Fisherman]".
     """
-    assert not character.can_purchase("inherited-option#One")
+    assert not character.can_purchase("inherited-option+One")
 
-    character.apply("specific-options#One")
-    character.apply("specific-options#Two")
+    character.apply("specific-options+One")
+    character.apply("specific-options+Two")
 
     assert character.can_purchase("inherited-option").needs_option
     assert character.options_values_for_feature(
         "inherited-option", exclude_taken=True
     ) == {"One", "Two"}
-    assert character.can_purchase("inherited-option#One")
-    assert character.apply("inherited-option#One")
+    assert character.can_purchase("inherited-option+One")
+    assert character.apply("inherited-option+One")
     assert character.options_values_for_feature(
         "inherited-option", exclude_taken=True
     ) == {"Two"}
-    assert character.apply("inherited-option#Two")
+    assert character.apply("inherited-option+Two")
 
     # After purchasing all available options, the skill no longer registers as purchasable
     rd = character.can_purchase("inherited-option")
@@ -185,17 +185,17 @@ def test_inherited_option_with_ranks(character: TempestCharacter):
     are only valid choices if they have that many ranks.
     """
     character.awarded_cp = 5
-    character.apply("specific-options#One")
-    character.apply("specific-options#Two:4")
+    character.apply("specific-options+One")
+    character.apply("specific-options+Two:4")
 
     assert character.can_purchase("inherited-with-ranks").needs_option
     assert character.options_values_for_feature(
         "inherited-with-ranks", exclude_taken=True
     ) == {"Two"}
-    assert not character.can_purchase("inherited-with-ranks#One")
-    assert character.can_purchase("inherited-with-ranks#Two")
-    assert not character.apply("inherited-with-ranks#One")
-    assert character.apply("inherited-with-ranks#Two")
+    assert not character.can_purchase("inherited-with-ranks+One")
+    assert character.can_purchase("inherited-with-ranks+Two")
+    assert not character.apply("inherited-with-ranks+One")
+    assert character.apply("inherited-with-ranks+Two")
     assert not character.options_values_for_feature(
         "inherited-with-ranks", exclude_taken=True
     )
@@ -211,13 +211,13 @@ def test_skill_with_option_requirements(character: TempestCharacter):
 
     character.apply("basic-skill")
     assert character.options_values_for_feature("requires-option") == {"One"}
-    assert character.can_purchase("requires-option#One")
-    assert not character.can_purchase("requires-option#Two")
+    assert character.can_purchase("requires-option+One")
+    assert not character.can_purchase("requires-option+Two")
 
     character.apply("basic-skill")
     assert character.options_values_for_feature("requires-option") == {"One", "Two"}
-    assert character.can_purchase("requires-option#Two")
-    assert not character.can_purchase("requires-option#Three")
+    assert character.can_purchase("requires-option+Two")
+    assert not character.can_purchase("requires-option+Three")
 
     character.apply("basic-skill")
     assert character.options_values_for_feature("requires-option") == {
@@ -225,7 +225,7 @@ def test_skill_with_option_requirements(character: TempestCharacter):
         "Two",
         "Three",
     }
-    assert character.apply("requires-option#Three")
+    assert character.apply("requires-option+Three")
 
 
 def test_skill_with_one_grant(character: TempestCharacter):

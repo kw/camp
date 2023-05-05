@@ -23,7 +23,7 @@ from .decision import Decision
 _REQ_SYNTAX = re.compile(
     r"""(?P<prop>[a-zA-Z0-9_-]+)
     (?:@(?P<slot>-?[a-zA-Z0-9_-]+))?          # Choice, aka "@4"
-    (?:\#(?P<option>[a-zA-Z0-9?_-]+))?   # Skill options, aka "#Undead_Lore"
+    (?:\+(?P<option>[a-zA-Z0-9?_-]+))?   # Skill options, aka "+Undead_Lore"
     (?::(?P<value>-?\d+))?       # Minimum value, aka ":5"
     (?:\$(?P<single>-?\d+))?       # Minimum value in single thing, aka "$5"
     (?:<(?P<less_than>-?\d+))?     # Less than value, aka "<5"
@@ -234,7 +234,7 @@ class PropExpression(BoolExpr):
         if slot:
             req += f"@{slot}"
         if option:
-            req += f"#{option.replace(' ', '_')}"
+            req += f"+{option.replace(' ', '_')}"
         if value:
             req += f":{value}"
         if single:
@@ -703,7 +703,7 @@ Mutation = RankMutation | ChoiceMutation | NoteMutation | PlotMutation
 
 def full_id(id: str, option: str | None) -> str:
     if option:
-        return f"{id}#{option.replace(' ', '_')}"
+        return f"{id}+{option.replace(' ', '_')}"
     else:
         return id
 

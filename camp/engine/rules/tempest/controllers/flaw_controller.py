@@ -6,7 +6,6 @@ from camp.engine import utils
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from .. import models
 from . import character_controller
 from . import feature_controller
 
@@ -19,8 +18,6 @@ _ALREADY_OVERCOME = Decision(success=False)
 
 class FlawController(feature_controller.FeatureController):
     definition: defs.FlawDef
-    model_type = models.FlawModel
-    model: models.FlawModel
 
     def __init__(self, full_id: str, character: character_controller.TempestCharacter):
         super().__init__(full_id, character)
@@ -167,3 +164,17 @@ class FlawController(feature_controller.FeatureController):
             self.model.overcome = True
         self.reconcile()
         return Decision.OK
+
+    def explain_ranks(self) -> list[str]:
+        reasons = super().explain_ranks()
+
+        if self.award_cp:
+            reasons.append(f"You receive {self.award_cp} CP from this flaw.")
+
+        if self.overcome:
+            reasons.append(f"This flaw has been overcome ({self.overcome_cp} CP).")
+
+        if self.overcome_disabled:
+            reasons.append("Plot has disabled the ability to overcome this flaw.")
+
+        return reasons

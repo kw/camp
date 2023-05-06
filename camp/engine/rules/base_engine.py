@@ -374,13 +374,17 @@ class PropertyController(ABC):
 
     def display_name(self) -> str:
         name = self.character.display_name(self.expression.prop)
-        if self.expression.option:
-            name += f" [{self.expression.option}]"
+        if self.option:
+            name += f" [{self.option}]"
         return name
 
     @abstractproperty
     def value(self) -> int:
         ...
+
+    @property
+    def option(self) -> str | None:
+        return self.expression.option
 
     @property
     def max_value(self) -> int:
@@ -437,10 +441,6 @@ class BaseFeatureController(PropertyController):
             # Arbitrarily chosen large int.
             return 101
         return self.definition.ranks
-
-    @property
-    def option(self) -> str | None:
-        return self.expression.option
 
     @property
     def option_def(self) -> base_models.OptionDef | None:
@@ -539,17 +539,13 @@ class BaseFeatureController(PropertyController):
         return None
 
     def __str__(self) -> str:
-        if self.expr.option:
-            name = f"{self.definition.name} [{self.expr.option}]"
-        else:
-            name = f"{self.definition.name}"
         if (
             isinstance(self.definition.ranks, str)
             or self.definition.ranks > 1
             and self.value > 0
         ):
-            name += f" x{self.value}"
-        return name
+            return f"{self.display_name()} x{self.value}"
+        return self.display_name()
 
 
 class AttributeController(PropertyController):

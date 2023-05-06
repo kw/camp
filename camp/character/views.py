@@ -24,6 +24,7 @@ from camp.character.models import Character
 from camp.character.models import Sheet
 from camp.engine.rules.base_engine import BaseFeatureController
 from camp.engine.rules.base_engine import CharacterController
+from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.tempest.controllers.subfeature_controller import (
     SubfeatureController,
@@ -151,16 +152,17 @@ def feature_view(request, pk, feature_id):
             pf = forms.FeatureForm(feature_controller, request.POST)
             if pf.is_valid():
                 ranks = pf.cleaned_data.get("ranks")
+                expr = PropExpression.parse(feature_id)
                 rm = RankMutation(
-                    id=feature_id,
-                    option=pf.cleaned_data.get("option"),
+                    id=expr.prop,
+                    option=pf.cleaned_data.get("option") or expr.option,
                     ranks=int(ranks) if ranks else 1,
                 )
                 try:
                     result = controller.apply(rm)
                     if result.success:
                         sheet.save()
-                        feature_controller = controller.feature_controller(rm.full_id)
+                        feature_controller = controller.feature_controller(expr.full_id)
                         messages.success(
                             request, f"{feature_controller.display_name()} applied."
                         )

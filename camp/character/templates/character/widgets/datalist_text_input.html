@@ -1,0 +1,8 @@
+<datalist id="{{ widget.attrs.datalist_id }}">
+{% for choice in widget.datalist %}
+    <option value="{{ choice }}" />
+{% empty %}
+    <option value="No options provided" />
+{% endfor %}
+</datalist>
+{% include "django/forms/widgets/text.html" %}

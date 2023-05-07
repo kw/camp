@@ -2,8 +2,9 @@ name: Skill With Single Option
 option:
   multiple: false
   values: [Rock, Paper, Scissors]
+  freeform: true
 cost: 1
 ranks: 10
 description: >
   This skill requires an option be picked, but you can only pick one.
-  It has multiple ranks.
+  You can also type in your own option.

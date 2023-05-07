@@ -162,8 +162,8 @@ def test_inherited_option_skill(character: TempestCharacter):
     """
     assert not character.can_purchase("inherited-option+One")
 
-    character.apply("specific-options+One")
-    character.apply("specific-options+Two")
+    assert character.apply("specific-options+One")
+    assert character.apply("specific-options+Two")
 
     assert character.can_purchase("inherited-option").needs_option
     assert character.options_values_for_feature(

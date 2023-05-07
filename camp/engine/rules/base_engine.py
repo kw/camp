@@ -449,6 +449,10 @@ class BaseFeatureController(PropertyController):
         return self.definition.ranks
 
     @property
+    def type_name(self) -> str:
+        return self.character.display_name(self.feature_type)
+
+    @property
     def option_def(self) -> base_models.OptionDef | None:
         return self.definition.option
 

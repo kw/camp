@@ -1,6 +1,7 @@
 name: Only One Option
 option:
   values: [Rock, Paper, Scissors]
+  multiple: false
 ranks: 10
 cost: 1
 description: >

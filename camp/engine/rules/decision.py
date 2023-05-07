@@ -39,6 +39,9 @@ class Decision(BaseModel):
     traceback: str | None | bool = Field(default=None, repr=False)
 
     OK: ClassVar[Decision]
+    NO: ClassVar[Decision]
+    NEEDS_OPTION: ClassVar[Decision]
+    NEEDS_OPTION_FAIL: ClassVar[Decision]
 
     @pydantic.root_validator(pre=True)
     def _capture_traceback(cls, values: dict[str, Any]) -> dict[str, Any]:
@@ -59,4 +62,6 @@ class Decision(BaseModel):
 
 
 Decision.OK = Decision(success=True)
-Decision.MUTATED = Decision(success=True, mutation_applied=True)
+Decision.NO = Decision(success=False)
+Decision.NEEDS_OPTION = Decision(success=True, needs_option=True)
+Decision.NEEDS_OPTION_FAIL = Decision(success=False, needs_option=True)

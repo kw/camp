@@ -246,6 +246,8 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def purchaseable_ranks(self) -> int:
+        if self.option_def and not self.option:
+            return self.max_ranks
         return max(self.max_ranks - self.value, 0)
 
     def _link_to_character(self):
@@ -270,9 +272,9 @@ class FeatureController(base_engine.BaseFeatureController):
         if not (rd := self.character.meets_requirements(self.definition.requires)):
             return rd
         # Is this an option skill without an option specified?
-        if self.option_def and not self.option:
-            return Decision(success=False, needs_option=True)
-        elif (
+        # if self.option_def and not self.option:
+        #     return Decision(success=False, needs_option=True)
+        if (
             self.option_def
             and self.option
             and not self.definition.option.freeform
@@ -302,6 +304,32 @@ class FeatureController(base_engine.BaseFeatureController):
                 reason=f"Need {cp_delta} CP to purchase, but only have {current_cp.value}",
                 amount=self._max_rank_increase(current_cp.value),
             )
+        if self.option_def:
+            # If this is an option feature and the option was specified,
+            # this is either a new or existing option. If it's existing, that's fine.
+            # If it's new, we need to make sure the character has enough options left.
+            if self.option:
+                if self.value > 0:
+                    # This isn't new, so we don't need to check if we can add a new option.
+                    return Decision.OK
+                if not self.can_take_new_option:
+                    # This is a new option, but we're at max. Report negative.
+                    return Decision(
+                        success=False,
+                        reason=f"Can't take new option for {self.id} because the maximum number of options has been reached.",
+                    )
+            if not self.option:
+                # Just checking whether the option template is available.
+                if self.can_take_new_option:
+                    # If this is a non-freeform option, are there any valid options left?
+                    if (
+                        not self.definition.option.freeform
+                        and not self.available_options
+                    ):
+                        return Decision.NO
+                    return Decision.NEEDS_OPTION
+                else:
+                    return Decision.NO
         return Decision.OK
 
     def can_decrease(self, value: int = 1) -> Decision:
@@ -321,6 +349,8 @@ class FeatureController(base_engine.BaseFeatureController):
     def increase(self, value: int) -> Decision:
         if not (rd := self.can_increase(value)):
             return rd
+        if rd.needs_option:
+            return Decision.NEEDS_OPTION_FAIL
         self.purchased_ranks += value
         self.reconcile()
         return Decision(success=True, amount=self.value)

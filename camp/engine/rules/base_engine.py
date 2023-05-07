@@ -88,6 +88,12 @@ class CharacterController(ABC):
                     continue
                 if available and not fc.can_increase():
                     continue
+                if fc.option_def and not fc.option:
+                    # This is feature controller belongs to an option feature
+                    # that doesn't have an option selected. It represents the
+                    # "raw" skill and should appear in the "untaken" list even
+                    # though it has a value associated.
+                    continue
                 yield fc
         else:
             for id, definition in self.ruleset.features.items():
@@ -464,6 +470,43 @@ class BaseFeatureController(PropertyController):
         return self.definition.type
 
     @property
+    def is_option_template(self) -> str:
+        """True if this is an option template feature.
+
+        For example, "Lore" is an option template feature, while
+        "Lore [History]" is an option feature.
+        The template should never appear on a character sheet except
+        in the "Add New {Type}" section of each type group. However,
+        the controller still needs to exist, as it is used to determine
+        whether a new option feature can be added based on it, and also
+        to provide a property for other features to use as a prerequisite.
+        (e.g. "Requires three ranks of Lore").
+        """
+        return self.option_def and not self.option
+
+    @property
+    def can_take_new_option(self) -> bool:
+        """True if this option template can take a new option.
+
+        False if no more options may be taken, or if this is not an option template.
+        """
+        if not self.option_def:
+            return False
+        taken = len(self.taken_options)
+        if isinstance(self.option_def.multiple, bool):
+            if not self.option_def.multiple and taken:
+                return False
+            return True
+        if (
+            isinstance(self.option_def.multiple, int)
+            and taken >= self.option_def.multiple
+        ):
+            return False
+        if self.option_def.inherit:
+            return True
+        return True
+
+    @property
     def taken_options(self) -> dict[str, int]:
         return {}
 
@@ -539,6 +582,11 @@ class BaseFeatureController(PropertyController):
         return None
 
     def __str__(self) -> str:
+        if self.option_def and not self.option:
+            # This is feature controller belongs to an option feature
+            # that doesn't have an option selected. It represents the
+            # "raw" skill, and it doesn't have anything to display.
+            return self.display_name()
         if (
             isinstance(self.definition.ranks, str)
             or self.definition.ranks > 1

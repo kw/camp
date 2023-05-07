@@ -113,7 +113,8 @@ def test_option_single_allowed(character: TempestCharacter):
     entry = RankMutation(id="single-option", option="Rock")
     assert character.can_purchase(entry)
     assert character.apply(entry)
-    assert not character.can_purchase("single-option")
+    rd = character.can_purchase("single-option")
+    assert not rd and not rd.needs_option
     assert not character.can_purchase("single-option+Paper")
 
 
@@ -138,13 +139,14 @@ def test_multiple_option_skill_without_option(character: TempestCharacter):
     """
     fid = "specific-options"
     rd = character.can_purchase(fid)
-    assert not rd.success and rd.needs_option
+    assert rd.success and rd.needs_option
     assert not character.apply(fid)
     assert character.apply(RankMutation(id=fid, option="One"))
     assert character.apply(RankMutation(id=fid, option="Two"))
     rd = character.can_purchase(fid)
+    assert rd.success and rd.needs_option
+    rd = character.apply(fid)
     assert not rd.success and rd.needs_option
-    assert not character.apply(fid)
     assert character.apply(RankMutation(id=fid, option="Three"))
     assert not character.can_purchase(fid)
     options = character.get_options(fid)
@@ -185,8 +187,8 @@ def test_inherited_option_with_ranks(character: TempestCharacter):
     are only valid choices if they have that many ranks.
     """
     character.awarded_cp = 5
-    character.apply("specific-options+One")
-    character.apply("specific-options+Two:4")
+    assert character.apply("specific-options+One")
+    assert character.apply("specific-options+Two:4")
 
     assert character.can_purchase("inherited-with-ranks").needs_option
     assert character.options_values_for_feature(

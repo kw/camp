@@ -31,7 +31,10 @@ class FeatureForm(forms.Form):
 
     def _make_ranks_field(self) -> forms.Field:
         available = self._controller.available_ranks
-        current = self._controller.value
+        if self._controller.option_def and not self._controller.option:
+            current = 0
+        else:
+            current = self._controller.value
         if available > 0 and self._controller.definition.ranks != 1:
             if self._controller.currency:
                 choices = [

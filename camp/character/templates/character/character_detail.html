@@ -161,7 +161,6 @@
                             <a href="{% url 'character-feature-view' character.id f.full_id%}">
                                 {{ f }}
                                 {% if f.can_increase %}
-                                ⇧
                                   {% if f.purchase_cost_string %}
                                     ({{ f.purchase_cost_string }})
                                   {% endif %}

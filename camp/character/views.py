@@ -26,9 +26,6 @@ from camp.engine.rules.base_engine import BaseFeatureController
 from camp.engine.rules.base_engine import CharacterController
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
-from camp.engine.rules.tempest.controllers.subfeature_controller import (
-    SubfeatureController,
-)
 
 from . import forms
 
@@ -187,17 +184,20 @@ def feature_view(request, pk, feature_id):
 def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        if isinstance(feat, SubfeatureController):
-            # Subfeatures with parents will be rendered with their parents.
-            # We should only end up with subfeatures in the list if they are orphaned.
-            if feat.parent is not None:
-                continue
+        if getattr(feat, "parent", None):
+            continue
         if feat.feature_type not in by_type:
             by_type[feat.feature_type] = FeatureGroup(
                 type=feat.feature_type, name=controller.display_name(feat.feature_type)
             )
         group = by_type[feat.feature_type]
-        if feat.value > 0:
+        if feat.is_option_template:
+            # Option templates should only appear in the available list,
+            # and only if another option is available.
+            if feat.can_take_new_option:
+                group.available.append(feat)
+            # Otherwise, we don't care about them.
+        elif feat.value > 0:
             group.taken.append(feat)
         else:
             group.available.append(feat)

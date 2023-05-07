@@ -1,6 +1,7 @@
 name: Specific Options
 option:
   values: [One, Two, Three, $More Specific Options]
+  multiple: 3
 ranks: 10
 cost: 1
 description: >

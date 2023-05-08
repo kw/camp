@@ -456,6 +456,28 @@ class BaseFeatureController(PropertyController):
         return self.character.engine.feature_defs[self.expr.prop]
 
     @property
+    def next_value(self) -> int | None:
+        """What's the next value that can be purchased?
+
+        Normally, the next value available for purchase is the current value + 1.
+
+        In some cases, such as when in Geas when selecting your first class level,
+        the class jumps from 0 directly to 2, and 1 is not a possible value.
+        """
+        if self.max_ranks == "unlimited" or self.value < self.max_ranks:
+            return self.value + 1
+
+    @property
+    def min_value(self) -> int | None:
+        """What's the lowest value that we can reduce to?
+
+        Normally this will be 0, but in some cases such as when a feature
+        has been granted ranks or you're asking about a Geas starting class's
+        level, it may not be possible to reduce it all the way.
+        """
+        return self.granted_ranks
+
+    @property
     def description(self) -> str | None:
         return self.definition.description
 

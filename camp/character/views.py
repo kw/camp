@@ -148,7 +148,10 @@ def feature_view(request, pk, feature_id):
         "explain_ranks": feature_controller.explain_ranks(),
     }
 
-    if (rd := feature_controller.can_increase()) or rd.needs_option:
+    can_inc = feature_controller.can_increase()
+    can_dec = feature_controller.can_decrease()
+
+    if can_inc or can_dec:
         if request.POST and "purchase" in request.POST:
             success, pf = _try_apply_purchase(
                 sheet, feature_id, feature_controller, controller, request
@@ -156,10 +159,14 @@ def feature_view(request, pk, feature_id):
             if success:
                 return redirect("character-detail", pk=pk)
         else:
-            pf = forms.FeatureForm(feature_controller)
+            current = feature_controller.value
+            next_value = feature_controller.next_value
+            pf = forms.FeatureForm(
+                feature_controller, {"ranks": current if can_dec else next_value}
+            )
         context["purchase_form"] = pf
-    else:
-        context["no_purchase_reason"] = rd.reason
+    if not can_inc:
+        context["no_purchase_reason"] = can_inc.reason
     return render(request, "character/feature_form.html", context)
 
 
@@ -173,11 +180,15 @@ def _try_apply_purchase(
     pf = forms.FeatureForm(feature_controller, request.POST)
     if pf.is_valid():
         ranks = pf.cleaned_data.get("ranks")
+        ranks = (int(ranks) if ranks else 1) - feature_controller.value
+        if ranks == 0:
+            messages.info(request, "No change requested.")
+            return True, pf
         expr = PropExpression.parse(feature_id)
         rm = RankMutation(
             id=expr.prop,
+            ranks=ranks,
             option=pf.cleaned_data.get("option") or expr.option,
-            ranks=int(ranks) if ranks else 1,
         )
         try:
             undo_data = controller.dump_dict()
@@ -193,9 +204,20 @@ def _try_apply_purchase(
                         sheet.undo_stack.order_by("timestamp").first().delete()
 
                 feature_controller = controller.feature_controller(expr.full_id)
-                messages.success(
-                    request, f"{feature_controller.display_name()} applied."
-                )
+                if ranks > 0:
+                    messages.success(
+                        request,
+                        f"{feature_controller.display_name()} x{ranks} purchased.",
+                    )
+                elif ranks < 0:
+                    messages.warning(
+                        request,
+                        f"{feature_controller.display_name()} x{abs(ranks)} refunded.",
+                    )
+                else:
+                    messages.info(
+                        request, f"{feature_controller.display_name()} applied."
+                    )
                 return True, pf
             elif result.needs_option:
                 messages.error(request, "This feature requires an option.")
@@ -207,7 +229,7 @@ def _try_apply_purchase(
                 )
         except Exception as exc:
             messages.error(request, f"Error applying feature: {exc}")
-        return False, pf
+    return False, pf
 
 
 @permission_required("character.change_character", fn=objectgetter(Character))
@@ -254,6 +276,7 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
     for group in groups:
         group.taken.sort(key=lambda f: f.display_name())
         group.available.sort(key=lambda f: f.display_name())
+    groups.sort(key=lambda g: g.name)
     return groups
 
 

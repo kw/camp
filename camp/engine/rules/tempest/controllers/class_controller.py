@@ -22,21 +22,37 @@ class ClassController(feature_controller.FeatureController):
             )
 
     @property
-    def is_primary(self) -> bool:
+    def is_archetype(self) -> bool:
         return self.model.is_archetype_class
 
-    @is_primary.setter
-    def is_primary(self, value: bool) -> None:
+    @is_archetype.setter
+    def is_archetype(self, value: bool) -> None:
         self.model.is_archetype_class = value
         if value:
             # There can be only one primary class
             for controller in self.character.classes:
                 if controller.id != self.full_id:
-                    controller.is_primary = False
+                    controller.is_archetype = False
 
     @property
     def is_starting(self) -> bool:
+        if self.character.level == 0:
+            # If there are no classes, we're talking hyoptheticals,
+            # so we'll assume this would be the starting class if purchased.
+            return True
         return self.model.is_starting_class
+
+    @property
+    def next_value(self) -> int:
+        if self.value == 0 and self.character.level == 0:
+            return 2
+        return super().next_value
+
+    @property
+    def min_value(self) -> int:
+        if self.is_starting and self.character.is_multiclass:
+            return 2
+        return super().min_value
 
     @is_starting.setter
     def is_starting(self, value: bool) -> None:
@@ -81,11 +97,11 @@ class ClassController(feature_controller.FeatureController):
         if not (rd := super().increase(value)):
             return rd
         if (
-            not self.is_primary
+            not self.is_archetype
             and max((c.value for c in self.character.classes), default=0)
             < self.purchased_ranks
         ):
-            self.is_primary = True
+            self.is_archetype = True
         if self.character.starting_class is None:
             self.is_starting = True
         self.reconcile()
@@ -117,7 +133,7 @@ class ClassController(feature_controller.FeatureController):
             self.model.is_starting_class = False
             self.model.is_archetype_class = False
         if (
-            self.is_primary
+            self.is_archetype
             and max((c.value for c in self.character.classes), default=0)
             > self.purchased_ranks
         ):

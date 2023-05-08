@@ -19,19 +19,30 @@ class FeatureForm(forms.Form):
             current = 0
         else:
             current = c.value
+        choices = []
+        if available == 1 and c.definition.ranks == 1:
+            # The only thing that can happen here is purchasing 1 rank, so don't
+            # bother with a choice field.
+            return
         if available > 0 and c.definition.ranks != 1:
+            next_value = c.next_value
             if c.currency:
-                choices = [
-                    (i, f"{current + i} ({c.purchase_cost_string(i)})")
-                    for i in range(1, available + 1)
-                ]
+                choices.extend(
+                    (i, f"{i} ({c.purchase_cost_string(i)})")
+                    for i in range(next_value, next_value + available)
+                )
             else:
-                choices = [(i, current + i) for i in range(1, available + 1)]
-            rank_name = c.rank_name_labels[0].title()
-            self.fields["ranks"] = forms.ChoiceField(
-                choices=choices,
-                label=f"New {rank_name}",
+                choices = [(i, i) for i in range(next_value, next_value + available)]
+        if c.can_decrease():
+            choices = (
+                [(i, i) for i in range(c.min_value, current)]
+                + [(current, f"{current} (Current)")]
+                + choices
             )
+        self.fields["ranks"] = forms.ChoiceField(
+            choices=choices,
+            label=f"New {c.rank_name_labels[0].title()}",
+        )
 
     def _make_option_field(self, c: BaseFeatureController):
         if not c.option and c.option_def:

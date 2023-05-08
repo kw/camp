@@ -8,11 +8,12 @@ class CharacterAdmin(admin.ModelAdmin):
     pass
 
 
+class UndoStackEntryAdmin(admin.TabularInline):
+    model = models.UndoStackEntry
+    extra = 0
+
+
 @admin.register(models.Sheet)
 class SheetAdmin(admin.ModelAdmin):
     list_filter = ("character", "ruleset", "primary")
-
-
-@admin.register(models.UndoStackEntry)
-class UndoStackEntryAdmin(admin.ModelAdmin):
-    list_filter = ("sheet",)
+    inlines = [UndoStackEntryAdmin]

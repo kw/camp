@@ -118,7 +118,7 @@ class TempestCharacter(base_engine.CharacterController):
     @property
     def primary_class(self) -> class_controller.ClassController | None:
         for controller in self.classes:
-            if controller.is_primary:
+            if controller.is_archetype:
                 return controller
         return None
 
@@ -150,6 +150,10 @@ class TempestCharacter(base_engine.CharacterController):
         ]
         classes.sort(key=lambda c: c.value, reverse=True)
         return classes
+
+    @property
+    def is_multiclass(self) -> bool:
+        return len(self.classes) > 1
 
     @property
     def skills(self) -> list[feature_controller.FeatureController]:

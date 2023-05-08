@@ -153,6 +153,20 @@ def test_multiple_option_skill_without_option(character: TempestCharacter):
     assert options == {"One": 1, "Two": 1, "Three": 1}
 
 
+def test_freeform_with_suggestions_allowed(character: TempestCharacter):
+    """
+    If a skill allows freeform options and specifies suggestions, the suggestions
+    not taken are the only thing that appears in the "available" list.
+    """
+    fid = "free-text-with-suggestions"
+    # Rock is in the default list...
+    assert character.apply(RankMutation(id=fid, option="Rock"))
+    # Dynamite is not.
+    assert character.apply(RankMutation(id=fid, option="Dynamite"))
+    fc = character.feature_controller(fid)
+    assert fc.available_options == ["Paper", "Scissors"]
+
+
 def test_inherited_option_skill(character: TempestCharacter):
     """A feature with an inherited option specified can only take values for
     that option if the option has already been taken for the inherited feature.

@@ -313,7 +313,7 @@ class CharacterController(ABC):
                     legal_values ^= removals
                     legal_values |= additions
 
-        legal_values ^= options_excluded
+        legal_values -= options_excluded
 
         # An option definition can specify requirements for each option. If a
         # requirement is specified and not met, remove it from the set.
@@ -644,10 +644,8 @@ class BaseFeatureController(PropertyController):
             # "raw" skill, and it doesn't have anything to display.
             return self.display_name()
         if (
-            isinstance(self.definition.ranks, str)
-            or self.definition.ranks > 1
-            and self.value > 0
-        ):
+            isinstance(self.definition.ranks, str) or self.definition.ranks > 1
+        ) and self.value > 0:
             return f"{self.display_name()} x{self.value}"
         return self.display_name()
 

@@ -331,6 +331,7 @@ class BaseFeatureDef(BaseModel):
     id: str
     name: str
     type: str
+    category: str | None = None
     requires: Requirements = None
     def_path: str | None = None
     tags: set[str] = pydantic.Field(default_factory=set)

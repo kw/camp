@@ -39,10 +39,11 @@ class FeatureForm(forms.Form):
                 + [(current, f"{current} (Current)")]
                 + choices
             )
-        self.fields["ranks"] = forms.ChoiceField(
-            choices=choices,
-            label=f"New {c.rank_name_labels[0].title()}",
-        )
+        if choices:
+            self.fields["ranks"] = forms.ChoiceField(
+                choices=choices,
+                label=f"New {c.rank_name_labels[0].title()}",
+            )
 
     def _make_option_field(self, c: BaseFeatureController):
         if not c.option and c.option_def:
@@ -51,13 +52,12 @@ class FeatureForm(forms.Form):
                 if c.option_def.freeform:
                     if available:
                         widget = DatalistTextInput(available)
-                        help = f"This {c.type_name.lower()} takes a custom option. Double click the field for suggestions."
+                        help = f"This {c.type_name.lower()} takes a custom option. Enter it here. Suggestions: {', '.join(available)}."
                     else:
                         widget = forms.TextInput
                         help = f"This {c.type_name.lower()} takes a custom option. Enter it here."
                     self.fields["option"] = forms.CharField(
                         max_length=100,
-                        initial=c.option,
                         label="Option",
                         widget=widget,
                         help_text=help,

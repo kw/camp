@@ -1,6 +1,7 @@
 name: Lore
 cost: 2
 option:
+  freeform: true
   values:
     - Arcane
     - Historical

@@ -34,6 +34,12 @@ spikes:
   factor: 8
   rounding: down
 
+name_overrides:
+  xp: XP
+  cp: CP
+  lp: LP
+  breedcap: Max Breeds
+
 default_flags:
   # Used in Mild Allergy and Severe Allergy
   Uncommon Allergens:

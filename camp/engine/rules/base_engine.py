@@ -501,6 +501,16 @@ class BaseFeatureController(PropertyController):
         return None
 
     @property
+    def category(self) -> str | None:
+        return self.definition.category
+
+    @property
+    def is_concrete(self) -> bool:
+        return (
+            (self.option_def and self.option) or not self.option_def
+        ) and self.value > 0
+
+    @property
     def is_taken(self) -> bool:
         if self.option_def and not self.option:
             # The "core" controller for an option feature is never
@@ -558,7 +568,9 @@ class BaseFeatureController(PropertyController):
     def available_options(self) -> list[str] | None:
         if not self.option_def:
             return None
-        return self.character.options_values_for_feature(self.id, exclude_taken=True)
+        return sorted(
+            self.character.options_values_for_feature(self.id, exclude_taken=True)
+        )
 
     @property
     def available_ranks(self) -> int:

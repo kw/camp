@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+from collections import defaultdict
 from itertools import chain
 from typing import Iterable
 from typing import cast
@@ -159,11 +160,15 @@ def feature_view(request, pk, feature_id):
             if success:
                 return redirect("character-detail", pk=pk)
         else:
+            data = None
             current = feature_controller.value
             next_value = feature_controller.next_value
-            pf = forms.FeatureForm(
-                feature_controller, {"ranks": current if can_dec else next_value}
-            )
+            if feature_controller.is_concrete:
+                # Only use a bound form if this is an existing concrete feature instance.
+                data = {"ranks": current if can_dec else next_value}
+                if feature_controller.option:
+                    data["option"] = feature_controller.option
+            pf = forms.FeatureForm(feature_controller, data)
         context["purchase_form"] = pf
     if not can_inc:
         context["no_purchase_reason"] = can_inc.reason
@@ -179,8 +184,9 @@ def _try_apply_purchase(
 ) -> tuple[bool, forms.FeatureForm]:
     pf = forms.FeatureForm(feature_controller, request.POST)
     if pf.is_valid():
-        ranks = pf.cleaned_data.get("ranks")
-        ranks = (int(ranks) if ranks else 1) - feature_controller.value
+        ranks = pf.cleaned_data.get("ranks", 1)
+        if feature_controller.is_concrete:
+            ranks = (int(ranks) if ranks else 1) - feature_controller.value
         if ranks == 0:
             messages.info(request, "No change requested.")
             return True, pf
@@ -267,16 +273,15 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
             # Option templates should only appear in the available list,
             # and only if another option is available.
             if feat.can_take_new_option:
-                group.available.append(feat)
+                group.add_available(feat)
             # Otherwise, we don't care about them.
         elif feat.value > 0:
             group.taken.append(feat)
         else:
-            group.available.append(feat)
+            group.add_available(feat)
     groups: list[FeatureGroup] = list(by_type.values())
     for group in groups:
-        group.taken.sort(key=lambda f: f.display_name())
-        group.available.sort(key=lambda f: f.display_name())
+        group.sort()
     groups.sort(key=lambda g: g.name)
     return groups
 
@@ -287,3 +292,27 @@ class FeatureGroup:
     name: str
     taken: list[BaseFeatureController] = dataclasses.field(default_factory=list)
     available: list[BaseFeatureController] = dataclasses.field(default_factory=list)
+    available_categories: dict[str, list[BaseFeatureController]] = dataclasses.field(
+        default_factory=lambda: defaultdict(list)
+    )
+
+    @property
+    def has_available(self) -> bool:
+        return self.available or self.available_categories
+
+    def add_available(self, feat: BaseFeatureController):
+        if feat.category:
+            self.available_categories[feat.category].append(feat)
+        else:
+            self.available.append(feat)
+
+    def sort(self):
+        # Sort the base taken/available lists by name.
+        self.taken.sort(key=lambda f: f.display_name())
+        self.available.sort(key=lambda f: f.display_name())
+        # Sort the categories themselves
+        cats = self.available_categories
+        self.available_categories = {k: cats[k] for k in sorted(cats)}
+        # Sort the items in each category
+        for cat in self.available_categories.values():
+            cat.sort(key=lambda f: f.display_name())

@@ -43,16 +43,17 @@
 {% endfor %}
 
 {% if purchase_form %}
-<form method="post">
+<form method="post" id="purchaseForm">
 {% csrf_token %}
 {{ purchase_form | crispy }}
-<button type="submit" name="purchase" value="{{ feature.id }}" class="btn btn-primary">Purchase</button>
 </form>
+{# Outside of the form so that it lines up with the back button by default #}
+<button type="submit" id="purchaseButton" form="purchaseForm" name="purchase" class="btn btn-primary">Purchase</button>
 {% elif no_purchase_reason %}
 <p>You can not currently purchase this because:</p>
 <p>{{ no_purchase_reason }}</p>
 {% endif %}
 
-<a href="{% url 'character-detail' character.id %}">Back</a>
+<a role="button" class="btn btn-secondary" href="{% url 'character-detail' character.id %}">Back</a>
 
 {% endblock %}

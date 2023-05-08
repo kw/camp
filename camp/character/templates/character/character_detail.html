@@ -74,7 +74,7 @@
                     {% endif %}
                 </li>
             {% endfor %}
-            {% if group.available %}
+            {% if group.has_available %}
             <li class="list-group-item">
                 <a href="#" role="button" data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type}}" aria-expanded="false" aria-controls="newFeatureModal_{{group.type}}">
                     New {{ group.name }} ➕
@@ -167,6 +167,7 @@
 
 <!-- Add Feature Modals -->
 {% for group in feature_groups %}
+{% if group.has_available %}
 <div class="modal fade" id="newFeatureModal_{{group.type}}" tabindex="-1" aria-labelledby="newFeatureModalLabel_{{group.type}}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -185,21 +186,46 @@
                 </p>
                 {% endif %}
                 {% if group.available %}
-                {% endif %}
                 <ul class="list-group list-group-flush">
                     {% for f in group.available %}
                         <li class="list-group-item">
                             <a href="{% url 'character-feature-view' character.id f.full_id%}">
                                 {{ f }}
-                                {% if f.can_increase %}
-                                  {% if f.purchase_cost_string %}
-                                    ({{ f.purchase_cost_string }})
-                                  {% endif %}
+                                {% if f.purchase_cost_string %}
+                                ({{ f.purchase_cost_string }})
                                 {% endif %}
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
+                {% endif %}
+                <div class="accordion" id="availableAccordian-{{group.type}}">
+                {% for category, available in group.available_categories.items %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{group.type}}-{{category|slugify}}" aria-expanded="{{ forloop.first }}" aria-controls="collapse-{{category|slugify}}">
+                            {{category}}
+                            </button>
+                        </h2>
+                        <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#availableAccordian-{{group.type}}">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                {% for f in available %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'character-feature-view' character.id f.full_id%}">
+                                        {{ f }}
+                                        {% if f.purchase_cost_string %}
+                                        ({{ f.purchase_cost_string }})
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -207,6 +233,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endfor %}
 
 {% endblock %}

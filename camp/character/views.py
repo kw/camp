@@ -248,6 +248,7 @@ def undo_view(request, pk):
                 else:
                     description = "the last action"
                 messages.success(request, f"Undid {description}")
+                return redirect("character-detail", pk=pk)
     messages.error(request, "Invalid undo request.")
     return redirect("character-detail", pk=pk)
 

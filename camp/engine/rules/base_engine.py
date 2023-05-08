@@ -368,7 +368,7 @@ class CharacterController(ABC):
                 if mutation.option:
                     name = f"{self.display_name(mutation.id)} [{mutation.option}] x{abs(mutation.ranks)}"
                 else:
-                    name = f"{self.display_name(mutation.id)} x{mutation.ranks}"
+                    name = f"{self.display_name(mutation.id)} x{abs(mutation.ranks)}"
                 if mutation.ranks > 0:
                     return f"Purchase {name}"
                 elif mutation.ranks == 0:

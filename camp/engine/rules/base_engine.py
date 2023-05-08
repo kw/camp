@@ -361,6 +361,24 @@ class CharacterController(ABC):
             feature_id, exclude_taken=exclude_taken
         )
 
+    def describe_mutation(self, mutation: base_models.Mutation) -> str:
+        """Returns a human-readable description of the given mutation."""
+        match mutation:
+            case base_models.RankMutation():
+                if mutation.option:
+                    name = f"{self.display_name(mutation.id)} [{mutation.option}] x{abs(mutation.ranks)}"
+                else:
+                    name = f"{self.display_name(mutation.id)} x{mutation.ranks}"
+                if mutation.ranks > 0:
+                    return f"Purchase {name}"
+                elif mutation.ranks == 0:
+                    # WTF?
+                    return f"Unrecognized rank mutation on {name}"
+                else:
+                    return f"Remove {name}"
+            case _:
+                return repr(mutation)
+
 
 @total_ordering
 class PropertyController(ABC):

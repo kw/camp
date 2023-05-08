@@ -12,8 +12,13 @@
         Manage
     </button>
     <ul class="dropdown-menu">
-        <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setAttrsModal">Set Attributes</a></li>
+        <li class=><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setAttrsModal">Set Attributes</a></li>
         <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#deleteCharacterModal">Delete Character</a></li>
+        {% if undo %}
+        <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#undoModal">{{undo}}</a></li>
+        {% else %}
+        <li><a class="dropdown-item btn-secondary-outline disabled" role="button">Undo not available</a></li>
+        {% endif %}
     </ul>
   </div>
 
@@ -133,6 +138,32 @@
         </div>
     </div>
 </div>
+
+{% if undo %}
+<!-- Undo Modal -->
+
+<div class="modal fade" id="undoModal" tabindex="-1" aria-labelledby="undoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="undoLabel">Confirm Undo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ undo }}</p>
+                <p>The last action will be undone. There is no "redo" functionality. Are you sure you want to do this?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'character-undo' character.id %}">{% csrf_token %}
+                    <input type="hidden" name="undo" value="{{ undo.id }}" />
+                    <input type="submit" class="btn btn-danger" value="Undo" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Add Feature Modals -->
 {% for group in feature_groups %}

@@ -654,6 +654,7 @@ class RankMutation(BaseModel):
             use the default of "1". If negative, this is a sellback or overcome.
     """
 
+    type: Literal["rank"] = "rank"
     id: str
     option: str | None = None
     ranks: int = 1
@@ -677,6 +678,7 @@ class RankMutation(BaseModel):
 
 
 class ChoiceMutation(BaseModel):
+    type: Literal["choice"] = "choice"
     id: str
     choice: str
     value: str
@@ -684,11 +686,13 @@ class ChoiceMutation(BaseModel):
 
 
 class NoteMutation(BaseModel):
+    type: Literal["note"] = "note"
     id: str
     note: str
 
 
 class PlotMutation(BaseModel):
+    type: Literal["plot"] = "plot"
     id: str
     ranks: int | None = None
     suppress: bool | None = None
@@ -699,6 +703,14 @@ class PlotMutation(BaseModel):
 
 
 Mutation = RankMutation | ChoiceMutation | NoteMutation | PlotMutation
+
+
+def load_mutation(data: dict) -> Mutation:
+    return pydantic.parse_obj_as(Mutation, data)
+
+
+def dump_mutation(mutation: Mutation) -> dict:
+    return utils.dump_dict(mutation, exclude_unset=False, exclude_defaults=False)
 
 
 def full_id(id: str, option: str | None) -> str:

@@ -5,9 +5,11 @@ from itertools import chain
 from typing import Iterable
 from typing import cast
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -26,6 +28,7 @@ from camp.engine.rules.base_engine import BaseFeatureController
 from camp.engine.rules.base_engine import CharacterController
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
+from camp.engine.rules.base_models import dump_mutation
 
 from . import forms
 
@@ -55,6 +58,7 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
         context["feature_groups"] = _features(
             controller, chain(taken_features, available_features)
         )
+        context["undo"] = sheet.last_undo
         return context
 
 
@@ -146,39 +150,84 @@ def feature_view(request, pk, feature_id):
 
     if (rd := feature_controller.can_increase()) or rd.needs_option:
         if request.POST and "purchase" in request.POST:
-            pf = forms.FeatureForm(feature_controller, request.POST)
-            if pf.is_valid():
-                ranks = pf.cleaned_data.get("ranks")
-                expr = PropExpression.parse(feature_id)
-                rm = RankMutation(
-                    id=expr.prop,
-                    option=pf.cleaned_data.get("option") or expr.option,
-                    ranks=int(ranks) if ranks else 1,
-                )
-                try:
-                    result = controller.apply(rm)
-                    if result.success:
-                        sheet.save()
-                        feature_controller = controller.feature_controller(expr.full_id)
-                        messages.success(
-                            request, f"{feature_controller.display_name()} applied."
-                        )
-                        return redirect("character-detail", pk=character.id)
-                    elif result.reason:
-                        messages.error(request, result.reason)
-                    else:
-                        messages.error(
-                            request, "Could not apply purchase for unspecified reasons."
-                        )
-                except Exception as exc:
-                    messages.error(request, "Error applying feature: %s" % exc)
+            success, pf = _try_apply_purchase(
+                sheet, feature_id, feature_controller, controller, request
+            )
+            if success:
+                return redirect("character-detail", pk=pk)
         else:
             pf = forms.FeatureForm(feature_controller)
         context["purchase_form"] = pf
     else:
         context["no_purchase_reason"] = rd.reason
-
     return render(request, "character/feature_form.html", context)
+
+
+def _try_apply_purchase(
+    sheet: Sheet,
+    feature_id: str,
+    feature_controller: BaseFeatureController,
+    controller: CharacterController,
+    request,
+) -> tuple[bool, forms.FeatureForm]:
+    pf = forms.FeatureForm(feature_controller, request.POST)
+    if pf.is_valid():
+        ranks = pf.cleaned_data.get("ranks")
+        expr = PropExpression.parse(feature_id)
+        rm = RankMutation(
+            id=expr.prop,
+            option=pf.cleaned_data.get("option") or expr.option,
+            ranks=int(ranks) if ranks else 1,
+        )
+        try:
+            undo_data = controller.dump_dict()
+            result = controller.apply(rm)
+            if result:
+                with transaction.atomic():
+                    sheet.save()
+                    sheet.undo_stack.create(
+                        mutation=dump_mutation(rm),
+                        previous_data=undo_data,
+                    )
+                    if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
+                        sheet.undo_stack.order_by("timestamp").first().delete()
+
+                feature_controller = controller.feature_controller(expr.full_id)
+                messages.success(
+                    request, f"{feature_controller.display_name()} applied."
+                )
+                return True, pf
+            elif result.needs_option:
+                messages.error(request, "This feature requires an option.")
+            elif result.reason:
+                messages.error(request, result.reason)
+            else:
+                messages.error(
+                    request, "Could not apply purchase for unspecified reasons."
+                )
+        except Exception as exc:
+            messages.error(request, f"Error applying feature: {exc}")
+        return False, pf
+
+
+@permission_required("character.change_character", fn=objectgetter(Character))
+def undo_view(request, pk):
+    character = get_object_or_404(Character, id=pk)
+    sheet = character.primary_sheet
+    if request.POST and "undo" in request.POST:
+        with transaction.atomic():
+            last_undo = sheet.last_undo
+            if not last_undo:
+                messages.error(request, "Nothing to undo.")
+            elif request.POST.get("undo") == str(sheet.last_undo.id):
+                mutation = sheet.undo()
+                if mutation:
+                    description = f"'{sheet.controller.describe_mutation(mutation)}'"
+                else:
+                    description = "the last action"
+                messages.success(request, f"Undid {description}")
+    messages.error(request, "Invalid undo request.")
+    return redirect("character-detail", pk=pk)
 
 
 def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:

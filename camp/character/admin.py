@@ -11,3 +11,8 @@ class CharacterAdmin(admin.ModelAdmin):
 @admin.register(models.Sheet)
 class SheetAdmin(admin.ModelAdmin):
     list_filter = ("character", "ruleset", "primary")
+
+
+@admin.register(models.UndoStackEntry)
+class UndoStackEntryAdmin(admin.ModelAdmin):
+    list_filter = ("sheet",)

@@ -5,6 +5,7 @@ from typing import cast
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from rules.contrib.models import RulesModel
 
 import camp.engine.loader
@@ -12,6 +13,8 @@ import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 import camp.game.models
 from camp.engine.rules.base_engine import Engine
+from camp.engine.rules.base_models import Mutation
+from camp.engine.rules.base_models import load_mutation
 from camp.game import rules
 
 User = get_user_model()
@@ -140,6 +143,34 @@ class Sheet(RulesModel):
             self.data = self._controller.dump_dict()
         super().save(*args, **kwargs)
 
+    @property
+    def last_undo(self) -> UndoStackEntry | None:
+        return self.undo_stack.order_by("-timestamp").first()
+
+    @property
+    def last_mutation(self) -> Mutation | None:
+        if last := self.last_undo:
+            return last.load_mutation()
+        return None
+
+    def undo(self) -> Mutation | None:
+        with transaction.atomic():
+            if not self.undo_available():
+                return
+            last: UndoStackEntry = self.undo_stack.order_by("-timestamp").first()
+            self.data = last.previous_data
+            self.save()
+            if last.mutation:
+                mutation = load_mutation(last.mutation)
+            else:
+                mutation = None
+            last.delete()
+            self._controller = None
+            return mutation
+
+    def undo_available(self) -> bool:
+        return self.undo_stack.exists()
+
     def __str__(self) -> str:
         if self.label:
             return f"{self.character} [{self.label}]"
@@ -155,3 +186,26 @@ class Sheet(RulesModel):
             "delete": rules.is_owner | rules.is_logistics,
             "add": rules.is_owner | rules.is_logistics,
         }
+
+
+class UndoStackEntry(models.Model):
+    sheet = models.ForeignKey(
+        Sheet, on_delete=models.CASCADE, related_name="undo_stack"
+    )
+    timestamp = models.DateTimeField(auto_now_add=True)
+    mutation = models.JSONField(null=True, blank=True)
+    previous_data = models.JSONField()
+
+    def load_mutation(self) -> Mutation | None:
+        if self.mutation:
+            return load_mutation(self.mutation)
+        return None
+
+    def __str__(self) -> str:
+        mutation = self.load_mutation()
+        if mutation:
+            return (
+                f"Undo {self.sheet.controller.describe_mutation(self.load_mutation())}"
+            )
+        else:
+            return "Undo"

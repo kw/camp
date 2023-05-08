@@ -201,6 +201,8 @@ MESSAGE_TAGS = {
     message_constants.ERROR: "error",
 }
 
+UNDO_STACK_SIZE = env.int("UNDO_STACK_SIZE", default=10)
+
 try:
     import django_heroku
 

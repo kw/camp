@@ -188,9 +188,9 @@ django-crispy-forms==1.14.0 ; python_full_version >= "3.11.0" and python_full_ve
 django-debug-toolbar==3.2.4 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
     --hash=sha256:644bbd5c428d3283aa9115722471769cac1bec189edf3a0c855fd8ff870375a9 \
     --hash=sha256:6b633b6cfee24f232d73569870f19aa86c819d750e7f3e833f2344a9eb4b4409
-django==4.2 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
-    --hash=sha256:ad33ed68db9398f5dfb33282704925bce044bef4261cd4fb59e4e7f9ae505a78 \
-    --hash=sha256:c36e2ab12824e2ac36afa8b2515a70c53c7742f0d6eaefa7311ec379558db997
+django==4.2.1 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
+    --hash=sha256:066b6debb5ac335458d2a713ed995570536c8b59a580005acb0732378d5eb1ee \
+    --hash=sha256:7efa6b1f781a6119a10ac94b4794ded90db8accbe7802281cd26f8664ffed59c
 environs[django]==9.5.0 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
     --hash=sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124 \
     --hash=sha256:a76307b36fbe856bdca7ee9161e6c466fd7fcffc297109a118c59b54e27e30c9

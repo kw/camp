@@ -27,9 +27,13 @@ from camp.character.models import Character
 from camp.character.models import Sheet
 from camp.engine.rules.base_engine import BaseFeatureController
 from camp.engine.rules.base_engine import CharacterController
+from camp.engine.rules.base_models import ChoiceMutation
+from camp.engine.rules.base_models import Mutation
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.base_models import dump_mutation
+from camp.engine.rules.decision import Decision
+from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter
 
 from . import forms
 
@@ -134,20 +138,13 @@ def set_attr(request, pk):
 def feature_view(request, pk, feature_id):
     character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
-    controller = sheet.controller
+    controller = cast(TempestCharacter, sheet.controller)
     feature_controller = controller.feature_controller(feature_id)
     currencies: dict[str, str] = {}
     if feature_controller.currency:
         currencies[
             controller.display_name(feature_controller.currency)
         ] = controller.get_prop(feature_controller.currency)
-    context = {
-        "character": character,
-        "controller": controller,
-        "feature": feature_controller,
-        "currencies": currencies,
-        "explain_ranks": feature_controller.explain_ranks(),
-    }
 
     can_inc = feature_controller.can_increase()
     can_dec = feature_controller.can_decrease()
@@ -169,7 +166,34 @@ def feature_view(request, pk, feature_id):
                 if feature_controller.option:
                     data["option"] = feature_controller.option
             pf = forms.FeatureForm(feature_controller, data)
-        context["purchase_form"] = pf
+
+    if request.POST and "choice" in request.POST:
+        if "selection" not in request.POST:
+            messages.error(request, "No selection made.")
+        else:
+            mutation = ChoiceMutation(
+                id=feature_id,
+                choice=request.POST["choice"],
+                value=request.POST["selection"],
+                remove=request.POST.get("remove", False),
+            )
+            if result := _apply_mutation(mutation, sheet, controller):
+                messages.success(request, result.reason)
+            else:
+                messages.error(request, result.reason or "Could not apply choice.")
+
+    choices = feature_controller.choices
+    context = {
+        "character": character,
+        "controller": controller,
+        "feature": feature_controller,
+        "currencies": currencies,
+        "explain_ranks": feature_controller.explain(),
+        "choices": {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
+        if choices
+        else {},
+        "purchase_form": pf,
+    }
     if not can_inc:
         context["no_purchase_reason"] = can_inc.reason
     return render(request, "character/feature_form.html", context)
@@ -179,7 +203,7 @@ def _try_apply_purchase(
     sheet: Sheet,
     feature_id: str,
     feature_controller: BaseFeatureController,
-    controller: CharacterController,
+    controller: TempestCharacter,
     request,
 ) -> tuple[bool, forms.FeatureForm]:
     pf = forms.FeatureForm(feature_controller, request.POST)
@@ -197,18 +221,7 @@ def _try_apply_purchase(
             option=pf.cleaned_data.get("option") or expr.option,
         )
         try:
-            undo_data = controller.dump_dict()
-            result = controller.apply(rm)
-            if result:
-                with transaction.atomic():
-                    sheet.save()
-                    sheet.undo_stack.create(
-                        mutation=dump_mutation(rm),
-                        previous_data=undo_data,
-                    )
-                    if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
-                        sheet.undo_stack.order_by("timestamp").first().delete()
-
+            if result := _apply_mutation(rm, sheet, controller):
                 feature_controller = controller.feature_controller(expr.full_id)
                 if ranks > 0:
                     messages.success(
@@ -231,10 +244,10 @@ def _try_apply_purchase(
                 messages.error(request, result.reason)
             else:
                 messages.error(
-                    request, "Could not apply purchase for unspecified reasons."
+                    request, "Could not apply mutation for unspecified reasons."
                 )
         except Exception as exc:
-            messages.error(request, f"Error applying feature: {exc}")
+            messages.error(request, f"Error applying mutation: {exc}")
     return False, pf
 
 
@@ -316,3 +329,20 @@ class FeatureGroup:
         # Sort the items in each category
         for cat in self.available_categories.values():
             cat.sort(key=lambda f: f.display_name())
+
+
+def _apply_mutation(
+    mutation: Mutation, sheet: Sheet, controller: TempestCharacter
+) -> Decision:
+    undo_data = controller.dump_dict()
+    result = controller.apply(mutation)
+    if result:
+        with transaction.atomic():
+            sheet.save()
+            sheet.undo_stack.create(
+                mutation=dump_mutation(mutation),
+                previous_data=undo_data,
+            )
+            if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
+                sheet.undo_stack.order_by("timestamp").first().delete()
+    return result

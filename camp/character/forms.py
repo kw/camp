@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from django import forms
 
-from camp.engine.rules.base_engine import BaseFeatureController
+from camp.engine.rules.tempest.controllers.choice_controller import ChoiceController
+from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 
 
 class FeatureForm(forms.Form):
-    _controller: BaseFeatureController
+    _controller: FeatureController
 
-    def __init__(self, controller: BaseFeatureController, *args, **kwargs):
+    def __init__(self, controller: FeatureController, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._make_ranks_field(controller)
         self._make_option_field(controller)
 
-    def _make_ranks_field(self, c: BaseFeatureController) -> forms.Field:
+    def _make_ranks_field(self, c: FeatureController) -> forms.Field:
         available = c.available_ranks
         if c.option_def and not c.option:
             current = 0
@@ -45,7 +46,7 @@ class FeatureForm(forms.Form):
                 label=f"New {c.rank_name_labels[0].title()}",
             )
 
-    def _make_option_field(self, c: BaseFeatureController):
+    def _make_option_field(self, c: FeatureController):
         if not c.option and c.option_def:
             available = c.available_options
             if c.option_def.freeform:
@@ -90,3 +91,31 @@ class DatalistTextInput(forms.TextInput):
         datalist_id = name + "_datalist"
         context["widget"]["attrs"]["list"] = datalist_id
         return context
+
+
+class ChoiceForm(forms.Form):
+    _choice: str
+    controller: ChoiceController
+    available: list[FeatureController]
+    taken: list[FeatureController]
+    removable: set[str]
+
+    @property
+    def id(self) -> str:
+        return self.controller.id
+
+    def __init__(self, controller: ChoiceController, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.controller = controller
+        self.available = controller.available_features()
+        self.taken = controller.taken_features()
+        self.removable = controller.removable_choices()
+        self._make_choice_field(controller)
+
+    def _make_choice_field(self, controller: ChoiceController):
+        if self.available:
+            self.fields["selection"] = forms.ChoiceField(
+                choices=[(f.full_id, f.display_name()) for f in self.available],
+                label="Choice",
+                help_text="Make a selection.",
+            )

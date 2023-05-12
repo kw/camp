@@ -165,8 +165,8 @@ class FlawController(feature_controller.FeatureController):
         self.reconcile()
         return Decision.OK
 
-    def explain_ranks(self) -> list[str]:
-        reasons = super().explain_ranks()
+    def explain(self) -> list[str]:
+        reasons = super().explain()
 
         if self.award_cp:
             reasons.append(f"You receive {self.award_cp} CP from this flaw.")

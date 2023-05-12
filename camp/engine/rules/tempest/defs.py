@@ -46,6 +46,27 @@ Discounts: TypeAlias = dict[str, Discount | int]
 
 
 class ChoiceDef(base_models.BaseModel):
+    """Describes a choice that can be made related to a feature.
+
+    Choices are always represented by features, which might be subfeatures
+    rather than "normal" features. By default, a choice causes the feature
+    to be Granted, unless a discount is specified (see the `discount` attribute).
+    However, a custom controler could alter this behavior.
+
+    Attributes:
+        name: The user-visible name of the choice.
+        description: A user-visible description of the choice.
+        limit: The number of times this choice can be made. If "unlimited",
+            there is no limit.
+        discount: A discount that applies to the choice. This is rarely used,
+            but can be used to make a choice cheaper than normal. For example,
+            the Geas Core "Patron" perk allows a number of choices to be made
+            from (almost) the full list of Perks, and each choice is discounted
+            by 1 CP. The choice can be made after the purchase was made. Note
+            that this doesn't actually _grant_ the choice in this case.
+        matcher: A feature matcher that can be used to limit the choices available.
+    """
+
     name: str
     description: str | None = None
     limit: int | Literal["unlimited"] = 1

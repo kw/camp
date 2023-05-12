@@ -6,6 +6,7 @@ from typing import cast
 
 from camp.engine import utils
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_models import ChoiceMutation
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.decision import Decision
@@ -203,6 +204,13 @@ class TempestCharacter(base_engine.CharacterController):
         return Decision(
             success=False, reason=f"Purchase not implemented: {entry.expression}"
         )
+
+    def choose(self, entry: ChoiceMutation) -> Decision:
+        if controller := self._controller_for_feature(entry.id):
+            if entry.remove:
+                return controller.unchoose(entry.choice, entry.value)
+            return controller.choose(entry.choice, entry.value)
+        return Decision(success=False, reason=f"Unknown feature {entry.id}")
 
     def has_prop(self, expr: str | PropExpression) -> bool:
         """Check whether the character has _any_ property (feature, attribute, etc) with the given name.

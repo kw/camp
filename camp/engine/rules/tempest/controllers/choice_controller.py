@@ -21,6 +21,10 @@ class ChoiceController:
         return self._feature.definition.choices[self._choice]
 
     @property
+    def id(self) -> str:
+        return self._choice
+
+    @property
     def name(self) -> str:
         return self.choice_def.name
 
@@ -32,7 +36,13 @@ class ChoiceController:
     def limit(self) -> int | Literal["unlimited"]:
         return self.choice_def.limit
 
-    def valid_features(self) -> set[str]:
+    @property
+    def choices_remaining(self) -> int:
+        if self.limit == "unlimited":
+            return 999
+        return self.limit - len(self.taken_choices())
+
+    def valid_choices(self) -> set[str]:
         taken = self.taken_choices()
         character = self._feature.character
 
@@ -103,10 +113,42 @@ class ChoiceController:
         # Otherwise, report the increase decision back. It might have useful info.
         return rd
 
+    def unchoose(self, feature: str) -> Decision:
+        taken = self.taken_choices()
+        if feature not in taken:
+            return Decision(success=False, reason="Choice not taken.")
+
+        choices = self._feature.model.choices.get(self._choice) or []
+        choices.remove(feature)
+        self._feature.model.choices[self._choice] = choices
+        self._feature.reconcile()
+        return Decision(success=True, mutation_applied=True, reason="Choice removed.")
+
     def taken_choices(self) -> set[str]:
         if choices := self._feature.model.choices.get(self._choice):
             return set(choices)
         return set()
+
+    def removable_choices(self) -> set[str]:
+        # TODO: Prevent choices from being removed when the character is not in "free edit" mode.
+        # There may be other circumstances when a choice can or can't be removed.
+        return self.taken_choices()
+
+    def taken_features(self) -> list[feature_controller.FeatureController]:
+        features = [
+            self._feature.character.feature_controller(id)
+            for id in self.taken_choices()
+        ]
+        features.sort(key=lambda f: f.display_name())
+        return features
+
+    def available_features(self) -> list[feature_controller.FeatureController]:
+        features = [
+            self._feature.character.feature_controller(id)
+            for id in self.valid_choices()
+        ]
+        features.sort(key=lambda f: f.display_name())
+        return features
 
     def update_propagation(
         self, grants: dict[str, int], discounts: dict[str, list[defs.Discount]]

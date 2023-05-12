@@ -4,6 +4,7 @@ import math
 from functools import cached_property
 from typing import Iterable
 from typing import Type
+from typing import cast
 
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import PropExpression
@@ -119,8 +120,8 @@ class FeatureController(base_engine.BaseFeatureController):
         elif not model.should_keep() and saved:
             del self.character.model.features[self.full_id]
 
-    def explain_ranks(self) -> list[str]:
-        """Returns a list of strings explaining how the ranks were obtained."""
+    def explain(self) -> list[str]:
+        """Returns a list of strings explaining details of the feature."""
         if self.model.plot_suppressed:
             return ["This feature was suppressed by a plot member."]
 
@@ -146,8 +147,10 @@ class FeatureController(base_engine.BaseFeatureController):
                 f"You have spent {self.cost} {self.currency_name} on this feature."
             )
 
-        if self.granted_ranks > 0:
+        if self._propagation_data:
             for source_id, data in self._propagation_data.items():
+                data = cast(engine.PropagationData, data)
+                source = self.character.display_name(source_id)
                 if data.grants > 0:
                     source = self.character.display_name(source_id)
                     if data.grants == 1:
@@ -156,6 +159,17 @@ class FeatureController(base_engine.BaseFeatureController):
                         reasons.append(
                             f"Granted {data.grants} {self.rank_name(data.grants)} from {source}."
                         )
+                if data.discount:
+                    for discount in data.discount:
+                        reason = (
+                            f"Discounted by {discount.discount} {self.currency_name}, "
+                        )
+                        if discount.minimum:
+                            reason += f"minimum {discount.minimum}, "
+                        if discount.ranks:
+                            reason += f"up to {discount.ranks} {self.rank_name(discount.ranks)}, "
+                        reason += f"via {source}."
+                        reasons.append(reason)
         return reasons
 
     @property
@@ -172,10 +186,20 @@ class FeatureController(base_engine.BaseFeatureController):
     def choices(self) -> dict[str, choice_controller.ChoiceController] | None:
         if not self.definition.choices or self.value < 1:
             return None
-        choices = dict()
-        for key in self.definition.choices:
-            choices[key] = choice_controller.ChoiceController(self, key)
-        return choices
+        return {
+            key: choice_controller.ChoiceController(self, key)
+            for key in self.definition.choices
+        }
+
+    def choose(self, choice: str, selection: str) -> Decision:
+        if controller := self.choices.get(choice):
+            return controller.choose(selection)
+        return Decision(success=False, reason=f"Unknown choice '{choice}'")
+
+    def unchoose(self, choice: str, selection: str) -> Decision:
+        if controller := self.choices.get(choice, None):
+            return controller.unchoose(selection)
+        return Decision(success=False, reason=f"Unknown choice '{choice}'")
 
     @property
     def paid_ranks(self) -> int:

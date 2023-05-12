@@ -2,11 +2,11 @@ name: Patron
 cost: 4
 choices:
   discount:
-    name: Patron Discount
+    name: Discount
     limit: unlimited
     description: >
-      Perks purchased with this slot cost -1 CP (minimum 1) per rank. If Patron is revoked, any
-      perks purchased with this discount are suppressed.
+      Perks chosen here cost -1 CP (minimum 1) per rank. If this perk is suppressed
+      due to strife with your patron, these perks are also suppressed.
     discount: 1
     matcher:
       type: perk

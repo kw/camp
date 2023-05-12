@@ -124,6 +124,8 @@ class CharacterController(ABC):
             match mutation:
                 case base_models.RankMutation():
                     rd = self.purchase(mutation)
+                case base_models.ChoiceMutation():
+                    rd = self.choose(mutation)
                 case _:
                     rd = Decision(
                         success=False, reason=f"Mutation {mutation} unsupported."
@@ -240,6 +242,10 @@ class CharacterController(ABC):
 
     @abstractmethod
     def purchase(self, entry: base_models.RankMutation) -> Decision:
+        ...
+
+    @abstractmethod
+    def choose(self, entry: base_models.ChoiceMutation) -> Decision:
         ...
 
     def meets_requirements(self, requirements: base_models.Requirements) -> Decision:
@@ -376,6 +382,12 @@ class CharacterController(ABC):
                     return f"Unrecognized rank mutation on {name}"
                 else:
                     return f"Remove {name}"
+            case base_models.ChoiceMutation():
+                feature = self.feature_controller(mutation.id)
+                choice = feature.choices.get(mutation.choice)
+                choice_name = getattr(choice, "name", mutation.choice.title())
+                selection = self.display_name(mutation.value)
+                return f"Chose '{selection}' for choice {choice_name} of {feature.display_name()}"
             case _:
                 return repr(mutation)
 
@@ -604,7 +616,7 @@ class BaseFeatureController(PropertyController):
         else:
             return self.rank_name_labels[1]
 
-    def explain_ranks(self) -> list[str]:
+    def explain(self) -> list[str]:
         """Returns a list of strings explaining how the ranks were obtained."""
         if self.value <= 0:
             return []

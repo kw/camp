@@ -42,7 +42,47 @@
 <p>{{ explanation }}</p>
 {% endfor %}
 
+{% if choices %}
+{% for key, choice in choices.items %}
+    <h3>{{ choice.controller.name }} ({{choice.controller.limit}})</h3>
+    {% if choice.controller.description %}
+    <p>{{ choice.controller.description }}</p>
+    {% endif %}
+    {% if choice.taken %}
+    <h4>Selected Choices</h4>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="remove" value="1">
+        <input type="hidden" name="choice" value="{{choice.id}}">
+        <ul>
+            {% for f in choice.taken %}
+            <li>{{ f }}
+                {% if f.id in choice.removable %}
+                    <button type="submit" class="btn btn-danger btn-sm" name="selection" value="{{f.full_id}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                    </svg>
+                </button>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </form>
+    {% endif %}
+    {% if choice.available %}
+    <h4>Available Choices</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ choice | crispy }}
+        <button type="submit" name="choice" value="{{choice.id}}" class="btn btn-primary">Choose this option</button>
+    </form>
+    {% endif %}
+{% endfor %}
+{% endif %}
+
 {% if purchase_form %}
+<h3>Purchase</h3>
 <form method="post" id="purchaseForm">
 {% csrf_token %}
 {{ purchase_form | crispy }}

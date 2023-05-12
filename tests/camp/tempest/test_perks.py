@@ -78,7 +78,7 @@ def test_patron_has_discount_choices(character: TempestCharacter):
 def test_patron_choice_contains_perks(character: TempestCharacter):
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
-    choices = discount.valid_features()
+    choices = discount.valid_choices()
     assert "basic-perk" in choices
     assert "basic-skill" not in choices
 
@@ -87,7 +87,7 @@ def test_patron_choice_does_not_contain_tagged(character: TempestCharacter):
     """Perks tagged `no-patron` aren't available for Patron discount."""
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
-    choices = discount.valid_features()
+    choices = discount.valid_choices()
     # The following perks are tagged "no-patron" in the test ruleset.
     assert "patron" not in choices
     assert "perk-discount-perk" not in choices

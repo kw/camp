@@ -4,7 +4,7 @@
 # create an Account model
 
 # create a Membership model, with refrences to
-    # Game (foreignKey)
-    # User (foreignKey)
-    # Nickname
-    # Date joined
+# Game (foreignKey)
+# User (foreignKey)
+# Nickname
+# Date joined

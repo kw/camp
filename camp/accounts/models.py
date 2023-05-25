@@ -10,12 +10,12 @@ class Membership(models.Model):
 
     A user can be a member of one or more games.
     A user gives a particular game only what information they want,
-    so each game membership has its own profile data,
+    so each game membership has its own data,
     though later we might add a feature to copy data between a user's
-    profiles or otherwise keep them in sync.
+    memberships or otherwise keep them in sync.
     """
 
     joined: int = models.TimeField(auto_now_add=True)
     nickname: str = models.CharField(blank=True, max_length=50, default="nickname")
-    game: Game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game")
+    game: int = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game")
     user: User = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")

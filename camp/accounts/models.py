@@ -9,8 +9,8 @@ class Membership(models.Model):
     """Represents a user's relationship with a game.
 
     A user can be a member of one or more games.
-    A user gives a particular game only what information they want,
-    so each game membership has its own data,
+    For certain fields, a user gives a particular game only what
+    information they want, so each game membership has its own data,
     though later we might add a feature to copy data between a user's
     memberships or otherwise keep them in sync.
     """

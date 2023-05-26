@@ -1,0 +1,5 @@
+name: Bonus Novice Arcane
+cost: 2
+grants: arcane.spell_slots@1
+description: >
+  Grants a bonus novice spell slot of Arcane sphere.

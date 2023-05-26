@@ -202,3 +202,15 @@ def test_mixed_spell_slots(character: TempestCharacter):
     assert character.meets_requirements("arcane.spell_slots:6")
     assert character.meets_requirements("divine.spell_slots@1:5")
     assert character.meets_requirements("divine.spell_slots:6")
+
+
+def test_bonus_spell_slots(character: TempestCharacter):
+    assert character.apply("wizard:2")
+    novice_slots = character.get_prop("arcane.spell_slots@1")
+    assert novice_slots > 0
+    intermediate_slots = character.get_prop("arcane.spell_slots@2")
+    assert intermediate_slots == 0
+    assert character.apply("bonus-novice-arcane")
+    # Novice slots are increased, but intermediate slots are not.
+    assert character.get_prop("arcane.spell_slots@1") == novice_slots + 1
+    assert character.get_prop("arcane.spell_slots@2") == intermediate_slots

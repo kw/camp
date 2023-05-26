@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from functools import total_ordering
 from typing import Any
+from typing import Callable
 from typing import Iterable
 from typing import Type
 
@@ -159,25 +160,63 @@ class CharacterController(ABC):
         return Decision.OK
 
     def has_prop(self, expr: str | base_models.PropExpression) -> bool:
-        """Check whether the character has _any_ property (feature, attribute, etc) with the given name.
-
-        The base implementation only knows how to check for attributes. Checking for features
-        must be added by implementations.
-        """
+        """Check whether the character has _any_ property (feature, attribute, etc) with the given name."""
         expr = base_models.PropExpression.parse(expr)
-        return expr.prop in self.engine.attribute_map
+        return expr.prop in self.engine.attribute_map or expr.full_id in self.features
+
+    def controller(
+        self, expr: base_models.PropExpression | str
+    ) -> PropertyController | None:
+        expr = base_models.PropExpression.parse(expr)
+        if expr.prop in self.ruleset.features:
+            controller = self.feature_controller(expr)
+            if expr.attribute:
+                return controller.subcontroller(
+                    expr.copy(update={"prop": expr.attribute, "attribute": None})
+                )
+            return controller
+        elif attr := self.ruleset.attribute_map.get(expr.prop):
+            if attr.scoped:
+                raise ValueError(
+                    f"Attribute {expr.prop} is scoped and can not be requested without a containing property."
+                )
+            return self.attribute_controller(expr)
+        return None
+
+    def __getitem__(self, expr: str | base_models.PropExpression) -> PropertyController:
+        try:
+            if c := self.controller(expr):
+                return c
+            raise KeyError(f"Can't find controller for {expr}")
+        except NotImplementedError:
+            raise KeyError(f"Controller not yet implemented for {expr}")
 
     @abstractmethod
-    def controller(self, id: str) -> PropertyController:
-        """Returns the controller (property, attribute, feature, etc) with the given id."""
+    def feature_controller(
+        self, expr: str | base_models.PropExpression
+    ) -> BaseFeatureController:
+        """Returns a feature controller for the given feature id."""
 
-    def feature_controller(self, id: str) -> BaseFeatureController:
-        controller = self.controller(id)
-        if isinstance(controller, BaseFeatureController):
-            return controller
-        raise ValueError(
-            f"Expected {id} to be a FeatureController but was {controller}"
-        )
+    def attribute_controller(
+        self, expr: str | base_models.PropExpression
+    ) -> AttributeController:
+        """Returns an attribute controller for the given attribute id."""
+        expr = base_models.PropExpression.parse(expr)
+        attr: base_models.Attribute
+        if attr := self.engine.attribute_map.get(expr.prop):
+            # There are a few different ways an attribute might be stored or computed.
+            if attr.scoped:
+                # Scoped attributes are never stored on the character controller.
+                return None
+            if hasattr(self, attr.property_name or attr.id):
+                attr_value: PropertyController | Callable | int = getattr(
+                    self, attr.property_name or attr.id
+                )
+                if isinstance(attr_value, PropertyController):
+                    return attr_value
+                else:
+                    return SimpleAttributeWrapper(repr(expr), self)
+        raise ValueError(f"Attribute {expr} not found.")
 
     def get_attribute(
         self, expr: str | base_models.PropExpression
@@ -186,6 +225,9 @@ class CharacterController(ABC):
         attr: base_models.Attribute
         if attr := self.engine.attribute_map.get(expr.prop):
             # There are a few different ways an attribute might be stored or computed.
+            if attr.scoped:
+                # Scoped attributes are never stored on the character controller.
+                return None
             if hasattr(self, attr.property_name or attr.id):
                 attr_value: PropertyController | int = getattr(
                     self, attr.property_name or attr.id
@@ -208,12 +250,8 @@ class CharacterController(ABC):
         add support for features.
         """
         expr = base_models.PropExpression.parse(expr)
-        if attr := self.get_attribute(expr):
-            if isinstance(attr, PropertyController):
-                if expr.single is not None:
-                    return attr.max_value
-                return attr.value
-            return attr
+        if controller := self.controller(expr):
+            return controller.evaluate(expr)
         return 0
 
     @cached_property
@@ -426,6 +464,49 @@ class PropertyController(ABC):
     def max_value(self) -> int:
         return self.value
 
+    def evaluate(self, expr: base_models.PropExpression) -> int:
+        if expr.prop != self.id or expr.option != self.option:
+            raise ValueError(f"Cannot evaluate {expr} on {self}")
+        if expr.attribute:
+            return self.evaluate_attribute(
+                expr.copy(update={"prop": expr.attribute, "attribute": None})
+            )
+        if expr.slot is not None:
+            return self.evaluate_slot(expr)
+        if expr.single is not None:
+            return self.max_value
+        return self.value
+
+    def evaluate_slot(self, expr: base_models.PropExpression) -> int:
+        raise ValueError(f"Cannot evaluate slot expression {expr} on {self}")
+
+    def evaluate_attribute(self, expr: base_models.PropExpression) -> int:
+        # Any property (including featuers and attributes) can have scoped attributes.
+        # There is currently no way to query for a scoped attribute of a scoped attribute,
+        # but that's probably not a thing that needs to happen.
+        if attr := self.character.engine.attribute_map.get(expr.attribute or expr.prop):
+            # There are a few different ways an attribute might be stored or computed.
+            if not attr.scoped:
+                # Global attributes are never stored on property controllers.
+                return None
+            if hasattr(self, attr.property_name or attr.id):
+                attr_value: PropertyController | int = getattr(
+                    self, attr.property_name or attr.id
+                )
+                if isinstance(attr_value, PropertyController):
+                    return attr_value.evaluate(
+                        expr.copy(update={"prop": attr.id, "attribute": None})
+                    )
+                elif isinstance(attr_value, Callable):
+                    try:
+                        return attr_value(expr)
+                    except TypeError:
+                        return attr_value()
+                return attr_value
+            else:
+                return attr.default_value
+        return 0
+
     def reconcile(self) -> None:
         """Override to update computations on change."""
 
@@ -438,6 +519,33 @@ class PropertyController(ABC):
         else:
             del self._propagation_data[data.source]
         self.reconcile()
+
+    def subcontroller(
+        self, expr: str | base_models.PropExpression
+    ) -> PropertyController | None:
+        """Returns a subcontroller for the given expression, if possible.
+
+        The default implementation supports attribute controllers. If a "simple" attribute
+        (one that does not return its own controller) is requested, it will be wrapped in a
+        SimpleAttributeWrapper.
+        """
+        expr = base_models.PropExpression.parse(expr)
+        attr_id = expr.attribute or expr.prop
+        if attr := self.character.engine.attribute_map.get(attr_id):
+            # There are a few different ways an attribute might be stored or computed.
+            if not attr.scoped:
+                # Global attributes are never stored on property controllers.
+                return None
+            if hasattr(self, attr.property_name or attr.id):
+                # If the attribute is stored on this controller, we can just return it.
+                # If it's a 'simple' attribute (it just returns an integer)
+                attr_value: PropertyController | int = getattr(
+                    self, attr.property_name or attr.id
+                )
+                if isinstance(attr_value, PropertyController):
+                    return attr_value
+                return SimpleAttributeWrapper(repr(expr), self.character, self)
+        return None
 
     def __eq__(self, other: Any) -> bool:
         if self is other:
@@ -669,6 +777,39 @@ class AttributeController(PropertyController):
 
     def __str__(self) -> str:
         return f"{self.definition.name}: {self.value}"
+
+
+class SimpleAttributeWrapper(AttributeController):
+    def __init__(
+        self,
+        full_id: str,
+        character: CharacterController,
+        subcontroller: PropertyController | None = None,
+    ):
+        super().__init__(full_id, character)
+        self._subcontroller = subcontroller
+        if self.definition.scoped and not subcontroller:
+            raise ValueError(f"Scoped attribute {self.id} requires a subcontroller.")
+        if not self.definition.scoped and subcontroller:
+            raise ValueError(
+                f"Attribute {self.id} is not scoped and cannot have a subcontroller."
+            )
+
+    def evaluate(self, expr: base_models.PropExpression) -> int:
+        if expr.prop != self.id:
+            expr = expr.copy(update={"prop": expr.attribute, "attribute": None})
+        return super().evaluate(expr)
+
+    def evaluate_slot(self, expr: base_models.PropExpression) -> int:
+        # When an attribute is defined by a callable, we can't decide whether it supports slots.
+        if expr.single is not None:
+            return self.max_value
+        return self.value
+
+    @property
+    def value(self) -> int:
+        controller = self._subcontroller or self.character
+        return controller.evaluate_attribute(self.expression)
 
 
 class Engine(ABC):

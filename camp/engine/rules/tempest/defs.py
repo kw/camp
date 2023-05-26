@@ -93,7 +93,6 @@ class BaseFeatureDef(base_models.BaseFeatureDef):
 
 class SubFeatureDef(BaseFeatureDef):
     type: Literal["subfeature"] = "subfeature"
-    parent: str | None = None
 
 
 class ClassDef(BaseFeatureDef):
@@ -220,13 +219,22 @@ FeatureDefinitions: TypeAlias = (
 )
 
 
-class AttributeScaling(base_models.BaseModel):
+class ScalingTable(base_models.Table, base_models.BaseModel):
     base: int
     factor: float
     rounding: Literal["up", "down", "nearest"] = "nearest"
+    low: int = 1
+    high: int = 25
 
-    def evaluate(self, value: float) -> int:
-        x = self.base + (value / self.factor)
+    def bounds(self) -> tuple[int, int]:
+        return self.low, self.high
+
+    def evaluate(self, key: int) -> int:
+        x = self.base + (key / self.factor)
+        if key < self.low:
+            key = self.low
+        elif key > self.high:
+            key = self.high
         match self.rounding:
             case "up":
                 return math.ceil(x)
@@ -234,6 +242,9 @@ class AttributeScaling(base_models.BaseModel):
                 return math.floor(x)
             case _:
                 return round(x)
+
+
+Table = ScalingTable | base_models.DictTable
 
 
 class Ruleset(base_models.BaseRuleset):
@@ -246,9 +257,21 @@ class Ruleset(base_models.BaseRuleset):
     flaw_overcome: int = 2
     cp_baseline: int = 1
     cp_per_level: int = 2
-    xp_table: dict[int, int]
-    lp: AttributeScaling = AttributeScaling(base=2, factor=10, rounding="up")
-    spikes: AttributeScaling = AttributeScaling(base=2, factor=8, rounding="down")
+    xp_table: Table
+    lp: Table = ScalingTable(base=2, factor=5, rounding="up")
+    spikes: Table = ScalingTable(base=2, factor=6, rounding="down")
+    # Actual rulesets will need to specify their power tables. The
+    # scaling table isn't smart enough to represent whatever formula
+    # the ruleset is using.
+    powers: dict[int, Table] = {
+        0: ScalingTable(base=0, factor=2, rounding="down"),
+        1: ScalingTable(base=1, factor=2, rounding="down"),
+        2: ScalingTable(base=0, factor=6, rounding="down"),
+        3: ScalingTable(base=0, factor=11, rounding="down"),
+        4: ScalingTable(base=0, factor=16, rounding="down"),
+    }
+    spells_known: Table = ScalingTable(base=1, factor=1)
+    spells_prepared: Table = ScalingTable(base=1, factor=1)
 
     attributes: ClassVar[Iterable[Attribute]] = [
         Attribute(
@@ -271,10 +294,8 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="breedcap", name="Max Breeds", default_value=2, hidden=True),
         Attribute(id="bp", name="Breed Points", scoped=True, default_value=0),
         Attribute(id="spikes", name="Spikes", default_value=0),
-        Attribute(id="bonus_utilities", name="Utilities"),
-        Attribute(id="bonus_cantrips", name="Cantrips"),
-        Attribute(id="active_pool", name="Active Powers / Spells Prepared"),
-        Attribute(id="utility_pool", name="Utility Powers / Cantrips"),
+        Attribute(id="utilities", name="Utilities", scoped=True),
+        Attribute(id="cantrips", name="Cantrips", scoped=True),
         Attribute(
             id="spell_slots",
             name="Spells",

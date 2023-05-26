@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter
 
 
@@ -161,13 +159,46 @@ def test_multiclass_sellback(character: TempestCharacter):
     assert character.primary_class is None
 
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_spell_slots(character: TempestCharacter):
+def test_arcane_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
     character.xp_level = 7
     character.apply("wizard:7")
-    assert character.meets_requirements("spells:7")
-    assert character.meets_requirements("spells@1:6")
-    assert character.meets_requirements("spells@2:1")
-    assert not character.meets_requirements("spells@3")
-    assert character.meets_requirements("spells@1#arcane:6")
-    assert not character.meets_requirements("spells@1#divine:6")
+    assert character.meets_requirements("wizard.spell_slots:6")
+    assert character.meets_requirements("wizard.spell_slots@1:5")
+    assert character.meets_requirements("wizard.spell_slots@2:1")
+    assert not character.meets_requirements("wizard.spell_slots@3")
+    assert character.meets_requirements("arcane.spell_slots:6")
+    assert character.meets_requirements("arcane.spell_slots@1:5")
+    assert not character.meets_requirements("divine.spell_slots@1")
+
+
+def test_divine_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
+    character.xp_level = 7
+    character.apply("cleric:7")
+    assert character.meets_requirements("cleric.spell_slots:6")
+    assert character.meets_requirements("cleric.spell_slots@1:5")
+    assert character.meets_requirements("cleric.spell_slots@2:1")
+    assert not character.meets_requirements("cleric.spell_slots@3")
+    assert character.meets_requirements("divine.spell_slots:6")
+    assert character.meets_requirements("divine.spell_slots@1:5")
+    assert not character.meets_requirements("arcane.spell_slots@1")
+
+
+def test_mixed_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
+    character.xp_level = 14
+    character.apply("cleric:7")
+    character.apply("wizard:7")
+    assert character.meets_requirements("wizard.spell_slots:6")
+    assert character.meets_requirements("wizard.spell_slots@1:5")
+    assert character.meets_requirements("wizard.spell_slots@2:1")
+    assert not character.meets_requirements("wizard.spell_slots@3")
+    assert character.meets_requirements("cleric.spell_slots:6")
+    assert character.meets_requirements("cleric.spell_slots@1:5")
+    assert character.meets_requirements("cleric.spell_slots@2:1")
+    assert not character.meets_requirements("cleric.spell_slots@3")
+    assert character.meets_requirements("arcane.spell_slots@1:5")
+    assert character.meets_requirements("arcane.spell_slots:6")
+    assert character.meets_requirements("divine.spell_slots@1:5")
+    assert character.meets_requirements("divine.spell_slots:6")

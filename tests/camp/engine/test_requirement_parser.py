@@ -20,7 +20,10 @@ from camp.engine.rules.base_models import parse_req
         "feature-id+Text:5",
         "feature-id@4:5",
         "feature-id+Undead_Lore",
+        "feature-id.attribute",
         "feature-id@1+My_Option:2$3<4",
+        "feature-id.attribute@1+My_Option:2$3<4",
+        "feature_id.attribute_id",
     ],
 )
 def test_parse_propreq(req):
@@ -35,8 +38,9 @@ def test_parse_propreq(req):
 
 def test_parse_propreq_values():
     """Test that, when parsed, the PropReq has the expected values."""
-    p = PropExpression.parse("feature-id@1+My_Option:23$34<450")
+    p = PropExpression.parse("feature-id.attr@1+My_Option:23$34<450")
     assert p.prop == "feature-id"
+    assert p.attribute == "attr"
     assert p.slot == "1"
     assert p.option == "My Option"
     assert p.value == 23

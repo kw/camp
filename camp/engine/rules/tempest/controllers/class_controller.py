@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
 from .. import defs
 from . import character_controller
 from . import feature_controller
-
-_MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 
 
 class ClassController(feature_controller.FeatureController):
@@ -82,6 +81,15 @@ class ClassController(feature_controller.FeatureController):
     @property
     def caster(self) -> bool:
         return self.definition.sphere != "martial"
+
+    def spell_slots(self, expr: PropExpression) -> int:
+        if expr is None or expr.slot is None:
+            return sum(
+                self.spell_slots(expr.copy(update={"slot": t})) for t in (1, 2, 3, 4)
+            )
+        slot = int(expr.slot)
+        tier_table = self.character.ruleset.powers[slot]
+        return tier_table.evaluate(self.value)
 
     def can_increase(self, value: int = 1) -> Decision:
         if not (rd := super().can_increase(value)):

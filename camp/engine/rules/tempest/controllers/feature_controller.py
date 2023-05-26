@@ -46,16 +46,14 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def parent(self) -> FeatureController | None:
-        if not hasattr(self.definition, "parent") or self.definition.parent is None:
+        if self.definition.parent is None:
             return None
         return self.character.controller(self.definition.parent)
 
     @property
     def taken_options(self) -> dict[str, int]:
         options = {}
-        for controller in self.character.controllers_for_type(
-            self.feature_type
-        ).values():
+        for controller in self.character.features.values():
             if controller.id == self.id and controller.option and controller.value > 0:
                 options[controller.option] = controller.value
         return options
@@ -227,9 +225,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Sum any ranks the character has in instances of it.
             total: int = 0
-            for feat, controller in self.character.controllers_for_type(
-                self.feature_type
-            ).items():
+            for feat, controller in self.character.features.items():
                 if feat.startswith(f"{self.id}+"):
                     total += controller.value
             return total
@@ -245,9 +241,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Return the value of the highest instance.
             current: int = 0
-            for feat, controller in self.character.controllers_for_type(
-                self.feature_type
-            ).items():
+            for feat, controller in self.character.features.items():
                 if feat.startswith(f"{self.id}+"):
                     new_value = controller.value
                     if new_value > current:
@@ -415,7 +409,7 @@ class FeatureController(base_engine.BaseFeatureController):
     def _perform_propagation(self) -> None:
         props = self._gather_propagation()
         for id, data in props.items():
-            if controller := self.character._controller_for_property(id):
+            if controller := self.character.controller(id):
                 controller.propagate(data)
 
     def extra_grants(self) -> dict[str, int]:

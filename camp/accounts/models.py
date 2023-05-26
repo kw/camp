@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from game.models import Game
+
+from camp.game.models import Game
 
 User = get_user_model()
 

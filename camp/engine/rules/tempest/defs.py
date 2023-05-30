@@ -18,7 +18,6 @@ from camp.engine.utils import table_lookup
 from . import models
 
 Attribute: TypeAlias = base_models.Attribute
-Grantable: TypeAlias = str | list[str] | dict[str, int]
 
 
 class Discount(base_models.BaseModel):
@@ -42,6 +41,15 @@ class Discount(base_models.BaseModel):
         return discount
 
 
+class GrantDef(base_models.BaseModel):
+    """Describes how a grant operates in more detail."""
+
+    id: str
+    value: int | list[str] | dict[int, int] = 1
+    per_rank: bool = False
+
+
+Grantable: TypeAlias = str | list[str] | dict[str, int] | GrantDef
 Discounts: TypeAlias = dict[str, Discount | int]
 
 
@@ -354,6 +362,8 @@ def _grantable_identifiers(grantables: Grantable | Iterable[Grantable]) -> set[s
                 id_set.update(list(g.keys()))
             case str():
                 id_set.add(g)
+            case GrantDef(id=expr):
+                id_set.add(expr)
             case None:
                 pass
             case _:

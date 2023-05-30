@@ -172,7 +172,12 @@ class PropExpression(BoolExpr):
 
     @property
     def full_id(self) -> str:
-        return full_id(self.prop, self.option)
+        return self.unparse(
+            prop=self.prop,
+            attribute=self.attribute,
+            slot=self.slot,
+            option=self.option,
+        )
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
         expr = self.unparse(
@@ -204,6 +209,12 @@ class PropExpression(BoolExpr):
 
     def identifiers(self) -> set[str]:
         return set([self.prop])
+
+    def popattr(self, new_attr: str | None = None) -> PropExpression:
+        """Returns a copy of this expression with the property removed and attribute moved into its place."""
+        if not self.attribute:
+            return self.copy()
+        return self.copy(update={"prop": self.attribute, "attribute": new_attr})
 
     @classmethod
     def parse(cls, req: str | PropExpression) -> PropExpression:
@@ -241,7 +252,7 @@ class PropExpression(BoolExpr):
         single: int | None = None,
         less_than: int | None = None,
     ):
-        req = prop
+        req = prop or "unknown"
         if attribute:
             req += f".{attribute}"
         if slot:

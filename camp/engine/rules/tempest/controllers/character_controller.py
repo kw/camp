@@ -211,7 +211,7 @@ class TempestCharacter(base_engine.CharacterController):
         expr = PropExpression.parse(expr)
         if super().has_prop(expr):
             return True
-        if controller := self.feature_controller(expr):
+        if controller := self.controller(expr):
             return controller.value > 0
         return False
 

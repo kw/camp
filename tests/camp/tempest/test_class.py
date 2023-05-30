@@ -162,14 +162,14 @@ def test_multiclass_sellback(character: TempestCharacter):
 def test_arcane_spell_slots(character: TempestCharacter):
     # TODO: Support for bonus archetype spell slots.
     character.xp_level = 7
-    character.apply("wizard:7")
-    assert character.meets_requirements("wizard.spell_slots:6")
-    assert character.meets_requirements("wizard.spell_slots@1:5")
-    assert character.meets_requirements("wizard.spell_slots@2:1")
-    assert not character.meets_requirements("wizard.spell_slots@3")
-    assert character.meets_requirements("arcane.spell_slots:6")
-    assert character.meets_requirements("arcane.spell_slots@1:5")
-    assert not character.meets_requirements("divine.spell_slots@1")
+    assert character.apply("wizard:7")
+    assert character.get_prop("wizard.spell_slots") == 6
+    assert character.get_prop("wizard.spell_slots@1") == 5
+    assert character.get_prop("wizard.spell_slots@2") == 1
+    assert character.get_prop("wizard.spell_slots@3") == 0
+    assert character.get_prop("arcane.spell_slots") == 6
+    assert character.get_prop("arcane.spell_slots@1") == 5
+    assert character.get_prop("divine.spell_slots@1") == 0
 
 
 def test_divine_spell_slots(character: TempestCharacter):
@@ -206,11 +206,25 @@ def test_mixed_spell_slots(character: TempestCharacter):
 
 def test_bonus_spell_slots(character: TempestCharacter):
     assert character.apply("wizard:2")
+    character.awarded_cp = 10
     novice_slots = character.get_prop("arcane.spell_slots@1")
     assert novice_slots > 0
     intermediate_slots = character.get_prop("arcane.spell_slots@2")
     assert intermediate_slots == 0
     assert character.apply("bonus-novice-arcane")
+    # The arcane sphere itself is not modified by the bonus.
+    assert character.get_prop("arcane") == 2
     # Novice slots are increased, but intermediate slots are not.
     assert character.get_prop("arcane.spell_slots@1") == novice_slots + 1
     assert character.get_prop("arcane.spell_slots@2") == intermediate_slots
+    # Adding more ranks adds more novice slots.
+    assert character.apply("bonus-novice-arcane")
+    assert character.get_prop("arcane.spell_slots@1") == novice_slots + 2
+    assert character.apply("bonus-novice-arcane")
+    assert character.get_prop("arcane.spell_slots@1") == novice_slots + 3
+    # Bonus intermediate slots also work. Level up to find out...
+    character.xp_level = 6
+    character.apply("wizard:4")
+    intermediate_slots = character.get_prop("arcane.spell_slots@2")
+    assert character.apply("bonus-intermediate-arcane:2")
+    assert character.get_prop("arcane.spell_slots@2") == intermediate_slots + 2

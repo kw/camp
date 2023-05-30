@@ -106,7 +106,9 @@ class ClassController(feature_controller.FeatureController):
             return rd
         if (
             not self.is_archetype
-            and max((c.value for c in self.character.classes), default=0)
+            and max(
+                (c.value for c in self.character.classes if c.id != self.id), default=0
+            )
             < self.purchased_ranks
         ):
             self.is_archetype = True

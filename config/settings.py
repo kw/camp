@@ -202,10 +202,3 @@ MESSAGE_TAGS = {
 }
 
 UNDO_STACK_SIZE = env.int("UNDO_STACK_SIZE", default=10)
-
-try:
-    import django_heroku
-
-    django_heroku.settings(locals(), test_runner=False)
-except ImportError:
-    pass

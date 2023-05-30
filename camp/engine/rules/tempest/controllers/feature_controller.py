@@ -6,6 +6,7 @@ from typing import Iterable
 from typing import Type
 from typing import cast
 
+from camp.engine import utils
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
@@ -38,24 +39,22 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def subfeatures(self) -> list[FeatureController]:
         subfeatures = []
-        for id in self._subfeatures:
-            subfeature = self.character.features.get(id)
+        for expr in self._subfeatures:
+            subfeature = self.character.features.get(expr)
             if subfeature is not None and subfeature.value > 0:
                 subfeatures.append(subfeature)
         return subfeatures
 
     @property
     def parent(self) -> FeatureController | None:
-        if not hasattr(self.definition, "parent") or self.definition.parent is None:
+        if self.definition.parent is None:
             return None
         return self.character.controller(self.definition.parent)
 
     @property
     def taken_options(self) -> dict[str, int]:
         options = {}
-        for controller in self.character.controllers_for_type(
-            self.feature_type
-        ).values():
+        for controller in self.character.features.values():
             if controller.id == self.id and controller.option and controller.value > 0:
                 options[controller.option] = controller.value
         return options
@@ -227,9 +226,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Sum any ranks the character has in instances of it.
             total: int = 0
-            for feat, controller in self.character.controllers_for_type(
-                self.feature_type
-            ).items():
+            for feat, controller in self.character.features.items():
                 if feat.startswith(f"{self.id}+"):
                     total += controller.value
             return total
@@ -245,9 +242,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Return the value of the highest instance.
             current: int = 0
-            for feat, controller in self.character.controllers_for_type(
-                self.feature_type
-            ).items():
+            for feat, controller in self.character.features.items():
                 if feat.startswith(f"{self.id}+"):
                     new_value = controller.value
                     if new_value > current:
@@ -377,7 +372,7 @@ class FeatureController(base_engine.BaseFeatureController):
             return Decision.NEEDS_OPTION_FAIL
         self.purchased_ranks += value
         self.reconcile()
-        return Decision(success=True, amount=self.value)
+        return Decision(success=True, amount=self.value, mutation_applied=True)
 
     def decrease(self, value: int) -> Decision:
         if not (rd := self.can_decrease(value)):
@@ -415,7 +410,7 @@ class FeatureController(base_engine.BaseFeatureController):
     def _perform_propagation(self) -> None:
         props = self._gather_propagation()
         for id, data in props.items():
-            if controller := self.character._controller_for_property(id):
+            if controller := self.character.controller(id):
                 controller.propagate(data)
 
     def extra_grants(self) -> dict[str, int]:
@@ -426,22 +421,30 @@ class FeatureController(base_engine.BaseFeatureController):
         return {}
 
     def _gather_propagation(self) -> dict[str, engine.PropagationData]:
-        grants = self._gather_grants(self.definition.grants)
+        if grant_def := getattr(self.definition, "grants", None):
+            grants = self._gather_grants(grant_def)
+        else:
+            grants = {}
         grants.update(self.extra_grants())
-        discounts = self._gather_discounts(self.definition.discounts)
+        if discount_def := getattr(self.definition, "discounts", None):
+            discounts = self._gather_discounts(discount_def)
+        else:
+            discounts = {}
         # Choices may also affect grants/discounts.
         if self.choices:
             for choice in self.choices.values():
                 choice.update_propagation(grants, discounts)
         props: dict[str, engine.PropagationData] = {}
         all_keys = set(grants.keys()).union(discounts.keys())
-        for id in all_keys:
-            props[id] = engine.PropagationData(source=self.full_id)
+        for expr in all_keys:
+            data = props[expr] = engine.PropagationData(
+                source=self.full_id, target=PropExpression.parse(expr)
+            )
             if self.value > 0:
-                if g := grants.get(id):
-                    props[id].grants = g
-                if d := discounts.get(id):
-                    props[id].discount = d
+                if g := grants.get(expr):
+                    data.grants = g
+                if d := discounts.get(expr):
+                    data.discount = d
         return props
 
     def _gather_grants(self, grants: defs.Grantable) -> dict[str, int]:
@@ -457,6 +460,14 @@ class FeatureController(base_engine.BaseFeatureController):
                 grant_map.update(self._gather_grants(grant))
         elif isinstance(grants, dict):
             grant_map.update(grants)
+        elif isinstance(grants, defs.GrantDef):
+            grant_value = grants.value
+            self_value = self.value
+            if isinstance(grant_value, (list, dict)):
+                grant_value = utils.table_lookup(grant_value, self_value)
+            if grants.per_rank:
+                grant_value *= self_value
+            grant_map[grants.id] = grant_value
         else:
             raise NotImplementedError(f"Unexpected grant value: {grants}")
         return grant_map

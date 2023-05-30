@@ -49,8 +49,10 @@ def maybe_iter(value: str | _T | list[str | _T] | None) -> Iterable[str | _T]:
         yield value
 
 
-def table_lookup(table: dict[int, _T], key: int) -> _T:
+def table_lookup(table: dict[int, _T] | list[_T], key: int) -> _T:
     best: _T | None = None
+    if isinstance(table, list):
+        table = {k: v for k, v in enumerate(table)}
     for k in sorted(table.keys()):
         if best is None or k <= key:
             best = table[k]

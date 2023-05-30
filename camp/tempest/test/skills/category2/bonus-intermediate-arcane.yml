@@ -1,0 +1,7 @@
+name: Bonus Intermediate Arcane
+cost: 2
+ranks: 5
+requires: arcane.spell_slots@2
+grants: {id: arcane.spell_slots@2, per_rank: true}
+description: >
+  Grants a bonus intermediate spell slot of Arcane sphere.

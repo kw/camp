@@ -11,9 +11,8 @@ from camp.engine.rules.tempest.engine import TempestEngine
 
 @pytest.fixture
 def engine() -> TempestEngine:
-    return cast(TempestEngine, loader.load_ruleset("$camp.tempest.test").engine)
-    if not isinstance(engine, TempestEngine):
-        raise Exception("Example ruleset does not specify expected engine")
+    engine = cast(TempestEngine, loader.load_ruleset("$camp.tempest.test").engine)
+    assert engine.ruleset.bad_defs == []
     return engine
 
 

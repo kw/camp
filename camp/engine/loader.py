@@ -106,7 +106,6 @@ def load_ruleset(
             ruleset.bad_defs.append(
                 base_models.BadDefinition(
                     path=feature.def_path,
-                    data=model.dump(as_json=False),
                     raw_data=None,
                     exception_type=type(exc).__name__,
                     exception_message=str(exc),
@@ -122,7 +121,6 @@ def load_ruleset(
         ruleset.bad_defs.append(
             base_models.BadDefinition(
                 path=feature.def_path,
-                data=model.dump(as_json=False),
                 raw_data=ruleset.engine_class,
                 exception_type=type(exc).__name__,
                 exception_message=str(exc),

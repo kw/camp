@@ -236,7 +236,7 @@ class TempestCharacter(base_engine.CharacterController):
 
     @cached_property
     def martial(self) -> base_engine.AttributeController:
-        return attribute_controllers.SumAttribute("martial", self, "class", "martial")
+        return attribute_controllers.SphereAttribute("martial", self)
 
     @cached_property
     def caster(self) -> base_engine.AttributeController:

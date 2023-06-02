@@ -249,10 +249,26 @@ def test_bonus_spell_slots(character: TempestCharacter):
     assert character.get("arcane.spell_slots@2") == intermediate_slots + 2
 
 
-def test_spells_known(character: TempestCharacter):
+def test_caster_attributes(character: TempestCharacter):
     character.xp_level = 7
     assert character.apply("wizard:7")
     assert character.get("wizard.spells_known") == 7
     assert character.get("arcane.spells_known") == 7
+    assert character.get("wizard.spells_prepared") == 5
+    assert character.get("arcane.spells_prepared") == 5
+    assert character.get("wizard.cantrips") == 3
+    assert character.get("arcane.cantrips") == 3
     assert character.get("divine.spells_known") == 0
     assert character.get("martial.spells_known") == 0
+
+
+def test_martial_powers(character: TempestCharacter):
+    character.xp_level = 7
+    assert character.apply("fighter:7")
+    assert character.get("fighter.powers") == 6
+    assert character.get("fighter.powers@1") == 5
+    assert character.get("fighter.powers@2") == 1
+    assert character.get("fighter.utilities") == 3
+    assert character.get("martial.powers") == 6
+    assert character.get("arcane.powers") == 0
+    assert character.get("divine.powers") == 0

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Iterable
 
 from camp.engine.rules import base_engine
-from camp.engine.rules.base_engine import PropagationData
 from camp.engine.rules.base_models import PropExpression
 
 from . import character_controller
@@ -80,14 +79,13 @@ class SphereAttribute(SumAttribute):
     def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
         super().__init__(prop_id, character, feature_type="class", condition=prop_id)
 
-    def spell_slots(self, expr: PropExpression) -> int:
-        total: int = 0
-        for fc in self.matching_controllers():
-            total += fc.subcontroller(expr).value
-        return total
+    def _evaluate_sphere_attr(self, expr: PropExpression) -> int:
+        return sum(fc.subcontroller(expr).value for fc in self.matching_controllers())
 
-    def propagate(self, data: PropagationData) -> None:
-        return super().propagate(data)
+    spell_slots = _evaluate_sphere_attr
+    spells_known = _evaluate_sphere_attr
+    spells_prepared = _evaluate_sphere_attr
+    cantrips = _evaluate_sphere_attr
 
 
 class CharacterPointController(AttributeController):

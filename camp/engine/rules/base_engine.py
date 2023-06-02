@@ -100,7 +100,7 @@ class CharacterController(ABC):
                 yield fc
         else:
             for id, definition in self.ruleset.features.items():
-                if id in self.features and self.get_prop(id) > 0:
+                if id in self.features and self.get(id) > 0:
                     continue
                 if type and definition.type != type:
                     continue
@@ -197,14 +197,6 @@ class CharacterController(ABC):
             return controller
         return None
 
-    def __getitem__(self, expr: str | base_models.PropExpression) -> PropertyController:
-        try:
-            if c := self.controller(expr):
-                return c
-            raise KeyError(f"Can't find controller for {expr}")
-        except NotImplementedError:
-            raise KeyError(f"Controller not yet implemented for {expr}")
-
     @abstractmethod
     def feature_controller(
         self, expr: str | base_models.PropExpression
@@ -240,7 +232,7 @@ class CharacterController(ABC):
             return controller
         raise ValueError(f"Attribute {expr.full_id} not found.")
 
-    def get_prop(self, expr: str | base_models.PropExpression) -> int:
+    def get(self, expr: str | base_models.PropExpression) -> int:
         """Retrieve the value of an arbitrary property (feature, attribute, etc).
 
         The base implementation only knows how to retrieve attributes. If the attribute
@@ -254,7 +246,7 @@ class CharacterController(ABC):
         """
         expr = base_models.PropExpression.parse(expr)
         if controller := self.controller(expr):
-            return controller.evaluate(expr)
+            return controller.get(expr)
         return 0
 
     @cached_property
@@ -469,7 +461,12 @@ class PropertyController(ABC):
     def max_value(self) -> int:
         return self.value
 
-    def evaluate(self, expr: base_models.PropExpression) -> int:
+    def get(self, expr: str | base_models.PropExpression) -> int:
+        expr = base_models.PropExpression.parse(expr)
+        if expr.prop != self.id and expr.attribute != self.id:
+            sub = self.subcontroller(expr)
+            if sub:
+                return sub.get(expr)
         if expr.single is not None:
             return self.max_value
         return self.value

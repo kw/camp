@@ -185,7 +185,7 @@ class PropExpression(BoolExpr):
         )
         if not char.has_prop(expr):
             return Decision(success=False, reason=f"{self!r} [{expr} not present]")
-        ranks = char.get_prop(expr)
+        ranks = char.get(expr)
         if self.value is not None:
             if ranks < self.value:
                 return Decision(
@@ -197,7 +197,7 @@ class PropExpression(BoolExpr):
                     success=False, reason=f"{self!r} [{ranks} ≥ {self.less_than}]"
                 )
         elif self.single is not None:
-            max_ranks = char.get_prop(f"{expr}$0")
+            max_ranks = char.get(f"{expr}$0")
             if max_ranks < self.single:
                 return Decision(
                     success=False, reason=f"{self!r} [{max_ranks} < {self.single}]"

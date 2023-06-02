@@ -306,10 +306,20 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="cantrips", name="Cantrips", scoped=True),
         Attribute(
             id="spell_slots",
-            name="Spells",
+            name="Spell Slots",
             scoped=True,
             tiered=True,
             tier_names=["Novice", "Intermediate", "Greater", "Master"],
+        ),
+        Attribute(
+            id="spells_known",
+            name="Spells Known",
+            scoped=True,
+        ),
+        Attribute(
+            id="spells_prepared",
+            name="Spells Prepared",
+            scoped=True,
         ),
         Attribute(
             id="powers",
@@ -320,19 +330,19 @@ class Ruleset(base_models.BaseRuleset):
         ),
         Attribute(
             id="arcane",
-            name="Arcane Caster Levels",
+            name="Arcane",
             is_tag=True,
             hidden=True,
         ),
         Attribute(
             id="divine",
-            name="Divine Caster Levels",
+            name="Divine",
             is_tag=True,
             hidden=True,
         ),
         Attribute(
             id="martial",
-            name="Martial Class Levels",
+            name="Martial",
             is_tag=True,
             hidden=True,
         ),

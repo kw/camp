@@ -1,0 +1,15 @@
+name: Revulsion
+incant: "... to keep you at bay."
+call: "Short Repel by Fear"
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Fear
+duration: Short Rest
+effect: Repel
+description: >
+  The Mage reaches out with their will, putting into others a deep compulsion to stay away.
+  Upon completion of the incantation, two spell-balls will be charged with the ability to Repel
+  others. If this spell is Prepared using an Adept spell-slot, four balls are charged. If it is
+  cast with a Greater spell-slot, it charges a single spell-packet, but gives the Mage the
+  ability to continue casting the spell as if it were a cantrip until the next Short Rest.
+  Although multiple spell-balls are charged at once, they must be thrown one at a time.

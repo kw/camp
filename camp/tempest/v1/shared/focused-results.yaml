@@ -1,0 +1,8 @@
+name: Focused Results
+type: archetype
+requires:
+  - level:6
+  - basic-classes<2
+description: >
+  You gain an additional Utility Power or Cantrip and an additional Basic Power or Novice Spell slot
+  from your archetype class.

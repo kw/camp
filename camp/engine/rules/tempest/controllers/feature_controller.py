@@ -29,7 +29,7 @@ class FeatureController(base_engine.BaseFeatureController):
 
     # Subclasses can change the currency used, but CP is the default.
     # Note that no currency display will be shown if the feature has no cost model.
-    currency: str = "cp"
+    currency: str | None = None
 
     def __init__(self, full_id: str, character: character_controller.TempestCharacter):
         super().__init__(full_id, character)
@@ -169,6 +169,14 @@ class FeatureController(base_engine.BaseFeatureController):
                             reason += f"up to {discount.ranks} {self.rank_name(discount.ranks)}, "
                         reason += f"via {source}."
                         reasons.append(reason)
+
+        if propdata := self._gather_propagation():
+            for id, data in propdata.items():
+                name = self.character.describe_expr(id)
+                if data.grants > 0:
+                    reasons.append(f"Grants {name} x{data.grants}")
+                if data.discount:
+                    reasons.append(f"Applies a discount to {name}")
         return reasons
 
     @property
@@ -314,14 +322,14 @@ class FeatureController(base_engine.BaseFeatureController):
                 success=False, reason=f"Feature {self.id} does not accept options."
             )
         # Is this a skill with a cost that must be paid? If so, can we pay it?
-        current_cp = self.character.cp
-        cp_delta = self._cost_for(self.paid_ranks + value) - self.cost
-        if current_cp < cp_delta:
+        available = self._currency_balance()
+        currency_delta = self._cost_for(self.paid_ranks + value) - self.cost
+        if available is not None and available < currency_delta:
             return Decision(
                 success=False,
-                need_currency={"cp": cp_delta},
-                reason=f"Need {cp_delta} CP to purchase, but only have {current_cp.value}",
-                amount=self._max_rank_increase(current_cp.value),
+                need_currency={self.currency: currency_delta},
+                reason=f"Need {currency_delta} {self.currency_name} to purchase, but only have {available}",
+                amount=self._max_rank_increase(available),
             )
         if self.option_def:
             # If this is an option feature and the option was specified,
@@ -527,9 +535,9 @@ class FeatureController(base_engine.BaseFeatureController):
                         rank_costs[i] = discount.minimum
         return sum(rank_costs)
 
-    def _max_rank_increase(self, available_cp: int = -1) -> int:
-        if available_cp < 0:
-            available_cp = self.character.cp.value
+    def _max_rank_increase(self, available: int = -1) -> int:
+        if available < 0:
+            available = self._currency_balance()
         available_ranks = self.purchaseable_ranks
         current_cost = self.cost
         if available_ranks < 1:
@@ -537,14 +545,33 @@ class FeatureController(base_engine.BaseFeatureController):
         match cd := self.cost_def:
             case int():
                 # Relatively trivial case
-                return min(available_ranks, math.floor(available_cp / cd))
+                return min(available_ranks, math.floor(available / cd))
             case defs.CostByRank():
                 while available_ranks > 0:
                     cp_delta = (
                         self._cost_for(self.paid_ranks + available_ranks) - current_cost
                     )
-                    if cp_delta <= available_cp:
+                    if cp_delta <= available:
                         return available_ranks
                     available_ranks -= 1
                 return 0
         raise NotImplementedError(f"Don't know how to compute cost with {cd}")
+
+    def _currency_balance(self) -> int | None:
+        match self.currency:
+            case "cp":
+                return self.character.cp.value
+            case None:
+                return 0
+            case _:
+                return 0
+
+
+class SkillController(FeatureController):
+    definition: defs.SkillDef
+    currency: str = "cp"
+
+
+class PerkController(FeatureController):
+    definition: defs.PerkDef
+    currency: str = "cp"

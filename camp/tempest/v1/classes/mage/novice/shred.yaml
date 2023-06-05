@@ -1,0 +1,12 @@
+name: Shred
+incant: "... to rend and break what is now forgotten."
+call: "Shatter [Item] by Force"
+target: Hand Held Object
+delivery: Touch
+accent: Force
+duration: Instantaneous
+effect: Shatter, Refresh or Grant Barrier
+description: >
+  When this spell is cast, Shred Shatters an item the Mage is holding. If the item is successfully Shattered,
+  and the item was tagged, or otherwise had provable in-game value, like a weapon, shield, or other discarded
+  item on the battlefield, the Mage refreshes one Spike, or gains two Barrier, their choice.

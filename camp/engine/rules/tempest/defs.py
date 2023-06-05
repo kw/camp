@@ -9,7 +9,7 @@ from typing import TypeAlias
 
 import pydantic
 from pydantic import Field
-from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 from camp.engine.rules import base_models
 from camp.engine.utils import maybe_iter
@@ -75,14 +75,25 @@ class ChoiceDef(base_models.BaseModel):
         matcher: A feature matcher that can be used to limit the choices available.
     """
 
-    name: str
+    name: str | None = None
     description: str | None = None
     limit: int | Literal["unlimited"] = 1
     discount: Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
 
 
-class BaseFeatureDef(base_models.BaseFeatureDef):
+class PowerCard(base_models.BaseModel):
+    incant: str | None = None
+    call: str | None = None
+    accent: str | None = None
+    target: str | None = None
+    duration: str | None = None
+    delivery: str | None = None
+    refresh: str | None = None
+    effect: str | None = None
+
+
+class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
     discounts: dict[str, Discount | int] | None = None
     choices: dict[str, ChoiceDef] | None = None
@@ -203,27 +214,44 @@ class PerkDef(BaseFeatureDef):
 
 class PowerDef(BaseFeatureDef):
     type: Literal["power"] = "power"
-    sphere: Literal["arcane", "divine", "martial", None] = None
-    tier: NonNegativeInt | None = None
-    class_: str | None = Field(alias="class", default=None)
-    incant_prefix: str | None = None
-    incant: str | None = None
-    call: str | None = None
-    accent: str | None = None
-    target: str | None = None
-    duration: str | None = None
-    delivery: str | None = None
-    refresh: str | None = None
-    effect: str | None = None
 
-    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
-        super().post_validate(ruleset)
-        ruleset.validate_identifiers(self.class_)
-        ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+
+class ArchetypePower(PowerDef):
+    type: Literal["archetype"] = "archetype"
+
+
+class MartialPower(PowerDef):
+    type: Literal["martial"] = "martial"
+    tier: PositiveInt | None = None
+
+
+class Utility(PowerDef):
+    type: Literal["utility"] = "utility"
+
+
+class Spell(PowerDef):
+    type: Literal["spell"] = "spell"
+    tier: PositiveInt | None = None
+    sphere: Literal["arcane", "divine", None] = None
+
+
+class Cantrip(PowerDef):
+    type: Literal["cantrip"] = "cantrip"
+    sphere: Literal["arcane", "divine", None] = None
 
 
 FeatureDefinitions: TypeAlias = (
-    ClassDef | SubFeatureDef | SkillDef | PowerDef | FlawDef | PerkDef
+    ClassDef
+    | SubFeatureDef
+    | SkillDef
+    | PowerDef
+    | FlawDef
+    | PerkDef
+    | ArchetypePower
+    | MartialPower
+    | Spell
+    | Cantrip
+    | Utility
 )
 
 
@@ -350,6 +378,11 @@ class Ruleset(base_models.BaseRuleset):
             id="caster",
             name="Caster Levels",
             is_tag=True,
+            hidden=True,
+        ),
+        Attribute(
+            id="basic-classes",
+            name="Basic Classes",
             hidden=True,
         ),
     ]

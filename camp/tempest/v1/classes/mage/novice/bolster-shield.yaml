@@ -1,0 +1,15 @@
+name: Bolster Shield
+incant: "... to enhance this shield."
+call: "“Short Grant 2 Shield-Point to Shield by Force” x3"
+target: Shield(s)
+delivery: Packet (Spell-ball)
+accent: Force
+duration: Short Rest
+effect: Grant Shield-Points
+description: >
+  Bolster Shield adds a sheath of magical power around up to three shields, giving them
+  additional hardness, adding 2 shield-points to the touched shields. This can take a
+  shield above its maximum Shield Points. These points will last only until lost (i.e.
+  they cannot be Mended) or until the shield’s user completes a Short Rest. This spell
+  will not work on a shield that has been Shattered. Each instance of this spell must
+  target a different shield.

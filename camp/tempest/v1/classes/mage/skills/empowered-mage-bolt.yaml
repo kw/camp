@@ -1,0 +1,10 @@
+name: Empowered Mage Bolt
+cost: 3
+requires: mage:2
+description: >
+  While before, the nuances of the arcane might have been foreign to the Mage, now,
+  it’s become second nature. The four arcane affinities: Flame, Ice, Lightning, and Acid,
+  are now always close to the Mage’s fingertips.
+
+  When casting the Mage Bolt cantrip, the Mage may choose to use the Acid, Flame, Ice, or
+  Lightning accent instead of Force.

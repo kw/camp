@@ -1,0 +1,21 @@
+name: Laernian Bottle
+cost: 3
+requires: mage:8
+incant: “I conjure words of arcane might, from studied tomes in candlelight, to invoke burning winds around my frame.”
+call: “[Name or Description] Piercing [X] by Flame”
+target: Self, Individual
+delivery: Verbal
+accent: Flame
+duration: Short Rest
+refresh: Short Rest
+effect: Piercing
+description: >
+  When the Laernian Bottle is used, the Mage must come to a stop and place both hands across their
+  chest. When struck by an opponent's melee attack, the Mage may call out “[Name or Description]
+  Piercing [X] by Flame”, where the target is the foe that struck the Mage, and the amount of damage
+  is equal to the number of times the Mage has been struck since the spell was cast. The power ends
+  when the Mage completes a short rest, falls unconscious, uses another power, or moves their right
+  foot or hands (other than for safety).
+
+  **Note**: The Mage gains no protection from this spell, but is allowed to use protections and
+  defenses that have already been cast.

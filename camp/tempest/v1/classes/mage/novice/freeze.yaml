@@ -1,0 +1,14 @@
+name: Freeze
+incant: "... to imprison you in ice."
+call: “Quick Imprison by Ice.” x2 or x3
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Ice
+duration: Quick 100
+effect: Imprison
+description: >
+  When this spell is cast, it will charge two spell-balls at the same time.
+  The spell-balls must be thrown separately. When struck by this spell, the
+  target is immediately encased in ice. For the duration, the block of ice
+  will protect them, but will also stop all movement and use of Powers (as normal
+  for imprisoned). If the caster expends a Spike an additional Spell ball is charged.

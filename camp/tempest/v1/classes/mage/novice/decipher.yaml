@@ -1,0 +1,15 @@
+name: Decipher
+incant: "... to demand your secrets be revealed!"
+call: None
+target: One Page
+delivery: Touch
+duration: Instantaneous
+effect: Special
+description: >
+  The Mage may, after casting this spell, understand one piece of written work regardless of the
+  language it was written in, or any code that has been used to obfuscate the meaning. The work
+  to be deciphered may be no longer than one page of script. Documents that can be deciphered in
+  this way will have the translated text attached or accompanying it. There will be some codes or
+  even languages that are resistant to this spell and thus cannot be deciphered (any that lack the
+  accompanying translation). Once cast, the document is readable by anyone with the ability to read,
+  but the original appearance of the page can be viewed too.

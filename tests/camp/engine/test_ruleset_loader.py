@@ -40,13 +40,17 @@ def test_load_ruleset(pkg):
     ruleset = loader.load_ruleset(pkg)
     if ruleset.bad_defs:
         bd = ruleset.bad_defs[0]
-        bd.data["description"] = "<...>"
+        if bd.data:
+            bd.data["description"] = "<...>"
+            data = utils.dump_json(bd.data, sort_keys=True, indent=4)
+        else:
+            data = None
         pytest.fail(
             FAIL_TEMPLATE.format(
                 path=bd.path,
                 exception_type=bd.exception_type,
                 exception_message=bd.exception_message,
-                data=utils.dump_json(bd.data, sort_keys=True, indent=4),
+                data=data,
             ),
             pytrace=False,
         )

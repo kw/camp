@@ -260,6 +260,10 @@ class TempestCharacter(base_engine.CharacterController):
                 return flaw_controller.FlawController(id, self)
             case "subfeature":
                 return subfeature_controller.SubfeatureController(id, self)
+            case "skill":
+                return feature_controller.SkillController(id, self)
+            case "perk":
+                return feature_controller.PerkController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 
@@ -272,6 +276,17 @@ class TempestCharacter(base_engine.CharacterController):
             return controller
         # Otherwise, create a controller and for it.
         return self._new_controller(expr.full_id)
+
+    def describe_expr(self, expr: str | PropExpression) -> str:
+        expr = PropExpression.parse(expr)
+        name = self.display_name(expr.prop)
+        if expr.option:
+            name += f" ({expr.option})"
+        if expr.attribute:
+            name += f" {expr.attribute}"
+        if expr.slot:
+            name += f" [{expr.slot}]"
+        return name
 
     def clear_caches(self):
         super().clear_caches()

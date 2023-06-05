@@ -1,0 +1,21 @@
+name: See Magic
+incant: "... to see the magic before me."
+call: See below
+target: Individual
+delivery: Verbal
+accent: Mind
+duration: Instantaneous
+refresh: Immediate
+effect: Discern
+description: >
+  See Magic gives the Mage the ability to detect magical emanations from enchantments,
+  active spells (including summoned armor), or magical items. Once cast, the Mage can
+  ask any or all of the following questions of as many targets as desired. The Mage can
+  do this until they cast another spell, says anything that is not one of the questions,
+  takes damage, takes an Effect, or completes a Short Rest:
+
+    * “[Name or Description] Discern: What non-Inherent Conditions do you have?”
+    * “[Name or Description] Discern: How many points of summoned armor do you have?”
+    * “[Name or Description] Discern: What items are you carrying that are magical?”
+    * “[Name or Description] Discern: What was the last spell you cast?”
+    * “[Name or Description] Discern: Are you a Magical Beast, Automata, or Construct?”

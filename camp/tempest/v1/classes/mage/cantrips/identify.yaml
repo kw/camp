@@ -1,0 +1,21 @@
+name: Identify
+incant: "... to lay bare your secrets."
+call: "Discern to [Item]: Identification"
+target: "Non-relic magic item"
+duration: Instantaneous
+delivery: Touch
+accent: None
+refresh: Immediate
+effect: Discern
+description: >
+  By using this Cantrip on an item **while at an Arcane Locus**, the Mage may learn all of the magical
+  properties of an item.
+
+  Although it is easy for anyone to determine if an item is magical or special in nature and read the
+  information card to discover obvious properties, this cantrip will allow the player to look at an
+  item’s folded information card (even if they don’t meet the requirements on the outside) to know its
+  exact properties. Only the caster will be allowed to read the properties, although if they choose to,
+  they can open the item card to make the properties discoverable to anyone. If the card says “Relic”
+  on the public portion, this spell has no effect.
+
+  **Note**: By game-design, Identify may have other specific uses.

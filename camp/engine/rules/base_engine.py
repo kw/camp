@@ -80,7 +80,10 @@ class CharacterController(ABC):
         return id.replace("_", " ").title()
 
     def list_features(
-        self, type: str | None = None, taken: bool = True, available: bool = True
+        self,
+        type: str | None = None,
+        taken: bool = True,
+        available: bool = True,
     ) -> Iterable[BaseFeatureController]:
         """List all features of the given type."""
         if taken:
@@ -557,6 +560,23 @@ class BaseFeatureController(PropertyController):
         return self.character.engine.feature_defs[self.expr.prop]
 
     @property
+    def parent(self) -> BaseFeatureController | None:
+        if self.definition.parent is None:
+            return None
+        return self.character.feature_controller(self.definition.parent)
+
+    @property
+    def children(self) -> list[BaseFeatureController]:
+        return [
+            self.character.feature_controller(expr)
+            for expr in self.definition.child_ids
+        ]
+
+    @property
+    def taken_children(self) -> list[BaseFeatureController]:
+        return [c for c in self.children if c.value > 0]
+
+    @property
     def next_value(self) -> int | None:
         """What's the next value that can be purchased?
 
@@ -581,6 +601,17 @@ class BaseFeatureController(PropertyController):
     @property
     def description(self) -> str | None:
         return self.definition.description
+
+    @property
+    def short_description(self) -> str | None:
+        if self.definition.short_description:
+            return self.definition.short_description
+        if self.description:
+            descr = self.description.split("\n")[0]
+            if len(descr) > 100:
+                return descr[:100] + "…"
+            return descr
+        return None
 
     @property
     def max_ranks(self) -> int:

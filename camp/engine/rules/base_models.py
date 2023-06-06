@@ -404,8 +404,10 @@ class BaseFeatureDef(BaseModel):
     def_path: str | None = None
     tags: set[str] = pydantic.Field(default_factory=set)
     description: str | None = None
+    short_description: str | None = None
     ranks: int | Literal["unlimited"] = 1
     option_def: OptionDef | None = pydantic.Field(default=None, alias="option")
+    _child_ids: set[str] = pydantic.PrivateAttr(default_factory=set)
 
     @classmethod
     def default_name(cls) -> str:
@@ -427,10 +429,18 @@ class BaseFeatureDef(BaseModel):
         """
         return self.option_def
 
+    @property
+    def child_ids(self) -> set[str]:
+        return self._child_ids
+
     def post_validate(self, ruleset: BaseRuleset) -> None:
         self.requires = parse_req(self.requires)
         if self.requires:
             ruleset.validate_identifiers(list(self.requires.identifiers()))
+        if self.parent:
+            ruleset.validate_identifiers([self.parent])
+            parent = ruleset.features[self.parent]
+            parent._child_ids.add(self.id)
 
 
 class BadDefinition(BaseModel):

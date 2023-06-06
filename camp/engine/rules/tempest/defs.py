@@ -24,7 +24,7 @@ class Discount(base_models.BaseModel):
     """Describes a cost discount, generally for CP.
 
     Attributes:
-        modifier: The amount to change the cost. For example, `1` means "the feature
+        discount: The amount to change the cost. For example, `1` means "the feature
             costs 1 CP less per rank".
         minimum: The minimum cost (per rank). If it's a discount, usually 1 or 0.
         ranks: The number of ranks that this can apply to.
@@ -73,6 +73,8 @@ class ChoiceDef(base_models.BaseModel):
             by 1 CP. The choice can be made after the purchase was made. Note
             that this doesn't actually _grant_ the choice in this case.
         matcher: A feature matcher that can be used to limit the choices available.
+        starting_class: Only applies to basic classes. If True, the choice is only
+            available when the class is your starting class.
     """
 
     name: str | None = None
@@ -80,6 +82,7 @@ class ChoiceDef(base_models.BaseModel):
     limit: int | Literal["unlimited"] = 1
     discount: Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
+    starting_class: bool = False
 
 
 class PowerCard(base_models.BaseModel):
@@ -95,7 +98,7 @@ class PowerCard(base_models.BaseModel):
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
-    discounts: dict[str, Discount | int] | None = None
+    discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
@@ -120,6 +123,7 @@ class ClassDef(BaseFeatureDef):
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
     bonus_features: dict[int, Grantable] | None = None
+    class_type: Literal["basic", "advanced", "epic"] = "basic"
     # By default, classes have 10 levels.
     ranks: int = 10
 
@@ -216,6 +220,10 @@ class PowerDef(BaseFeatureDef):
     type: Literal["power"] = "power"
 
 
+class InnatePower(PowerDef):
+    type: Literal["innate"] = "innate"
+
+
 class ArchetypePower(PowerDef):
     type: Literal["archetype"] = "archetype"
 
@@ -247,6 +255,7 @@ FeatureDefinitions: TypeAlias = (
     | PowerDef
     | FlawDef
     | PerkDef
+    | InnatePower
     | ArchetypePower
     | MartialPower
     | Spell
@@ -382,6 +391,7 @@ class Ruleset(base_models.BaseRuleset):
         ),
         Attribute(
             id="basic-classes",
+            property_name="basic_classes",
             name="Basic Classes",
             hidden=True,
         ),

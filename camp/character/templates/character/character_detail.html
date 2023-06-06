@@ -54,6 +54,10 @@
                             ({{ f.purchase_cost_string }})
                           {% endif %}
                         {% endif %}
+
+                        {% if f.has_available_choices %}
+                        (Choices Available)
+                        {% endif %}
                     </a>
                     {% if f.subfeatures %}
                     <ul>

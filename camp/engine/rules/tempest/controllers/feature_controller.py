@@ -19,13 +19,16 @@ from . import choice_controller
 
 _MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 _NO_RESPEND = Decision(success=False, reason="Respend not currently available.")
+_NO_PURCHASE = Decision(success=False, reason="Feature cannot be purchased.")
+
+_SUBFEATURE_TYPES: set[str] = {"subfeature", "innate", "archetype"}
 
 
 class FeatureController(base_engine.BaseFeatureController):
+    definition: defs.BaseFeatureDef
     character: character_controller.TempestCharacter
     model_type: Type[models.FeatureModel] = models.FeatureModel
     _effective_ranks: int | None
-    _subfeatures: set[str]
 
     # Subclasses can change the currency used, but CP is the default.
     # Note that no currency display will be shown if the feature has no cost model.
@@ -34,16 +37,12 @@ class FeatureController(base_engine.BaseFeatureController):
     def __init__(self, full_id: str, character: character_controller.TempestCharacter):
         super().__init__(full_id, character)
         self._effective_ranks = None
-        self._subfeatures = set()
 
     @property
     def subfeatures(self) -> list[FeatureController]:
-        subfeatures = []
-        for expr in self._subfeatures:
-            subfeature = self.character.features.get(expr)
-            if subfeature is not None and subfeature.value > 0:
-                subfeatures.append(subfeature)
-        return subfeatures
+        return [
+            fc for fc in self.taken_children if fc.feature_type in _SUBFEATURE_TYPES
+        ]
 
     @property
     def parent(self) -> FeatureController | None:
@@ -170,14 +169,25 @@ class FeatureController(base_engine.BaseFeatureController):
                         reason += f"via {source}."
                         reasons.append(reason)
 
-        if propdata := self._gather_propagation():
-            for id, data in propdata.items():
-                name = self.character.describe_expr(id)
-                if data.grants > 0:
-                    reasons.append(f"Grants {name} x{data.grants}")
-                if data.discount:
-                    reasons.append(f"Applies a discount to {name}")
         return reasons
+
+    @property
+    def granted_features(self) -> list[FeatureController]:
+        """Returns a list of features granted by this feature."""
+        return [
+            self.character.controller(id)
+            for id, data in self._gather_propagation().items()
+            if data.grants > 0
+        ]
+
+    @property
+    def discounted_features(self) -> list[FeatureController]:
+        """Returns a list of features discounted by this feature."""
+        return [
+            self.character.controller(id)
+            for id, data in self._gather_propagation().items()
+            if data.discount
+        ]
 
     @property
     def granted_ranks(self) -> int:
@@ -190,13 +200,40 @@ class FeatureController(base_engine.BaseFeatureController):
                 yield from data.discount
 
     @property
+    def is_starting(self) -> bool:
+        """Is this a 'starting' feature?
+
+        This is only really defined for basic classes, which grant different benefits
+        based on whether it's the first one taken. It may be relevant to subfeatures of
+        those classes in certain circumstances, so we propagate it down.
+
+        For other features, it doesn't matter. Return True for convenience.
+        """
+        if self.parent:
+            return self.parent.is_starting
+        return True
+
+    @property
+    def has_available_choices(self) -> bool:
+        if choices := self.choices:
+            for choice in choices.values():
+                if choice.choices_remaining > 0:
+                    return True
+        return False
+
+    @property
     def choices(self) -> dict[str, choice_controller.ChoiceController] | None:
         if not self.definition.choices or self.value < 1:
             return None
-        return {
+        choices = {
             key: choice_controller.ChoiceController(self, key)
             for key in self.definition.choices
         }
+        if not self.is_starting:
+            choices = {
+                k: v for k, v in choices.items() if not v.definition.starting_class
+            }
+        return choices
 
     def choose(self, choice: str, selection: str) -> Decision:
         if controller := self.choices.get(choice):
@@ -277,6 +314,10 @@ class FeatureController(base_engine.BaseFeatureController):
             return self.max_ranks
         return max(self.max_ranks - self.value, 0)
 
+    @property
+    def meets_requirements(self) -> Decision:
+        return self.character.meets_requirements(self.definition.requires)
+
     def _link_to_character(self):
         if self.full_id not in self.character.features:
             self.character.features[self.full_id] = self
@@ -299,8 +340,6 @@ class FeatureController(base_engine.BaseFeatureController):
         if not (rd := self.character.meets_requirements(self.definition.requires)):
             return rd
         # Is this an option skill without an option specified?
-        # if self.option_def and not self.option:
-        #     return Decision(success=False, needs_option=True)
         if (
             self.option_def
             and self.option
@@ -322,15 +361,10 @@ class FeatureController(base_engine.BaseFeatureController):
                 success=False, reason=f"Feature {self.id} does not accept options."
             )
         # Is this a skill with a cost that must be paid? If so, can we pay it?
-        available = self._currency_balance()
-        currency_delta = self._cost_for(self.paid_ranks + value) - self.cost
-        if available is not None and available < currency_delta:
-            return Decision(
-                success=False,
-                need_currency={self.currency: currency_delta},
-                reason=f"Need {currency_delta} {self.currency_name} to purchase, but only have {available}",
-                amount=self._max_rank_increase(available),
-            )
+        if not (rd := self.can_afford(value)):
+            return rd
+
+        # Checks for option logic.
         if self.option_def:
             # If this is an option feature and the option was specified,
             # this is either a new or existing option. If it's existing, that's fine.
@@ -357,6 +391,20 @@ class FeatureController(base_engine.BaseFeatureController):
                     return Decision.NEEDS_OPTION
                 else:
                     return Decision.NO
+        return Decision.OK
+
+    def can_afford(self, value: int = 1) -> Decision:
+        available = self._currency_balance()
+        if available is None:
+            return _NO_PURCHASE
+        currency_delta = self._cost_for(self.paid_ranks + value) - self.cost
+        if available < currency_delta:
+            return Decision(
+                success=False,
+                need_currency={self.currency: currency_delta},
+                reason=f"Need {currency_delta} {self.currency_name} to purchase, but only have {available}",
+                amount=self._max_rank_increase(available),
+            )
         return Decision.OK
 
     def can_decrease(self, value: int = 1) -> Decision:
@@ -562,7 +610,7 @@ class FeatureController(base_engine.BaseFeatureController):
             case "cp":
                 return self.character.cp.value
             case None:
-                return 0
+                return None
             case _:
                 return 0
 

@@ -123,6 +123,10 @@ class FlawController(feature_controller.FeatureController):
             return _NO_RESPEND
         return super().can_increase(value)
 
+    def can_afford(self, value: int = 1) -> Decision:
+        # Any number of flaws can be taken, though the number of CP awarded is limited.
+        return True
+
     def increase(self, value: int) -> Decision:
         if not (rd := self.can_increase(value)):
             return rd

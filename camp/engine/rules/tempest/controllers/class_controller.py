@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
@@ -21,8 +23,16 @@ class ClassController(feature_controller.FeatureController):
             )
 
     @property
+    def class_type(self) -> Literal["basic", "advanced", "epic"]:
+        return self.definition.class_type
+
+    @property
     def is_archetype(self) -> bool:
         return self.model.is_archetype_class
+
+    @property
+    def innate_powers(self) -> list[feature_controller.FeatureController]:
+        return (fc for fc in self.children if fc.definition.type == "innate")
 
     @is_archetype.setter
     def is_archetype(self, value: bool) -> None:
@@ -126,9 +136,7 @@ class ClassController(feature_controller.FeatureController):
             return 0
         return self.character.ruleset.powers[0].evaluate(self.value)
 
-    def can_increase(self, value: int = 1) -> Decision:
-        if not (rd := super().can_increase(value)):
-            return rd
+    def can_afford(self, value: int = 1) -> Decision:
         character_available = self.character.levels_available
         available = min(character_available, self.purchaseable_ranks)
         return Decision(success=available >= value, amount=available)
@@ -189,10 +197,17 @@ class ClassController(feature_controller.FeatureController):
 
     def extra_grants(self) -> dict[str, int]:
         # Base classes grant different starting features based on whether it's your starting class.
+        grants = {}
+        # Starting features
         if self.is_starting:
-            return self._gather_grants(self.definition.starting_features)
+            grants.update(self._gather_grants(self.definition.starting_features))
         else:
-            return self._gather_grants(self.definition.multiclass_features)
+            grants.update(self._gather_grants(self.definition.multiclass_features))
+        # Innate features
+        for feature in self.innate_powers:
+            if feature.meets_requirements:
+                grants[feature.id] = 1
+        return grants
 
     def explain(self) -> list[str]:
         lines = super().explain()

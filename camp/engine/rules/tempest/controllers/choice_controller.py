@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import cached_property
 from typing import Literal
+from typing import cast
 
 from ...decision import Decision
 from .. import defs
@@ -17,8 +18,10 @@ class ChoiceController:
         self._choice = choice_id
 
     @cached_property
-    def choice_def(self) -> defs.ChoiceDef:
-        return self._feature.definition.choices[self._choice]
+    def definition(self) -> defs.ChoiceDef:
+        return cast(
+            feature_controller.FeatureController, self._feature.definition
+        ).choices[self._choice]
 
     @property
     def id(self) -> str:
@@ -26,15 +29,15 @@ class ChoiceController:
 
     @property
     def name(self) -> str:
-        return self.choice_def.name
+        return self.definition.name
 
     @property
     def description(self) -> str:
-        return self.choice_def.description
+        return self.definition.description
 
     @property
     def limit(self) -> int | Literal["unlimited"]:
-        return self.choice_def.limit
+        return self.definition.limit
 
     @property
     def choices_remaining(self) -> int:
@@ -42,7 +45,7 @@ class ChoiceController:
             return 999
         return self.limit - len(self.taken_choices())
 
-    def valid_choices(self) -> set[str]:
+    def valid_choices(self) -> dict[str, str]:
         taken = self.taken_choices()
         character = self._feature.character
 
@@ -50,7 +53,7 @@ class ChoiceController:
         if self.limit != "unlimited" and len(taken) >= self.limit:
             return set()
 
-        matcher = self.choice_def.matcher
+        matcher = self.definition.matcher
         if matcher:
             feats = {
                 id
@@ -61,7 +64,16 @@ class ChoiceController:
             # No matcher, no matches.
             return set()
 
-        return feats - taken
+        feats -= taken
+        choices = {}
+        for expr in sorted(feats):
+            feat = character.feature_controller(expr)
+            short = feat.short_description
+            if short:
+                choices[expr] = f"{feat.display_name()}: {short}"
+            else:
+                choices[expr] = feat.display_name()
+        return choices
 
     def choose(self, feature: str) -> Decision:
         taken = self.taken_choices()
@@ -79,7 +91,7 @@ class ChoiceController:
                 success=False, reason=f"Feature definition not found for {feature}."
             )
 
-        matcher = self.choice_def.matcher
+        matcher = self.definition.matcher
         if not matcher or not matcher.matches(feature_def):
             return Decision(
                 success=False,
@@ -96,11 +108,13 @@ class ChoiceController:
         # has currently paid for or can currently buy the feature (ignoring the question of whether the character can afford it).
 
         # If you've bought it (and this is a discount), can buy it now, or _could_ buy it if you had the currency, good enough.
+        # Features that do not have a currency cost are always valid.
         rd = feat_controller.can_increase()
         if (
-            (self.choice_def.discount and feat_controller.paid_ranks > 0)
+            (self.definition.discount and feat_controller.paid_ranks > 0)
             or rd
             or rd.need_currency
+            or feat_controller.currency is None
         ):
             choices = self._feature.model.choices.get(self._choice) or []
             choices.append(feature)
@@ -110,8 +124,11 @@ class ChoiceController:
                 success=True, mutation_applied=True, reason="Choice applied."
             )
 
-        # Otherwise, report the increase decision back. It might have useful info.
-        return rd
+        # If the decision was negative report the increase decision back. It might have useful info.
+        if not rd:
+            return rd
+        # Otherwise, just return a generic failure.
+        return Decision(success=False, reason="Choice could not be applied.")
 
     def unchoose(self, feature: str) -> Decision:
         taken = self.taken_choices()
@@ -147,17 +164,17 @@ class ChoiceController:
             self._feature.character.feature_controller(id)
             for id in self.valid_choices()
         ]
-        features.sort(key=lambda f: f.display_name())
+        features.sort(key=lambda f: f.full_id)
         return features
 
     def update_propagation(
         self, grants: dict[str, int], discounts: dict[str, list[defs.Discount]]
     ) -> None:
         for choice in self.taken_choices():
-            if self.choice_def.discount:
+            if self.definition.discount:
                 if choice not in discounts:
                     discounts[choice] = []
-                discounts[choice].append(defs.Discount.cast(self.choice_def.discount))
+                discounts[choice].append(defs.Discount.cast(self.definition.discount))
             else:
                 if choice not in grants:
                     grants[choice] = 0

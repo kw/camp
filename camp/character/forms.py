@@ -96,7 +96,6 @@ class DatalistTextInput(forms.TextInput):
 class ChoiceForm(forms.Form):
     _choice: str
     controller: ChoiceController
-    available: list[FeatureController]
     taken: list[FeatureController]
     removable: set[str]
 
@@ -110,12 +109,13 @@ class ChoiceForm(forms.Form):
         self.available = controller.available_features()
         self.taken = controller.taken_features()
         self.removable = controller.removable_choices()
-        self._make_choice_field(controller)
+        self._make_choice_field()
 
-    def _make_choice_field(self, controller: ChoiceController):
+    def _make_choice_field(self):
         if self.available:
+            choices = [(k, v) for (k, v) in self.controller.valid_choices().items()]
             self.fields["selection"] = forms.ChoiceField(
-                choices=[(f.full_id, f.display_name()) for f in self.available],
-                label="Choice",
+                choices=choices,
+                label="Available Choices",
                 help_text="Make a selection.",
             )

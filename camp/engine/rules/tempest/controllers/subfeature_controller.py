@@ -23,12 +23,6 @@ class SubfeatureController(feature_controller.FeatureController):
                 f"Expected {id} to be a subfeature, but was {type(self.definition)}"
             )
 
-    @property
-    def parent(self) -> feature_controller.FeatureController | None:
-        if self.definition.parent is None:
-            return None
-        return self.character.features.get(self.definition.parent)
-
     def can_increase(self, value: int = 1) -> Decision:
         return _NO_PURCHASE
 
@@ -37,8 +31,3 @@ class SubfeatureController(feature_controller.FeatureController):
 
     def decrease(self, value: int) -> Decision:
         return _NO_PURCHASE
-
-    def reconcile(self) -> None:
-        if p := self.parent:
-            p._subfeatures.add(self.id)
-        return super().reconcile()

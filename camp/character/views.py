@@ -139,7 +139,7 @@ def set_attr(request, pk):
 @permission_required(
     "character.change_character", fn=objectgetter(Character), raise_exception=True
 )
-def feature_view(request, pk, feature_id):
+def feature_view(request, pk, feature_id, anchor=None):
     character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
@@ -160,6 +160,12 @@ def feature_view(request, pk, feature_id):
                 sheet, feature_id, feature_controller, controller, request
             )
             if success:
+                # If we purchased a feature and it has a choice that can be made,
+                # stay on the feature page. Otherwise, return to the character page.
+                if feature_controller.has_available_choices:
+                    return redirect(
+                        "character-feature-view", pk=pk, feature_id=feature_id
+                    )
                 return redirect("character-detail", pk=pk)
         else:
             data = None
@@ -282,8 +288,8 @@ def undo_view(request, pk):
 def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        if getattr(feat, "parent", None):
-            continue
+        # if feat.parent:
+        #     continue
         if feat.feature_type not in by_type:
             by_type[feat.feature_type] = FeatureGroup(
                 type=feat.feature_type, name=controller.display_name(feat.feature_type)
@@ -296,10 +302,11 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
                 group.add_available(feat)
             # Otherwise, we don't care about them.
         elif feat.value > 0:
-            group.taken.append(feat)
+            if not feat.parent:
+                group.taken.append(feat)
         else:
             group.add_available(feat)
-    groups: list[FeatureGroup] = list(by_type.values())
+    groups: list[FeatureGroup] = list(t for t in by_type.values() if t)
     for group in groups:
         group.sort()
     groups.sort(key=lambda g: g.name)
@@ -319,6 +326,9 @@ class FeatureGroup:
     @property
     def has_available(self) -> bool:
         return self.available or self.available_categories
+
+    def __bool__(self) -> bool:
+        return bool(self.taken or self.available or self.available_categories)
 
     def add_available(self, feat: BaseFeatureController):
         if feat.category:

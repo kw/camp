@@ -118,6 +118,10 @@ class TempestCharacter(base_engine.CharacterController):
         return None
 
     @property
+    def basic_classes(self) -> int:
+        return sum(1 for c in self.classes if c.class_type == "basic")
+
+    @property
     def starting_class(self) -> class_controller.ClassController | None:
         for controller in self.classes:
             if controller.is_starting:

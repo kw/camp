@@ -1,14 +1,23 @@
 type: class
-category: Base Class
+category: Basic Class
 name: Mage
+sphere: arcane
 starting_features:
   - basic-arcane
   - basic-scholarship
   - novice-spell-scholar
   - lore
-  - mage-magical-specialty
 multiclass_features:
   - basic-arcane
+choices:
+  magical-specialty:
+    starting_class: true
+    name: Magical Specialty
+    matcher:
+      id:
+        - mage-magical-specialty-1
+        - mage-magical-specialty-2
+        - mage-magical-specialty-3
 description: >
   The Mage is truly a power to be reckoned with. Their offensive magic is effective and lethal and their defensive magic is some of the most potent available. There are few classes that compare to a high level Mage and Mages always command both fear and respect from their adversaries. They are the disciples of power.
 
@@ -21,25 +30,12 @@ description: >
   The Mage is an Arcane spell-caster. The Mage should choose a special symbol that is their caster-sigil and mark their spellbook and packets with it.
 
 ---
-id: mage-magical-specialty
-type: subfeature
-parent: mage
-name: Magical Specialty
-# TODO: Make it possible to choose a subfeature.
-# It's not possible to do it right now, the UI just says
-# it was unable to make the selection.
-choices:
-  magical-specialty:
-      matcher:
-        id:
-          - mage-magical-specialty-1
-          - mage-magical-specialty-2
-          - mage-magical-specialty-3
----
 id: mage-magical-specialty-1
 type: subfeature
 parent: mage
-name: Spell Preparation (3), Extended Capacity - Novice (2), Library Use (1)
+name: Spellcasting Specialist
+description: Grants Spell Preparation, Extended Capacity - Novice, Library Use
+category: Mage Starting Skills
 grants:
   - spell-preparation
   - extended-capacity-novice
@@ -48,7 +44,9 @@ grants:
 id: mage-magical-specialty-2
 type: subfeature
 parent: mage
-name: Additional Recharge (5), Novice Bookcaster (1)
+name: Bookcasting Specialist
+description: Grants Additional Recharge, Novice Bookcaster
+category: Mage Starting Skills
 grants:
   - additional-recharge
   - novice-bookcaster
@@ -56,6 +54,8 @@ grants:
 id: mage-magical-specialty-3
 type: subfeature
 parent: mage
-name: Additional Cantrip (6)
+name: Cantrip Specialist
+description: Grants Additional Cantrip
+category: Mage Starting Skills
 grants:
   - additional-cantrip

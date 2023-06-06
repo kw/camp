@@ -1,3 +1,4 @@
 name: Toughness
 cost: 5
 grants: lp:1
+description: The character is harder to kill and adds 1 Life Point to their maximum.

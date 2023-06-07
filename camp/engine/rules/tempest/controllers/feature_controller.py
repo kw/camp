@@ -236,7 +236,7 @@ class FeatureController(base_engine.BaseFeatureController):
         if not self.definition.choices or self.value < 1:
             return None
         choices = {
-            key: choice_controller.ChoiceController(self, key)
+            key: choice_controller.make_controller(self, key)
             for key in self.definition.choices
         }
         if not self.is_starting:

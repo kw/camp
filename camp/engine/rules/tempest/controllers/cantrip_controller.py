@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from camp.engine.rules.decision import Decision
 from camp.engine.rules.tempest.controllers import class_controller
 
@@ -23,6 +25,10 @@ class CantripController(feature_controller.FeatureController):
             purchased = self.parent.cantrips_purchased()
             return self.parent.get("cantrips") - purchased
         return 0
+
+    @property
+    def sphere(self) -> Literal["arcane", "divine", None]:
+        return self.definition.sphere
 
     def can_afford(self, value: int = 1) -> Decision:
         if self._cantrips_available() >= value:

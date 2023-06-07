@@ -53,16 +53,9 @@ class ChoiceController:
         if self.limit != "unlimited" and len(taken) >= self.limit:
             return set()
 
-        matcher = self.definition.matcher
-        if matcher:
-            feats = {
-                id
-                for id, feat in character.ruleset.features.items()
-                if matcher.matches(feat)
-            }
-        else:
-            # No matcher, no matches.
-            return set()
+        feats = {
+            choice for choice in character.ruleset.features if self.matches(choice)
+        }
 
         feats -= taken
         choices = {}
@@ -75,9 +68,9 @@ class ChoiceController:
                 choices[expr] = feat.display_name()
         return choices
 
-    def choose(self, feature: str) -> Decision:
+    def choose(self, choice: str) -> Decision:
         taken = self.taken_choices()
-        if feature in taken:
+        if choice in taken:
             return Decision(success=False, reason="Choice already taken.")
         if self.limit != "unlimited" and len(taken) >= self.limit:
             return Decision(
@@ -85,21 +78,14 @@ class ChoiceController:
                 reason=f"Choice {self._choice} of {self._feature.full_id} only accepts {self.limit} choices.",
             )
 
-        feature_def = self._feature.character.feature_def(feature)
-        if not feature_def:
-            return Decision(
-                success=False, reason=f"Feature definition not found for {feature}."
-            )
-
-        matcher = self.definition.matcher
-        if not matcher or not matcher.matches(feature_def):
+        if not self.matches(choice):
             return Decision(
                 success=False,
-                reason=f"`{feature}` does not match choice definition for {self._feature.full_id}/{self._choice}",
+                reason=f"`{choice}` does not match choice definition for {self._feature.full_id}/{self._choice}",
             )
 
         character = self._feature.character
-        feat_controller = character.feature_controller(feature)
+        feat_controller = character.feature_controller(choice)
 
         # The choice is technically valid, but can the character actually choose it?
         # This depends a bit on the type of choice. If the choice grants ranks, the character may or may not have to
@@ -117,7 +103,7 @@ class ChoiceController:
             or feat_controller.currency is None
         ):
             choices = self._feature.model.choices.get(self._choice) or []
-            choices.append(feature)
+            choices.append(choice)
             self._feature.model.choices[self._choice] = choices
             self._feature.reconcile()
             return Decision(
@@ -167,6 +153,11 @@ class ChoiceController:
         features.sort(key=lambda f: f.full_id)
         return features
 
+    def matches(self, choice: str) -> bool:
+        if feat := self._feature.character.feature_def(choice):
+            return self.definition.matcher.matches(feat)
+        return False
+
     def update_propagation(
         self, grants: dict[str, int], discounts: dict[str, list[defs.Discount]]
     ) -> None:
@@ -179,3 +170,19 @@ class ChoiceController:
                 if choice not in grants:
                     grants[choice] = 0
                 grants[choice] += 1
+
+
+def make_controller(
+    feature: feature_controller.FeatureController, choice_id: str
+) -> ChoiceController:
+    """Factory function for custom choice controllers."""
+    choice_def = feature.definition.choices[choice_id]
+    match choice_def.controller:
+        case "sphere-bonus":
+            from .custom import sphere_bonus_choice
+
+            return sphere_bonus_choice.SphereBonusChoice(feature, choice_id)
+        case None:
+            return ChoiceController(feature, choice_id)
+        case _:
+            raise ValueError(f"Unknown choice controller '{choice_def.controller}'")

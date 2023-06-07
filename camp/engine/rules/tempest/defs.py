@@ -75,6 +75,10 @@ class ChoiceDef(base_models.BaseModel):
         matcher: A feature matcher that can be used to limit the choices available.
         starting_class: Only applies to basic classes. If True, the choice is only
             available when the class is your starting class.
+        controller: If provided, the name of a custom controller to use for this
+            choice. If not provided, the default controller is used.
+        controller_args: If provided, a dictionary of arbitrary data to be used
+            by the custom controller.
     """
 
     name: str | None = None
@@ -83,6 +87,8 @@ class ChoiceDef(base_models.BaseModel):
     discount: Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
     starting_class: bool = False
+    controller: str | None = None
+    controller_data: dict | None = None
 
 
 class PowerCard(base_models.BaseModel):

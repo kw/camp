@@ -23,14 +23,13 @@
     {% endif %}
 </h2>
 
+{% if feature.parent %}
+<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
+{% endif %}
 
 {# TODO: Render markdown #}
 {% if feature.description %}
 <p>{{ feature.description }}</p>
-{% endif %}
-
-{% if feature.parent %}
-<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
 {% endif %}
 
 {% for explanation in explain_ranks %}

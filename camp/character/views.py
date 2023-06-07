@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections import defaultdict
 from itertools import chain
+from itertools import islice
 from typing import Iterable
 from typing import cast
 
@@ -285,14 +286,16 @@ def undo_view(request, pk):
     return redirect("character-detail", pk=pk)
 
 
-def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:
+def _features(
+    controller: CharacterController, feats: Iterable[BaseFeatureController]
+) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        # if feat.parent:
-        #     continue
         if feat.feature_type not in by_type:
             by_type[feat.feature_type] = FeatureGroup(
-                type=feat.feature_type, name=controller.display_name(feat.feature_type)
+                type=feat.feature_type,
+                name=controller.display_name(feat.feature_type),
+                priority=controller.display_priority(feat.feature_type),
             )
         group = by_type[feat.feature_type]
         if feat.is_option_template:
@@ -302,14 +305,14 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
                 group.add_available(feat)
             # Otherwise, we don't care about them.
         elif feat.value > 0:
-            if not feat.parent:
+            if not feat.internal:
                 group.taken.append(feat)
         else:
             group.add_available(feat)
     groups: list[FeatureGroup] = list(t for t in by_type.values() if t)
     for group in groups:
         group.sort()
-    groups.sort(key=lambda g: g.name)
+    groups.sort(key=FeatureGroup.sortkey)
     return groups
 
 
@@ -322,19 +325,34 @@ class FeatureGroup:
     available_categories: dict[str, list[BaseFeatureController]] = dataclasses.field(
         default_factory=lambda: defaultdict(list)
     )
+    priority: int = 1
 
     @property
     def has_available(self) -> bool:
         return self.available or self.available_categories
 
+    def sortkey(self) -> tuple[int, str]:
+        return self.priority, self.name
+
     def __bool__(self) -> bool:
         return bool(self.taken or self.available or self.available_categories)
+
+    def explain(self) -> str | None:
+        for feat in islice(self.all(), 1):
+            return feat.explain_type_group()
+        return None
 
     def add_available(self, feat: BaseFeatureController):
         if feat.category:
             self.available_categories[feat.category].append(feat)
         else:
             self.available.append(feat)
+
+    def all(self) -> Iterable[BaseFeatureController]:
+        yield from self.taken
+        yield from self.available
+        for cat in self.available_categories.values():
+            yield from cat
 
     def sort(self):
         # Sort the base taken/available lists by name.

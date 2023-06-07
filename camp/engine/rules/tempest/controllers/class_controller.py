@@ -34,6 +34,10 @@ class ClassController(feature_controller.FeatureController):
     def innate_powers(self) -> list[feature_controller.FeatureController]:
         return (fc for fc in self.children if fc.definition.type == "innate")
 
+    @property
+    def archetype_powers(self) -> list[feature_controller.FeatureController]:
+        return (fc for fc in self.children if fc.definition.type == "archetype")
+
     @is_archetype.setter
     def is_archetype(self, value: bool) -> None:
         self.model.is_archetype_class = value
@@ -119,6 +123,15 @@ class ClassController(feature_controller.FeatureController):
         if not self.caster:
             return 0
         return self.character.ruleset.powers[0].evaluate(self.value)
+
+    def cantrips_purchased(self) -> int:
+        if not self.caster:
+            return 0
+        return sum(
+            1
+            for c in self.taken_children
+            if c.feature_type == "cantrip" and c.purchased_ranks > 0
+        )
 
     def powers(self, expr: PropExpression) -> int:
         if self.caster:
@@ -207,6 +220,11 @@ class ClassController(feature_controller.FeatureController):
         for feature in self.innate_powers:
             if feature.meets_requirements:
                 grants[feature.id] = 1
+        # Archetype features
+        if self.is_archetype:
+            for feature in self.archetype_powers:
+                if feature.meets_requirements:
+                    grants[feature.id] = 1
         return grants
 
     def explain(self) -> list[str]:

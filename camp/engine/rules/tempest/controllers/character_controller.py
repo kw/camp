@@ -12,10 +12,16 @@ from .. import defs
 from .. import engine  # noqa: F401
 from .. import models
 from . import attribute_controllers
+from . import cantrip_controller
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
 from . import subfeature_controller
+
+_DISPLAY_PRIORITIES = {
+    "class": 0,
+    "breed": 1,
+}
 
 
 class TempestCharacter(base_engine.CharacterController):
@@ -127,6 +133,9 @@ class TempestCharacter(base_engine.CharacterController):
             if controller.is_starting:
                 return controller
         return None
+
+    def display_priority(self, feature_type: str) -> int:
+        return _DISPLAY_PRIORITIES.get(feature_type, 99)
 
     @property
     def features(self) -> dict[str, feature_controller.FeatureController]:
@@ -268,6 +277,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return feature_controller.SkillController(id, self)
             case "perk":
                 return feature_controller.PerkController(id, self)
+            case "cantrip":
+                return cantrip_controller.CantripController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

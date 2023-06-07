@@ -37,6 +37,7 @@
     <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
 </ul>
 
+<!-- Existing Feature Cards -->
 {% for group in feature_groups %}
     <div class="card">
         <div class="card-body">
@@ -180,6 +181,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                {% if group.explain %}
+                <p>{{ group.explain }}</p>
+                {% endif %}
                 {% if group.type == "flaw" and controller.cp.flaw_cp_available <= 0 %}
                 <p>You have reached the maximum Flaw CP award ({{ controller.cp.flaw_cp_cap }}).
                     You can still take new flaws, but you will not receive any more CP for them.</p>
@@ -214,6 +218,11 @@
                         <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#availableAccordian-{{group.type}}">
                             <div class="accordion-body">
                                 <ul class="list-group list-group-flush">
+                                {% if available.0.explain_category_group %}
+                                <li class="list-group-item">
+                                    {{ available.0.explain_category_group }}
+                                </li>
+                                {% endif %}
                                 {% for f in available %}
                                 <li class="list-group-item">
                                     <a href="{% url 'character-feature-view' character.id f.full_id%}">

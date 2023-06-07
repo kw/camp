@@ -79,6 +79,16 @@ class CharacterController(ABC):
             return self.ruleset.attribute_map[id].name
         return id.replace("_", " ").title()
 
+    def display_priority(self, feature_type: str) -> int:
+        """Returns the display priority of the given feature type.
+
+        By default, all feature types have the same priority. Subclasses can
+        override this to change the order in which feature types are displayed.
+
+        Lower valued priorities are displayed first.
+        """
+        return 1
+
     def list_features(
         self,
         type: str | None = None,
@@ -567,10 +577,12 @@ class BaseFeatureController(PropertyController):
 
     @property
     def children(self) -> list[BaseFeatureController]:
-        return [
+        children = [
             self.character.feature_controller(expr)
             for expr in self.definition.child_ids
         ]
+        children.sort(key=lambda f: f.full_id)
+        return children
 
     @property
     def taken_children(self) -> list[BaseFeatureController]:

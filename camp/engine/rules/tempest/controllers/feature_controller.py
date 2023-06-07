@@ -45,6 +45,10 @@ class FeatureController(base_engine.BaseFeatureController):
         ]
 
     @property
+    def internal(self) -> bool:
+        return self.feature_type in _SUBFEATURE_TYPES
+
+    @property
     def parent(self) -> FeatureController | None:
         if self.definition.parent is None:
             return None
@@ -174,20 +178,26 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def granted_features(self) -> list[FeatureController]:
         """Returns a list of features granted by this feature."""
-        return [
+        controllers = (
             self.character.controller(id)
             for id, data in self._gather_propagation().items()
             if data.grants > 0
-        ]
+        )
+        features = [f for f in controllers if isinstance(f, FeatureController)]
+        features.sort(key=lambda f: f.full_id)
+        return features
 
     @property
     def discounted_features(self) -> list[FeatureController]:
         """Returns a list of features discounted by this feature."""
-        return [
+        controllers = (
             self.character.controller(id)
             for id, data in self._gather_propagation().items()
             if data.discount
-        ]
+        )
+        features = [f for f in controllers if isinstance(f, FeatureController)]
+        features.sort(key=lambda f: f.full_id)
+        return features
 
     @property
     def granted_ranks(self) -> int:
@@ -613,6 +623,14 @@ class FeatureController(base_engine.BaseFeatureController):
                 return None
             case _:
                 return 0
+
+    def explain_type_group(self) -> str | None:
+        if (balance := self._currency_balance()) is not None:
+            return f"{balance} {self.currency_name} available"
+        return None
+
+    def explain_category_group(self) -> str | None:
+        return None
 
 
 class SkillController(FeatureController):

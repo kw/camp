@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load rules %}
+{% load character_sheet %}
 
 {% block head_title %}{% block body_title %}
 {{ character }}
@@ -23,18 +24,18 @@
   </div>
 
 <ul class="list-group list-group-horizontal">
-    <li class="list-group-item">Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
+    <li class="list-group-item">Level {% get 'xp_level' %} ({% get 'xp' %} XP)</li>
     <li class="list-group-item"
         data-bs-toggle="tooltip" data-bs-html="true"
         data-bs-placement="bottom"
         data-bs-title="
         <p>Base: {{ controller.base_cp }}</p>
         <p>Awarded: {{ controller.awarded_cp }}</p>
-        <p>Flaw Awards: {{ controller.cp.flaw_award_cp}}</p>
+        <p>Flaw Awards: {{ controller.cp.flaw_award_cp }}</p>
         <p>Spent: {{ controller.cp.spent_cp }}</p>">
-        CP: {{ controller.cp.value }}</li>
-    <li class="list-group-item">LP: {{ controller.lp.value }}</li>
-    <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
+        CP: {% get 'cp' %}</li>
+    <li class="list-group-item">LP: {% get 'lp' %}</li>
+    <li class="list-group-item">Spikes: {% get 'spikes' %}</li>
 </ul>
 
 <!-- Existing Feature Cards -->

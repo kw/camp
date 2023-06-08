@@ -487,11 +487,22 @@ class FeatureController(base_engine.BaseFeatureController):
         return {}
 
     def _gather_propagation(self) -> dict[str, engine.PropagationData]:
-        if grant_def := getattr(self.definition, "grants", None):
+        # Basic grants that are always provided by the feature.
+        if grant_def := self.definition.grants:
             grants = self._gather_grants(grant_def)
         else:
             grants = {}
+        # Handle the rank grant table, if present. This table is keyed by the number of ranks
+        # purchased in the feature, and the value is a dict of grants to apply. You get all
+        # grants on the table up to your current rank level.
+        if self.definition.rank_grants:
+            for rank in range(self.value + 1):
+                if grant := self.definition.rank_grants.get(rank):
+                    grants.update(self._gather_grants(grant))
+        # Subclasses might have other grants that the produce. Add them in.
         grants.update(self.extra_grants())
+
+        # Collect discounts, if present.
         if discount_def := getattr(self.definition, "discounts", None):
             discounts = self._gather_discounts(discount_def)
         else:
@@ -500,6 +511,7 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.choices:
             for choice in self.choices.values():
                 choice.update_propagation(grants, discounts)
+        # Now that we have all the grants and discounts, create the propagation data.
         props: dict[str, engine.PropagationData] = {}
         all_keys = set(grants.keys()).union(discounts.keys())
         for expr in all_keys:

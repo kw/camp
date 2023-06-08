@@ -104,6 +104,7 @@ class PowerCard(base_models.BaseModel):
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
+    rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
     discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
 
@@ -111,6 +112,9 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
         super().post_validate(ruleset)
         if self.grants:
             ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+        if self.rank_grants:
+            grantables = list(self.rank_grants.values())
+            ruleset.validate_identifiers(_grantable_identifiers(grantables))
         if self.discounts:
             ruleset.validate_identifiers(self.discounts.keys())
         if self.choices:
@@ -128,7 +132,6 @@ class ClassDef(BaseFeatureDef):
     sphere: Literal["arcane", "divine", "martial"] = "martial"
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
-    bonus_features: dict[int, Grantable] | None = None
     class_type: Literal["basic", "advanced", "epic"] = "basic"
     # By default, classes have 10 levels.
     ranks: int = 10
@@ -141,9 +144,6 @@ class ClassDef(BaseFeatureDef):
             ruleset.validate_identifiers(
                 _grantable_identifiers(self.multiclass_features)
             )
-        if self.bonus_features:
-            grantables = list(self.bonus_features.values())
-            ruleset.validate_identifiers(_grantable_identifiers(grantables))
 
 
 class CostByRank(base_models.BaseModel):

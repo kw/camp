@@ -9,6 +9,9 @@ starting_features:
   - lore
 multiclass_features:
   - basic-arcane
+level_grants:
+  2: cancel
+  7: spikes:1
 choices:
   magical-specialty:
     starting_class: true

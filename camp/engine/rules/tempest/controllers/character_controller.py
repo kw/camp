@@ -88,7 +88,7 @@ class TempestCharacter(base_engine.CharacterController):
         return attribute_controllers.LifePointController("lp", self)
 
     @property
-    def base_spikes(self) -> int:
+    def spikes(self) -> int:
         return self.ruleset.spikes.evaluate(self.xp_level)
 
     @property

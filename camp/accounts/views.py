@@ -18,6 +18,9 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         return self.request.user
 
 
+# Put a create page under /accounts/profile/create, and similar for edit.
+
+
 class MembershipListView(ListView):
     model = Membership
     template_name = "account/membership_list.html"

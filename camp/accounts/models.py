@@ -19,4 +19,7 @@ class Membership(models.Model):
     joined: int = models.TimeField(auto_now_add=True)
     nickname: str = models.CharField(blank=True, max_length=50, default="nickname")
     game: int = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game")
-    user: User = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    user: str = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+
+    def __str__(self):
+        return self.nickname

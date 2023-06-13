@@ -761,6 +761,7 @@ class BaseFeatureController(PropertyController):
         else:
             return self.rank_name_labels[1]
 
+    @property
     def explain(self) -> list[str]:
         """Returns a list of strings explaining how the ranks were obtained."""
         if self.value <= 0:

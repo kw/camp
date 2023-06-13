@@ -200,7 +200,7 @@ def feature_view(request, pk, feature_id, anchor=None):
         "controller": controller,
         "feature": feature_controller,
         "currencies": currencies,
-        "explain_ranks": feature_controller.explain(),
+        "explain_ranks": feature_controller.explain,
         "choices": {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
         if choices
         else {},

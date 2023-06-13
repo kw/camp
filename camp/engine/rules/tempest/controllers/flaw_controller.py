@@ -186,7 +186,7 @@ class FlawController(feature_controller.FeatureController):
 
     @property
     def explain(self) -> list[str]:
-        reasons = super().explain()
+        reasons = super().explain
 
         if self.award_cp:
             reasons.append(f"You receive {self.award_cp} CP from this flaw.")

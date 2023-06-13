@@ -20,9 +20,6 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         return self.request.user
 
 
-# Put a create page under /accounts/profile/create, and similar for edit.
-
-
 class MembershipListView(AutoPermissionRequiredMixin, ListView):
     permission_type_map = [
         (CreateView, "add"),

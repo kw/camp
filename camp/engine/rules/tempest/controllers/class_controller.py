@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
 from .. import defs
 from . import character_controller
 from . import feature_controller
-
-_MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 
 
 class ClassController(feature_controller.FeatureController):
@@ -83,6 +82,50 @@ class ClassController(feature_controller.FeatureController):
     def caster(self) -> bool:
         return self.definition.sphere != "martial"
 
+    def spell_slots(self, expr: PropExpression) -> int:
+        if not self.caster:
+            return 0
+        if expr is None or expr.slot is None:
+            return sum(
+                self.spell_slots(expr.copy(update={"slot": t})) for t in (1, 2, 3, 4)
+            )
+        slot = int(expr.slot)
+        if 1 <= slot <= 4:
+            tier_table = self.character.ruleset.powers[slot]
+            return tier_table.evaluate(self.value)
+        raise ValueError(f"Invalid spell slot tier: {expr}")
+
+    def spells_prepared(self) -> int:
+        if not self.caster:
+            return 0
+        return self.character.ruleset.spells_prepared.evaluate(self.value)
+
+    def spells_known(self) -> int:
+        if not self.caster:
+            return 0
+        return self.character.ruleset.spells_known.evaluate(self.value)
+
+    def cantrips(self) -> int:
+        if not self.caster:
+            return 0
+        return self.character.ruleset.powers[0].evaluate(self.value)
+
+    def powers(self, expr: PropExpression) -> int:
+        if self.caster:
+            return 0
+        if expr is None or expr.slot is None:
+            return sum(self.powers(expr.copy(update={"slot": t})) for t in (1, 2, 3, 4))
+        slot = int(expr.slot)
+        if 1 <= slot <= 4:
+            tier_table = self.character.ruleset.powers[slot]
+            return tier_table.evaluate(self.value)
+        raise ValueError(f"Invalid power tier: {expr}")
+
+    def utilities(self) -> int:
+        if self.caster:
+            return 0
+        return self.character.ruleset.powers[0].evaluate(self.value)
+
     def can_increase(self, value: int = 1) -> Decision:
         if not (rd := super().can_increase(value)):
             return rd
@@ -98,7 +141,9 @@ class ClassController(feature_controller.FeatureController):
             return rd
         if (
             not self.is_archetype
-            and max((c.value for c in self.character.classes), default=0)
+            and max(
+                (c.value for c in self.character.classes if c.id != self.id), default=0
+            )
             < self.purchased_ranks
         ):
             self.is_archetype = True
@@ -148,6 +193,30 @@ class ClassController(feature_controller.FeatureController):
             return self._gather_grants(self.definition.starting_features)
         else:
             return self._gather_grants(self.definition.multiclass_features)
+
+    def explain(self) -> list[str]:
+        lines = super().explain()
+        if self.value > 0:
+            if self.is_starting:
+                lines.append("This is your starting class.")
+            if self.is_archetype:
+                lines.append("This is your archetype class.")
+            if self.caster:
+                lines.append(
+                    f"Spellcasting sphere: {self.character.display_name(self.sphere)}"
+                )
+                lines.append(f"Cantrips: {self.get('cantrips')}")
+                lines.append(
+                    f"Spell slots: {self.get('spell_slots@1')}/{self.get('spell_slots@2')}/{self.get('spell_slots@3')}/{self.get('spell_slots@4')}"
+                )
+                lines.append(f"Spells prepared: {self.get('spells_prepared')}")
+                lines.append(f"Spells known: {self.get('spells_known')}")
+            else:
+                lines.append(f"Utilities: {self.get('utilities')}")
+                lines.append(
+                    f"Powers: {self.get('powers@1')}/{self.get('powers@2')}/{self.get('powers@3')}/{self.get('powers@4')}"
+                )
+        return lines
 
     def __str__(self) -> str:
         if self.value > 0:

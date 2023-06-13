@@ -18,7 +18,11 @@
 
 <h2>{{ feature.display_name }}
     {% if feature.purchase_cost_string %} ({{ feature.purchase_cost_string }}){% endif %}
+    {% if feature.category %}
+    <p class="fw-lighter fs-5">{{ feature.category }}</p>
+    {% endif %}
 </h2>
+
 
 {# TODO: Render markdown #}
 {% if feature.description %}

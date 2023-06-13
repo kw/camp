@@ -113,7 +113,7 @@ class FlawController(feature_controller.FeatureController):
         # The award value can be modified if other features are present.
         if self.definition.award_mods:
             for flaw, mod in self.definition.award_mods.items():
-                if self.character.get_prop(flaw) > 0:
+                if self.character.get(flaw) > 0:
                     award += mod
         return max(award * self.paid_ranks, 0)
 

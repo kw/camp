@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Iterable
+
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_models import PropExpression
 
 from . import character_controller
 
@@ -40,7 +43,7 @@ class SumAttribute(AttributeController):
         self,
         prop_id: str,
         character: character_controller.TempestCharacter,
-        feature_type: str,
+        feature_type: str | None = None,
         condition: str | None = None,
     ):
         super().__init__(prop_id, character)
@@ -50,20 +53,41 @@ class SumAttribute(AttributeController):
     @property
     def value(self) -> int:
         total: int = super().value
-        for fc in self.character.controllers_for_type(self._feature_type).values():
-            if self._condition is None or getattr(fc, self._condition, True):
-                total += fc.value
+        for fc in self.matching_controllers():
+            total += fc.value
         return total
 
     @property
     def max_value(self) -> int:
         current: int = 0
-        for fc in self.character.controllers_for_type(self._feature_type).values():
-            if (self._condition is None or getattr(fc, self._condition, True)) and (
-                v := fc.value
-            ) > current:
+        for fc in self.matching_controllers():
+            if (v := fc.value) > current:
                 current = v
         return current
+
+    def matching_controllers(self) -> Iterable[base_engine.BaseFeatureController]:
+        for fc in self.character.features.copy().values():
+            if self._feature_type and fc.feature_type != self._feature_type:
+                continue
+            if self._condition is None or getattr(fc, self._condition, True):
+                yield fc
+
+
+class SphereAttribute(SumAttribute):
+    sphere: str
+
+    def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
+        super().__init__(prop_id, character, feature_type="class", condition=prop_id)
+
+    def _evaluate_sphere_attr(self, expr: PropExpression) -> int:
+        return sum(fc.subcontroller(expr).value for fc in self.matching_controllers())
+
+    spell_slots = _evaluate_sphere_attr
+    spells_known = _evaluate_sphere_attr
+    spells_prepared = _evaluate_sphere_attr
+    cantrips = _evaluate_sphere_attr
+    powers = _evaluate_sphere_attr
+    utilities = _evaluate_sphere_attr
 
 
 class CharacterPointController(AttributeController):
@@ -82,7 +106,7 @@ class CharacterPointController(AttributeController):
     @property
     def purchase_spent_cp(self) -> int:
         spent: int = 0
-        for feat in list(self.character.features.values()):
+        for feat in self.character.features.copy().values():
             if feat.currency == "cp":
                 spent += feat.cost
         return spent

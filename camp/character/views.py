@@ -148,10 +148,11 @@ def feature_view(request, pk, feature_id):
     if feature_controller.currency:
         currencies[
             controller.display_name(feature_controller.currency)
-        ] = controller.get_prop(feature_controller.currency)
+        ] = controller.get(feature_controller.currency)
 
     can_inc = feature_controller.can_increase()
     can_dec = feature_controller.can_decrease()
+    pf = None
 
     if can_inc or can_dec:
         if request.POST and "purchase" in request.POST:
@@ -212,9 +213,9 @@ def _try_apply_purchase(
 ) -> tuple[bool, forms.FeatureForm]:
     pf = forms.FeatureForm(feature_controller, request.POST)
     if pf.is_valid():
-        ranks = pf.cleaned_data.get("ranks", 1)
+        ranks = int(pf.cleaned_data.get("ranks", 1))
         if feature_controller.is_concrete:
-            ranks = (int(ranks) if ranks else 1) - feature_controller.value
+            ranks -= feature_controller.value
         if ranks == 0:
             messages.info(request, "No change requested.")
             return True, pf

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter
 
 
@@ -161,13 +159,116 @@ def test_multiclass_sellback(character: TempestCharacter):
     assert character.primary_class is None
 
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_spell_slots(character: TempestCharacter):
+def test_arcane_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
     character.xp_level = 7
+    assert character.apply("wizard:7")
+    assert character.get("wizard.spell_slots") == 6
+    assert character.get("wizard.spell_slots@1") == 5
+    assert character.get("wizard.spell_slots@2") == 1
+    assert character.get("wizard.spell_slots@3") == 0
+    assert character.get("arcane.spell_slots") == 6
+    assert character.get("arcane.spell_slots@1") == 5
+    assert character.get("divine.spell_slots@1") == 0
+
+
+def test_divine_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
+    character.xp_level = 7
+    character.apply("cleric:7")
+    assert character.meets_requirements("cleric.spell_slots:6")
+    assert character.meets_requirements("cleric.spell_slots@1:5")
+    assert character.meets_requirements("cleric.spell_slots@2:1")
+    assert not character.meets_requirements("cleric.spell_slots@3")
+    assert character.meets_requirements("divine.spell_slots:6")
+    assert character.meets_requirements("divine.spell_slots@1:5")
+    assert not character.meets_requirements("arcane.spell_slots@1")
+
+
+def test_martial_spells(character: TempestCharacter):
+    """Martial classes don't have spell attributes."""
+    character.xp_level = 7
+    character.apply("fighter:7")
+    assert not character.get("fighter.spell_slots")
+    assert not character.get("fighter.spell_slots@1")
+    assert not character.get("fighter.spell_slots@2")
+    assert not character.get("martial.spell_slots")
+    assert not character.get("martial.spell_slots@1")
+    assert not character.get("martial.spell_slots@2")
+    assert not character.get("fighter.spells_known")
+    assert not character.get("fighter.spells_prepared")
+    assert not character.get("fighter.cantrips")
+    assert not character.get("martial.spells_known")
+    assert not character.get("martial.spells_prepared")
+    assert not character.get("martial.cantrips")
+
+
+def test_mixed_spell_slots(character: TempestCharacter):
+    # TODO: Support for bonus archetype spell slots.
+    character.xp_level = 20
+    character.apply("cleric:7")
     character.apply("wizard:7")
-    assert character.meets_requirements("spells:7")
-    assert character.meets_requirements("spells@1:6")
-    assert character.meets_requirements("spells@2:1")
-    assert not character.meets_requirements("spells@3")
-    assert character.meets_requirements("spells@1#arcane:6")
-    assert not character.meets_requirements("spells@1#divine:6")
+    character.apply("fighter:6")
+    assert character.meets_requirements("wizard.spell_slots:6")
+    assert character.meets_requirements("wizard.spell_slots@1:5")
+    assert character.meets_requirements("wizard.spell_slots@2:1")
+    assert not character.meets_requirements("wizard.spell_slots@3")
+    assert character.meets_requirements("cleric.spell_slots:6")
+    assert character.meets_requirements("cleric.spell_slots@1:5")
+    assert character.meets_requirements("cleric.spell_slots@2:1")
+    assert not character.meets_requirements("cleric.spell_slots@3")
+    assert character.meets_requirements("arcane.spell_slots@1:5")
+    assert character.meets_requirements("arcane.spell_slots:6")
+    assert character.meets_requirements("divine.spell_slots@1:5")
+    assert character.meets_requirements("divine.spell_slots:6")
+
+
+def test_bonus_spell_slots(character: TempestCharacter):
+    assert character.apply("wizard:2")
+    character.awarded_cp = 10
+    novice_slots = character.get("arcane.spell_slots@1")
+    assert novice_slots > 0
+    intermediate_slots = character.get("arcane.spell_slots@2")
+    assert intermediate_slots == 0
+    assert character.apply("bonus-novice-arcane")
+    # The arcane sphere itself is not modified by the bonus.
+    assert character.get("arcane") == 2
+    # Novice slots are increased, but intermediate slots are not.
+    assert character.get("arcane.spell_slots@1") == novice_slots + 1
+    assert character.get("arcane.spell_slots@2") == intermediate_slots
+    # Adding more ranks adds more novice slots.
+    assert character.apply("bonus-novice-arcane")
+    assert character.get("arcane.spell_slots@1") == novice_slots + 2
+    assert character.apply("bonus-novice-arcane")
+    assert character.get("arcane.spell_slots@1") == novice_slots + 3
+    # Bonus intermediate slots also work. Level up to find out...
+    character.xp_level = 6
+    character.apply("wizard:4")
+    intermediate_slots = character.get("arcane.spell_slots@2")
+    assert character.apply("bonus-intermediate-arcane:2")
+    assert character.get("arcane.spell_slots@2") == intermediate_slots + 2
+
+
+def test_caster_attributes(character: TempestCharacter):
+    character.xp_level = 7
+    assert character.apply("wizard:7")
+    assert character.get("wizard.spells_known") == 7
+    assert character.get("arcane.spells_known") == 7
+    assert character.get("wizard.spells_prepared") == 5
+    assert character.get("arcane.spells_prepared") == 5
+    assert character.get("wizard.cantrips") == 3
+    assert character.get("arcane.cantrips") == 3
+    assert character.get("divine.spells_known") == 0
+    assert character.get("martial.spells_known") == 0
+
+
+def test_martial_powers(character: TempestCharacter):
+    character.xp_level = 7
+    assert character.apply("fighter:7")
+    assert character.get("fighter.powers") == 6
+    assert character.get("fighter.powers@1") == 5
+    assert character.get("fighter.powers@2") == 1
+    assert character.get("fighter.utilities") == 3
+    assert character.get("martial.powers") == 6
+    assert character.get("arcane.powers") == 0
+    assert character.get("divine.powers") == 0

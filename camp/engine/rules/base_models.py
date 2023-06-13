@@ -22,7 +22,8 @@ from .decision import Decision
 
 _REQ_SYNTAX = re.compile(
     r"""(?P<prop>[a-zA-Z0-9_-]+)
-    (?:@(?P<slot>-?[a-zA-Z0-9_-]+))?          # Choice, aka "@4"
+    (?:\.(?P<attribute>[a-zA-Z0-9_-]+))?  # Attribute, aka ".utilities"
+    (?:@(?P<slot>-?[a-zA-Z0-9_-]+))?     # Choice, aka "@4"
     (?:\+(?P<option>[a-zA-Z0-9?_-]+))?   # Skill options, aka "+Undead_Lore"
     (?::(?P<value>-?\d+))?       # Minimum value, aka ":5"
     (?:\$(?P<single>-?\d+))?       # Minimum value in single thing, aka "$5"
@@ -142,6 +143,10 @@ class PropExpression(BoolExpr):
 
     Attributes:
         prop: The property being tested. Often a feature ID. Required.
+        attribute: The scoped attribute of the property being tested.
+            For example, "artisan.utilities" is the number of artisan utility
+            powers available to purchase. Global attributes (such as "level")
+            are not scoped like this.
         option: Text value listed after a #. Ex: lore#Undead
             This is handled specially if the value is '?', which means
             "You need the same option in the indicated skill as you are
@@ -158,6 +163,7 @@ class PropExpression(BoolExpr):
     """
 
     prop: str
+    attribute: str | None = None
     slot: str | None = None
     option: str | None = None
     value: int | None = None
@@ -166,13 +172,20 @@ class PropExpression(BoolExpr):
 
     @property
     def full_id(self) -> str:
-        return full_id(self.prop, self.option)
+        return self.unparse(
+            prop=self.prop,
+            attribute=self.attribute,
+            slot=self.slot,
+            option=self.option,
+        )
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
-        id = self.unparse(prop=self.prop, slot=self.slot, option=self.option)
-        if not char.has_prop(id):
-            return Decision(success=False, reason=f"{self!r} [{id} not present]")
-        ranks = char.get_prop(id)
+        expr = self.unparse(
+            prop=self.prop, attribute=self.attribute, slot=self.slot, option=self.option
+        )
+        if not char.has_prop(expr):
+            return Decision(success=False, reason=f"{self!r} [{expr} not present]")
+        ranks = char.get(expr)
         if self.value is not None:
             if ranks < self.value:
                 return Decision(
@@ -184,7 +197,7 @@ class PropExpression(BoolExpr):
                     success=False, reason=f"{self!r} [{ranks} ≥ {self.less_than}]"
                 )
         elif self.single is not None:
-            max_ranks = char.get_prop(f"{id}$0")
+            max_ranks = char.get(f"{expr}$0")
             if max_ranks < self.single:
                 return Decision(
                     success=False, reason=f"{self!r} [{max_ranks} < {self.single}]"
@@ -197,6 +210,12 @@ class PropExpression(BoolExpr):
     def identifiers(self) -> set[str]:
         return set([self.prop])
 
+    def popattr(self, new_attr: str | None = None) -> PropExpression:
+        """Returns a copy of this expression with the property removed and attribute moved into its place."""
+        if not self.attribute:
+            return self.copy()
+        return self.copy(update={"prop": self.attribute, "attribute": new_attr})
+
     @classmethod
     def parse(cls, req: str | PropExpression) -> PropExpression:
         if isinstance(req, PropExpression):
@@ -205,6 +224,7 @@ class PropExpression(BoolExpr):
         if match := _REQ_SYNTAX.fullmatch(req):
             groups = match.groupdict()
             prop = groups["prop"]
+            attr = groups.get("attribute")
             slot = t if (t := groups.get("slot")) else None
             option = o.replace("_", " ") if (o := groups.get("option")) else None
             value = int(m) if (m := groups.get("value")) else None
@@ -212,6 +232,7 @@ class PropExpression(BoolExpr):
             less_than = int(lt) if (lt := groups.get("less_than")) else None
             return cls(
                 prop=prop,
+                attribute=attr,
                 slot=slot,
                 option=option,
                 value=value,
@@ -224,13 +245,16 @@ class PropExpression(BoolExpr):
     def unparse(
         cls,
         prop: str,
+        attribute: str = None,
         slot: str | None = None,
         option: str | None = None,
         value: int | None = None,
         single: int | None = None,
         less_than: int | None = None,
     ):
-        req = prop
+        req = prop or "unknown"
+        if attribute:
+            req += f".{attribute}"
         if slot:
             req += f"@{slot}"
         if option:
@@ -246,6 +270,7 @@ class PropExpression(BoolExpr):
     def __repr__(self) -> str:
         return self.unparse(
             prop=self.prop,
+            attribute=self.attribute,
             slot=self.slot,
             option=self.option,
             value=self.value,
@@ -263,6 +288,47 @@ AnyOf.update_forward_refs()
 AllOf.update_forward_refs()
 NoneOf.update_forward_refs()
 PropExpression.update_forward_refs()
+
+
+class Table(ABC):
+    @abstractmethod
+    def evaluate(self, key: int) -> int:
+        """Returns the table value for the given key."""
+
+    @abstractmethod
+    def bounds(self) -> tuple[int, int]:
+        """Returns the boundaries of the table."""
+
+    def table(self, first: int = None, last: int = None) -> Iterable[int]:
+        return {i: self.evaluate(i) for i in range(first, last + 1)}
+
+    def reverse_lookup(self, value: int) -> int:
+        """Return the key that best matches the given value.
+
+        If an exact match isn't found, the key for the next lowest value is returned.
+        """
+        # Inefficient generic lookup by default.
+        low, high = self.bounds()
+        for k in range(low, high + 1):
+            v = self.evaluate(k)
+            if v == value:
+                return k
+            elif v > value:
+                return k - 1
+        return high
+
+
+class DictTable(Table, BaseModel):
+    __root__: dict[int, int]
+
+    def evaluate(self, key: int) -> int:
+        return utils.table_lookup(self.__root__, key)
+
+    def bounds(self) -> tuple[int, int]:
+        return min(self.__root__.keys()), max(self.__root__.keys())
+
+    def reverse_lookup(self, value: int) -> int:
+        return utils.table_reverse_lookup(self.__root__, value)
 
 
 class OptionDef(BaseModel):
@@ -306,6 +372,7 @@ class BaseFeatureDef(BaseModel):
             is optional. If not provided, the file's base name will be used.
             Typically this will not be specified unless multiple features are provided
             in a single YAML document stream.
+        parent: If this feature is logically nested within another feature, list its ID here.
         name: The user-visible name of the feature.
         type: The type of feature. Subclasses will normally override this with
             to specify the type literally, which can aid the parser in identifying
@@ -331,6 +398,7 @@ class BaseFeatureDef(BaseModel):
     id: str
     name: str
     type: str
+    parent: str | None = None
     category: str | None = None
     requires: Requirements = None
     def_path: str | None = None

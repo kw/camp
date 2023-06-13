@@ -69,13 +69,6 @@ class MembershipUpdateView(AutoPermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy("membership-list")
     template_name = "account/membership_update.html"
 
-    def form_valid(self, form):
-        # You don't get to choose which Game the Membership applies to.
-        # Intercept the model to set the Game manually before saving.
-        self.object = form.save(commit=False)
-        self.object.user = self.request.user
-        return super().form_valid(form)
-
 
 class MembershipDeleteView(AutoPermissionRequiredMixin, DeleteView):
     model = Membership

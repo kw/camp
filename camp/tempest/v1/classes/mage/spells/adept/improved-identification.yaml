@@ -1,0 +1,21 @@
+name: Improved Identification
+incant: "...to reveal the secrets and portents of this item."
+call: "Discern: What are all the magical properties of this item?"
+target: Any number of non-relic special items
+duration: Instantaneous
+delivery: Touch
+accent: None
+effect: Discern
+description: >
+  By casting this spell inside an Arcane Locus, the Mage may learn all of the
+  magical properties of all non-relic items within the locus. Although it is
+  easy for anyone to determine if an item is magical or special in nature and
+  read the information card to discover obvious properties, this spell will
+  allow the player to look at the folded information card (even if they don’t
+  meet the requirements on the outside) to know its exact properties. If any
+  card says “Relic” on the public portion, this spell will not function on it.
+  Only the caster will be allowed to read the properties, although if they
+  choose to, they can open each item card to make the properties discoverable
+  to anyone.
+
+  **Note**: By game-design, Identify may have other specific uses.

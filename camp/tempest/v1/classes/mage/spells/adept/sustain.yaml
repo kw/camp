@@ -1,0 +1,14 @@
+name: Sustain
+incant: ...to sustain the breath.
+call: Explanation
+target: Individual
+duration: Short Rest
+delivery: Touch
+accent: None
+effect: Immunity
+description: >
+  The Mage designates up to 3 individuals creating a bridge between the target
+  and the element of air. The targets cease to breathe the air around them, and
+   therefore can survive in airless environments such as being underwater, and
+   gain immunity to the Gas Accent and any similar Effects that are obviously
+   breath driven. The appropriate call for this defense is “Immune.”

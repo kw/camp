@@ -94,6 +94,7 @@ class ChoiceDef(base_models.BaseModel):
 
 
 class PowerCard(base_models.BaseModel):
+    name: str | None = None
     incant: str | None = None
     call: str | None = None
     accent: str | None = None
@@ -102,6 +103,7 @@ class PowerCard(base_models.BaseModel):
     delivery: str | None = None
     refresh: str | None = None
     effect: str | None = None
+    description: str | None = None
 
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
@@ -109,6 +111,7 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
     discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
+    subcard: PowerCard | list[PowerCard] | None = None
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)

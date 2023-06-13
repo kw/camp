@@ -1,0 +1,16 @@
+name: Disintegrate Item
+incant: "... to summon the ravages of time."
+call: "Shatter [Item] by Time"
+target: Individual or Item
+duration: Instantaneous
+delivery: Packet (Spell-Ball)
+accent: Time
+effect: Shatter
+description: >
+  When cast, this spell charges two Spell balls that cause the items struck
+  to be Shattered. If the spell-ball strikes a shield or weapon held by an
+  individual, then that shield or weapon must be targeted. If the spell-ball
+  strikes the individual, the caster can choose from a held item, physical
+  armor, or some other visible possession. The target may be an unattended
+  physical item. Special items are generally *immune* and their holder may call
+  out “No Effect” in these cases.

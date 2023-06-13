@@ -1,0 +1,32 @@
+name: Town Portal
+incant: "... to gather the aether to guide my way."
+call: '"Town Portal, Insubstantial!", “Grant Insubstantial to Self”, Instruction, “[Name or Description] Cure Insubstantial to Insubstantial”'
+target: Self, Individual
+delivery: Touch
+accent: None
+duration: Long Rest
+effect: Grant Insubstantial, Cure Insubstantial, Instruction
+description: >
+  This spell must be cast Out Of Combat and the Mage may only have one active Town Portal trigger and sigil at any one time.
+  The Mage inscribes a location, outside, with a symbol of their choosing. The Symbol must be at least 6” by 6” and must be
+  visible from at least one angle by a person standing on the ground.
+
+  Until the Mage finishes a Long Rest, they may trigger this power in order to “Grant Insubstantial to Self” and are compelled
+  to walk directly to their inscribed symbol and touch it. The Mage should call "Town Portal, Insubstantial!" when this occurs.
+
+  If this spell is cast using a higher tier spell slot, the caster may designate up to two additional targets per tier. Thus,
+  with a Master Level Slot, 7 people would be transported, including the caster. These individuals must all be within Touch
+  range when the Power is triggered. The caster should make it clear to the targets who is being affected and how. The Mage
+  may use "Instruction" to tell the players that their character is going to be Insubstantial, can only walk, and should
+  Call "Town Portal, Insubstantial." In addition, all affected characters must attempt to remain within melee distance of
+  the caster until they have reached the Sigil, or have been cured of Insubstantial.
+
+  When the travelers reach the sigil's original location and the Mage touches the sigil, the caster calls
+  “[Name or Description] Cure Insubstantial to Insubstantial” on all the travelers. If, instead, the Symbol is no longer
+  there or otherwise defaced, the caster immediately dies.
+
+  Should the caster die, or the spell ends, all effects and conditions related to this spell end.
+
+  **Note**: This means the caster is Dead, but no longer Insubstantial, as all Conditions are removed when dead. Removing the
+  Insubstantial Condition will not remove any other part of this Spell's effects: the Mage (and other Targets) will still
+  need to walk back to the original location and will still die if the sigil has been moved or defaced.

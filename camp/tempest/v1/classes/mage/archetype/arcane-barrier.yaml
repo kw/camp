@@ -1,0 +1,14 @@
+name: Arcane Barrier
+requires: mage:5
+incant: “I conjure words of arcane might, from studied tomes in candlelight to grant you the protection of the Arcane."
+call: "Short Grant 1 Barrier by Force"
+target: Individual
+delivery: Touch
+accent: Force
+duration: Short Rest
+refresh: Long Rest, Special
+effect: Grant Barrier
+description: >
+  The Mage can call upon the powers of the Arcane to grant an individual 1 Barrier by Touch.
+  This archetype power refreshes whenever the Mage casts a spell (not cantrip) from their
+  list of mage spells or after a Long Rest.

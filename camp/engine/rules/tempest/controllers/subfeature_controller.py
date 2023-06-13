@@ -24,10 +24,10 @@ class SubfeatureController(feature_controller.FeatureController):
             )
 
     @property
-    def parent(self) -> feature_controller.FeatureController | None:
-        if self.definition.parent is None:
-            return None
-        return self.character.features.get(self.definition.parent)
+    def type_name(self) -> str:
+        if self.definition.display_type:
+            return self.definition.display_type
+        return super().type_name
 
     def can_increase(self, value: int = 1) -> Decision:
         return _NO_PURCHASE
@@ -37,8 +37,3 @@ class SubfeatureController(feature_controller.FeatureController):
 
     def decrease(self, value: int) -> Decision:
         return _NO_PURCHASE
-
-    def reconcile(self) -> None:
-        if p := self.parent:
-            p._subfeatures.add(self.id)
-        return super().reconcile()

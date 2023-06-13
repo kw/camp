@@ -1,0 +1,25 @@
+name: Dispel Magic
+incant: "... to dispel magic."
+call: See below
+target: Individual or Object
+duration: Instantaneous
+delivery: Packet (Spell-Ball)
+accent: None
+effect: Dispel
+description: >
+  This powerful spell can be used to end the duration of many Spells or Powers,
+  including Spells like Elemental Node or protective circles. It can be used in
+  one of the following ways:
+
+    * Harm Constructs: “Piercing 3 to Construct.” If the caster expends a Spike
+      an additional Spell ball is charged.
+    * Dispel any of the following: “Dispel Protects”, “Dispel Summoned Armor”,
+      “Dispel Barrier”, or a specific Condition: “Dispel [Condition]” (remember
+      that Immunity is also a Condition).
+    * Dispel all Conditions caused by a specific Accent: “Dispel [Accent]”.
+    * Break any circle represented by a cord, rope, or the like:
+      “Dispel Circle”. This will end spells like Elemental Node.
+    * Deactivate a Glyph for a Slow Count of 60: “Dispel Magic: Deactivate
+      Glyph, Slow 60”.
+
+  Note: By game-design, Dispel Magic may have other specific uses.

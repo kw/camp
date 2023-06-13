@@ -1,0 +1,15 @@
+name: Succumb
+incant: ...to conjure nameless dread.
+call: "Short Grant Vulnerability to [Force, Flame, Ice, Lightning, Acid]"
+target: Individual
+duration: Short Rest
+delivery: Packet (Spell-Ball)
+accent: None
+effect: Grant Vulnerability
+description: >
+  Twisting fate and warping reality, the Mage lays bare their opponent’s
+  weakness for all to exploit. A single spell ball is charged with this
+  spell, but if a Greater spell slot is used, the duration becomes Long,
+  like so: “Long Grant Vulnerability to Force.” If this spell is cast using
+  a Master Spell slot, the call gains the “Final” modifier, ie “Long Grant
+  Vulnerability to Force Final.”

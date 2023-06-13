@@ -1,0 +1,17 @@
+name: Arcane Bridge
+incant: "...to create an arcane bridge."
+target: Special
+duration: Special
+accent: Force
+delivery: Packet (Spell-Ball)
+effect: Special
+description: >
+  This spell must be cast upon a spell-ball that has been marked with a symbol that is special to the caster.
+  The packet is then thrown and once it comes to rest, the Mage can briefly touch the ground to create an ethereal,
+  translucent bridge of pure magical power that extends from that spot to the thrown spell-ball.
+
+  The bridge is taxing to maintain, and once six Individuals have passed over it, the magical force will dissipate.
+  The bridge will likewise dissipate if the anchoring spell-ball is moved in any way. This spell can be cast with a
+  Greater magic spell-slot to allow ten individuals across, or a Master spell slot to allow any number of individuals
+  to cross as long as the caster maintains Focus. Severe changes in level between the two ends cause the bridge to
+  dissipate immediately, so this spell cannot be used to help climb or descend more than about four stair-steps up or down.

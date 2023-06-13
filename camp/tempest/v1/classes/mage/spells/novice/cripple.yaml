@@ -1,0 +1,14 @@
+name: Cripple
+incant: "... to disable my foe."
+call: "Short Disable [Limb] by Force"
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Force
+duration: Short Rest
+effect: Disable
+description: >
+  The target of this spell feels their limb twisted and crushed by an invisible force. An arm will become
+  useless and will be forced to drop whatever that hand is holding. A disabled leg is unable to hold weight.
+  When the packet strikes the target, the caster must choose a limb and make the call. If the packet appears
+  to hit a specific limb, or if it hits a weapon or equipment held by a specific limb, that limb must be
+  called, even if it is already Disabled. If the caster expends a Spike an additional Spell ball is charged.

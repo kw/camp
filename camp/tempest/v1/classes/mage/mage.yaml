@@ -1,0 +1,67 @@
+type: class
+category: Basic Class
+name: Mage
+sphere: arcane
+starting_features:
+  - basic-arcane
+  - basic-scholarship
+  - novice-spell-scholar
+  - lore
+multiclass_features:
+  - basic-arcane
+level_grants:
+  2: cancel
+  7: spikes:1
+choices:
+  magical-specialty:
+    starting_class: true
+    name: Magical Specialty
+    matcher:
+      id:
+        - mage-magical-specialty-1
+        - mage-magical-specialty-2
+        - mage-magical-specialty-3
+description: >
+  The Mage is truly a power to be reckoned with. Their offensive magic is effective and lethal and their defensive magic is some of the most potent available. There are few classes that compare to a high level Mage and Mages always command both fear and respect from their adversaries. They are the disciples of power.
+
+  Mage comes from the Latin word “Magus,” which means magician. Originally, the term meant "learned man." This was especially applied to the Persian scholars of the first century B.C.E. These men were the most advanced scientists of the time and were revered for their wisdom and literacy. Magi has also been used, in its learned or wise man sense, to speak of the kings that came to visit Christ at his birth. It was J.R.R. Tolkien that gave the fantasy mage its real birth. Although Arthurian legend has the strong character of Merlin, a half-fairy wizard of almost unlimited power, it is Gandalf that followed and who ultimately claimed the wizard's place in fantasy literature for all time.
+
+  The Mage is a strong addition to any team. Mages have a number of enchantments and spells that can help add to a team's strength and effectiveness. The Mage's power trade-off is tightly restricted weaponry and light armor in return for particularly potent defensive magic. They tend to be back-line combatants, as their abilities rarely allow them the capability to stand up to well-armed and armored warrior classes. With the right warrior back-up though, the Mage can become a truly devastating force.
+
+  Wizards are most often thought of in long robes inscribed with arcane symbols. Flowing cloaks and robes are good garb for a Mage character and as for weapon choice, staff is always a good pick.
+
+  The Mage is an Arcane spell-caster. The Mage should choose a special symbol that is their caster-sigil and mark their spellbook and packets with it.
+
+---
+id: mage-magical-specialty-1
+type: subfeature
+parent: mage
+name: Spellcasting Specialist
+description: Grants Spell Preparation, Extended Capacity - Novice, Library Use
+category: Mage Starting Skills
+display_type: Magical Specialty
+grants:
+  - spell-preparation
+  - extended-capacity-novice
+  - library-use
+---
+id: mage-magical-specialty-2
+type: subfeature
+parent: mage
+name: Bookcasting Specialist
+description: Grants Additional Recharge, Novice Bookcaster
+category: Mage Starting Skills
+display_type: Magical Specialty
+grants:
+  - additional-recharge
+  - novice-bookcaster
+---
+id: mage-magical-specialty-3
+type: subfeature
+parent: mage
+name: Cantrip Specialist
+description: Grants Additional Cantrip
+category: Mage Starting Skills
+display_type: Magical Specialty
+grants:
+  - additional-cantrip

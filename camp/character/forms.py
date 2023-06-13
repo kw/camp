@@ -3,18 +3,36 @@ from __future__ import annotations
 from django import forms
 
 from camp.engine.rules.tempest.controllers.choice_controller import ChoiceController
+from camp.engine.rules.tempest.controllers.class_controller import ClassController
 from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 
 
 class FeatureForm(forms.Form):
     _controller: FeatureController
+    button_label: str = "Purchase"
+    button_level: str = "primary"
 
     def __init__(self, controller: FeatureController, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._controller = controller
         self._make_ranks_field(controller)
         self._make_option_field(controller)
 
+    @property
+    def show_remove_button(self) -> bool:
+        """Whether to show the remove button.
+
+        At present, the remove button is only shown if this is a single-rank feature.
+        Multi-rank features are removed by setting the rank to 0 in the rank chooser.
+        """
+        c = self._controller
+        return c.value == 1 and c.definition.ranks == 1 and c.can_decrease()
+
     def _make_ranks_field(self, c: FeatureController) -> forms.Field:
+        # If the feature only needs a remove button, don't bother with a ranks field.
+        if self.show_remove_button:
+            return
+
         available = c.available_ranks
         if c.option_def and not c.option:
             current = 0
@@ -30,16 +48,23 @@ class FeatureForm(forms.Form):
             if c.currency:
                 choices.extend(
                     (i, f"{i} ({c.purchase_cost_string(i)})")
-                    for i in range(next_value, next_value + available)
+                    for i in range(next_value, current + available + 1)
                 )
             else:
-                choices = [(i, i) for i in range(next_value, next_value + available)]
+                choices = [(i, i) for i in range(next_value, current + available + 1)]
         if c.can_decrease():
             choices = (
                 [(i, i) for i in range(c.min_value, current)]
                 + [(current, f"{current} (Current)")]
                 + choices
             )
+            self.button_label = "Update"
+        # Special case: Your starting class level can be 0 (if you're removing it) or 2,
+        # but it can never be 1. I don't think there are any other cases where a feature has
+        # a weird discontinuity, so I'm not going to try to generalize this for now.
+        if isinstance(c, ClassController) and c.is_starting:
+            if (1, 1) in choices:
+                choices.remove((1, 1))
         if choices:
             self.fields["ranks"] = forms.ChoiceField(
                 choices=choices,
@@ -96,7 +121,6 @@ class DatalistTextInput(forms.TextInput):
 class ChoiceForm(forms.Form):
     _choice: str
     controller: ChoiceController
-    available: list[FeatureController]
     taken: list[FeatureController]
     removable: set[str]
 
@@ -110,12 +134,13 @@ class ChoiceForm(forms.Form):
         self.available = controller.available_features()
         self.taken = controller.taken_features()
         self.removable = controller.removable_choices()
-        self._make_choice_field(controller)
+        self._make_choice_field()
 
-    def _make_choice_field(self, controller: ChoiceController):
+    def _make_choice_field(self):
         if self.available:
+            choices = [(k, v) for (k, v) in self.controller.valid_choices().items()]
             self.fields["selection"] = forms.ChoiceField(
-                choices=[(f.full_id, f.display_name()) for f in self.available],
-                label="Choice",
+                choices=choices,
+                label="Available Choices",
                 help_text="Make a selection.",
             )

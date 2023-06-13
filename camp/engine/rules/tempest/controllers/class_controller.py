@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from functools import cached_property
+from typing import Literal
+
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
 from .. import defs
 from . import character_controller
 from . import feature_controller
+from . import spellbook_controller
 
 
 class ClassController(feature_controller.FeatureController):
@@ -21,8 +25,20 @@ class ClassController(feature_controller.FeatureController):
             )
 
     @property
+    def class_type(self) -> Literal["basic", "advanced", "epic"]:
+        return self.definition.class_type
+
+    @property
     def is_archetype(self) -> bool:
         return self.model.is_archetype_class
+
+    @property
+    def innate_powers(self) -> list[feature_controller.FeatureController]:
+        return (fc for fc in self.children if fc.definition.type == "innate")
+
+    @property
+    def archetype_powers(self) -> list[feature_controller.FeatureController]:
+        return (fc for fc in self.children if fc.definition.type == "archetype")
 
     @is_archetype.setter
     def is_archetype(self, value: bool) -> None:
@@ -110,6 +126,37 @@ class ClassController(feature_controller.FeatureController):
             return 0
         return self.character.ruleset.powers[0].evaluate(self.value)
 
+    def cantrips_purchased(self) -> int:
+        if not self.caster:
+            return 0
+        return sum(
+            1
+            for c in self.taken_children
+            if c.feature_type == "cantrip" and c.purchased_ranks > 0
+        )
+
+    def spells_purchased(self) -> int:
+        if not self.caster:
+            return 0
+        return sum(
+            1
+            for c in self.taken_children
+            if c.feature_type == "spell" and c.purchased_ranks > 0
+        )
+
+    @cached_property
+    def spellbook(self) -> spellbook_controller.SpellbookController | None:
+        if self.caster:
+            return self.character.controller(f"{self.sphere}.spellbook")
+        return None
+
+    @property
+    def spellbook_available(self) -> int:
+        if spellbook := self.spellbook:
+            available_dict = spellbook.spells_available_per_class
+            return available_dict.get(self.full_id, 0) + available_dict.get(None, 0)
+        return 0
+
     def powers(self, expr: PropExpression) -> int:
         if self.caster:
             return 0
@@ -126,9 +173,7 @@ class ClassController(feature_controller.FeatureController):
             return 0
         return self.character.ruleset.powers[0].evaluate(self.value)
 
-    def can_increase(self, value: int = 1) -> Decision:
-        if not (rd := super().can_increase(value)):
-            return rd
+    def can_afford(self, value: int = 1) -> Decision:
         character_available = self.character.levels_available
         available = min(character_available, self.purchaseable_ranks)
         return Decision(success=available >= value, amount=available)
@@ -189,10 +234,22 @@ class ClassController(feature_controller.FeatureController):
 
     def extra_grants(self) -> dict[str, int]:
         # Base classes grant different starting features based on whether it's your starting class.
+        grants = {}
+        # Starting features
         if self.is_starting:
-            return self._gather_grants(self.definition.starting_features)
+            grants.update(self._gather_grants(self.definition.starting_features))
         else:
-            return self._gather_grants(self.definition.multiclass_features)
+            grants.update(self._gather_grants(self.definition.multiclass_features))
+        # Innate features
+        for feature in self.innate_powers:
+            if feature.meets_requirements:
+                grants[feature.id] = 1
+        # Archetype features
+        if self.is_archetype:
+            for feature in self.archetype_powers:
+                if feature.meets_requirements:
+                    grants[feature.id] = 1
+        return grants
 
     def explain(self) -> list[str]:
         lines = super().explain()
@@ -210,7 +267,9 @@ class ClassController(feature_controller.FeatureController):
                     f"Spell slots: {self.get('spell_slots@1')}/{self.get('spell_slots@2')}/{self.get('spell_slots@3')}/{self.get('spell_slots@4')}"
                 )
                 lines.append(f"Spells prepared: {self.get('spells_prepared')}")
-                lines.append(f"Spells known: {self.get('spells_known')}")
+                lines.append(
+                    f"Spells that can be added to spellbook: {self.spellbook_available}"
+                )
             else:
                 lines.append(f"Utilities: {self.get('utilities')}")
                 lines.append(

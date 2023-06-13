@@ -1,0 +1,9 @@
+name: Arcane Charge
+cost: 2
+requires:
+  - mage:4
+  - replicate-enhancement
+description: >
+  When the Replicate Enhancement Passive is used, the Mage may choose to reduce the number of targets
+  by one and instead place the additional charge granted into a Spell-Ball. This allows the Mage to
+  retain the charge for later use, or deliver the charge at range.

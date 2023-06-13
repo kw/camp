@@ -1,12 +1,24 @@
 name: Adept Spell-Scholar
-cost: 2
+cost: 4
 ranks: unlimited
-# TODO(#15): Add "one adept spell-slot" requirement
 requires:
-  any:
+  - any:
+    - arcane.spell_slots@2
+    - divine.spell_slots@2
+  - any:
     - basic-arcane
     - basic-faith
-# TODO(#15): Track spellbook
+choices:
+  spell:
+    name: Adept Spell
+    limit: 2
+    limit_is_per_rank: true
+    matcher:
+      type: spell
+      parent:
+        type: class
+    controller: sphere-bonus
 description: >
-  The character can add two Novice spells from a spell-casting class she has levels in and add them to her spellbook.
-  If the character does not have a class spell-list, they may pick spells from any class’ spell list.
+  The character can add two spells from a spell-casting class they have levels in and add them to their spellbook.
+  These spells can be of any tier (although that will not make them castable). If the character does not have a
+  class spell-list, they may pick spells from any class’ spell list.

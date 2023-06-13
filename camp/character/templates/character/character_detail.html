@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load rules %}
+{% load character_sheet %}
 
 {% block head_title %}{% block body_title %}
 {{ character }}
@@ -23,36 +24,51 @@
   </div>
 
 <ul class="list-group list-group-horizontal">
-    <li class="list-group-item">Level {{ controller.xp_level }} ({{ controller.xp }} XP)</li>
+    <li class="list-group-item">Level {% get 'xp_level' %} ({% get 'xp' %} XP)</li>
     <li class="list-group-item"
         data-bs-toggle="tooltip" data-bs-html="true"
         data-bs-placement="bottom"
         data-bs-title="
         <p>Base: {{ controller.base_cp }}</p>
         <p>Awarded: {{ controller.awarded_cp }}</p>
-        <p>Flaw Awards: {{ controller.cp.flaw_award_cp}}</p>
+        <p>Flaw Awards: {{ controller.cp.flaw_award_cp }}</p>
         <p>Spent: {{ controller.cp.spent_cp }}</p>">
-        CP: {{ controller.cp.value }}</li>
-    <li class="list-group-item">LP: {{ controller.lp.value }}</li>
-    <li class="list-group-item">Spikes: {{ controller.base_spikes }}</li>
+        CP: {% get 'cp' %}</li>
+    <li class="list-group-item">LP: {% get 'lp' %}</li>
+    <li class="list-group-item">Spikes: {% get 'spikes' %}</li>
 </ul>
 
+<!-- Existing Feature Cards -->
+<div class="row">
 {% for group in feature_groups %}
-    <div class="card">
+    <div class="card col-12 col-lg-6 col-xl-4">
         <div class="card-body">
         <h2 class="card-title">
             {{ group.name }}
         </h2>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group">
+            {% if group.explain_list %}
+            <li class="list-group-item">
+                <ul>
+                {% for text in group.explain_list %}
+                    <li>{{ text }}</li>
+                {% endfor %}
+                </ul>
+            </li>
+            {% endif %}
             {% for f in group.taken %}
                 <li class="list-group-item">
                     <a href="{% url 'character-feature-view' character.id f.full_id %}">
-                        {{ f }}
+                        {{ f.feature_list_name }}
                         {% if f.can_increase %}
                         ⇧
                           {% if f.purchase_cost_string %}
                             ({{ f.purchase_cost_string }})
                           {% endif %}
+                        {% endif %}
+
+                        {% if f.has_available_choices %}
+                        (Choices Available)
                         {% endif %}
                     </a>
                     {% if f.subfeatures %}
@@ -60,7 +76,7 @@
                         {% for sf in f.subfeatures %}
                         <li>
                             <a href="{% url 'character-feature-view' character.id sf.full_id%}">
-                                {{ sf }}
+                                {{ sf.formal_name }}
                                 {% if sff.can_increase %}
                                 ⇧
                                   {% if sf.purchase_cost_string %}
@@ -85,6 +101,7 @@
         </div>
     </div>
 {% endfor %}
+</div>
 
 
 <!-- Set XP/CP Modal -->
@@ -176,14 +193,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {% if group.type == "flaw" and controller.cp.flaw_cp_available <= 0 %}
-                <p>You have reached the maximum Flaw CP award ({{ controller.cp.flaw_cp_cap }}).
-                    You can still take new flaws, but you will not receive any more CP for them.</p>
-                </p>
-                {% elif group.type == "flaw" %}
-                <p>You may take an additional {{ controller.cp.flaw_cp_available }} CP
-                    worth of flaws. Any flaws taken beyond this limit will not award CP.</p>
-                </p>
+                {% if group.explain %}
+                <p>{{ group.explain }}</p>
                 {% endif %}
                 {% if group.available %}
                 <ul class="list-group list-group-flush">
@@ -210,6 +221,11 @@
                         <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#availableAccordian-{{group.type}}">
                             <div class="accordion-body">
                                 <ul class="list-group list-group-flush">
+                                {% if available.0.explain_category_group %}
+                                <li class="list-group-item">
+                                    {{ available.0.explain_category_group }}
+                                </li>
+                                {% endif %}
                                 {% for f in available %}
                                 <li class="list-group-item">
                                     <a href="{% url 'character-feature-view' character.id f.full_id%}">

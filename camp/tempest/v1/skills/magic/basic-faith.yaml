@@ -1,6 +1,6 @@
 name: Basic Faith
 cost: 4
-# TODO(#14): Support spellbook bonuses.
+grants: divine.spellbook:4
 description: >
   The character learns how to record Divine spells into a spellbook and Prepare them.
   She can add four Novice-tier Divine spells into her spellbook. If the character has

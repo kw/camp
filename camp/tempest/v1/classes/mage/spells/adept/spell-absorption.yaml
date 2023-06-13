@@ -1,0 +1,19 @@
+name: Spell Absorption
+incant: "...to turn the magic of my foes against them."
+call: 'Grant Protect vs Damage from Packets", "Wounding [X] by Force"'
+target: Self, Individual
+duration: Short Rest, Instantaneous
+delivery: None, Packet (Spell-Ball)
+accent: Force
+effect: Grant Protect, Refresh, Wounding
+description: >
+  This spell gives the Mage a limited ability to absorb magical power and use
+  it themself. They gain a Protect against Packets that do damage. When the
+  Protect is used, it will also absorb the magic of the attack. The amount of
+  Power that can be used depends on the damage called with the Power. If the
+  Mage does not have a spell-ball in hand, the Mage can Refresh one exhausted
+  Novice spell-slot. If the Mage has a spell-ball in hand and the packet does
+  damage, they can call “Spell-ball Charged!” and give the spell-ball the
+  ability to do the same damage as the original Power, although whatever accent
+  that Power had will be changed to Force. The call for the charged spell-ball
+  is “Wounding [Damage] by Force.”

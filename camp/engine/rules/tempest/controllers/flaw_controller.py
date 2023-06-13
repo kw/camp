@@ -123,6 +123,10 @@ class FlawController(feature_controller.FeatureController):
             return _NO_RESPEND
         return super().can_increase(value)
 
+    def can_afford(self, value: int = 1) -> Decision:
+        # Any number of flaws can be taken, though the number of CP awarded is limited.
+        return True
+
     def increase(self, value: int) -> Decision:
         if not (rd := self.can_increase(value)):
             return rd
@@ -165,6 +169,22 @@ class FlawController(feature_controller.FeatureController):
         self.reconcile()
         return Decision.OK
 
+    def purchase_cost_string(self, ranks: int = 1, cost: int | None = None) -> str:
+        match self.definition.award:
+            case int():
+                return f"+{self.definition.award} CP"
+            case dict():
+                # The award varies based on a table of options. Determine the spread and use that.
+                values = set(self.award_options.values())
+                min_v = min(values)
+                max_v = max(values)
+                if min_v == max_v:
+                    return f"+{min_v} CP"
+                return f"+{min_v}-{max_v} CP"
+            case _:
+                return "+? CP"
+
+    @property
     def explain(self) -> list[str]:
         reasons = super().explain()
 
@@ -178,3 +198,15 @@ class FlawController(feature_controller.FeatureController):
             reasons.append("Plot has disabled the ability to overcome this flaw.")
 
         return reasons
+
+    @property
+    def explain_type_group(self) -> str | None:
+        if self.character.cp.flaw_cp_available <= 0:
+            return (
+                f"You have reached the maximum Flaw CP award ({self.character.cp.flaw_cp_cap}). "
+                + "You may still take new flaws, but you will not receive any more CP for them."
+            )
+        return (
+            f"You may take an additional {self.character.cp.flaw_cp_available} CP worth of flaws. "
+            + "Any flaws taken beyond this point will not award CP."
+        )

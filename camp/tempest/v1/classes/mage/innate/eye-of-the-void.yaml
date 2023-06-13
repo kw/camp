@@ -1,0 +1,11 @@
+name: Eye of the Void
+requires:
+  - mage:9
+  - apprentice-arcane-ritual
+description: >
+  When the Mage is a Primary Ritualist in an Arcane Ritual, when they pull their final
+  card from the Dark Territory Hand, they may also pull one additional card from the hand.
+  When the second card is revealed, the spirits of the Void will give them a premonition
+  of the outcome of the second card. This premonition is given by the attending Ritual Marshal
+  as “Weal (Success), Woe (Failure), or Geas (Alteration).“ This does not replace the first
+  drawn card, merely suggests what the outcome of the second card might have been.

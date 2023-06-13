@@ -19,37 +19,66 @@ from . import choice_controller
 
 _MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 _NO_RESPEND = Decision(success=False, reason="Respend not currently available.")
+_NO_PURCHASE = Decision(success=False, reason="Feature cannot be purchased.")
+
+_SUBFEATURE_TYPES: set[str] = {"subfeature", "innate", "archetype"}
 
 
 class FeatureController(base_engine.BaseFeatureController):
+    definition: defs.BaseFeatureDef
     character: character_controller.TempestCharacter
     model_type: Type[models.FeatureModel] = models.FeatureModel
     _effective_ranks: int | None
-    _subfeatures: set[str]
 
     # Subclasses can change the currency used, but CP is the default.
     # Note that no currency display will be shown if the feature has no cost model.
-    currency: str = "cp"
+    currency: str | None = None
 
     def __init__(self, full_id: str, character: character_controller.TempestCharacter):
         super().__init__(full_id, character)
         self._effective_ranks = None
-        self._subfeatures = set()
 
     @property
     def subfeatures(self) -> list[FeatureController]:
-        subfeatures = []
-        for expr in self._subfeatures:
-            subfeature = self.character.features.get(expr)
-            if subfeature is not None and subfeature.value > 0:
-                subfeatures.append(subfeature)
-        return subfeatures
+        return [
+            fc for fc in self.taken_children if fc.feature_type in _SUBFEATURE_TYPES
+        ]
+
+    @property
+    def internal(self) -> bool:
+        return self.feature_type in _SUBFEATURE_TYPES
 
     @property
     def parent(self) -> FeatureController | None:
         if self.definition.parent is None:
             return None
         return self.character.controller(self.definition.parent)
+
+    @property
+    def formal_name(self) -> str:
+        """Used in contexts where the feature's name should be listed along with its type and other qualifiers.
+
+        This is typically used in places where features of different types and sources might be comingled in the same list,
+        such as the list of internal features for a class.
+        """
+        return f"{self.display_name()} [{self.type_name}]"
+
+    @property
+    def type_name(self) -> str:
+        base_name = self.character.display_name(self.feature_type)
+        if self.parent:
+            return f"{self.parent.display_name()} {base_name}"
+        return base_name
+
+    @property
+    def feature_list_name(self) -> str:
+        """Used in contexts where the type of the feature can be assumed, such as the main feature type lists on the character display.
+
+        Subclasses may still add more details. For example, in a giant list of spells, it's likely still useful to note the class and tier.
+        """
+        if self.parent:
+            return f"{super().feature_list_name} [{self.parent.display_name()}]"
+        return f"{super().feature_list_name}"
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -169,7 +198,32 @@ class FeatureController(base_engine.BaseFeatureController):
                             reason += f"up to {discount.ranks} {self.rank_name(discount.ranks)}, "
                         reason += f"via {source}."
                         reasons.append(reason)
+
         return reasons
+
+    @property
+    def granted_features(self) -> list[FeatureController]:
+        """Returns a list of features granted by this feature."""
+        controllers = (
+            self.character.controller(id)
+            for id, data in self._gather_propagation().items()
+            if data.grants > 0
+        )
+        features = [f for f in controllers if isinstance(f, FeatureController)]
+        features.sort(key=lambda f: f.full_id)
+        return features
+
+    @property
+    def discounted_features(self) -> list[FeatureController]:
+        """Returns a list of features discounted by this feature."""
+        controllers = (
+            self.character.controller(id)
+            for id, data in self._gather_propagation().items()
+            if data.discount
+        )
+        features = [f for f in controllers if isinstance(f, FeatureController)]
+        features.sort(key=lambda f: f.full_id)
+        return features
 
     @property
     def granted_ranks(self) -> int:
@@ -182,13 +236,40 @@ class FeatureController(base_engine.BaseFeatureController):
                 yield from data.discount
 
     @property
+    def is_starting(self) -> bool:
+        """Is this a 'starting' feature?
+
+        This is only really defined for basic classes, which grant different benefits
+        based on whether it's the first one taken. It may be relevant to subfeatures of
+        those classes in certain circumstances, so we propagate it down.
+
+        For other features, it doesn't matter. Return True for convenience.
+        """
+        if self.parent:
+            return self.parent.is_starting
+        return True
+
+    @property
+    def has_available_choices(self) -> bool:
+        if choices := self.choices:
+            for choice in choices.values():
+                if choice.choices_remaining > 0:
+                    return True
+        return False
+
+    @property
     def choices(self) -> dict[str, choice_controller.ChoiceController] | None:
         if not self.definition.choices or self.value < 1:
             return None
-        return {
-            key: choice_controller.ChoiceController(self, key)
+        choices = {
+            key: choice_controller.make_controller(self, key)
             for key in self.definition.choices
         }
+        if not self.is_starting:
+            choices = {
+                k: v for k, v in choices.items() if not v.definition.starting_class
+            }
+        return choices
 
     def choose(self, choice: str, selection: str) -> Decision:
         if controller := self.choices.get(choice):
@@ -269,6 +350,10 @@ class FeatureController(base_engine.BaseFeatureController):
             return self.max_ranks
         return max(self.max_ranks - self.value, 0)
 
+    @property
+    def meets_requirements(self) -> Decision:
+        return self.character.meets_requirements(self.definition.requires)
+
     def _link_to_character(self):
         if self.full_id not in self.character.features:
             self.character.features[self.full_id] = self
@@ -291,8 +376,6 @@ class FeatureController(base_engine.BaseFeatureController):
         if not (rd := self.character.meets_requirements(self.definition.requires)):
             return rd
         # Is this an option skill without an option specified?
-        # if self.option_def and not self.option:
-        #     return Decision(success=False, needs_option=True)
         if (
             self.option_def
             and self.option
@@ -314,15 +397,10 @@ class FeatureController(base_engine.BaseFeatureController):
                 success=False, reason=f"Feature {self.id} does not accept options."
             )
         # Is this a skill with a cost that must be paid? If so, can we pay it?
-        current_cp = self.character.cp
-        cp_delta = self._cost_for(self.paid_ranks + value) - self.cost
-        if current_cp < cp_delta:
-            return Decision(
-                success=False,
-                need_currency={"cp": cp_delta},
-                reason=f"Need {cp_delta} CP to purchase, but only have {current_cp.value}",
-                amount=self._max_rank_increase(current_cp.value),
-            )
+        if not (rd := self.can_afford(value)):
+            return rd
+
+        # Checks for option logic.
         if self.option_def:
             # If this is an option feature and the option was specified,
             # this is either a new or existing option. If it's existing, that's fine.
@@ -349,6 +427,20 @@ class FeatureController(base_engine.BaseFeatureController):
                     return Decision.NEEDS_OPTION
                 else:
                     return Decision.NO
+        return Decision.OK
+
+    def can_afford(self, value: int = 1) -> Decision:
+        available = self._currency_balance()
+        if available is None:
+            return _NO_PURCHASE
+        currency_delta = self._cost_for(self.paid_ranks + value) - self.cost
+        if available < currency_delta:
+            return Decision(
+                success=False,
+                need_currency={self.currency: currency_delta},
+                reason=f"Need {currency_delta} {self.currency_name} to purchase, but only have {available}",
+                amount=self._max_rank_increase(available),
+            )
         return Decision.OK
 
     def can_decrease(self, value: int = 1) -> Decision:
@@ -421,11 +513,22 @@ class FeatureController(base_engine.BaseFeatureController):
         return {}
 
     def _gather_propagation(self) -> dict[str, engine.PropagationData]:
-        if grant_def := getattr(self.definition, "grants", None):
+        # Basic grants that are always provided by the feature.
+        if grant_def := self.definition.grants:
             grants = self._gather_grants(grant_def)
         else:
             grants = {}
+        # Handle the rank grant table, if present. This table is keyed by the number of ranks
+        # purchased in the feature, and the value is a dict of grants to apply. You get all
+        # grants on the table up to your current rank level.
+        if self.definition.rank_grants:
+            for rank in range(self.value + 1):
+                if grant := self.definition.rank_grants.get(rank):
+                    grants.update(self._gather_grants(grant))
+        # Subclasses might have other grants that the produce. Add them in.
         grants.update(self.extra_grants())
+
+        # Collect discounts, if present.
         if discount_def := getattr(self.definition, "discounts", None):
             discounts = self._gather_discounts(discount_def)
         else:
@@ -434,6 +537,7 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.choices:
             for choice in self.choices.values():
                 choice.update_propagation(grants, discounts)
+        # Now that we have all the grants and discounts, create the propagation data.
         props: dict[str, engine.PropagationData] = {}
         all_keys = set(grants.keys()).union(discounts.keys())
         for expr in all_keys:
@@ -527,9 +631,9 @@ class FeatureController(base_engine.BaseFeatureController):
                         rank_costs[i] = discount.minimum
         return sum(rank_costs)
 
-    def _max_rank_increase(self, available_cp: int = -1) -> int:
-        if available_cp < 0:
-            available_cp = self.character.cp.value
+    def _max_rank_increase(self, available: int = -1) -> int:
+        if available < 0:
+            available = self._currency_balance()
         available_ranks = self.purchaseable_ranks
         current_cost = self.cost
         if available_ranks < 1:
@@ -537,14 +641,47 @@ class FeatureController(base_engine.BaseFeatureController):
         match cd := self.cost_def:
             case int():
                 # Relatively trivial case
-                return min(available_ranks, math.floor(available_cp / cd))
+                return min(available_ranks, math.floor(available / cd))
             case defs.CostByRank():
                 while available_ranks > 0:
                     cp_delta = (
                         self._cost_for(self.paid_ranks + available_ranks) - current_cost
                     )
-                    if cp_delta <= available_cp:
+                    if cp_delta <= available:
                         return available_ranks
                     available_ranks -= 1
                 return 0
         raise NotImplementedError(f"Don't know how to compute cost with {cd}")
+
+    def _currency_balance(self) -> int | None:
+        match self.currency:
+            case "cp":
+                return self.character.cp.value
+            case None:
+                return None
+            case _:
+                return 0
+
+    @property
+    def explain_type_group(self) -> str | None:
+        if (balance := self._currency_balance()) is not None:
+            return f"{balance} {self.currency_name} available"
+        return None
+
+    @property
+    def explain_category_group(self) -> str | None:
+        return None
+
+    @property
+    def explain_list(self) -> list[str]:
+        return []
+
+
+class SkillController(FeatureController):
+    definition: defs.SkillDef
+    currency: str = "cp"
+
+
+class PerkController(FeatureController):
+    definition: defs.PerkDef
+    currency: str = "cp"

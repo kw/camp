@@ -1,0 +1,23 @@
+name: Elemental Node
+incant: "...to claim this place as a place of power."
+call: "Wounding 2 by [Acid / Flame / Ice / Lighting]"
+target: An Arcane Circle
+duration: Instantaneous, Short Rest
+delivery: Touch, Packet (Spell-Ball)
+accent: Acid, Flame, Ice, or Lightning
+effect: Wounding
+description: >
+  This spell must be cast while inside a white cord, rope, or the like that is
+  no longer than 10 feet long that has been laid down to make a continuous shape
+  (usually a circle). At the completion of the Incantation, the lain rope cannot
+  be purposefully moved until the caster picks it up. This should be
+  communicated to others trying to touch or manipulate it. As long as the caster
+  has both feet inside the circle (regardless of whether they have remained in
+  the circle), they can charge a spell-ball with elemental energy by calling
+  “Spell-ball Charged”. Only one spell ball may be charged at a time with this spell.
+
+  The ball will cause 2 points of Wounding Acid / Flame / Ice / Lightning Damage.
+  The Mage may charge a number of Spell-Balls with this spell equal to their Mage
+  class-level. The Mage can continue to do this until they complete a Short Rest
+  or until the circle is moved, broken, or Dispelled. Incidental/accidental movement
+  of the circle will not disturb the spell (such as a foot moving the cord accidentally).

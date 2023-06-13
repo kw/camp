@@ -1,12 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from rules.contrib.models import RulesModel
 
+from camp.game import rules
 from camp.game.models import Game
 
 User = get_user_model()
 
 
-class Membership(models.Model):
+class Membership(RulesModel):
     """Represents a user's relationship with a game.
 
     A user can be a member of one or more games.
@@ -23,3 +25,11 @@ class Membership(models.Model):
 
     def __str__(self):
         return self.nickname
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_authenticated,
+            "change": rules.is_owner | rules.is_logistics,
+            "delete": rules.is_owner | rules.is_logistics,
+            "add": rules.is_authenticated,
+        }

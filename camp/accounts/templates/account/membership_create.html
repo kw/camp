@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load rules %}
+
+{% block head_title %}{% block body_title %}
+{{ membership }}
+{% endblock %}{% endblock %}
+
+{% block content %}
+<main>
+    <div>
+        <h1>Enter a nickname for the membership</h1>
+        <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Create</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

@@ -251,8 +251,9 @@ class ClassController(feature_controller.FeatureController):
                     grants[feature.id] = 1
         return grants
 
+    @property
     def explain(self) -> list[str]:
-        lines = super().explain()
+        lines = super().explain
         if self.value > 0:
             if self.is_starting:
                 lines.append("This is your starting class.")

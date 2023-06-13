@@ -148,6 +148,7 @@ class FeatureController(base_engine.BaseFeatureController):
         elif not model.should_keep() and saved:
             del self.character.model.features[self.full_id]
 
+    @property
     def explain(self) -> list[str]:
         """Returns a list of strings explaining details of the feature."""
         if self.model.plot_suppressed:

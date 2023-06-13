@@ -6,14 +6,12 @@
 {% endblock %}{% endblock %}
 
 {% block content %}
-<main>
-    <div>
-        <h1>Enter a nickname for the membership</h1>
-        <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button>Create</button>
-        </form>
-    </div>
-</main>
+<div>
+    <h1>Enter a nickname for the membership</h1>
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button>Create</button>
+    </form>
+</div>
 {% endblock %}

@@ -33,13 +33,17 @@ class MembershipListView(AutoPermissionRequiredMixin, ListView):
     template_name = "account/membership_list.html"
     context_object_name = "membership_list"
 
+    def get_queryset(self):
+        queryset = Membership.objects.all()
+        return queryset.filter(user=self.request.user)
 
-class MembershipDetailView(DetailView):
+
+class MembershipDetailView(AutoPermissionRequiredMixin, DetailView):
     model = Membership
     template_name = "account/membership_detail.html"
 
 
-class MembershipCreateView(CreateView):
+class MembershipCreateView(AutoPermissionRequiredMixin, CreateView):
     model = Membership
     fields = ["nickname"]
     success_url = reverse_lazy("membership-list")
@@ -59,7 +63,7 @@ class MembershipCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MembershipUpdateView(UpdateView):
+class MembershipUpdateView(AutoPermissionRequiredMixin, UpdateView):
     model = Membership
     fields = ["nickname"]
     success_url = reverse_lazy("membership-list")
@@ -73,7 +77,7 @@ class MembershipUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class MembershipDeleteView(DeleteView):
+class MembershipDeleteView(AutoPermissionRequiredMixin, DeleteView):
     model = Membership
     context_object_name = "membership"
     success_url = reverse_lazy("membership-list")

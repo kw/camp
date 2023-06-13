@@ -55,6 +55,32 @@ class FeatureController(base_engine.BaseFeatureController):
         return self.character.controller(self.definition.parent)
 
     @property
+    def formal_name(self) -> str:
+        """Used in contexts where the feature's name should be listed along with its type and other qualifiers.
+
+        This is typically used in places where features of different types and sources might be comingled in the same list,
+        such as the list of internal features for a class.
+        """
+        return f"{self.display_name()} [{self.type_name}]"
+
+    @property
+    def type_name(self) -> str:
+        base_name = self.character.display_name(self.feature_type)
+        if self.parent:
+            return f"{self.parent.display_name()} {base_name}"
+        return base_name
+
+    @property
+    def feature_list_name(self) -> str:
+        """Used in contexts where the type of the feature can be assumed, such as the main feature type lists on the character display.
+
+        Subclasses may still add more details. For example, in a giant list of spells, it's likely still useful to note the class and tier.
+        """
+        if self.parent:
+            return f"{super().feature_list_name} [{self.parent.display_name()}]"
+        return f"{super().feature_list_name}"
+
+    @property
     def taken_options(self) -> dict[str, int]:
         options = {}
         for controller in self.character.features.values():
@@ -636,13 +662,19 @@ class FeatureController(base_engine.BaseFeatureController):
             case _:
                 return 0
 
+    @property
     def explain_type_group(self) -> str | None:
         if (balance := self._currency_balance()) is not None:
             return f"{balance} {self.currency_name} available"
         return None
 
+    @property
     def explain_category_group(self) -> str | None:
         return None
+
+    @property
+    def explain_list(self) -> list[str]:
+        return []
 
 
 class SkillController(FeatureController):

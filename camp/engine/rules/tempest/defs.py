@@ -66,6 +66,7 @@ class ChoiceDef(base_models.BaseModel):
         description: A user-visible description of the choice.
         limit: The number of times this choice can be made. If "unlimited",
             there is no limit.
+        limit_is_per_rank: If True, the limit is multiplied by the rank of the feature.
         discount: A discount that applies to the choice. This is rarely used,
             but can be used to make a choice cheaper than normal. For example,
             the Geas Core "Patron" perk allows a number of choices to be made
@@ -84,6 +85,7 @@ class ChoiceDef(base_models.BaseModel):
     name: str | None = None
     description: str | None = None
     limit: int | Literal["unlimited"] = 1
+    limit_is_per_rank: bool = False
     discount: Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
     starting_class: bool = False
@@ -125,6 +127,7 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
 
 class SubFeatureDef(BaseFeatureDef):
     type: Literal["subfeature"] = "subfeature"
+    display_type: str | None = None
 
 
 class ClassDef(BaseFeatureDef):
@@ -352,11 +355,19 @@ class Ruleset(base_models.BaseRuleset):
             name="Spell Slots",
             scoped=True,
             tiered=True,
-            tier_names=["Novice", "Intermediate", "Greater", "Master"],
+            tier_names=["Novice", "Adept", "Greater", "Master"],
         ),
         Attribute(
             id="spells_known",
             name="Spells Known",
+            scoped=True,
+        ),
+        # Spellbook is a little different than Spells Known. It's a pool of "bonus" spellbook
+        # capacity granted by skills like Basic Arcane, Spellscholar, etc. Spellbook capacity
+        # is per-sphere, and critically, taking the Sourcerer class blocks it entirely.
+        Attribute(
+            id="spellbook",
+            name="Spellbook",
             scoped=True,
         ),
         Attribute(

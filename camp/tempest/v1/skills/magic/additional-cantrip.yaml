@@ -9,6 +9,8 @@ choices:
     name: Bonus Cantrip
     matcher:
       type: cantrip
+      parent:
+        type: class
     controller: sphere-bonus
 description: >
   The character can choose one additional cantrip from their class’ cantrip spell-list.

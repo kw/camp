@@ -39,6 +39,7 @@ parent: mage
 name: Spellcasting Specialist
 description: Grants Spell Preparation, Extended Capacity - Novice, Library Use
 category: Mage Starting Skills
+display_type: Magical Specialty
 grants:
   - spell-preparation
   - extended-capacity-novice
@@ -50,6 +51,7 @@ parent: mage
 name: Bookcasting Specialist
 description: Grants Additional Recharge, Novice Bookcaster
 category: Mage Starting Skills
+display_type: Magical Specialty
 grants:
   - additional-recharge
   - novice-bookcaster
@@ -60,5 +62,6 @@ parent: mage
 name: Cantrip Specialist
 description: Grants Additional Cantrip
 category: Mage Starting Skills
+display_type: Magical Specialty
 grants:
   - additional-cantrip

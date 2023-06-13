@@ -23,6 +23,12 @@ class SubfeatureController(feature_controller.FeatureController):
                 f"Expected {id} to be a subfeature, but was {type(self.definition)}"
             )
 
+    @property
+    def type_name(self) -> str:
+        if self.definition.display_type:
+            return self.definition.display_type
+        return super().type_name
+
     def can_increase(self, value: int = 1) -> Decision:
         return _NO_PURCHASE
 

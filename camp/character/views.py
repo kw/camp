@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import dataclasses
 from collections import defaultdict
+from functools import cached_property
 from itertools import chain
-from itertools import islice
 from typing import Iterable
 from typing import cast
 
@@ -156,7 +156,7 @@ def feature_view(request, pk, feature_id, anchor=None):
     pf = None
 
     if can_inc or can_dec:
-        if request.POST and "purchase" in request.POST:
+        if request.POST and "purchase" in request.POST or "remove" in request.POST:
             success, pf = _try_apply_purchase(
                 sheet, feature_id, feature_controller, controller, request
             )
@@ -220,7 +220,10 @@ def _try_apply_purchase(
 ) -> tuple[bool, forms.FeatureForm]:
     pf = forms.FeatureForm(feature_controller, request.POST)
     if pf.is_valid():
-        ranks = int(pf.cleaned_data.get("ranks", 1))
+        if request.POST.get("remove"):
+            ranks = 0
+        else:
+            ranks = int(pf.cleaned_data.get("ranks", 1))
         if feature_controller.is_concrete:
             ranks -= feature_controller.value
         if ranks == 0:
@@ -326,6 +329,7 @@ class FeatureGroup:
         default_factory=lambda: defaultdict(list)
     )
     priority: int = 1
+    category_priority: dict[str, int] = dataclasses.field(default_factory=dict)
 
     @property
     def has_available(self) -> bool:
@@ -338,13 +342,21 @@ class FeatureGroup:
         return bool(self.taken or self.available or self.available_categories)
 
     def explain(self) -> str | None:
-        for feat in islice(self.all(), 1):
-            return feat.explain_type_group()
+        for feat in self.all():
+            return feat.explain_type_group
         return None
+
+    @cached_property
+    def explain_list(self) -> list[str]:
+        for feat in self.all():
+            return feat.explain_list
+        return []
 
     def add_available(self, feat: BaseFeatureController):
         if feat.category:
             self.available_categories[feat.category].append(feat)
+            if hasattr(feat, "tier"):
+                self.category_priority[feat.category] = feat.tier
         else:
             self.available.append(feat)
 
@@ -364,6 +376,13 @@ class FeatureGroup:
         # Sort the items in each category
         for cat in self.available_categories.values():
             cat.sort(key=lambda f: f.display_name())
+        # Sort the categories themselves. This is mostly by name, but a few categories
+        # (those that contain tiered abilities) have priority equal to their tier.
+        cats = sorted(
+            self.available_categories.keys(),
+            key=lambda k: (self.category_priority.get(k, 0), k),
+        )
+        self.available_categories = {k: self.available_categories[k] for k in cats}
 
 
 def _apply_mutation(
@@ -380,4 +399,5 @@ def _apply_mutation(
             )
             if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
                 sheet.undo_stack.order_by("timestamp").first().delete()
+            controller.clear_caches()
     return result

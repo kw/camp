@@ -31,10 +31,25 @@ class SphereBonusChoice(choice_controller.ChoiceController):
         # Rule 2: The choice must come from a casting class the character has, if they have any.
         casting_classes = {claz.full_id for claz in character.classes if claz.caster}
         if casting_classes:
+            # In the off chance that a cantrip/spell/whatever is listed with a cost, it should be excluded.
+            # These have unique purchase rules and shouldn't be available as a choice for anything that uses
+            # this controller.
+            if feat.cost:
+                return False
+            # Otherwise, the choice must be from one of these classes.
             return feat.parent and feat.parent.full_id in casting_classes
 
-        # Rule 3: If the character has Basic Arcane and/or Basic Faith, the choice must come from that sphere.
-        # If they have neither, they can't take this choice.
+        # Rule 3: If the character does _not_ have a casting class, the spell in question must still
+        # come from a class.
+        # TODO: The rules team might want to restrict this to just basic classes.
+        # As is, the skills that use this controller say nothing about the type of class the spell
+        # can come from.
+        if not (parent := feat.parent) or not parent.feature_type == "class":
+            return False
+
+        # Rule 4: If the character does _not_ have a casting class, the choice must come from a sphere
+        # they have access to via the Basic Arcane or Basic Faith skills. One of these skills is always
+        # a requirement to take a skill that uses this controller, though sometimes it's implicit.
         if sphere := getattr(feat, "sphere", None):
             if sphere == "arcane" and not character.meets_requirements("basic-arcane"):
                 return False

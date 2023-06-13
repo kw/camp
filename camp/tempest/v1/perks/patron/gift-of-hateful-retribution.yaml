@@ -1,5 +1,6 @@
 name: Gift of Hateful Retribution
 requires: patron
+ranks: 5
 cost:
   ranks:
     1: 2

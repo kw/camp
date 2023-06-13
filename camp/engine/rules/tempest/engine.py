@@ -31,6 +31,17 @@ class TempestEngine(base_engine.Engine):
         }
 
 
+class AttributeController(base_engine.AttributeController):
+    character: character_controller.TempestCharacter
+
+    def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
+        super().__init__(prop_id, character)
+
+    @property
+    def value(self):
+        return sum(p.grants for p in self._propagation_data.values())
+
+
 @dataclass
 class PropagationData(base_engine.PropagationData):
     discount: list[defs.Discount] | None = None

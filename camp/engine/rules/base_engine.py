@@ -464,6 +464,15 @@ class PropertyController(ABC):
 
     @property
     def value(self) -> int:
+        """Returns the computed value for this property.
+
+        Subclasses should override this. The default implementation returns only the applied bonuses.
+        """
+        return self.bonus
+
+    @property
+    def bonus(self) -> int:
+        """Returns the bonus values applied to this property by other controllers."""
         return sum(p.grants for p in self._propagation_data.values())
 
     @property
@@ -574,6 +583,10 @@ class BaseFeatureController(PropertyController):
         if self.definition.parent is None:
             return None
         return self.character.feature_controller(self.definition.parent)
+
+    @property
+    def parent_def(self) -> base_models.BaseFeatureDef | None:
+        return self.definition.parent_def
 
     @property
     def children(self) -> list[BaseFeatureController]:
@@ -781,17 +794,19 @@ class BaseFeatureController(PropertyController):
     def currency(self) -> str | None:
         return None
 
-    def __str__(self) -> str:
+    @property
+    def feature_list_name(self) -> str:
         if self.option_def and not self.option:
             # This is feature controller belongs to an option feature
             # that doesn't have an option selected. It represents the
             # "raw" skill, and it doesn't have anything to display.
             return self.display_name()
-        if (
-            isinstance(self.definition.ranks, str) or self.definition.ranks > 1
-        ) and self.value > 0:
+        if self.definition.has_ranks and self.value > 0:
             return f"{self.display_name()} x{self.value}"
         return self.display_name()
+
+    def __str__(self) -> str:
+        return self.feature_list_name
 
 
 class AttributeController(PropertyController):

@@ -7,6 +7,7 @@ from typing import TypeVar
 from django import template
 
 from camp.engine.rules.base_engine import CharacterController
+from camp.engine.rules.base_engine import PropertyController
 
 register = template.Library()
 
@@ -25,6 +26,24 @@ def get(context: dict, expr: str, controller: CharacterController | None = None)
     if not controller:
         raise ValueError("No controller specified and no controller found in context.")
     return controller.get(expr)
+
+
+@register.simple_tag(takes_context=True)
+def subcon(
+    context: dict, expr: str, controller: CharacterController | None = None
+) -> PropertyController:
+    """Get a value from the character sheet.
+
+    If no controller is specified, checks the current context for a CharacterController object
+    called 'controller', 'character', or failing that, just checks everything.
+    """
+    if not controller:
+        controller = _find_context_controller(
+            context, CharacterController, ("controller", "character")
+        )
+    if not controller:
+        raise ValueError("No controller specified and no controller found in context.")
+    return controller.controller(expr)
 
 
 _T = TypeVar("_T")

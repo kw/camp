@@ -1,3 +1,4 @@
 type: skill
 requires: mage
+parent: mage
 category: Mage Class Skills

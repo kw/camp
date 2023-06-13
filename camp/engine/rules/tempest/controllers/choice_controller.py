@@ -8,6 +8,9 @@ from ...decision import Decision
 from .. import defs
 from . import feature_controller
 
+# TODO: When too many choices have been taken (usually because the character has lost points in the feature),
+# the player should be prompted to remove choices.
+
 
 class ChoiceController:
     _feature: feature_controller.FeatureController
@@ -37,6 +40,8 @@ class ChoiceController:
 
     @property
     def limit(self) -> int | Literal["unlimited"]:
+        if isinstance(self.definition.limit, int) and self.definition.limit_is_per_rank:
+            return self.definition.limit * self._feature.value
         return self.definition.limit
 
     @property
@@ -63,9 +68,9 @@ class ChoiceController:
             feat = character.feature_controller(expr)
             short = feat.short_description
             if short:
-                choices[expr] = f"{feat.display_name()}: {short}"
+                choices[expr] = f"{feat.formal_name}: {short}"
             else:
-                choices[expr] = feat.display_name()
+                choices[expr] = feat.formal_name
         return choices
 
     def choose(self, choice: str) -> Decision:

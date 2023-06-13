@@ -16,11 +16,20 @@ from . import cantrip_controller
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
+from . import spell_controller
+from . import spellbook_controller
 from . import subfeature_controller
 
 _DISPLAY_PRIORITIES = {
     "class": 0,
     "breed": 1,
+    "flaw": 2,
+    "perk": 3,
+    "skill": 4,
+    "cantrip": 5,
+    "utility": 6,
+    "spell": 7,
+    "power": 8,
 }
 
 
@@ -149,7 +158,7 @@ class TempestCharacter(base_engine.CharacterController):
         """List of the character's class controllers."""
         classes = [
             feat
-            for feat in self.features.values()
+            for feat in list(self.features.values())
             if feat.feature_type == "class" and feat.value > 0
         ]
         classes.sort(key=lambda c: c.value, reverse=True)
@@ -185,6 +194,22 @@ class TempestCharacter(base_engine.CharacterController):
             for (id, feat) in self.features.items()
             if isinstance(feat, flaw_controller.FlawController)
         }
+
+    @property
+    def cantrips(self) -> dict[str, cantrip_controller.CantripController]:
+        return [
+            feat
+            for feat in self.features.values()
+            if isinstance(feat, cantrip_controller.CantripController)
+        ]
+
+    @property
+    def spells(self) -> list[spell_controller.SpellController]:
+        return [
+            feat
+            for feat in self.features.values()
+            if isinstance(feat, spell_controller.SpellController)
+        ]
 
     def can_purchase(self, entry: RankMutation | str) -> Decision:
         if not isinstance(entry, RankMutation):
@@ -248,7 +273,7 @@ class TempestCharacter(base_engine.CharacterController):
         return super().get_options(id)
 
     @cached_property
-    def martial(self) -> base_engine.AttributeController:
+    def martial(self) -> attribute_controllers.SphereAttribute:
         return attribute_controllers.SphereAttribute("martial", self)
 
     @cached_property
@@ -256,12 +281,16 @@ class TempestCharacter(base_engine.CharacterController):
         return attribute_controllers.SumAttribute("caster", self, "class", "caster")
 
     @cached_property
-    def arcane(self) -> base_engine.AttributeController:
+    def arcane(self) -> attribute_controllers.SphereAttribute:
         return attribute_controllers.SphereAttribute("arcane", self)
 
     @cached_property
-    def divine(self) -> base_engine.AttributeController:
+    def divine(self) -> attribute_controllers.SphereAttribute:
         return attribute_controllers.SphereAttribute("divine", self)
+
+    @cached_property
+    def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
+        return [self.arcane.spellbook, self.divine.spellbook]
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
@@ -279,6 +308,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return feature_controller.PerkController(id, self)
             case "cantrip":
                 return cantrip_controller.CantripController(id, self)
+            case "spell":
+                return spell_controller.SpellController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

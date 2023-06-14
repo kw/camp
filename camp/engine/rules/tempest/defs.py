@@ -7,7 +7,6 @@ from typing import Literal
 from typing import Type
 from typing import TypeAlias
 
-import pydantic
 from pydantic import Field
 from pydantic import PositiveInt
 
@@ -20,27 +19,6 @@ from . import models
 Attribute: TypeAlias = base_models.Attribute
 
 
-class Discount(base_models.BaseModel):
-    """Describes a cost discount, generally for CP.
-
-    Attributes:
-        discount: The amount to change the cost. For example, `1` means "the feature
-            costs 1 CP less per rank".
-        minimum: The minimum cost (per rank). If it's a discount, usually 1 or 0.
-        ranks: The number of ranks that this can apply to.
-    """
-
-    discount: pydantic.PositiveInt
-    minimum: int = 1
-    ranks: int | None = None
-
-    @classmethod
-    def cast(cls, discount: Discount | int) -> Discount:
-        if isinstance(discount, int):
-            return cls(discount=discount)
-        return discount
-
-
 class GrantDef(base_models.BaseModel):
     """Describes how a grant operates in more detail."""
 
@@ -50,7 +28,7 @@ class GrantDef(base_models.BaseModel):
 
 
 Grantable: TypeAlias = str | list[str] | dict[str, int] | GrantDef
-Discounts: TypeAlias = dict[str, Discount | int]
+Discounts: TypeAlias = dict[str, base_models.Discount | int]
 
 
 class ChoiceDef(base_models.BaseModel):
@@ -86,7 +64,7 @@ class ChoiceDef(base_models.BaseModel):
     description: str | None = None
     limit: int | Literal["unlimited"] = 1
     limit_is_per_rank: bool = False
-    discount: Discount | int | None = None
+    discount: base_models.Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
     starting_class: bool = False
     controller: str | None = None

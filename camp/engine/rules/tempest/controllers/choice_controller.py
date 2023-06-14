@@ -4,6 +4,8 @@ from functools import cached_property
 from typing import Literal
 from typing import cast
 
+from camp.engine.rules.base_models import Discount
+
 from ...decision import Decision
 from .. import defs
 from . import feature_controller
@@ -164,13 +166,13 @@ class ChoiceController:
         return False
 
     def update_propagation(
-        self, grants: dict[str, int], discounts: dict[str, list[defs.Discount]]
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
     ) -> None:
         for choice in self.taken_choices():
             if self.definition.discount:
                 if choice not in discounts:
                     discounts[choice] = []
-                discounts[choice].append(defs.Discount.cast(self.definition.discount))
+                discounts[choice].append(Discount.cast(self.definition.discount))
             else:
                 if choice not in grants:
                     grants[choice] = 0

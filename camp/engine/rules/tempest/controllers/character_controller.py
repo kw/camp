@@ -273,20 +273,20 @@ class TempestCharacter(base_engine.CharacterController):
         return super().get_options(id)
 
     @cached_property
-    def martial(self) -> attribute_controllers.SphereAttribute:
-        return attribute_controllers.SphereAttribute("martial", self)
+    def martial(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("martial", self)
 
     @cached_property
     def caster(self) -> base_engine.AttributeController:
         return attribute_controllers.SumAttribute("caster", self, "class", "caster")
 
     @cached_property
-    def arcane(self) -> attribute_controllers.SphereAttribute:
-        return attribute_controllers.SphereAttribute("arcane", self)
+    def arcane(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("arcane", self)
 
     @cached_property
-    def divine(self) -> attribute_controllers.SphereAttribute:
-        return attribute_controllers.SphereAttribute("divine", self)
+    def divine(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("divine", self)
 
     @cached_property
     def spellbooks(self) -> list[spellbook_controller.SpellbookController]:

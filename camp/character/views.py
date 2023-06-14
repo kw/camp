@@ -177,7 +177,7 @@ def feature_view(request, pk, feature_id, anchor=None):
                 data = {"ranks": current if can_dec else next_value}
                 if feature_controller.option:
                     data["option"] = feature_controller.option
-            pf = forms.FeatureForm(feature_controller, data)
+            pf = forms.FeatureForm(feature_controller, initial=data)
 
     if request.POST and "choice" in request.POST:
         if "selection" not in request.POST:
@@ -193,6 +193,7 @@ def feature_view(request, pk, feature_id, anchor=None):
                 messages.success(request, result.reason)
             else:
                 messages.error(request, result.reason or "Could not apply choice.")
+        return redirect("character-feature-view", pk=pk, feature_id=feature_id)
 
     choices = feature_controller.choices
     context = {

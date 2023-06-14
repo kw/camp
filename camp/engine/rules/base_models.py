@@ -802,6 +802,27 @@ class PlotMutation(BaseModel):
     player_note: str | None = None
 
 
+class Discount(BaseModel):
+    """Describes a cost discount.
+
+    Attributes:
+        discount: The amount to change the cost. For example, `1` means "the feature
+            costs 1 CP less per rank".
+        minimum: The minimum cost (per rank). If it's a discount, usually 1 or 0.
+        ranks: The number of ranks that this can apply to.
+    """
+
+    discount: pydantic.PositiveInt
+    minimum: int = 1
+    ranks: int | None = None
+
+    @classmethod
+    def cast(cls, discount: Discount | int) -> Discount:
+        if isinstance(discount, int):
+            return cls(discount=discount)
+        return discount
+
+
 Mutation = RankMutation | ChoiceMutation | NoteMutation | PlotMutation
 
 

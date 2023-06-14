@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from functools import cached_property
 from typing import Iterable
 
 from camp.engine.rules import base_engine
-from camp.engine.rules.base_models import PropExpression
-from camp.engine.rules.tempest.engine import AttributeController
 
-from . import character_controller
-from . import spellbook_controller
+
+class AttributeController(base_engine.AttributeController):
+    @property
+    def value(self):
+        return sum(p.grants for p in self._propagation_data.values())
 
 
 class LifePointController(AttributeController):
@@ -27,14 +27,14 @@ class SumAttribute(AttributeController):
 
     """
 
-    character: character_controller.TempestCharacter
+    character: base_engine.CharacterController
     _condition: str | None
     _feature_type: str
 
     def __init__(
         self,
         prop_id: str,
-        character: character_controller.TempestCharacter,
+        character: base_engine.CharacterController,
         feature_type: str | None = None,
         condition: str | None = None,
     ):
@@ -65,35 +65,8 @@ class SumAttribute(AttributeController):
                 yield fc
 
 
-class SphereAttribute(SumAttribute):
-    def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
-        super().__init__(prop_id, character, feature_type="class", condition=prop_id)
-
-    def _evaluate_sphere_attr(self, expr: PropExpression) -> int:
-        return sum(fc.subcontroller(expr).value for fc in self.matching_controllers())
-
-    @property
-    def sphere(self) -> str:
-        return self.expression.prop
-
-    spell_slots = _evaluate_sphere_attr
-    spells_known = _evaluate_sphere_attr
-    spells_prepared = _evaluate_sphere_attr
-    cantrips = _evaluate_sphere_attr
-    powers = _evaluate_sphere_attr
-    utilities = _evaluate_sphere_attr
-
-    @cached_property
-    def spellbook(self) -> spellbook_controller.SpellbookController | None:
-        if self.sphere != "martial":
-            return spellbook_controller.SpellbookController(
-                "spellbook", self.sphere, self.character
-            )
-        return None
-
-
 class CharacterPointController(AttributeController):
-    character: character_controller.TempestCharacter
+    character: base_engine.CharacterController
 
     @property
     def value(self) -> int:

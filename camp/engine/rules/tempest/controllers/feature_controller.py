@@ -4,17 +4,15 @@ import math
 from functools import cached_property
 from typing import Iterable
 from typing import Type
-from typing import cast
 
 from camp.engine import utils
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_models import Discount
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from .. import engine
 from .. import models
-from . import character_controller
 from . import choice_controller
 
 _MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
@@ -26,7 +24,7 @@ _SUBFEATURE_TYPES: set[str] = {"subfeature", "innate", "archetype"}
 
 class FeatureController(base_engine.BaseFeatureController):
     definition: defs.BaseFeatureDef
-    character: character_controller.TempestCharacter
+    character: base_engine.CharacterController
     model_type: Type[models.FeatureModel] = models.FeatureModel
     _effective_ranks: int | None
 
@@ -34,7 +32,7 @@ class FeatureController(base_engine.BaseFeatureController):
     # Note that no currency display will be shown if the feature has no cost model.
     currency: str | None = None
 
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
+    def __init__(self, full_id: str, character: base_engine.CharacterController):
         super().__init__(full_id, character)
         self._effective_ranks = None
 
@@ -137,11 +135,14 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @purchased_ranks.setter
     def purchased_ranks(self, value: int) -> None:
-        model = self.model
         if self.definition.ranks != "unlimited":
-            model.ranks = min(value, self.definition.ranks)
+            self.model.ranks = min(value, self.definition.ranks)
         else:
-            model.ranks = value
+            self.model.ranks = value
+        self._link_model()
+
+    def _link_model(self) -> None:
+        model = self.model
         saved = self.full_id in self.character.model.features
         if model.should_keep() and not saved:
             self.character.model.features[self.full_id] = model
@@ -178,7 +179,6 @@ class FeatureController(base_engine.BaseFeatureController):
 
         if self._propagation_data:
             for source_id, data in self._propagation_data.items():
-                data = cast(engine.PropagationData, data)
                 source = self.character.display_name(source_id)
                 if data.grants > 0:
                     source = self.character.display_name(source_id)
@@ -231,9 +231,9 @@ class FeatureController(base_engine.BaseFeatureController):
         return sum(d.grants for d in self._propagation_data.values())
 
     @property
-    def discounts(self) -> Iterable[defs.Discount]:
+    def discounts(self) -> Iterable[Discount]:
         for data in self._propagation_data.values():
-            if isinstance(data, engine.PropagationData) and data.discount:
+            if data.discount:
                 yield from data.discount
 
     @property
@@ -486,9 +486,9 @@ class FeatureController(base_engine.BaseFeatureController):
         self._effective_ranks = min(
             self.granted_ranks + self.purchased_ranks, self.max_ranks
         )
-
         self._link_to_character()
         self._update_choices()
+        self._link_model()
         self._perform_propagation()
 
     def _update_choices(self) -> None:
@@ -513,7 +513,7 @@ class FeatureController(base_engine.BaseFeatureController):
         """
         return {}
 
-    def _gather_propagation(self) -> dict[str, engine.PropagationData]:
+    def _gather_propagation(self) -> dict[str, base_engine.PropagationData]:
         # Basic grants that are always provided by the feature.
         if grant_def := self.definition.grants:
             grants = self._gather_grants(grant_def)
@@ -539,10 +539,10 @@ class FeatureController(base_engine.BaseFeatureController):
             for choice in self.choices.values():
                 choice.update_propagation(grants, discounts)
         # Now that we have all the grants and discounts, create the propagation data.
-        props: dict[str, engine.PropagationData] = {}
+        props: dict[str, base_engine.PropagationData] = {}
         all_keys = set(grants.keys()).union(discounts.keys())
         for expr in all_keys:
-            data = props[expr] = engine.PropagationData(
+            data = props[expr] = base_engine.PropagationData(
                 source=self.full_id, target=PropExpression.parse(expr)
             )
             if self.value > 0:
@@ -577,17 +577,15 @@ class FeatureController(base_engine.BaseFeatureController):
             raise NotImplementedError(f"Unexpected grant value: {grants}")
         return grant_map
 
-    def _gather_discounts(
-        self, discounts: defs.Discounts
-    ) -> dict[str, list[defs.Discount]]:
-        discount_map: dict[str, list[defs.Discount]] = {}
+    def _gather_discounts(self, discounts: defs.Discounts) -> dict[str, list[Discount]]:
+        discount_map: dict[str, list[Discount]] = {}
         if not discounts:
             return discount_map
         elif isinstance(discounts, dict):
             for key, value in discounts.items():
                 if key not in discount_map:
                     discount_map[key] = []
-                discount_map[key].append(defs.Discount.cast(value))
+                discount_map[key].append(Discount.cast(value))
             return discount_map
         else:
             raise NotImplementedError(f"Unexpected discount value: {discounts}")

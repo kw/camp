@@ -932,6 +932,7 @@ class PropagationData:
     source: str
     target: base_models.PropExpression
     grants: int = 0
+    discount: list[base_models.Discount] | None = None
 
     def __bool__(self) -> bool:
-        return bool(self.grants)
+        return bool(self.grants) or bool(self.discount)

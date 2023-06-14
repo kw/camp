@@ -3,12 +3,38 @@ from __future__ import annotations
 from collections import defaultdict
 from functools import cached_property
 
+from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import PropExpression
 
-from .. import engine
+from . import attribute_controllers
 
 
-class SpellbookController(engine.AttributeController):
+class SphereAttribute(attribute_controllers.SumAttribute):
+    def __init__(self, prop_id: str, character: base_engine.CharacterController):
+        super().__init__(prop_id, character, feature_type="class", condition=prop_id)
+
+    def _evaluate_sphere_attr(self, expr: PropExpression) -> int:
+        return sum(fc.subcontroller(expr).value for fc in self.matching_controllers())
+
+    @property
+    def sphere(self) -> str:
+        return self.expression.prop
+
+    spell_slots = _evaluate_sphere_attr
+    spells_known = _evaluate_sphere_attr
+    spells_prepared = _evaluate_sphere_attr
+    cantrips = _evaluate_sphere_attr
+    powers = _evaluate_sphere_attr
+    utilities = _evaluate_sphere_attr
+
+    @cached_property
+    def spellbook(self) -> SpellbookController | None:
+        if self.sphere != "martial":
+            return SpellbookController("spellbook", self.sphere, self.character)
+        return None
+
+
+class SpellbookController(attribute_controllers.AttributeController):
     """The Spellbook controller keeps track of spellbook capacity.
 
     Specifically, it keeps track of how many spells of each class (in its sphere) are
@@ -28,7 +54,7 @@ class SpellbookController(engine.AttributeController):
         self,
         expr: str | PropExpression,
         sphere: str,
-        character: engine.CharacterController,
+        character: base_engine.CharacterController,
     ):
         super().__init__(expr, character)
         self.sphere = sphere

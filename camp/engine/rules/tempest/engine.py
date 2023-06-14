@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from functools import cached_property
 from typing import Type
 
@@ -40,11 +39,3 @@ class AttributeController(base_engine.AttributeController):
     @property
     def value(self):
         return sum(p.grants for p in self._propagation_data.values())
-
-
-@dataclass
-class PropagationData(base_engine.PropagationData):
-    discount: list[defs.Discount] | None = None
-
-    def __bool__(self) -> bool:
-        return super().__bool__() or bool(self.discount)

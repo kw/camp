@@ -16,35 +16,75 @@
 </ul>
 {% endif %}
 
-<h2>{{ feature.display_name }}
-    {% if feature.purchase_cost_string %} ({{ feature.purchase_cost_string }}){% endif %}
+<h2>{{ feature.formal_name }}
+    {% if feature.can_increase and feature.purchase_cost_string %} ({{ feature.purchase_cost_string }}){% endif %}
+    {% if feature.category %}
+    <p class="fw-lighter fs-5">{{ feature.category }}</p>
+    {% endif %}
 </h2>
+
+{% if feature.parent %}
+<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
+{% endif %}
+
+{% if purchase_form %}
+<form method="post" id="purchaseForm">
+    {% csrf_token %}
+        {{ purchase_form | crispy }}
+        {% if purchase_form.show_remove_button %}
+        <button type="submit" id="removeButton"
+                name="remove" value="1"
+                class="btn btn-danger">
+            Remove
+        </button>
+        {% else %}
+        <button type="submit" id="purchaseButton" name="purchase"
+                class="btn btn-{{purchase_form.button_level}}">
+            {{purchase_form.button_label}}
+        </button>
+        {% endif %}
+    </div>
+</form>
+{% elif no_purchase_reason %}
+<p>You can not currently purchase this because:</p>
+<p>{{ no_purchase_reason }}</p>
+{% endif %}
 
 {# TODO: Render markdown #}
 {% if feature.description %}
 <p>{{ feature.description }}</p>
 {% endif %}
 
-{% if feature.parent %}
-<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
-{% endif %}
-
-{% if feature.subfeatures %}
-<h3>Features</h3>
-<ul>
-{% for subfeature in feature.subfeatures %}
-<li><a href="{% url 'character-feature-view' character.id subfeature.id %}">{{ subfeature.display_name }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
 {% for explanation in explain_ranks %}
 <p>{{ explanation }}</p>
 {% endfor %}
 
+{% if feature.granted_features %}
+<h3>Granted Features</h3>
+<ul>
+{% for subfeat in feature.granted_features %}
+<li><a href="{% url 'character-feature-view' character.id subfeat.id %}">{{ subfeat.formal_name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if feature.discounted_features %}
+<h3>Discounted Features</h3>
+<ul>
+{% for subfeat in feature.discounted_features %}
+<li><a href="{% url 'character-feature-view' character.id subfeat.id %}">{{ subfeat.display_name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
 {% if choices %}
+<a name="choices"></a>
 {% for key, choice in choices.items %}
+    {% if choice.controller.limit > 1 %}
     <h3>{{ choice.controller.name }} ({{choice.controller.limit}})</h3>
+    {% else %}
+    <h3>{{ choice.controller.name }}</h3>
+    {% endif %}
     {% if choice.controller.description %}
     <p>{{ choice.controller.description }}</p>
     {% endif %}
@@ -56,7 +96,7 @@
         <input type="hidden" name="choice" value="{{choice.id}}">
         <ul>
             {% for f in choice.taken %}
-            <li>{{ f }}
+            <li><a href="{% url 'character-feature-view' character.id f.id %}">{{ f.formal_name }}</a>
                 {% if f.id in choice.removable %}
                     <button type="submit" class="btn btn-danger btn-sm" name="selection" value="{{f.full_id}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -71,7 +111,6 @@
     </form>
     {% endif %}
     {% if choice.available %}
-    <h4>Available Choices</h4>
     <form method="post">
         {% csrf_token %}
         {{ choice | crispy }}
@@ -79,19 +118,6 @@
     </form>
     {% endif %}
 {% endfor %}
-{% endif %}
-
-{% if purchase_form %}
-<h3>Purchase</h3>
-<form method="post" id="purchaseForm">
-{% csrf_token %}
-{{ purchase_form | crispy }}
-</form>
-{# Outside of the form so that it lines up with the back button by default #}
-<button type="submit" id="purchaseButton" form="purchaseForm" name="purchase" class="btn btn-primary">Purchase</button>
-{% elif no_purchase_reason %}
-<p>You can not currently purchase this because:</p>
-<p>{{ no_purchase_reason }}</p>
 {% endif %}
 
 <a role="button" class="btn btn-secondary" href="{% url 'character-detail' character.id %}">Back</a>

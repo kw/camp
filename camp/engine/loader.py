@@ -103,29 +103,35 @@ def load_ruleset(
         try:
             feature.post_validate(ruleset)
         except Exception as exc:
-            ruleset.bad_defs.append(
-                base_models.BadDefinition(
-                    path=feature.def_path,
-                    raw_data=None,
-                    exception_type=type(exc).__name__,
-                    exception_message=str(exc),
+            if with_bad_defs:
+                ruleset.bad_defs.append(
+                    base_models.BadDefinition(
+                        path=feature.def_path,
+                        raw_data=None,
+                        exception_type=type(exc).__name__,
+                        exception_message=str(exc),
+                    )
                 )
-            )
-            broken_features.add(id)
+                broken_features.add(id)
+            else:
+                raise
     for id in broken_features:
         del ruleset.features[id]
     try:
         # Ensure the ruleset's engine can be loaded.
         ruleset.engine
     except Exception as exc:
-        ruleset.bad_defs.append(
-            base_models.BadDefinition(
-                path=feature.def_path,
-                raw_data=ruleset.engine_class,
-                exception_type=type(exc).__name__,
-                exception_message=str(exc),
+        if with_bad_defs:
+            ruleset.bad_defs.append(
+                base_models.BadDefinition(
+                    path=feature.def_path,
+                    raw_data=ruleset.engine_class,
+                    exception_type=type(exc).__name__,
+                    exception_message=str(exc),
+                )
             )
-        )
+        else:
+            raise
     return ruleset
 
 

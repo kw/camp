@@ -1,0 +1,19 @@
+name: Ease Lock
+incant: '"... to aid in unlocking the works of magic", Special Focus'
+call: Explanation
+target: Individual
+delivery: Touch
+accent: Will
+duration: Special
+effect: Special
+description: >
+  The Mage can allow the target character (who cannot be the Mage themself) to make one
+  attempt on a magical lock. The target must be holding a lockwand when the incantation
+  is complete, and the Mage must Focus from the moment the incantation is completed until
+  the target finishes their attempt (or gives up, puts down the wand, etc.). Each casting
+  will grant one attempt on the lock.
+
+  If the Mage’s Focus is interrupted, the magical lock must be immediately tripped (the lockwand
+  should touch the wire). The Mage must use “[Name and Description of lockwand-holder] Instruction:
+  Touch the lockwand to the wire.” Note that a character with a Power like Thief’s Touch might be
+  able to continue on from that point anyway.

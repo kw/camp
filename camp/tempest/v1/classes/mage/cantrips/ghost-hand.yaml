@@ -1,0 +1,23 @@
+name: Ghost Hand
+incant: "...to form a ghostly hand."
+call: “Insubstantial”, “Cure Insubstantial”
+target: Self
+duration: Slow Count of 15
+refresh: Focus Slow 300
+accent: Force
+effect: Grant Insubstantial, Cure
+description: >
+  The caster must immediately drop everything they are holding and will go insubstantial.
+  They then have a Slow Count of 15 to perform one action and return to the approximate
+  spot where they completed the incant. At the end of the Slow Count of 15 the caster
+  must immediately return to where they were at the start of the spell, and cure their
+  insubstantial Condition.
+
+  The action must be one of the following: pushing a spot with one finger, picking up a
+  small object (no larger than two fists) and placing it/throwing it, pulling on something
+  with one hand, gesturing to another individual with one hand, or tapping a character on
+  the shoulder (if the character has prior explicit consent only). If this movement triggers
+  a trap, the Mage will be considered to have tripped the trap while momentarily physical,
+  and therefore take the effects of the trap per the normal Insubstantial rules. Note that
+  this spell offers interaction normally unavailable to Insubstantial creatures. This cantrip
+  can only be cast out of combat.

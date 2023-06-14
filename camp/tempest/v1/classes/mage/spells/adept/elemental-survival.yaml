@@ -1,0 +1,30 @@
+name: Elemental Survival
+incant: "...to give the planar strength of [Air/Fire/Earth/Water]"
+call: Explanation
+target: Individuals
+duration: Short Rest
+delivery: Touch
+accent: None
+effect: Resistance
+description: >
+  Elemental Survival must be cast focusing on one of the Elemental Planes (Fire, Air,
+  Water, Earth). The caster designates 3 targets to gain traits based on the plane chosen.
+  If this spell is cast with a Greater spell-slot, it will last until the character
+  completes a Long Rest. The character cannot be affected by this spell more than once
+  at a time, even if a different plane is chosen.
+
+  **Air** - The character is unaffected by high winds, including natural tornadoes and the
+  like. The character is unaffected by natural lightning strikes and can see normally through clouds and the dust caused by weather. The character has resistance to Lightning and resistance to falling damage a number of times equal to their Maximum Life Points.
+
+  **Fire** - The character takes no damage from normal fire or heat, and can breathe and see
+  normally in smoky environments. The character has resistance to Flame a number of times
+  equal to their Maximum Life Points.
+
+  **Earth** - The character can pass through some rock and stone (the player can move through
+  earth/stone walls where it is possible, as if Slowed). The character has resistance to
+  Acid a number of times equal to their Maximum Life Points.
+
+  **Water** - The character can walk normally on icy surfaces and can breathe normally
+  underwater. The character will suffer no ill effects from being in deep water and can
+  see normally underwater, even in almost total darkness. The character has resistance to
+  Ice a number of times equal to their Maximum Life Points.

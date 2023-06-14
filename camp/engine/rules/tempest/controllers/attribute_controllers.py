@@ -3,18 +3,9 @@ from __future__ import annotations
 from typing import Iterable
 
 from camp.engine.rules import base_engine
-from camp.engine.rules.base_engine import PropagationData
-from camp.engine.rules.base_models import PropExpression
-
-from . import character_controller
 
 
 class AttributeController(base_engine.AttributeController):
-    character: character_controller.TempestCharacter
-
-    def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
-        super().__init__(prop_id, character)
-
     @property
     def value(self):
         return sum(p.grants for p in self._propagation_data.values())
@@ -36,14 +27,14 @@ class SumAttribute(AttributeController):
 
     """
 
-    character: character_controller.TempestCharacter
+    character: base_engine.CharacterController
     _condition: str | None
     _feature_type: str
 
     def __init__(
         self,
         prop_id: str,
-        character: character_controller.TempestCharacter,
+        character: base_engine.CharacterController,
         feature_type: str | None = None,
         condition: str | None = None,
     ):
@@ -74,24 +65,8 @@ class SumAttribute(AttributeController):
                 yield fc
 
 
-class SphereAttribute(SumAttribute):
-    sphere: str
-
-    def __init__(self, prop_id: str, character: character_controller.TempestCharacter):
-        super().__init__(prop_id, character, feature_type="class", condition=prop_id)
-
-    def spell_slots(self, expr: PropExpression) -> int:
-        total: int = 0
-        for fc in self.matching_controllers():
-            total += fc.subcontroller(expr).value
-        return total
-
-    def propagate(self, data: PropagationData) -> None:
-        return super().propagate(data)
-
-
 class CharacterPointController(AttributeController):
-    character: character_controller.TempestCharacter
+    character: base_engine.CharacterController
 
     @property
     def value(self) -> int:

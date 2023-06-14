@@ -1,0 +1,9 @@
+name: Replicate Enhancement
+requires: mage:2
+description: >
+  When casting a prepared non-damaging touch spell, the number of targets is increased by one.
+  The spell must have a target of Individual, shield, or armor, the delivery must be Touch
+  (downcasts to Touch are not affected by this power), and the spell must come from the Basic
+  Class: Mage Spell List (this includes both Novice and Adept).
+
+  Once they achieve 7th level Mage they may add one additional target per cast.

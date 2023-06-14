@@ -4,6 +4,14 @@ requires:
   any:
     - basic-arcane
     - basic-faith
+choices:
+  cantrip:
+    name: Bonus Cantrip
+    matcher:
+      type: cantrip
+      parent:
+        type: class
+    controller: sphere-bonus
 description: >
   The character can choose one additional cantrip from their class’ cantrip spell-list.
   If the character does not have a class spell-list, they may pick any cantrip but the

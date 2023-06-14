@@ -1,0 +1,14 @@
+name: Wrest Control
+incant: 'Focus Quick 100, "...to subjugate the mindless that stand before me."'
+call: "[Name of Description] Short Dominate to Construct by Arcane"
+target: One Construct
+duration: Short Rest
+delivery: Verbal
+accent: Arcane
+effect: Dominate
+description: >
+  Calling upon their deep understandings of the Weave, the Mage can intuit
+  the mystical pathways used in the generation of constructs, and attempt
+  to override them, gaining control. The Mage weaves mystic sigils in the
+  air binding the strands of eldritch energy animating the golem, verbalizing
+  their intent, and the construct is tethered to their will… for a time.

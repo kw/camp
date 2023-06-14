@@ -1,0 +1,10 @@
+name: Mage Mend
+incant: "... to make this armor whole again."
+call: "Mend Armor 5 by Force"
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Force
+duration: Instantaneous
+effect: Mend
+description: >
+  The target of this spell will mend 5 Armor Points.

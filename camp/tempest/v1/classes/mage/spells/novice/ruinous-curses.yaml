@@ -1,0 +1,11 @@
+name: Ruinous Curses
+incant: "...to rob my enemies of their speed and strength."
+call: '"Quick Slow by Mind", "Quick Weakness by Mind"'
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Mind
+duration: Quick 100
+effect: Slow, Weakness
+description: >
+  Ruinous Curse charges two spell-balls simultaneously. One will Slow its target, the other will Weaken
+  its target, each for a Quick Count of 100. The spell-balls must be thrown separately.

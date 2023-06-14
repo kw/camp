@@ -7,9 +7,8 @@ from typing import Literal
 from typing import Type
 from typing import TypeAlias
 
-import pydantic
 from pydantic import Field
-from pydantic import NonNegativeInt
+from pydantic import PositiveInt
 
 from camp.engine.rules import base_models
 from camp.engine.utils import maybe_iter
@@ -18,27 +17,6 @@ from camp.engine.utils import table_lookup
 from . import models
 
 Attribute: TypeAlias = base_models.Attribute
-
-
-class Discount(base_models.BaseModel):
-    """Describes a cost discount, generally for CP.
-
-    Attributes:
-        modifier: The amount to change the cost. For example, `1` means "the feature
-            costs 1 CP less per rank".
-        minimum: The minimum cost (per rank). If it's a discount, usually 1 or 0.
-        ranks: The number of ranks that this can apply to.
-    """
-
-    discount: pydantic.PositiveInt
-    minimum: int = 1
-    ranks: int | None = None
-
-    @classmethod
-    def cast(cls, discount: Discount | int) -> Discount:
-        if isinstance(discount, int):
-            return cls(discount=discount)
-        return discount
 
 
 class GrantDef(base_models.BaseModel):
@@ -50,7 +28,7 @@ class GrantDef(base_models.BaseModel):
 
 
 Grantable: TypeAlias = str | list[str] | dict[str, int] | GrantDef
-Discounts: TypeAlias = dict[str, Discount | int]
+Discounts: TypeAlias = dict[str, base_models.Discount | int]
 
 
 class ChoiceDef(base_models.BaseModel):
@@ -66,6 +44,7 @@ class ChoiceDef(base_models.BaseModel):
         description: A user-visible description of the choice.
         limit: The number of times this choice can be made. If "unlimited",
             there is no limit.
+        limit_is_per_rank: If True, the limit is multiplied by the rank of the feature.
         discount: A discount that applies to the choice. This is rarely used,
             but can be used to make a choice cheaper than normal. For example,
             the Geas Core "Patron" perk allows a number of choices to be made
@@ -73,24 +52,52 @@ class ChoiceDef(base_models.BaseModel):
             by 1 CP. The choice can be made after the purchase was made. Note
             that this doesn't actually _grant_ the choice in this case.
         matcher: A feature matcher that can be used to limit the choices available.
+        starting_class: Only applies to basic classes. If True, the choice is only
+            available when the class is your starting class.
+        controller: If provided, the name of a custom controller to use for this
+            choice. If not provided, the default controller is used.
+        controller_args: If provided, a dictionary of arbitrary data to be used
+            by the custom controller.
     """
 
-    name: str
+    name: str | None = None
     description: str | None = None
     limit: int | Literal["unlimited"] = 1
-    discount: Discount | int | None = None
+    limit_is_per_rank: bool = False
+    discount: base_models.Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
+    starting_class: bool = False
+    controller: str | None = None
+    controller_data: dict | None = None
 
 
-class BaseFeatureDef(base_models.BaseFeatureDef):
+class PowerCard(base_models.BaseModel):
+    name: str | None = None
+    incant: str | None = None
+    call: str | None = None
+    accent: str | None = None
+    target: str | None = None
+    duration: str | None = None
+    delivery: str | None = None
+    refresh: str | None = None
+    effect: str | None = None
+    description: str | None = None
+
+
+class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
-    discounts: dict[str, Discount | int] | None = None
+    rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
+    discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
+    subcard: PowerCard | list[PowerCard] | None = None
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.grants:
             ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+        if self.rank_grants:
+            grantables = list(self.rank_grants.values())
+            ruleset.validate_identifiers(_grantable_identifiers(grantables))
         if self.discounts:
             ruleset.validate_identifiers(self.discounts.keys())
         if self.choices:
@@ -101,6 +108,7 @@ class BaseFeatureDef(base_models.BaseFeatureDef):
 
 class SubFeatureDef(BaseFeatureDef):
     type: Literal["subfeature"] = "subfeature"
+    display_type: str | None = None
 
 
 class ClassDef(BaseFeatureDef):
@@ -108,7 +116,7 @@ class ClassDef(BaseFeatureDef):
     sphere: Literal["arcane", "divine", "martial"] = "martial"
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
-    bonus_features: dict[int, Grantable] | None = None
+    class_type: Literal["basic", "advanced", "epic"] = "basic"
     # By default, classes have 10 levels.
     ranks: int = 10
 
@@ -120,9 +128,6 @@ class ClassDef(BaseFeatureDef):
             ruleset.validate_identifiers(
                 _grantable_identifiers(self.multiclass_features)
             )
-        if self.bonus_features:
-            grantables = list(self.bonus_features.values())
-            ruleset.validate_identifiers(_grantable_identifiers(grantables))
 
 
 class CostByRank(base_models.BaseModel):
@@ -203,27 +208,49 @@ class PerkDef(BaseFeatureDef):
 
 class PowerDef(BaseFeatureDef):
     type: Literal["power"] = "power"
-    sphere: Literal["arcane", "divine", "martial", None] = None
-    tier: NonNegativeInt | None = None
-    class_: str | None = Field(alias="class", default=None)
-    incant_prefix: str | None = None
-    incant: str | None = None
-    call: str | None = None
-    accent: str | None = None
-    target: str | None = None
-    duration: str | None = None
-    delivery: str | None = None
-    refresh: str | None = None
-    effect: str | None = None
 
-    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
-        super().post_validate(ruleset)
-        ruleset.validate_identifiers(self.class_)
-        ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+
+class InnatePower(PowerDef):
+    type: Literal["innate"] = "innate"
+
+
+class ArchetypePower(PowerDef):
+    type: Literal["archetype"] = "archetype"
+
+
+class MartialPower(PowerDef):
+    type: Literal["martial"] = "martial"
+    tier: PositiveInt | None = None
+
+
+class Utility(PowerDef):
+    type: Literal["utility"] = "utility"
+
+
+class Spell(PowerDef):
+    type: Literal["spell"] = "spell"
+    tier: PositiveInt | None = None
+    sphere: Literal["arcane", "divine", None] = None
+
+
+class Cantrip(PowerDef):
+    type: Literal["cantrip"] = "cantrip"
+    sphere: Literal["arcane", "divine", None] = None
 
 
 FeatureDefinitions: TypeAlias = (
-    ClassDef | SubFeatureDef | SkillDef | PowerDef | FlawDef | PerkDef
+    ClassDef
+    | SubFeatureDef
+    | SkillDef
+    | PowerDef
+    | FlawDef
+    | PerkDef
+    | InnatePower
+    | ArchetypePower
+    | MartialPower
+    | Spell
+    | Cantrip
+    | Utility
 )
 
 
@@ -306,10 +333,28 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="cantrips", name="Cantrips", scoped=True),
         Attribute(
             id="spell_slots",
-            name="Spells",
+            name="Spell Slots",
             scoped=True,
             tiered=True,
-            tier_names=["Novice", "Intermediate", "Greater", "Master"],
+            tier_names=["Novice", "Adept", "Greater", "Master"],
+        ),
+        Attribute(
+            id="spells_known",
+            name="Spells Known",
+            scoped=True,
+        ),
+        # Spellbook is a little different than Spells Known. It's a pool of "bonus" spellbook
+        # capacity granted by skills like Basic Arcane, Spellscholar, etc. Spellbook capacity
+        # is per-sphere, and critically, taking the Sourcerer class blocks it entirely.
+        Attribute(
+            id="spellbook",
+            name="Spellbook",
+            scoped=True,
+        ),
+        Attribute(
+            id="spells_prepared",
+            name="Spells Prepared",
+            scoped=True,
         ),
         Attribute(
             id="powers",
@@ -320,19 +365,19 @@ class Ruleset(base_models.BaseRuleset):
         ),
         Attribute(
             id="arcane",
-            name="Arcane Caster Levels",
+            name="Arcane",
             is_tag=True,
             hidden=True,
         ),
         Attribute(
             id="divine",
-            name="Divine Caster Levels",
+            name="Divine",
             is_tag=True,
             hidden=True,
         ),
         Attribute(
             id="martial",
-            name="Martial Class Levels",
+            name="Martial",
             is_tag=True,
             hidden=True,
         ),
@@ -340,6 +385,12 @@ class Ruleset(base_models.BaseRuleset):
             id="caster",
             name="Caster Levels",
             is_tag=True,
+            hidden=True,
+        ),
+        Attribute(
+            id="basic-classes",
+            property_name="basic_classes",
+            name="Basic Classes",
             hidden=True,
         ),
     ]

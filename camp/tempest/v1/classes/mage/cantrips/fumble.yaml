@@ -1,0 +1,16 @@
+name: Fumble
+incant: "... to loosen your grip."
+call: "Disarm [Item] by Force"
+target: Individual
+delivery: Packet (Spell-Packet)
+accent: Force
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Disarm
+description: >
+  A creature stuck by the spell has the named item or item held by the named limb
+  forcibly removed and dropped to the ground. If the specified equipment is a shield
+  (or the limb is wearing a shield) the arm must be straightened so that it is pointing
+  directly at the ground to allow the shield to slide off the arm if possible. Unlike
+  other Effects, if no duration is called, the duration of Disarm is Instantaneous, and
+  the item may be picked up immediately upon hitting the ground.

@@ -12,10 +12,25 @@ from .. import defs
 from .. import engine  # noqa: F401
 from .. import models
 from . import attribute_controllers
+from . import cantrip_controller
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
+from . import spell_controller
+from . import spellbook_controller
 from . import subfeature_controller
+
+_DISPLAY_PRIORITIES = {
+    "class": 0,
+    "breed": 1,
+    "flaw": 2,
+    "perk": 3,
+    "skill": 4,
+    "cantrip": 5,
+    "utility": 6,
+    "spell": 7,
+    "power": 8,
+}
 
 
 class TempestCharacter(base_engine.CharacterController):
@@ -82,7 +97,7 @@ class TempestCharacter(base_engine.CharacterController):
         return attribute_controllers.LifePointController("lp", self)
 
     @property
-    def base_spikes(self) -> int:
+    def spikes(self) -> int:
         return self.ruleset.spikes.evaluate(self.xp_level)
 
     @property
@@ -118,11 +133,18 @@ class TempestCharacter(base_engine.CharacterController):
         return None
 
     @property
+    def basic_classes(self) -> int:
+        return sum(1 for c in self.classes if c.class_type == "basic")
+
+    @property
     def starting_class(self) -> class_controller.ClassController | None:
         for controller in self.classes:
             if controller.is_starting:
                 return controller
         return None
+
+    def display_priority(self, feature_type: str) -> int:
+        return _DISPLAY_PRIORITIES.get(feature_type, 99)
 
     @property
     def features(self) -> dict[str, feature_controller.FeatureController]:
@@ -136,7 +158,7 @@ class TempestCharacter(base_engine.CharacterController):
         """List of the character's class controllers."""
         classes = [
             feat
-            for feat in self.features.values()
+            for feat in list(self.features.values())
             if feat.feature_type == "class" and feat.value > 0
         ]
         classes.sort(key=lambda c: c.value, reverse=True)
@@ -172,6 +194,22 @@ class TempestCharacter(base_engine.CharacterController):
             for (id, feat) in self.features.items()
             if isinstance(feat, flaw_controller.FlawController)
         }
+
+    @property
+    def cantrips(self) -> dict[str, cantrip_controller.CantripController]:
+        return [
+            feat
+            for feat in self.features.values()
+            if isinstance(feat, cantrip_controller.CantripController)
+        ]
+
+    @property
+    def spells(self) -> list[spell_controller.SpellController]:
+        return [
+            feat
+            for feat in self.features.values()
+            if isinstance(feat, spell_controller.SpellController)
+        ]
 
     def can_purchase(self, entry: RankMutation | str) -> Decision:
         if not isinstance(entry, RankMutation):
@@ -235,20 +273,24 @@ class TempestCharacter(base_engine.CharacterController):
         return super().get_options(id)
 
     @cached_property
-    def martial(self) -> base_engine.AttributeController:
-        return attribute_controllers.SumAttribute("martial", self, "class", "martial")
+    def martial(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("martial", self)
 
     @cached_property
     def caster(self) -> base_engine.AttributeController:
         return attribute_controllers.SumAttribute("caster", self, "class", "caster")
 
     @cached_property
-    def arcane(self) -> base_engine.AttributeController:
-        return attribute_controllers.SphereAttribute("arcane", self)
+    def arcane(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("arcane", self)
 
     @cached_property
-    def divine(self) -> base_engine.AttributeController:
-        return attribute_controllers.SphereAttribute("divine", self)
+    def divine(self) -> spellbook_controller.SphereAttribute:
+        return spellbook_controller.SphereAttribute("divine", self)
+
+    @cached_property
+    def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
+        return [self.arcane.spellbook, self.divine.spellbook]
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
@@ -260,6 +302,14 @@ class TempestCharacter(base_engine.CharacterController):
                 return flaw_controller.FlawController(id, self)
             case "subfeature":
                 return subfeature_controller.SubfeatureController(id, self)
+            case "skill":
+                return feature_controller.SkillController(id, self)
+            case "perk":
+                return feature_controller.PerkController(id, self)
+            case "cantrip":
+                return cantrip_controller.CantripController(id, self)
+            case "spell":
+                return spell_controller.SpellController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 
@@ -272,6 +322,17 @@ class TempestCharacter(base_engine.CharacterController):
             return controller
         # Otherwise, create a controller and for it.
         return self._new_controller(expr.full_id)
+
+    def describe_expr(self, expr: str | PropExpression) -> str:
+        expr = PropExpression.parse(expr)
+        name = self.display_name(expr.prop)
+        if expr.option:
+            name += f" ({expr.option})"
+        if expr.attribute:
+            name += f" {expr.attribute}"
+        if expr.slot:
+            name += f" [{expr.slot}]"
+        return name
 
     def clear_caches(self):
         super().clear_caches()

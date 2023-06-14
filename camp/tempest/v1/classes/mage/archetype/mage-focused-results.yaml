@@ -1,0 +1,10 @@
+name: Focused Results
+type: archetype
+requires:
+  - mage:6
+  - basic-classes<2
+grants:
+  - mage.cantrips:1
+  - mage.spell_slots@1:1
+description: >
+  The Mage gains an additional Cantrip from the Mage Class list and an additional Novice Spell Slot.

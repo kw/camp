@@ -1,0 +1,14 @@
+name: Mask Aura
+incant: "... to mask your aura from others' sight."
+call: "Short Obfuscate: Discern by Will"
+target: Individual
+delivery: Touch
+accent: Will
+duration: Short Rest
+effect: Obfuscate
+description: >
+  The Mage may put a protective bubble around one individual, rendering that individual *Obfuscated* to
+  Discern Powers. Mask Aura can only be cast out of combat in a quiet and generally peaceful area and
+  the Effect must be explained clearly to the recipient. In response to any Discern Effects, the
+  character may decline to answer or answer however they wish a number of times equal to their Maximum
+  Life Points.

@@ -79,8 +79,21 @@ class CharacterController(ABC):
             return self.ruleset.attribute_map[id].name
         return id.replace("_", " ").title()
 
+    def display_priority(self, feature_type: str) -> int:
+        """Returns the display priority of the given feature type.
+
+        By default, all feature types have the same priority. Subclasses can
+        override this to change the order in which feature types are displayed.
+
+        Lower valued priorities are displayed first.
+        """
+        return 1
+
     def list_features(
-        self, type: str | None = None, taken: bool = True, available: bool = True
+        self,
+        type: str | None = None,
+        taken: bool = True,
+        available: bool = True,
     ) -> Iterable[BaseFeatureController]:
         """List all features of the given type."""
         if taken:
@@ -100,7 +113,7 @@ class CharacterController(ABC):
                 yield fc
         else:
             for id, definition in self.ruleset.features.items():
-                if id in self.features and self.get_prop(id) > 0:
+                if id in self.features and self.get(id) > 0:
                     continue
                 if type and definition.type != type:
                     continue
@@ -197,14 +210,6 @@ class CharacterController(ABC):
             return controller
         return None
 
-    def __getitem__(self, expr: str | base_models.PropExpression) -> PropertyController:
-        try:
-            if c := self.controller(expr):
-                return c
-            raise KeyError(f"Can't find controller for {expr}")
-        except NotImplementedError:
-            raise KeyError(f"Controller not yet implemented for {expr}")
-
     @abstractmethod
     def feature_controller(
         self, expr: str | base_models.PropExpression
@@ -240,7 +245,7 @@ class CharacterController(ABC):
             return controller
         raise ValueError(f"Attribute {expr.full_id} not found.")
 
-    def get_prop(self, expr: str | base_models.PropExpression) -> int:
+    def get(self, expr: str | base_models.PropExpression) -> int:
         """Retrieve the value of an arbitrary property (feature, attribute, etc).
 
         The base implementation only knows how to retrieve attributes. If the attribute
@@ -254,7 +259,7 @@ class CharacterController(ABC):
         """
         expr = base_models.PropExpression.parse(expr)
         if controller := self.controller(expr):
-            return controller.evaluate(expr)
+            return controller.get(expr)
         return 0
 
     @cached_property
@@ -459,6 +464,15 @@ class PropertyController(ABC):
 
     @property
     def value(self) -> int:
+        """Returns the computed value for this property.
+
+        Subclasses should override this. The default implementation returns only the applied bonuses.
+        """
+        return self.bonus
+
+    @property
+    def bonus(self) -> int:
+        """Returns the bonus values applied to this property by other controllers."""
         return sum(p.grants for p in self._propagation_data.values())
 
     @property
@@ -469,7 +483,12 @@ class PropertyController(ABC):
     def max_value(self) -> int:
         return self.value
 
-    def evaluate(self, expr: base_models.PropExpression) -> int:
+    def get(self, expr: str | base_models.PropExpression) -> int:
+        expr = base_models.PropExpression.parse(expr)
+        if expr.prop != self.id and expr.attribute != self.id:
+            sub = self.subcontroller(expr)
+            if sub:
+                return sub.get(expr)
         if expr.single is not None:
             return self.max_value
         return self.value
@@ -560,6 +579,29 @@ class BaseFeatureController(PropertyController):
         return self.character.engine.feature_defs[self.expr.prop]
 
     @property
+    def parent(self) -> BaseFeatureController | None:
+        if self.definition.parent is None:
+            return None
+        return self.character.feature_controller(self.definition.parent)
+
+    @property
+    def parent_def(self) -> base_models.BaseFeatureDef | None:
+        return self.definition.parent_def
+
+    @property
+    def children(self) -> list[BaseFeatureController]:
+        children = [
+            self.character.feature_controller(expr)
+            for expr in self.definition.child_ids
+        ]
+        children.sort(key=lambda f: f.full_id)
+        return children
+
+    @property
+    def taken_children(self) -> list[BaseFeatureController]:
+        return [c for c in self.children if c.value > 0]
+
+    @property
     def next_value(self) -> int | None:
         """What's the next value that can be purchased?
 
@@ -584,6 +626,17 @@ class BaseFeatureController(PropertyController):
     @property
     def description(self) -> str | None:
         return self.definition.description
+
+    @property
+    def short_description(self) -> str | None:
+        if self.definition.short_description:
+            return self.definition.short_description
+        if self.description:
+            descr = self.description.split("\n")[0]
+            if len(descr) > 100:
+                return descr[:100] + "…"
+            return descr
+        return None
 
     @property
     def max_ranks(self) -> int:
@@ -708,6 +761,7 @@ class BaseFeatureController(PropertyController):
         else:
             return self.rank_name_labels[1]
 
+    @property
     def explain(self) -> list[str]:
         """Returns a list of strings explaining how the ranks were obtained."""
         if self.value <= 0:
@@ -741,17 +795,19 @@ class BaseFeatureController(PropertyController):
     def currency(self) -> str | None:
         return None
 
-    def __str__(self) -> str:
+    @property
+    def feature_list_name(self) -> str:
         if self.option_def and not self.option:
             # This is feature controller belongs to an option feature
             # that doesn't have an option selected. It represents the
             # "raw" skill, and it doesn't have anything to display.
             return self.display_name()
-        if (
-            isinstance(self.definition.ranks, str) or self.definition.ranks > 1
-        ) and self.value > 0:
+        if self.definition.has_ranks and self.value > 0:
             return f"{self.display_name()} x{self.value}"
         return self.display_name()
+
+    def __str__(self) -> str:
+        return self.feature_list_name
 
 
 class AttributeController(PropertyController):
@@ -876,6 +932,7 @@ class PropagationData:
     source: str
     target: base_models.PropExpression
     grants: int = 0
+    discount: list[base_models.Discount] | None = None
 
     def __bool__(self) -> bool:
-        return bool(self.grants)
+        return bool(self.grants) or bool(self.discount)

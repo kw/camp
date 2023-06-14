@@ -1,0 +1,11 @@
+name: Stop
+incant: "... to halt your steps."
+call: "Quick Root by Mind"
+target: Individual
+delivery: Packet (Spell-Packet)
+accent: Mind
+duration: Quick 100
+refresh: Focus Quick 100
+effect: Root
+description: >
+  A creature struck by the spell has their feet bound to the ground with momentary shackles of pure mental power.

@@ -1,0 +1,15 @@
+name: Dominate Creature
+incant: "... to dominate the mind, bending it to my will."
+call: "Short Dominate by Mind"
+target: Individual
+duration: Short Rest
+delivery: Packet (Spell-Ball)
+accent: Mind
+effect: Dominate
+description: >
+  The target of the spell will feel their attitude change and shift, becoming
+  compliant to the caster’s will. The target is Dominated to the caster for a
+  Short Rest, or until the target is reduced to zero Life Points. This spell is
+  exhausting to the caster, and thus the caster may only have a single target
+  dominated with this spell at any one time, and, in addition, this spell may
+  only be cast once per Long Rest.

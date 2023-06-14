@@ -1,6 +1,6 @@
 name: Basic Arcane
 cost: 4
-# TODO(#14): Support spellbook bonuses.
+grants: arcane.spellbook:4
 description: >
   The character learns how to record Arcane spells into a spellbook and Prepare them.
   She can add four Novice-tier Arcane spells into her spellbook. If the character has

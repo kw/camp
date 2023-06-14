@@ -1,0 +1,12 @@
+name: Mage Bolt
+incant: "... for a mage bolt"
+call: "1 Force"
+target: Individual
+delivery: Packet (Spell-Packet)
+accent: Force
+duration: Instantaneous
+refresh: Immediate
+effect: None, only damage
+description: >
+  This minor cantrip charges a packet of materia with an explosive burst which will do 1 point of
+  Force damage to those it hits.

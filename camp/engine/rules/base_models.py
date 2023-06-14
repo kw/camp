@@ -185,7 +185,7 @@ class PropExpression(BoolExpr):
         )
         if not char.has_prop(expr):
             return Decision(success=False, reason=f"{self!r} [{expr} not present]")
-        ranks = char.get_prop(expr)
+        ranks = char.get(expr)
         if self.value is not None:
             if ranks < self.value:
                 return Decision(
@@ -197,7 +197,7 @@ class PropExpression(BoolExpr):
                     success=False, reason=f"{self!r} [{ranks} ≥ {self.less_than}]"
                 )
         elif self.single is not None:
-            max_ranks = char.get_prop(f"{expr}$0")
+            max_ranks = char.get(f"{expr}$0")
             if max_ranks < self.single:
                 return Decision(
                     success=False, reason=f"{self!r} [{max_ranks} < {self.single}]"
@@ -404,8 +404,11 @@ class BaseFeatureDef(BaseModel):
     def_path: str | None = None
     tags: set[str] = pydantic.Field(default_factory=set)
     description: str | None = None
+    short_description: str | None = None
     ranks: int | Literal["unlimited"] = 1
     option_def: OptionDef | None = pydantic.Field(default=None, alias="option")
+    _child_ids: set[str] = pydantic.PrivateAttr(default_factory=set)
+    _parent_def: BaseFeatureDef | None = pydantic.PrivateAttr(default=None)
 
     @classmethod
     def default_name(cls) -> str:
@@ -419,6 +422,10 @@ class BaseFeatureDef(BaseModel):
         return cls.__fields__["type"].type_.__args__[0]
 
     @property
+    def has_ranks(self) -> bool:
+        return self.ranks == "unlimited" or self.ranks > 1
+
+    @property
     def option(self) -> OptionDef | None:
         """Produces the option definition.
 
@@ -427,10 +434,23 @@ class BaseFeatureDef(BaseModel):
         """
         return self.option_def
 
+    @property
+    def child_ids(self) -> set[str]:
+        return self._child_ids
+
+    @property
+    def parent_def(self) -> BaseFeatureDef | None:
+        return self._parent_def
+
     def post_validate(self, ruleset: BaseRuleset) -> None:
         self.requires = parse_req(self.requires)
         if self.requires:
             ruleset.validate_identifiers(list(self.requires.identifiers()))
+        if self.parent:
+            ruleset.validate_identifiers([self.parent])
+            parent = ruleset.features[self.parent]
+            parent._child_ids.add(self.id)
+            self._parent_def = parent
 
 
 class BadDefinition(BaseModel):
@@ -563,6 +583,7 @@ class FeatureMatcher(BaseModel):
             'negative', depending on whether they're prefixed with a '-'. If positive
             tags are present, the feature must have them to pass. If negative tags are
             present, the feature must _not_ have them to pass. These can be combined.
+        parent: Either the ID of the parent, or another matcher to test against the parent.
         attrs: Automatically populated with any extra attributes when parsed from
             data files. Any key is interpreted as a property of the feature object,
             and the property's value must equal it.
@@ -571,6 +592,7 @@ class FeatureMatcher(BaseModel):
     id: Identifiers = None
     type: str | None = None
     tags: str | set[str] | None = None
+    parent: FeatureMatcher | str | None = None
     attrs: dict[str, Any] = pydantic.Field(default_factory=dict)
 
     class Config:
@@ -613,6 +635,15 @@ class FeatureMatcher(BaseModel):
                 return False
             if negative_tags and negative_tags.issubset(feature.tags):
                 return False
+        if self.parent is not None:
+            if isinstance(self.parent, str):
+                if feature.parent != self.parent:
+                    return False
+            elif isinstance(self.parent, FeatureMatcher):
+                if not feature.parent_def or not self.parent.matches(
+                    feature.parent_def
+                ):
+                    return False
         # Arbitrary attribute matcher.
         for attr, value in self.attrs.items():
             if not hasattr(feature, attr):
@@ -769,6 +800,27 @@ class PlotMutation(BaseModel):
     player_can_remove: bool = False
     plot_note: str | None = None
     player_note: str | None = None
+
+
+class Discount(BaseModel):
+    """Describes a cost discount.
+
+    Attributes:
+        discount: The amount to change the cost. For example, `1` means "the feature
+            costs 1 CP less per rank".
+        minimum: The minimum cost (per rank). If it's a discount, usually 1 or 0.
+        ranks: The number of ranks that this can apply to.
+    """
+
+    discount: pydantic.PositiveInt
+    minimum: int = 1
+    ranks: int | None = None
+
+    @classmethod
+    def cast(cls, discount: Discount | int) -> Discount:
+        if isinstance(discount, int):
+            return cls(discount=discount)
+        return discount
 
 
 Mutation = RankMutation | ChoiceMutation | NoteMutation | PlotMutation

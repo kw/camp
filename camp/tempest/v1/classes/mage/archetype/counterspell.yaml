@@ -1,0 +1,15 @@
+name: Counterspell
+requires: mage:10
+call: "Counter"
+target: Self
+duration: Instantaneous
+refresh: Immediate
+effect: Counter
+description: >
+  If the Mage is struck by a spell-packet that matches the Effect call of one
+  of their prepared spells, the Mage may expend that spell slot immediately
+  and call “Counter” as long as the call includes the Effect in a spell that
+  the Mage has prepared, and has available spell slots for. Cantrip effects may
+  be used to counterspell, but consume a Novice Spell slot to do so.
+
+  **Note**: Counterspell cannot be used while Silenced.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from collections import defaultdict
+from functools import cached_property
 from itertools import chain
 from typing import Iterable
 from typing import cast
@@ -139,7 +140,7 @@ def set_attr(request, pk):
 @permission_required(
     "character.change_character", fn=objectgetter(Character), raise_exception=True
 )
-def feature_view(request, pk, feature_id):
+def feature_view(request, pk, feature_id, anchor=None):
     character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
@@ -148,17 +149,24 @@ def feature_view(request, pk, feature_id):
     if feature_controller.currency:
         currencies[
             controller.display_name(feature_controller.currency)
-        ] = controller.get_prop(feature_controller.currency)
+        ] = controller.get(feature_controller.currency)
 
     can_inc = feature_controller.can_increase()
     can_dec = feature_controller.can_decrease()
+    pf = None
 
     if can_inc or can_dec:
-        if request.POST and "purchase" in request.POST:
+        if request.POST and "purchase" in request.POST or "remove" in request.POST:
             success, pf = _try_apply_purchase(
                 sheet, feature_id, feature_controller, controller, request
             )
             if success:
+                # If we purchased a feature and it has a choice that can be made,
+                # stay on the feature page. Otherwise, return to the character page.
+                if feature_controller.has_available_choices:
+                    return redirect(
+                        "character-feature-view", pk=pk, feature_id=feature_id
+                    )
                 return redirect("character-detail", pk=pk)
         else:
             data = None
@@ -169,7 +177,7 @@ def feature_view(request, pk, feature_id):
                 data = {"ranks": current if can_dec else next_value}
                 if feature_controller.option:
                     data["option"] = feature_controller.option
-            pf = forms.FeatureForm(feature_controller, data)
+            pf = forms.FeatureForm(feature_controller, initial=data)
 
     if request.POST and "choice" in request.POST:
         if "selection" not in request.POST:
@@ -185,6 +193,7 @@ def feature_view(request, pk, feature_id):
                 messages.success(request, result.reason)
             else:
                 messages.error(request, result.reason or "Could not apply choice.")
+        return redirect("character-feature-view", pk=pk, feature_id=feature_id)
 
     choices = feature_controller.choices
     context = {
@@ -192,7 +201,7 @@ def feature_view(request, pk, feature_id):
         "controller": controller,
         "feature": feature_controller,
         "currencies": currencies,
-        "explain_ranks": feature_controller.explain(),
+        "explain_ranks": feature_controller.explain,
         "choices": {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
         if choices
         else {},
@@ -212,9 +221,12 @@ def _try_apply_purchase(
 ) -> tuple[bool, forms.FeatureForm]:
     pf = forms.FeatureForm(feature_controller, request.POST)
     if pf.is_valid():
-        ranks = pf.cleaned_data.get("ranks", 1)
+        if request.POST.get("remove"):
+            ranks = 0
+        else:
+            ranks = int(pf.cleaned_data.get("ranks", 1))
         if feature_controller.is_concrete:
-            ranks = (int(ranks) if ranks else 1) - feature_controller.value
+            ranks -= feature_controller.value
         if ranks == 0:
             messages.info(request, "No change requested.")
             return True, pf
@@ -278,14 +290,16 @@ def undo_view(request, pk):
     return redirect("character-detail", pk=pk)
 
 
-def _features(controller, feats: Iterable[BaseFeatureController]) -> list[FeatureGroup]:
+def _features(
+    controller: CharacterController, feats: Iterable[BaseFeatureController]
+) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        if getattr(feat, "parent", None):
-            continue
         if feat.feature_type not in by_type:
             by_type[feat.feature_type] = FeatureGroup(
-                type=feat.feature_type, name=controller.display_name(feat.feature_type)
+                type=feat.feature_type,
+                name=controller.display_name(feat.feature_type),
+                priority=controller.display_priority(feat.feature_type),
             )
         group = by_type[feat.feature_type]
         if feat.is_option_template:
@@ -295,13 +309,14 @@ def _features(controller, feats: Iterable[BaseFeatureController]) -> list[Featur
                 group.add_available(feat)
             # Otherwise, we don't care about them.
         elif feat.value > 0:
-            group.taken.append(feat)
+            if not feat.internal:
+                group.taken.append(feat)
         else:
             group.add_available(feat)
-    groups: list[FeatureGroup] = list(by_type.values())
+    groups: list[FeatureGroup] = list(t for t in by_type.values() if t)
     for group in groups:
         group.sort()
-    groups.sort(key=lambda g: g.name)
+    groups.sort(key=FeatureGroup.sortkey)
     return groups
 
 
@@ -314,16 +329,43 @@ class FeatureGroup:
     available_categories: dict[str, list[BaseFeatureController]] = dataclasses.field(
         default_factory=lambda: defaultdict(list)
     )
+    priority: int = 1
+    category_priority: dict[str, int] = dataclasses.field(default_factory=dict)
 
     @property
     def has_available(self) -> bool:
         return self.available or self.available_categories
 
+    def sortkey(self) -> tuple[int, str]:
+        return self.priority, self.name
+
+    def __bool__(self) -> bool:
+        return bool(self.taken or self.available or self.available_categories)
+
+    def explain(self) -> str | None:
+        for feat in self.all():
+            return feat.explain_type_group
+        return None
+
+    @cached_property
+    def explain_list(self) -> list[str]:
+        for feat in self.all():
+            return feat.explain_list
+        return []
+
     def add_available(self, feat: BaseFeatureController):
         if feat.category:
             self.available_categories[feat.category].append(feat)
+            if hasattr(feat, "tier"):
+                self.category_priority[feat.category] = feat.tier
         else:
             self.available.append(feat)
+
+    def all(self) -> Iterable[BaseFeatureController]:
+        yield from self.taken
+        yield from self.available
+        for cat in self.available_categories.values():
+            yield from cat
 
     def sort(self):
         # Sort the base taken/available lists by name.
@@ -335,6 +377,13 @@ class FeatureGroup:
         # Sort the items in each category
         for cat in self.available_categories.values():
             cat.sort(key=lambda f: f.display_name())
+        # Sort the categories themselves. This is mostly by name, but a few categories
+        # (those that contain tiered abilities) have priority equal to their tier.
+        cats = sorted(
+            self.available_categories.keys(),
+            key=lambda k: (self.category_priority.get(k, 0), k),
+        )
+        self.available_categories = {k: self.available_categories[k] for k in cats}
 
 
 def _apply_mutation(
@@ -351,4 +400,5 @@ def _apply_mutation(
             )
             if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
                 sheet.undo_stack.order_by("timestamp").first().delete()
+            controller.clear_caches()
     return result

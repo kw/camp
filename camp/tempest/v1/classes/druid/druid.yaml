@@ -12,9 +12,9 @@ multiclass_features:
 level_grants:
   2: cancel
 choices:
-  magical-specialty:
+  budding-wisdom:
     starting_class: true
-    name: budding-wisdom
+    name: Budding Wisdom
     matcher:
       id:
         - budding-wisdom-1

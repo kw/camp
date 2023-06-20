@@ -1,0 +1,9 @@
+name: One With Nature
+requires: druid:7
+description: >
+  Bound to the cycles of nature and time, the Druid can feel the forces of the
+  world bend and shape them to its will.
+
+  While in the Form of the Rising Sun, the Druid gains a +1 bonus to Natural
+  Armor, conversely while in the Form of the Waning Moon, the Druid gains +1
+  bonus to Spike Damage.

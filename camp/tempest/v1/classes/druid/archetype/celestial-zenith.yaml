@@ -1,0 +1,19 @@
+name: Celestial Zenith
+requires: druid:10
+call: '“Grant Protect vs Packets to Self”, ”Piercing [X]”, “Grant Beast Type to Self”'
+target: Self
+delivery: None
+duration: Long Rest
+refresh: Long Rest, Event
+accent: None
+effect: Grant Protect, Piercing, Grant Type
+description: >
+  While in the Form of the Rising Sun, the Druid’s may Focus for a Quick 100
+  and expend a Spike to Grant themselves a Protect vs Packets a number of times
+  per Long Rest equal to their Maximum Life Points.
+
+  Conversely, while in the Form of the Waning Moon, may convert a Wounding
+  Effect to Piercing once per Long Rest.
+
+  Regardless of Form, the Druid gains the Inherent Type: Beast, and is affected
+  by all spells, powers, and effects that target those traits.

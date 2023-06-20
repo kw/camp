@@ -1,0 +1,22 @@
+name: Nature's Understanding
+requires: druid:2
+incant: "By dawning growth that blooms in Spring I would know the denizens of the wood."
+call: “[Name or Description] Subtle Discern [Question]”
+target: Individual
+delivery: Verval
+accent: None
+duration: Special
+refresh: Short Rest
+effect: Discern
+description: >
+  This power allows the character to determine if a targeted creature is a beast of nature, and its intent.
+  The power lasts until the Druid moves their right foot or takes a Short Rest, whichever comes first.
+  Until it ends, the Druid can ask any of the following questions as often as desired of any number of
+  targets that they can see, but may only ask each target each question once.
+
+  - “[Name or Description] Subtle Discern: Are you an Animal, Beast, or neither?”
+  - “[Name or Description] Subtle Discern to [Animal/Beast]: Why are you here?”
+  - “[Name or Description] Subtle Discern to [Animal/Beast]: What are you feeling?”
+  - “[Name or Description] Subtle Discern to [Animal/Beast]: Do you mean me harm?”
+  - “[Name or Description] Subtle Discern to [Animal/Beast]: What kind of [Animal/Beast] are you?”
+  - “[Name of Description] Subtle Discern to [Animal/Beast]: What is one of your Vulnerabilities?”

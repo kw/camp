@@ -1,0 +1,21 @@
+name: Life Tap
+tags: [rising-sun]
+incant: "...I tap into the flowing weave of life."
+call: Heal [X] to Living
+target: Individual (Other than Self)
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Heal
+description: >
+  The Druid can heal damage to an Individual up to the Druid’s class-level by drawing life from nearby flora.
+  This cantrip only works if the Druid is outside.  If the character is inside they must be touching a tree
+  with a trunk of at least four inches wide, a character under the effects of an Arboreal Transformation, or
+  a plant creature with one hand to cast the spell. This spell will not work on the caster themself.
+
+  This Power, although it refreshes immediately, can only be used to grant a limited amount of healing between
+  Long Rests. This number, called the Life Tap Pool, is equal to the Druid’s class-level.
+
+  If the Druid is in the Form of the Rising Sun the Life Tap Pool’s maximum is instead three times the
+  Druid’s Class Level.

@@ -1,0 +1,16 @@
+name: Nettles and Barbs
+tags: [waning-moon]
+incant: "...I strike with the wrath of the forest."
+call: '"2 Poison", "Wounding 2 by Poison."'
+target: Individual
+delivery: Weapon
+accent: Poison
+duration: Instantaneous
+refresh: Immediate
+effect: Wounding
+description: >
+  The Druid’s next un-Accented weapon attack gains the Poison accent as the weapon seeps poisonous liquid.
+
+  If the Druid is currently in the Form of the Waning Moon and using a Claw weapon, they may call
+  “2 Poison” on their next basic attack. If they expend a Spike while doing so, the call is
+  altered to “Wounding 2 by Poison.”

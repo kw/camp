@@ -1,0 +1,12 @@
+name: Antitoxin
+incant: "...I shield myself from nature's sting."
+call: "Grant Protect vs Poison"
+target: Self
+delivery: None
+duration: Until Used
+refresh: Focus Quick 100
+accent: None
+effect: Grant Protect
+description: >
+  The Druid calls on nature to protect themselves from poisons.
+  This gives the caster one Protect from Poison.

@@ -1,0 +1,16 @@
+name: Natural Remedies
+tags: [rising-sun]
+incant: "...I draw out the toxic, and purify the body."
+call: Cure Poison or Disease
+target: Individual
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Cure
+description: >
+  From the deep lore of the woods, Druids have found ways to cure any number of poisons,
+  toxins, and venoms with ease. Out of combat, the Druid may incant, and then call
+  “Cure Poison or Disease.”
+
+  If the Druid is in the Form of the Rising Sun they may cast this cantrip in combat.

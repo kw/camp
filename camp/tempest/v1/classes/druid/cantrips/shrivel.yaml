@@ -1,0 +1,16 @@
+name: Shrivel
+tags: [waning-moon]
+incant: "...I sap the water from the flesh."
+call: '"1 to Living", or "Wounding 2 to Living"'
+target: Individual
+delivery: Packet (Spell-Packet)
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Wounding
+description: >
+  The Druid is able to sap the life out of the others through dark nature magics of the woods.
+  When casting this spell they may inflict “1 to Living.”
+
+  If the caster is currently in the Form of the Waning Moon, the caster may expend a Spike to
+  make this effect Wounding. The appropriate call in that case is “Wounding 2 to Living.”

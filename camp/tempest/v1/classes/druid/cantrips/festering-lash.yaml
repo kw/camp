@@ -1,0 +1,16 @@
+name: Festering Lash
+tags: [waning-moon]
+incant: "...I enkindle a lash to disarm my foes."
+call: '"Disarm [Weapon] by Disease.", "Quick Disable [Arm] by Disease."'
+target: Individual
+delivery: Weapon
+accent: Disease
+duration: Instantaneous, Quick 100
+refresh: Focus Quick 100
+effect: Disarm, Disable
+description: >
+  By calling the toxic wrath of nature the Druid can lash out disarming foes that seek to harm them.
+  By Sacrificing one Life Point, the caster may call “Disarm [Weapon] by Disease.”
+
+  If the Druid is in the Form of the Waning Moon, they may expend a Spike instead to
+  call “Quick Disable [Arm] by Disease.”

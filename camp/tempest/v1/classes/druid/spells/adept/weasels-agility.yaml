@@ -1,0 +1,18 @@
+name: Weasel's Agility
+tags: [beast-shape, waning-moon]
+incant: "...I dance the steps of the Weasel."
+call: "Short Grant Resistance to Root and Slow"
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+effect: Grant Resistance
+description: >
+  The Druid is able to tap into some of the deeper energies of the forest to become more
+  bestial in nature. This spell will give the Druid the ability to resist the snares and
+  traps that would slow or pin them down. The Druid may spend a Spike to Resist Root and
+  Slow effects.
+
+  If the Druid is in the Form of the Waning Moon, instead of expending Spikes to resist
+  these Root and Slow effects, the character instead gains a number of resists equal to
+  their Maximum Life Points.

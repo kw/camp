@@ -1,0 +1,14 @@
+name: Hide of the Rhino
+tags: [beast-shape, rising-sun]
+incant: "...I wear the hide of the rhino."
+call: '"Long Grant 3 Natural Armor", "Grant Protect vs Weapon"'
+target: Self
+delivery: None
+accent: None
+duration: Long Rest, Until Discharged
+effect: Grant Natural Armor, Grant Protect
+description: >
+  The Druid is able to tap into some of the deeper energies of the forest to become more bestial in nature.
+  This spell will give the Druid three points of Natural Armor.
+
+  If the Druid is in the Form of the Rising Sun, the caster may grant themselves a Protect vs Weapon.

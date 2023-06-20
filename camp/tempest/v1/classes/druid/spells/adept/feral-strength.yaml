@@ -1,0 +1,16 @@
+name: Feral Strength
+tags: [rising-sun]
+incant: "...I bolster your strength with the essence of the forest."
+call: "Refresh One Spike to Self and Mend 2 to Self"
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous, Short Rest
+effect: Refresh Spike, Mend
+description: >
+  The Druid is able to call upon the feral nature of the wild beasts of the wood.
+  Upon casting this spell the Druid will be able to Refresh one Spike and Mend 2 Armor.
+
+  If the Druid is in the Form of the Rising Sun they may add three Life Tap pool.
+  If the caster has the Peacecaster skill, instead the caster will add three points into
+  their Life Tap pool if they have one.

@@ -1,0 +1,16 @@
+name: Cauterizing Claws
+tags: [rising-sun]
+incant: "...I cauterize the wounded."
+call: "Heal 2 by Flame"
+target: Individual
+delivery: Weapon
+accent: Flame
+duration: Short Rest
+refresh: Spell, Immediate
+effect: Heal
+description: >
+  Upon casting this spell the Druid may keep their right foot planted, while doing so, they may
+  charge a weapon strike with “Heal 2 by Flame” a number of times equal to their Maximum Life Points.
+
+  If the Druid is in the Form of the Rising Sun, and using Claws, they may charge a weapon strike with
+  “Heal 2 by Flame” a number of times equal to their Druid class-levels.

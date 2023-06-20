@@ -1,0 +1,15 @@
+name: Bitter Grasp
+tags: [waning-moon]
+incant: "...I call forth glacial cold."
+call: "Wounding 2 by Ice"
+target: Individual
+delivery: Weapon
+accent: Ice
+duration: Instantaneous, Short Rest
+effect: Wounding
+description: >
+  The caster can coat their melee weapon with rime from the highest peaks. When the caster strikes another
+  creature or their equipment, they can call “Wounding 2 by Ice.” This casting produces enough rime to use twice,
+  though they need not be consecutive, however the spell (and all charges) expire at the end of a Short Rest.
+
+  If the Druid is in the Form of the Waning Moon, the caster may swing with this effect three times.

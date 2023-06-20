@@ -1,0 +1,23 @@
+name: Form of the Weird
+tags: [beast-shape, rising-sun]
+incant: "...I move as those of the sea do."
+call: None
+target: Self
+delivery: None
+accent: Will
+duration: Short Rest
+effect: Grant Water Breathing, Grant Water Walk
+description: >
+  By taking on aspects of a creature that is the embodiment of the sea, the Druid becomes amphibious and
+  able to swiftly swim, breathe water through newly erupted gills, and even skim along the surface of the water
+  for short distances.
+
+  While under the effects of this spell, the Druid is able to breathe water indefinitely, walk or run in
+  water-based environments without restriction, and may expend a Spike to take ten steps on the surface of the water.
+  While skimming the top of the water, if the Druid is unwilling or unable to expend further Spikes, they fall into
+  the water, and may continue swimming from there.
+
+  **Note**: This does not prevent environmental effects from hazardous liquids, either by touch or immersion, but may
+  mitigate some of their effects.
+
+  If the Druid is in the Form of the Rising Sun, the duration of this effect is extended to Long Rest.

@@ -1,0 +1,16 @@
+name: Dart Frog's Skin
+tags: [beast-shape]
+incant: "...to ooze acid from my pores."
+call: '"Charged", "[Name or Description] 2 Poison"'
+target: Self, Individual
+delivery: None, Verbal
+accent: Poison
+duration: Short Rest, Instantaneous
+effect: None, only damage
+description: >
+  Until the Druid’s next Short Rest, each time the caster deals Poison accented damage by melee
+  weapon delivery on a conscious foe and the target doesn’t Prevent it, the caster may call "Charged."
+
+  Then the next time the Druid is hit by a melee attack they may spend a charge to verbally call against
+  the creature that hit them "[Name or Description] 2 Poison.” You may have charges equal to your level
+  in Druid at a time.

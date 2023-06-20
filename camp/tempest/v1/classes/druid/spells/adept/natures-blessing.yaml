@@ -1,0 +1,16 @@
+name: Nature's Blessing
+tags: [rising-sun]
+incant: "...I graft the strength of nature to you."
+call: "Short Grant +1 Maximum Life Points by Will"
+target: Other Individual
+delivery: Touch
+accent: Will
+duration: Short Rest
+effect: Grant Maximum Life Points
+description: >
+  This spell augments the target, increasing the life essence within, increasing their Maximum Life
+  Point total by one. The Druid may not cast this on themselves.
+
+  If the Druid is in the Form of the Rising Sun, the caster adds three points to their Life Tap pool,
+  if they have one. If the caster has the Peacecaster skill, instead the caster will add four points
+  into their Life Tap pool if they have one.

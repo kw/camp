@@ -1,0 +1,19 @@
+name: Phoenix Reborn
+tags: [rising-sun]
+incant: "...I rebuild your broken form through flame and pain."
+call: "Grant Life by Flame"
+target: Individual
+delivery: Touch
+accent: Flame
+duration: Instantaneous
+effect: Grant Life
+description: >
+  This powerful spell washes the target in flame and magical life. If the target is a corpse, it will bring
+  it back to the living with 1 Life Point. If used on an Undead, it will cause the creature to immediately
+  discorporate and take Spirit Form. Upon casting this spell the Druid suffers a Death Final effect. This spell
+  can only be used to bring one corpse back from the dead once per Long Rest. If a power refreshes a Long Rest
+  ability, it can target the “one per Long Rest” limitation of this spell, allowing one more individual to be
+  brought back to life by this spell.
+
+  If the Druid is in Rising Sun form instead of suffering a Death Final, they receive 10 Piercing by Flame Final
+  to Self. Casting this spell adds seven points to the Druid’s Life Tap pool if they have one.

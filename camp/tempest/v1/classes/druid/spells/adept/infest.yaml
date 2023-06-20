@@ -1,0 +1,16 @@
+name: Infest
+tags: [waning-moon]
+incant: "...I infest the flesh of my foes."
+call: '"Piercing 1 by Disease", "Piercing 2 by Disease"'
+target: Individual
+delivery: Weapon
+accent: Disease
+duration: Short Rest
+effect: Piercing
+refresh: Spell, Immediate
+description: >
+  Upon casting this spell the Druid must expend a Spike, which causes the caster to gain two charges
+  of “Piercing 1 by Disease” deliverable by melee weapon. These charges may be used at any time the
+  Druid wishes, but all charges expire at the next Short Rest. The accent on this power may not be altered.
+
+  If the Druid is in the Form of the Waning Moon, the call for each swing is instead “Piercing 2 by Disease.”

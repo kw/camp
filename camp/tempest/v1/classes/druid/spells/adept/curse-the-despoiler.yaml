@@ -1,0 +1,22 @@
+name: Curse the Despoiler
+tags: [rising-sun, waning-moon]
+incant: "...I curse you for what you have done to this land!"
+call: "Long Obey by Fear: Do not [Prospect/Forage/Scavenge] without my permission."
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Fear
+duration: Long Rest
+effect: Obey
+description: >
+  Woe unto the enemy of the Druid who takes from the land in a way unsustainable. The Druid may charge a spell-ball
+  with a powerful curse that prevents the individual from gathering from the land and using either their Prospecting,
+  Foraging, or Scavenging skill until the next Long Rest or until the Druid that cast the spell removes the curse from
+  them, usually requiring a quest.
+
+  **Note**: An Apprentice Divine ritual may also remove this curse.
+
+  If the Druid is in the Form of the Rising Sun, they may add four points of their Life Tap pool when casting this spell.
+  If the caster has the Peacecaster skill, instead the caster will add four points into their Life Tap pool if they have one.
+
+  If the Druid is in the Form of the Waning Moon, they may instead call “Long Obey by Fear: Do not Prospect, Forage, or Scavenge
+  without my permission” instead of having to choose a single harvesting skill.

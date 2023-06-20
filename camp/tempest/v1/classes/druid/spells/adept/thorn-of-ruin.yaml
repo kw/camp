@@ -1,0 +1,17 @@
+name: Thorn of Ruin
+tags: [waning-moon]
+incant: "...I wield the Thorn of Ruin."
+call: "Wounding [X]"
+target: Self
+delivery: None
+accent: None
+duration: Short
+effect: Wounding
+description: >
+  Vines with deadly thorns extend from the Druid’s hands and wrap around their melee weapon,
+  causing pain but bringing power. When casting this spell, the Druid must Sacrifice a Life Point.
+  After casting the Druid may expend a Spike to add the Wounding effect to their next blow. This may
+  be done a number of times equal to half the Druid’s class-level. Additionally, the spell ends when
+  the Druid is reduced to zero Life Points.
+
+  If the Druid is in the Form of the Waning Moon, the number of charges changes to the Druid’s class-level.

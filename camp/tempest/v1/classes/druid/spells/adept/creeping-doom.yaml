@@ -1,0 +1,15 @@
+name: Creeping Doom
+tags: [waning-moon]
+incant: "...I envenom your blood, ensuring your death."
+call: '"Short Taint by Disease", "Short Taint by Disease Final"'
+target: Individual
+delivery: Weapon
+accent: Disease
+duration: Instantaneous
+effect: Taint
+description: >
+  Coating their melee weapon with vile toxins and ravaging disease, the Druid can lash out
+  and corrupt the blood of their foe. When the caster strikes another creature or their
+  equipment, they can release the energy causing “Short Taint by Disease.”
+
+  If the Druid is in the Form of the Waning Moon, the call is instead “Short Taint by Disease Final”

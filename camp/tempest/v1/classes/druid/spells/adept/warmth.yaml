@@ -1,0 +1,21 @@
+name: Warmth
+tags: [rising-sun]
+incant: "...I stoke the flames of the mountain within you."
+call: "Short Grant Ice Resistance by Flame"
+target: Self
+delivery: None
+accent: Flame
+duration: Short Rest
+effect: Grant Resistance, Special
+description: >
+  The character will not suffer ill effects from in-game cold environments. Although the player
+  should be aware of the dangers of actual cold temperatures, this will allow the character to
+  travel through freezing cold areas, even other planes, without harm from the ambient cold, as
+  long as they are wearing appropriate clothing, and can even melt ice by touch without ill effect
+  to themself.
+
+  The character is warm enough to gain Ice Resistance a number of times equal to the target’s
+  Maximum Life Points.
+
+  If the Druid is in the Form of the Rising Sun, the number of resists is instead the Druids
+  class-levels, if that is greater than their Maximum Life Points.

@@ -1,0 +1,14 @@
+name: Serpent Strikes
+tags: [waning-moon]
+incant: "...I envenom my strikes."
+call: Short Weakness by Poison
+target: Individual
+delivery: Weapon
+accent: Poison
+duration: Short Rest
+effect: Weakness
+description: >
+  After casting this spell, the Druid may do a single melee attack for “Short Weakness by Poison”
+  anytime before they take a Short Rest. If the Druid uses claws, the number of charges goes up by one.
+
+  If the Druid is in the Form of the Waning Moon, the base number of charges is two.

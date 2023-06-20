@@ -1,0 +1,29 @@
+name: Bounty of the Land
+tags: [rising-sun, waning-moon]
+incant: "...I harvest the bounty of the land."
+call: "Counter"
+target: Self
+delivery: Self
+duration: Long Rest
+effect: Special
+accent: None
+description: >
+  The Druid knows how to take from the land without ruining its natural beauty or despoiling its resources
+  permanently. In return for this treatment, the land is kinder to the Druid. Until the Druid's next Long Rest,
+  the next time the Druid would suffer negative consequences of gathering, the character may avoid them.
+  The character can ignore the negative effects of Skinning a creature, Prospecting, or Foraging until their
+  next Long Rest. The appropriate call for preventing this negative effect is “Counter.”
+
+  Additionally, if the spell is cast with an Adept spell-slot, the character can put back a card and re-draw when
+  Prospecting once, or alternatively, if the Druid has the Foraging skill, the Druid may take a single Bloom
+  from an Ash Bin.
+
+  If the caster is currently in the Form of the Rising Sun, the Druid may add two points of their Life Tap pool,
+  if they have one. If the caster has the Peacecaster skill, instead the caster will add three points into their
+  Life Tap pool if they have one.
+
+  If the Druid is in the Form of the Waning Moon, they may, once per event, instead take a Night Prize from an
+  Ash Bin rather than a Bloom.
+
+  If the Ash Bin does not have any of the appropriate resources and the Druid chooses not to gain any other results
+  such as Life Tap pool from this spell, the spell slot is refunded.

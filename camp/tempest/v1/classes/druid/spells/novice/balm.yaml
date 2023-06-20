@@ -1,0 +1,15 @@
+name: Balm
+tags: [rising-sun]
+incant: "...I soothe what ails you."
+call: '"Heal 3", "Cure [Root, Disable, or Weakness]"'
+target: Individual
+delivery: Touch
+accent: None
+duration: Instantaneous
+effect: Heal
+description: >
+  The Druid heals the target of the spell for 3 Life Points.
+
+  If the Druid is in the Form of the Rising Sun they also may Cure one of the following conditions
+  of the target of the heal: Root, Disable, Weakness. The appropriate call for this is
+  “Cure [Root, Disable, or Weakness]”

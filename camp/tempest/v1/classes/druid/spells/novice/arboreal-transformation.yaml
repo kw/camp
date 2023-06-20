@@ -1,0 +1,18 @@
+name: Arboreal Transformation
+tags: [rising-sun]
+incant: "...I call forth the earth's wellspring to give life"
+call: '"Transformation", "Transformation Down"'
+target: Self
+delivery: None
+accent: None
+duration: Long Rest, Special
+effect: Special
+description: >
+  While this spell is active, and the Druid has their feet planted, the Druid gains the
+  Plant Type and may count for any tree size requirements for spells for the caster and
+  other character’s requirements. Keep in mind that the caster is not to be touched without
+  consent, and that a Touch range spell can be cast with a packet in hand at 6.” If the
+  caster moves after the spell is cast, the spell immediately ends.
+
+  If the caster is currently in the Form of the Rising Sun, they are Inherently Slowed and
+  the spell only ends when the character takes a Long Rest, or calls “Transformation Down.”

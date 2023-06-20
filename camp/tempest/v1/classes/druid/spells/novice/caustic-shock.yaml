@@ -1,0 +1,15 @@
+name: Caustic Shock
+tags: [waning-moon]
+incant: "...I charge this weapon with shocking power."
+call: '"Short Disable [Arm] by Acid", "Short Disable [Limb] by Ice"'
+target: Individual
+delivery: Weapon
+accent: Acid
+duration: Short Rest
+effect: Disable
+description: >
+  The caster can release a blast of power through a melee weapon that they are holding.
+  When the caster strikes another creature or their equipment, they can release the energy
+  causing “Short Disable [Arm] by Acid.”
+
+  If the Druid is in the Form of the Waning Moon, they may call “Short Disable [Limb] by Ice” instead.

@@ -1,0 +1,16 @@
+name: Purifying Flame
+tags: [rising-sun]
+incant: "...I cleanse your flesh with purifying flame."
+call: "Cure [Condition] and 1 by Flame"
+target: Individual
+delivery: Touch
+accent: Flame
+duration: Instantaneous
+effect: Cure
+description: >
+  When casting this spell, the Druid infuses their touch with the burning purity of the sun.
+  They may call “Cure [Condition] and 1 by Flame” with a touch cast.
+
+  If the Druid is in the Form of the Rising Sun, they may add two points of their Life Tap
+  pool when casting this spell. If the caster has the Peacecaster skill, instead the caster
+  will add three points into their Life Tap pool if they have one.

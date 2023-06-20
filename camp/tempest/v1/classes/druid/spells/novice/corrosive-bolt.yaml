@@ -1,0 +1,15 @@
+name: Corrosive Bolt
+tags: [waning-moon]
+incant: "...I summon a corrosive bolt."
+call: '"Wounding 2 by Acid", "Wounding 3 by Acid"'
+target: Individual
+delivery: Packet (Spell-Ball), Weapon
+accent: Acid
+duration: Instantaneous
+effect: Wounding
+description: >
+  Casting this spell, the Druid infuses the packet with the destructive power of Acid.
+  The spell does Wounding 2 by Acid.
+
+  If the Druid is in the Form of the Waning Moon, they may channel the Acid through their
+  weapon by expending a Spike to charge a melee attack with “Wounding 3 by Acid.”

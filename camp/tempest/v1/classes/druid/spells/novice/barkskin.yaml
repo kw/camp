@@ -1,0 +1,16 @@
+name: Barkskin
+tags: [rising-sun]
+incant: "...I summon a hide of the strongest bark."
+call: "Long Grant 2 Natural Armor to Self"
+target: Self
+delivery: None
+accent: None
+duration: Long Rest
+effect: Grant Natural Armor
+description: >
+  Pulling the protection of the forest around them, the Druid hardens their skin with bark,
+  Sacrificing a _Maximum_ Life Point for a Short Rest, giving them two points of Natural Armor.
+  The process of growing the bark is an agonizing one, as shards of rough wood manifest beneath the skin.
+
+  If the Druid is in the Form of the Rising Sun, they may instead Sacrifice a Life Point to grant themself
+  two points of Natural Armor.

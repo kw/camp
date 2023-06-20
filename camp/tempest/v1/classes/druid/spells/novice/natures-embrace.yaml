@@ -1,0 +1,16 @@
+name: Nature's Embrace
+tags: [waning-moon]
+incant: "...I accept the obscuring embrace of nature."
+call: Short Obfuscate vs Expose
+target: Self
+delivery: None
+accent: None
+duration: Short Rest, Long Rest
+effect: Obfuscate
+description: >
+  The Druid is able to cloak themselves from those that wish to find them. By calling for nature’s
+  aid this spell will protect them from the Expose effect. While touching a tree or laying in grass,
+  the Druid has Obfuscated vs Expose.
+
+  If the Druid is in the Form of the Waning Moon, the Duration is instead Long Rest, and may be used
+  at any time while the Druid is fully surrounded by shadow.

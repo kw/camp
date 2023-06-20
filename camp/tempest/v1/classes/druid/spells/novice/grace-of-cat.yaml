@@ -1,0 +1,15 @@
+name: Grace of the Cat
+tags: [beast-shape, waning-moon]
+incant: "...I land with the grace of the Cat"
+call: "Cat's Grace"
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+effect: Special
+description: >
+  While under the effects of Cat’s Grace, the character can Counter the Damage and Effects
+  from falling by Sacrificing two Life Points.
+
+  If the caster is currently in the Form of the Waning Moon, the Druid may expend a Spike
+  instead of Sacrificing the two Life Points. When using this power, the Druid should call ‘Cat’s Grace’.

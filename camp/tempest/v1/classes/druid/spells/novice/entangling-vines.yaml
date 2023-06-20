@@ -1,0 +1,15 @@
+name: Entangling Vines
+tags: [rising-sun]
+incant: "...I call for entangling vines."
+call: '“[Name or Description] Quick Disable [Leg] by Poison”, “[Name or Description] Quick Root by Poison”'
+target: Individual
+delivery: Verbal
+accent: Poison
+duration: Quick 100
+effect: Root, Disable
+description: >
+  Venomous thorns reach up from the underbrush, or through the cracks in the stones, striking at
+  the legs and feet of the Druid’s enemies to disable their foe’s leg.
+
+  If the Druid is in the Form of the Rising Sun, the vines that are drawn forth are covered in
+  venomous barbs, and Druid may call “[Name or Description] Quick Root by Poison” instead.

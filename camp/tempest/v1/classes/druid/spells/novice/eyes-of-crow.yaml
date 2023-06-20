@@ -1,0 +1,18 @@
+name: Eyes of the Crow
+tags: [beast-shape, waning-moon]
+incant: "...I see with the eyes of the crow."
+call: "Short Eyes of the Crow"
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+effect: Special, Mend
+description: >
+  Instead of searching a target, the Druid can quickly size up a helpless or willing creature and
+  determine where to search. Please note that, like searching, this should not include any actual
+  touching without express pre-negotiated consent. The caster can search instantaneously, by calling
+  “Instruction: Give me your loot”, rather than waiting the Quick 100. This ability refreshes when
+  loot is collected or the target indicates they have none.
+
+  If the caster is currently in the Form of the Waning Moon, they may Mend 1 Armor to themselves the
+  first time they receive at least one Coin while looting a downed creature.

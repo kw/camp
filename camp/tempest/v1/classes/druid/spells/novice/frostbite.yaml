@@ -1,0 +1,15 @@
+name: Frostbite
+tags: [waning-moon]
+incant: "...I slow your stride with frostbite."
+call: Quick Slow by Ice
+target: Individual
+delivery: Weapon
+accent: Ice
+duration: Quick 100
+effect: Slow
+description: >
+  The Druid is able to call forth the freezing cold of winter to hinder their enemy.
+  After casting they may do two melee attacks for “Quick Slow by Ice.”
+
+  If the Druid is in the Form of the Waning Moon, they may call this effect a number
+  of times equal to their Maximum Life Points.

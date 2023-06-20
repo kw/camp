@@ -1,0 +1,4 @@
+type: spell
+sphere: divine
+parent: druid
+refresh: Spell

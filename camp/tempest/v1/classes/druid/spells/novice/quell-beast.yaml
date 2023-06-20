@@ -1,0 +1,16 @@
+name: Quell Beast
+tags: [rising-sun]
+incant: "...I become one of the pack."
+call: '"[Name or Description] Short Charm to Animal or Beast by Will"'
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Short Rest
+effect: Charm, Sleep
+description: >
+  The Druid is at home with the creatures of the forest, and is able to soothe even the most
+  dangerous of natural beasts. They may make a verbal call to a creature known to be an Animal or
+  Beast and call “[Name or Description] Short Charm to Animal or Beast by Will.”
+
+  If the Druid is in the Form of the Rising Sun, they may expend a Spike to instead call “Short Sleep
+  to Animal or Beast by Will.”

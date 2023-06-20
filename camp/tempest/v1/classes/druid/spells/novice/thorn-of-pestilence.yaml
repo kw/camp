@@ -1,0 +1,15 @@
+name: Thorn of Pestilence
+tags: [waning-moon]
+incant: "...I hone this edge with the thorn"
+call: '"Grant Plus 1 Spike Damage", "Short Grant Poison", "Short Grant Disease"'
+target: Self
+delivery: None
+accent: Poison, Disease
+duration: Short Rest
+effect: Grant Plus Spike Damage, Grant Accent
+description: >
+  While using melee weapons, the caster gains +1 Spike Damage for their next swing, and adds the
+  Poison Accent to unaccented swings until their next Short Rest
+
+  If the Druid is in the Form of the Waning Moon, they may add or change the Accent of their melee
+  strikes when doing Spike damage to “Disease”

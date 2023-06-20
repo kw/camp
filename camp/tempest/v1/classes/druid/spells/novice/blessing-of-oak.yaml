@@ -1,0 +1,16 @@
+name: Blessing of the Oak
+tags: [rising-sun]
+incant: "...I anoint you with the essence of the Great Oak."
+call: "Grant Protect vs Poison and Disease"
+target: Individual
+delivery: Touch
+accent: None
+duration: Until Used
+effect: Grant Protect
+description: >
+  The Druid may bestow the blessings of the mighty oak to bolster their allies' fortitude granting
+  a Protect against Poison and Disease. The Druid may expend a Spike to add one additional Target.
+
+  If the caster is currently in the Form of the Rising Sun, the Druid may refresh one point of their
+  Life Tap pool, if they have one. If the caster has the Peacecaster skill, instead the caster will
+  add two points into their Life Tap pool if they have one.

@@ -1,0 +1,28 @@
+name: Cloak of Leaves
+cost: 3
+requires: druid:6
+incant: Focus Quick 30
+call: '“Grant Insubstantial to Self”, “Dispel Insubstantial”'
+target: Self
+delivery: None
+accent: None
+duration: Special
+refresh: Special, Short Rest
+effect: Grant Insubstantial, Dispel Insubstantial
+description: >
+  The Druid may protect themself from harm by drawing a camouflaging cloak about them and
+  melding with the forest. They are empowered to seek shelter within the wood of a tree,
+  becoming insubstantial to the real world so long as they do not move.
+
+  After spending two Spikes, the Druid must gather their naturally-colored hooded cloak
+  around them, Focus for a Quick 30, and call out "Grant Insubstantial to Self." They will
+  retain the Insubstantial Condition until they choose to move, are knocked out of
+  Insubstantial form by an Effect, or Dusk comes.
+
+  Once the spell is ended, by whatever means, they must Dispel their insubstantial
+  Condition by calling "Dispel Insubstantial." Remember that when Insubstantial, the player
+  has a duty to inform anyone that inspects, closely interacts with, or plans to attack
+  the character.
+
+  If the Druid is in the Form of the Waning Moon, the power costs no Spikes to activate,
+  and may be done once per Short Rest.

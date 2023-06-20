@@ -1,0 +1,20 @@
+name: Find the Path
+cost: 2
+requires: druid:2
+incant: “By dawning growth that blooms in Spring I ask the forest for a path forward.”
+call: "Short Grant Tracking to Self"
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+refresh: Long Rest
+effect: Grant Tracking
+# TODO: Implement the "refund if you buy Tracking" clause.
+description: >
+  Upon using this power, the character may ask the trees what they have seen,
+  and follow specific paths. They can see and follow green flags marked with a
+  white circle (called a “Halo”) until they have finished a Short Rest. This
+  Power must be cast while within Touch range of a tree of any size, but its
+  benefits may be used anywhere.
+
+  If the Druid later purchases the Tracking Skill, they may refund this skill.

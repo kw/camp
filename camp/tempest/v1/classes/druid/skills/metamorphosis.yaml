@@ -1,0 +1,16 @@
+name: Metamorphosis
+cost: 4
+requires: druid:7
+incant: RP - Slow 300 spent in a rite re-dedicating oneself to nature.
+call: '"Dispel Form", "Imbue Form of [Rising Sun or Waning Moon]"'
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous, Long Rest
+refresh: Long Rest
+effect: Grant Form
+description: >
+  The Druid may alter their Form with this power after performing a rite to renew
+  their dedication to nature and regain its blessings. This rite grants the Druid
+  any Form they have access to from the Druid Base Class. The Commune with Nature
+  Innate power may be used in conjunction with this power.

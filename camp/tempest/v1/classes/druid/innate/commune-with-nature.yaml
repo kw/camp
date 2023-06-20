@@ -1,0 +1,32 @@
+name: Commune with Nature
+requires: druid:1
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Refresh
+description: >
+  This Power gives the Druid a limited ability to Refresh spent spell-slots.
+  The Druid can spend a Short Rest in prayer, either alone or with others,
+  re-focusing on their faith and the Greater power to whom they owe fealty.
+
+  Between Long Rests, the Druid can refresh a number of Divine Novice
+  spell-slots equal to two times their total levels in their Divine-casting
+  Classes. This power may be used to refresh spells from any of this
+  character’s Divine spellcasting classes, but this power does not stack with
+  similar powers from those classes.
+
+  This can be done in any increment and the Druid can refresh a Divine Adept
+  spell-slot in the place of two Divine Novice spell-slots. Greater spell-slots
+  take the place of three Novice spell-slots, and Master spell-slots take the
+  place of four Novice spell-slots.
+
+  Additional benefits come if this Power is used in an area of sacred faith
+  (such as consecrated ground), with a personal rite (determined by the Druid).
+  Up to three times per Long Rest, if the Druid uses this Power in that way,
+  they can Refresh a Divine Novice spell-slot that does not count toward the
+  total Refresh limit between Long Rests. This may occur in addition to
+  Refreshing other spell-slots as normal.

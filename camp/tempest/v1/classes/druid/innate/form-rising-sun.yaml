@@ -1,0 +1,13 @@
+name: Form of the Rising Sun
+requires: druid:2
+tags: [form]
+incant: RP - Slow 300 spent in a rite dedicating oneself to nature
+call: “Imbue Form of the Rising Sun to Self”
+target: Self
+delivery: None
+accent: None
+duration: Long Rest
+refresh: Long Rest
+effect: Special
+description: >
+  The Druid gains the ability to take on the Form of the Rising Sun.

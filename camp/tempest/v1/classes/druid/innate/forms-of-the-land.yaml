@@ -1,0 +1,14 @@
+name: Forms of the Land
+requires: druid:1
+description: >
+  As the path of the Druid unfolds, they are granted a number of Forms -
+  aspects of the land and environment they inhabit that they can take within
+  themselves and express as newfound abilities. Each of these Forms are
+  mutually exclusive with each other, and no character can have more than one
+  Form active at any one time. By default, Forms expire on Long Rest, when the
+  Druid resurrects, or if the Druid is hit by a Dispel effect specifically
+  targeting a Form.
+
+  Note: If the Druid changes or loses Form (such as with Metamorphosis), all
+  Spells, Effects, and Conditions granted by Druid Powers “to Self” from the
+  Druid Class expire.

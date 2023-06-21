@@ -47,7 +47,7 @@ class FeatureForm(forms.Form):
             next_value = c.next_value
             if c.currency:
                 choices.extend(
-                    (i, f"{i} ({c.purchase_cost_string(i)})")
+                    (i, f"{i} ({c.purchase_cost_string(i - current)})")
                     for i in range(next_value, current + available + 1)
                 )
             else:

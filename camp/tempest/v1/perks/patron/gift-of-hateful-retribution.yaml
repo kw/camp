@@ -24,10 +24,10 @@ description: >
   time it is used. The Accent on the damage is “by Spite”. Note that in the case of a Deathblow,
   the Hateful Retribution will go off before the character actually dies.
 
-  | Dmg | BMV Dmg | Cost |
-  | :-: | :-----: | :--: |
-  | 10  | -       | 2    |
-  | 15  | -       | 3    |
-  | 25  | 5       | 4    |
-  | 50  | 10      | 5    |
-  | 100 | 20      | 6    |
+    | Dmg | BMV Dmg | Cost |
+    | :-: | :-----: | :--: |
+    | 10  | -       | 2    |
+    | 15  | -       | 3    |
+    | 25  | 5       | 4    |
+    | 50  | 10      | 5    |
+    | 100 | 20      | 6    |

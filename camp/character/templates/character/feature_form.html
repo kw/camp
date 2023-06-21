@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load character_sheet %}
 {% load rules %}
 
 {% block head_title %}{% block body_title %}
@@ -52,12 +53,15 @@
 
 {# TODO: Render markdown #}
 {% if feature.description %}
-<p>{{ feature.description }}</p>
+<p>{{ feature.description | markdown }}</p>
 {% endif %}
 
+{% if explain_ranks %}
+<h3>Details</h3>
 {% for explanation in explain_ranks %}
-<p>{{ explanation }}</p>
+<p>{{ explanation | markdown }}</p>
 {% endfor %}
+{% endif %}
 
 {% if feature.granted_features %}
 <h3>Granted Features</h3>
@@ -86,7 +90,7 @@
     <h3>{{ choice.controller.name }}</h3>
     {% endif %}
     {% if choice.controller.description %}
-    <p>{{ choice.controller.description }}</p>
+    <p>{{ choice.controller.description | markdown }}</p>
     {% endif %}
     {% if choice.taken %}
     <h4>Selected Choices</h4>

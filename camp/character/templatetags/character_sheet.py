@@ -4,12 +4,22 @@ import itertools
 from typing import Type
 from typing import TypeVar
 
+import markdown as md
 from django import template
+from django.template.defaultfilters import stringfilter
+from django.utils.safestring import mark_safe
 
 from camp.engine.rules.base_engine import CharacterController
 from camp.engine.rules.base_engine import PropertyController
 
 register = template.Library()
+
+
+@register.filter()
+@mark_safe
+@stringfilter
+def markdown(value):
+    return md.markdown(value, extensions=["tables", "smarty"])
 
 
 @register.simple_tag(takes_context=True)

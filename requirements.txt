@@ -200,6 +200,9 @@ gunicorn==20.1.0 ; python_full_version >= "3.11.0" and python_full_version < "4.
 idna==3.4 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
+markdown==3.4.3 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
+    --hash=sha256:065fd4df22da73a625f14890dd77eb8040edcbd68794bcd35943be14490608b2 \
+    --hash=sha256:8bf101198e004dc93e84a12a7395e31aac6a9c9942848ae1d99b9d72cf9b3520
 marshmallow==3.19.0 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
     --hash=sha256:90032c0fd650ce94b6ec6dc8dfeb0e3ff50c144586462c389b81a07205bedb78 \
     --hash=sha256:93f0958568da045b0021ec6aeb7ac37c81bfcccbb9a0e7ed8559885070b3a19b

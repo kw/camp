@@ -5,6 +5,7 @@ from typing import Type
 from typing import TypeVar
 
 import markdown as md
+import nh3
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
@@ -19,7 +20,7 @@ register = template.Library()
 @mark_safe
 @stringfilter
 def markdown(value):
-    return md.markdown(value, extensions=["tables", "smarty"])
+    return nh3.clean(md.markdown(value, extensions=["tables", "smarty"]))
 
 
 @register.simple_tag(takes_context=True)

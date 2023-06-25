@@ -45,13 +45,8 @@ class ChoiceDef(base_models.BaseModel):
         limit: The number of times this choice can be made. If "unlimited",
             there is no limit.
         limit_is_per_rank: If True, the limit is multiplied by the rank of the feature.
-        discount: A discount that applies to the choice. This is rarely used,
-            but can be used to make a choice cheaper than normal. For example,
-            the Geas Core "Patron" perk allows a number of choices to be made
-            from (almost) the full list of Perks, and each choice is discounted
-            by 1 CP. The choice can be made after the purchase was made. Note
-            that this doesn't actually _grant_ the choice in this case.
-        matcher: A feature matcher that can be used to limit the choices available.
+        matcher: A feature matcher that can be used to limit the choices available, assuming
+            this choice selects a feature.
         starting_class: Only applies to basic classes. If True, the choice is only
             available when the class is your starting class.
         controller: If provided, the name of a custom controller to use for this
@@ -64,7 +59,6 @@ class ChoiceDef(base_models.BaseModel):
     description: str | None = None
     limit: int | Literal["unlimited"] = 1
     limit_is_per_rank: bool = False
-    discount: base_models.Discount | int | None = None
     matcher: base_models.FeatureMatcher | None = None
     starting_class: bool = False
     controller: str | None = None

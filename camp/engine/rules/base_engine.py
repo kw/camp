@@ -9,6 +9,7 @@ from functools import total_ordering
 from typing import Any
 from typing import Callable
 from typing import Iterable
+from typing import Literal
 from typing import Type
 
 import pydantic
@@ -738,12 +739,17 @@ class BaseFeatureController(PropertyController):
         3 ranks in a feature that has a max of 5, then they have 2 ranks available,
         but only if they have enough CP to buy them and they meet any other requirements.
         """
-        theoretical_max = self.max_ranks - self.value
+        theoretical_max = self.possible_ranks
         if theoretical_max <= 0:
             return 0
         if rd := self.can_increase(theoretical_max):
             return theoretical_max
         return rd.amount or 0
+
+    @property
+    def possible_ranks(self) -> int:
+        """The number of ranks left to be taken, regardless of whether they can be taken right now."""
+        return self.max_ranks - self.value
 
     @property
     def purchased_ranks(self) -> int:
@@ -817,6 +823,53 @@ class AttributeController(PropertyController):
 
     def __str__(self) -> str:
         return f"{self.definition.name}: {self.value}"
+
+
+class ChoiceController(ABC):
+    @abstractproperty
+    def id(self) -> str:
+        ...
+
+    @abstractproperty
+    def name(self) -> str:
+        ...
+
+    @property
+    def description(self) -> str | None:
+        return None
+
+    @property
+    def limit(self) -> int | Literal["unlimited"]:
+        return 1
+
+    @property
+    def choices_remaining(self) -> int:
+        if self.limit == "unlimited":
+            return 999
+        return self.limit - len(self.taken_choices())
+
+    @abstractmethod
+    def available_choices(self) -> dict[str, str]:
+        """Dictionary of available choices and their readable descriptions."""
+
+    @abstractmethod
+    def taken_choices(self) -> dict[str, int]:
+        """Dict of choice IDs that have been taken, and the number of times taken."""
+
+    def removeable_choices(self) -> set[str]:
+        """Set of choice IDs that are removable.
+
+        If not implemented, all choices are assumed removable.
+        """
+        return set(self.taken_choices().keys())
+
+    @abstractmethod
+    def choose(self, choice: str) -> Decision:
+        """Choose the given choice."""
+
+    @abstractmethod
+    def unchoose(self, choice: str) -> Decision:
+        """Unchoose the given choice."""
 
 
 class SimpleAttributeWrapper(AttributeController):

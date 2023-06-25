@@ -3,7 +3,7 @@ from __future__ import annotations
 from .. import choice_controller
 
 
-class SphereBonusChoice(choice_controller.ChoiceController):
+class SphereBonusChoice(choice_controller.GrantChoice):
     """Choose a bonus from a magic sphere.
 
     This is a special case of a bonus feature chooser where the choices are linked
@@ -15,10 +15,10 @@ class SphereBonusChoice(choice_controller.ChoiceController):
     at least one of to take the skill).
     """
 
-    def matches(self, choice: str) -> bool:
+    def _matches(self, choice: str) -> bool:
         """In addition to the normal feature match, does the rest of the filtering described above."""
         # Rule 0: The choice must match the normal feature match.
-        if not super().matches(choice):
+        if not super()._matches(choice):
             return False
 
         character = self._feature.character

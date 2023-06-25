@@ -78,7 +78,7 @@ def test_patron_has_discount_choices(character: TempestCharacter):
 def test_patron_choice_contains_perks(character: TempestCharacter):
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
-    choices = discount.valid_choices()
+    choices = discount.available_choices()
     assert "basic-perk" in choices
     assert "basic-skill" not in choices
 
@@ -87,7 +87,7 @@ def test_patron_choice_does_not_contain_tagged(character: TempestCharacter):
     """Perks tagged `no-patron` aren't available for Patron discount."""
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
-    choices = discount.valid_choices()
+    choices = discount.available_choices()
     # The following perks are tagged "no-patron" in the test ruleset.
     assert "patron" not in choices
     assert "perk-discount-perk" not in choices
@@ -97,12 +97,14 @@ def test_patron_discount_applied(character: TempestCharacter):
     character.awarded_cp = 9
     character.apply("patron")
     assert character.cp.spent_cp == 4
-    character.apply("varying-cost-perk")
-    assert character.cp.spent_cp == 4 + 1
-    assert character.apply("varying-cost-perk:4")
-    assert character.cp.spent_cp == 4 + sum([1, 1, 2, 2, 3])
+    assert character.apply("grants-bonus-lp-perk")
+    assert character.cp.spent_cp == 4 + 3
+    assert character.apply("basic-perk")
+    assert character.cp.spent_cp == 4 + 3 + 1
+    assert character.apply("advanced-perk")
+    assert character.cp.spent_cp == 4 + 3 + 1 + 2
     discount = character.feature_controller("patron").choices["discount"]
-    assert discount.choose("varying-cost-perk")
-    # Discount is applied to each rank individually, and the cost of any
-    # given rank can't go below 1.
-    assert character.cp.spent_cp == 4 + sum([1, 1, 1, 1, 2])
+    assert discount.choose("grants-bonus-lp-perk")
+    assert character.cp.spent_cp == 4 + 2 + 1 + 2
+    assert discount.choose("advanced-perk")
+    assert character.cp.spent_cp == 4 + 2 + 1 + 1

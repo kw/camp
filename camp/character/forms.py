@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django import forms
 
-from camp.engine.rules.tempest.controllers.choice_controller import ChoiceController
+from camp.engine.rules.base_engine import ChoiceController
 from camp.engine.rules.tempest.controllers.class_controller import ClassController
 from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 
@@ -138,7 +138,7 @@ class ChoiceForm(forms.Form):
 
     def _make_choice_field(self):
         if self.available:
-            choices = [(k, v) for (k, v) in self.controller.valid_choices().items()]
+            choices = [(k, v) for (k, v) in self.controller.available_choices()]
             self.fields["selection"] = forms.ChoiceField(
                 choices=choices,
                 label="Available Choices",

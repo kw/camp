@@ -259,7 +259,7 @@ class FeatureController(base_engine.BaseFeatureController):
         return False
 
     @property
-    def choices(self) -> dict[str, choice_controller.ChoiceController] | None:
+    def choices(self) -> dict[str, choice_controller.GrantChoice] | None:
         if not self.definition.choices or self.value < 1:
             return None
         choices = {

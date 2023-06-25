@@ -4,6 +4,7 @@ from functools import cached_property
 from typing import Literal
 from typing import cast
 
+from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import Discount
 
 from ...decision import Decision
@@ -14,7 +15,7 @@ from . import feature_controller
 # the player should be prompted to remove choices.
 
 
-class ChoiceController:
+class BaseFeatureChoice(base_engine.ChoiceController):
     _feature: feature_controller.FeatureController
     _choice: str
 
@@ -46,34 +47,23 @@ class ChoiceController:
             return self.definition.limit * self._feature.value
         return self.definition.limit
 
-    @property
-    def choices_remaining(self) -> int:
-        if self.limit == "unlimited":
-            return 999
-        return self.limit - len(self.taken_choices())
+    def taken_choices(self) -> set[str]:
+        if choices := self._feature.model.choices.get(self._choice):
+            return set(choices)
+        return set()
 
-    def valid_choices(self) -> dict[str, str]:
-        taken = self.taken_choices()
-        character = self._feature.character
-
-        # Already taken too many?
-        if self.limit != "unlimited" and len(taken) >= self.limit:
-            return set()
-
-        feats = {
-            choice for choice in character.ruleset.features if self.matches(choice)
+    def _matching_features(self):
+        return {
+            choice
+            for choice in self._feature.character.ruleset.features
+            if self._matches(choice)
         }
 
-        feats -= taken
-        choices = {}
-        for expr in sorted(feats):
-            feat = character.feature_controller(expr)
-            short = feat.short_description
-            if short:
-                choices[expr] = f"{feat.formal_name}: {short}"
-            else:
-                choices[expr] = feat.formal_name
-        return choices
+    def _record_choice(self, choice: str) -> None:
+        choices = self._feature.model.choices.get(self._choice) or []
+        choices.append(choice)
+        self._feature.model.choices[self._choice] = choices
+        self._feature.reconcile()
 
     def choose(self, choice: str) -> Decision:
         taken = self.taken_choices()
@@ -85,43 +75,19 @@ class ChoiceController:
                 reason=f"Choice {self._choice} of {self._feature.full_id} only accepts {self.limit} choices.",
             )
 
-        if not self.matches(choice):
+        if not self._matches(choice):
             return Decision(
                 success=False,
                 reason=f"`{choice}` does not match choice definition for {self._feature.full_id}/{self._choice}",
             )
 
-        character = self._feature.character
-        feat_controller = character.feature_controller(choice)
+        self._record_choice(choice)
+        return Decision(success=True, mutation_applied=True, reason="Choice applied.")
 
-        # The choice is technically valid, but can the character actually choose it?
-        # This depends a bit on the type of choice. If the choice grants ranks, the character may or may not have to
-        # meet some or all of its requirements, which is a bit complex.
-        # If the choice just applies a discount, like with Patron, all we care about is whether the character currently
-        # has currently paid for or can currently buy the feature (ignoring the question of whether the character can afford it).
-
-        # If you've bought it (and this is a discount), can buy it now, or _could_ buy it if you had the currency, good enough.
-        # Features that do not have a currency cost are always valid.
-        rd = feat_controller.can_increase()
-        if (
-            (self.definition.discount and feat_controller.paid_ranks > 0)
-            or rd
-            or rd.need_currency
-            or feat_controller.currency is None
-        ):
-            choices = self._feature.model.choices.get(self._choice) or []
-            choices.append(choice)
-            self._feature.model.choices[self._choice] = choices
-            self._feature.reconcile()
-            return Decision(
-                success=True, mutation_applied=True, reason="Choice applied."
-            )
-
-        # If the decision was negative report the increase decision back. It might have useful info.
-        if not rd:
-            return rd
-        # Otherwise, just return a generic failure.
-        return Decision(success=False, reason="Choice could not be applied.")
+    def _matches(self, choice: str) -> bool:
+        if feat := self._feature.character.feature_def(choice):
+            return self.definition.matcher.matches(feat)
+        return False
 
     def unchoose(self, feature: str) -> Decision:
         taken = self.taken_choices()
@@ -134,54 +100,80 @@ class ChoiceController:
         self._feature.reconcile()
         return Decision(success=True, mutation_applied=True, reason="Choice removed.")
 
-    def taken_choices(self) -> set[str]:
-        if choices := self._feature.model.choices.get(self._choice):
-            return set(choices)
-        return set()
-
     def removable_choices(self) -> set[str]:
         # TODO: Prevent choices from being removed when the character is not in "free edit" mode.
         # There may be other circumstances when a choice can or can't be removed.
+        # TODO: Allow choices to be removed when the character has more choices than they are allowed.
         return self.taken_choices()
 
-    def taken_features(self) -> list[feature_controller.FeatureController]:
-        features = [
-            self._feature.character.feature_controller(id)
-            for id in self.taken_choices()
-        ]
-        features.sort(key=lambda f: f.display_name())
-        return features
 
-    def available_features(self) -> list[feature_controller.FeatureController]:
-        features = [
-            self._feature.character.feature_controller(id)
-            for id in self.valid_choices()
-        ]
-        features.sort(key=lambda f: f.full_id)
-        return features
+class GrantChoice(BaseFeatureChoice):
+    def available_choices(self) -> dict[str, str]:
+        # Already taken too many?
+        if self.choices_remaining <= 0:
+            return {}
 
-    def matches(self, choice: str) -> bool:
-        if feat := self._feature.character.feature_def(choice):
-            return self.definition.matcher.matches(feat)
-        return False
+        feats = self._matching_features()
+        feats -= self.taken_choices()
+
+        choices = {}
+        for expr in sorted(feats):
+            feat = self._feature.character.feature_controller(expr)
+            short = feat.short_description
+            descr = getattr(feat, "formal_name", feat.display_name())
+            if not feat.possible_ranks:
+                descr = f"{descr} (Already at Max)"
+            elif short:
+                descr = f"{descr}: {short}"
+
+            choices[expr] = descr
+        return choices
 
     def update_propagation(
         self, grants: dict[str, int], discounts: dict[str, list[Discount]]
     ) -> None:
         for choice in self.taken_choices():
-            if self.definition.discount:
-                if choice not in discounts:
-                    discounts[choice] = []
-                discounts[choice].append(Discount.cast(self.definition.discount))
-            else:
-                if choice not in grants:
-                    grants[choice] = 0
-                grants[choice] += 1
+            if choice not in grants:
+                grants[choice] = 0
+            grants[choice] += 1
+            # if self.definition.discount:
+            #     if choice not in discounts:
+            #         discounts[choice] = []
+            #     discounts[choice].append(Discount.cast(self.definition.discount))
+
+
+class PatronChoice(BaseFeatureChoice):
+    def available_choices(self) -> dict[str, str]:
+        # Already taken too many?
+        if self.choices_remaining <= 0:
+            return {}
+
+        feats = self._matching_features()
+        feats -= self.taken_choices()
+
+        choices = {}
+        for expr in sorted(feats):
+            feat = self._feature.character.feature_controller(expr)
+            short = feat.short_description
+            name = getattr(feat, "formal_name", feat.display_name())
+            choices[expr] = f"{name}: {short}" if short else name
+        return choices
+
+    def update_propagation(
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
+    ) -> None:
+        for choice in self.taken_choices():
+            if self._feature.model.plot_suppressed:
+                # TODO(#38): Propagate suppression to chosen features.
+                continue
+            if choice not in discounts:
+                discounts[choice] = []
+            discounts[choice].append(Discount(discount=1, minimum=1, ranks=1))
 
 
 def make_controller(
     feature: feature_controller.FeatureController, choice_id: str
-) -> ChoiceController:
+) -> GrantChoice:
     """Factory function for custom choice controllers."""
     choice_def = feature.definition.choices[choice_id]
     match choice_def.controller:
@@ -189,7 +181,9 @@ def make_controller(
             from .custom import sphere_bonus_choice
 
             return sphere_bonus_choice.SphereBonusChoice(feature, choice_id)
+        case "patron":
+            return PatronChoice(feature, choice_id)
         case None:
-            return ChoiceController(feature, choice_id)
+            return GrantChoice(feature, choice_id)
         case _:
             raise ValueError(f"Unknown choice controller '{choice_def.controller}'")

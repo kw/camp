@@ -70,7 +70,7 @@ def test_choices(user_client):
     assert spellscholar.value > 0
     spell_choice = spellscholar.choices["spell"]
     assert spell_choice
-    assert spell_choice.taken_choices() == {"bolster-shield", "carnate"}
+    assert spell_choice.taken_choices().keys() == {"bolster-shield", "carnate"}
 
     assert controller.get("bolster-shield")
     assert controller.get("carnate")

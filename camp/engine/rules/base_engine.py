@@ -839,6 +839,11 @@ class ChoiceController(ABC):
         return None
 
     @property
+    def advertise(self) -> bool:
+        """If True, the top-level character sheet will note when this choice is available."""
+        return True
+
+    @property
     def limit(self) -> int | Literal["unlimited"]:
         return 1
 
@@ -853,8 +858,8 @@ class ChoiceController(ABC):
         """Dictionary of available choices and their readable descriptions."""
 
     @abstractmethod
-    def taken_choices(self) -> dict[str, int]:
-        """Dict of choice IDs that have been taken, and the number of times taken."""
+    def taken_choices(self) -> dict[str, str]:
+        """Dict of choice IDs that have been taken and a printable name."""
 
     def removeable_choices(self) -> set[str]:
         """Set of choice IDs that are removable.

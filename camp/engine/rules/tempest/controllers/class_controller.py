@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import cached_property
 from typing import Literal
 
+from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
@@ -13,6 +14,7 @@ from . import spellbook_controller
 
 
 class ClassController(feature_controller.FeatureController):
+    character: character_controller.TempestCharacter
     definition: defs.ClassDef
     currency = None
     rank_name_labels: tuple[str, str] = ("level", "levels")
@@ -30,7 +32,15 @@ class ClassController(feature_controller.FeatureController):
 
     @property
     def is_archetype(self) -> bool:
+        """Is this currently the archetype class?"""
         return self.model.is_archetype_class
+
+    @property
+    def is_legal_archetype(self) -> bool:
+        """Could this be chosen as the archetype class?"""
+        if self.class_type != "basic":
+            return False
+        return self in self.character.archetype_legal_classes
 
     @property
     def innate_powers(self) -> list[feature_controller.FeatureController]:
@@ -278,7 +288,62 @@ class ClassController(feature_controller.FeatureController):
                 )
         return lines
 
+    @property
+    def choices(self) -> dict[str, base_engine.ChoiceController]:
+        choices = super().choices or {}
+        if not self.is_archetype and self.is_legal_archetype:
+            choices["archetype"] = ArchetypeChoiceController(self)
+        return choices
+
     def __str__(self) -> str:
         if self.value > 0:
             return f"{self.definition.name} {self.value}"
         return self.definition.name
+
+
+class ArchetypeChoiceController(base_engine.ChoiceController):
+    """This controller is presented when a the player has a choice of archetypes available.
+
+    Normally a character's archetype class is their highest-level base class, but when more than
+    one class fits that requirement the player can choose among them.
+
+    This choice is only presented on a class that could, at this minute, be your archetype.
+    Many of the fields can therefore be hard-coded.
+    """
+
+    id = "archetype"
+    name = "Archetype"
+    description = (
+        "Your highest-level base classes are eligible to become archetype classes."
+    )
+    limit = 1
+    choices_remaining = 1
+    advertise = False
+    _class: ClassController
+
+    def __init__(self, class_controller: ClassController):
+        self._class = class_controller
+
+    def available_choices(self) -> dict[str, str]:
+        return {
+            "set-archetype": f"Set {self._class.display_name()} as your archetype class"
+        }
+
+    def taken_choices(self) -> dict[str, int]:
+        return {}
+
+    def choose(self, choice: str) -> Decision:
+        if choice != "set-archetype":
+            return Decision(success=False, reason="Invalid choice")
+        if self._class.is_archetype:
+            return Decision(success=True, reason="Already the archetype class")
+        if not self._class.is_legal_archetype:
+            return Decision(success=False, reason="Not a legal archetype class")
+        self._class.is_archetype = True
+        return Decision.OK
+
+    def unchoose(self, choice: str) -> Decision:
+        return Decision.NO
+
+    def update_propagation(self, *args, **kwargs) -> None:
+        pass

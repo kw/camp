@@ -254,12 +254,12 @@ class FeatureController(base_engine.BaseFeatureController):
     def has_available_choices(self) -> bool:
         if choices := self.choices:
             for choice in choices.values():
-                if choice.choices_remaining > 0:
+                if choice.choices_remaining > 0 and choice.advertise:
                     return True
         return False
 
     @property
-    def choices(self) -> dict[str, choice_controller.GrantChoice] | None:
+    def choices(self) -> dict[str, base_engine.ChoiceController] | None:
         if not self.definition.choices or self.value < 1:
             return None
         choices = {
@@ -535,8 +535,8 @@ class FeatureController(base_engine.BaseFeatureController):
         else:
             discounts = {}
         # Choices may also affect grants/discounts.
-        if self.choices:
-            for choice in self.choices.values():
+        if choices := self.choices:
+            for choice in choices.values():
                 choice.update_propagation(grants, discounts)
         # Now that we have all the grants and discounts, create the propagation data.
         props: dict[str, base_engine.PropagationData] = {}

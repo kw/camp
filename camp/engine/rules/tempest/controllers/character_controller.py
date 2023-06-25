@@ -165,6 +165,13 @@ class TempestCharacter(base_engine.CharacterController):
         return classes
 
     @property
+    def archetype_legal_classes(self) -> list(class_controller.ClassController):
+        """List of classes that are legal to be the character's archetype."""
+        classes = self.classes
+        max_level = max([c.value for c in classes], default=0)
+        return [c for c in classes if c.value == max_level]
+
+    @property
     def is_multiclass(self) -> bool:
         return len(self.classes) > 1
 

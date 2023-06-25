@@ -140,7 +140,7 @@ def set_attr(request, pk):
 @permission_required(
     "character.change_character", fn=objectgetter(Character), raise_exception=True
 )
-def feature_view(request, pk, feature_id, anchor=None):
+def feature_view(request, pk, feature_id):
     character = get_object_or_404(Character, id=pk)
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)

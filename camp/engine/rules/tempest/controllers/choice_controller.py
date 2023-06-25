@@ -47,10 +47,12 @@ class BaseFeatureChoice(base_engine.ChoiceController):
             return self.definition.limit * self._feature.value
         return self.definition.limit
 
-    def taken_choices(self) -> set[str]:
+    def taken_choices(self) -> dict[str, str]:
+        taken = {}
         if choices := self._feature.model.choices.get(self._choice):
-            return set(choices)
-        return set()
+            for choice in choices:
+                taken[choice] = self._feature.character.display_name(choice)
+        return taken
 
     def _matching_features(self):
         return {
@@ -114,7 +116,7 @@ class GrantChoice(BaseFeatureChoice):
             return {}
 
         feats = self._matching_features()
-        feats -= self.taken_choices()
+        feats -= set(self.taken_choices().keys())
 
         choices = {}
         for expr in sorted(feats):
@@ -136,10 +138,6 @@ class GrantChoice(BaseFeatureChoice):
             if choice not in grants:
                 grants[choice] = 0
             grants[choice] += 1
-            # if self.definition.discount:
-            #     if choice not in discounts:
-            #         discounts[choice] = []
-            #     discounts[choice].append(Discount.cast(self.definition.discount))
 
 
 class PatronChoice(BaseFeatureChoice):
@@ -149,7 +147,7 @@ class PatronChoice(BaseFeatureChoice):
             return {}
 
         feats = self._matching_features()
-        feats -= self.taken_choices()
+        feats -= set(self.taken_choices().keys())
 
         choices = {}
         for expr in sorted(feats):
@@ -173,7 +171,7 @@ class PatronChoice(BaseFeatureChoice):
 
 def make_controller(
     feature: feature_controller.FeatureController, choice_id: str
-) -> GrantChoice:
+) -> base_engine.ChoiceController:
     """Factory function for custom choice controllers."""
     choice_def = feature.definition.choices[choice_id]
     match choice_def.controller:

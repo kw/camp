@@ -187,7 +187,7 @@ def feature_view(request, pk, feature_id):
                 id=feature_id,
                 choice=request.POST["choice"],
                 value=request.POST["selection"],
-                remove=request.POST.get("remove", False),
+                unchoose=request.POST.get("unchoose", False),
             )
             if result := _apply_mutation(mutation, sheet, controller):
                 messages.success(request, result.reason)

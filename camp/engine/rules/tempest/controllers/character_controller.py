@@ -242,7 +242,7 @@ class TempestCharacter(base_engine.CharacterController):
 
     def choose(self, entry: ChoiceMutation) -> Decision:
         if controller := self.feature_controller(entry.id):
-            if entry.remove:
+            if entry.unchoose:
                 return controller.unchoose(entry.choice, entry.value)
             return controller.choose(entry.choice, entry.value)
         return Decision(success=False, reason=f"Unknown feature {entry.id}")

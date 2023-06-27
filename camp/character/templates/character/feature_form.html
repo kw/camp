@@ -96,7 +96,7 @@
     <h4>Selected Choices</h4>
     <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="remove" value="1">
+        <input type="hidden" name="unchoose" value="1">
         <input type="hidden" name="choice" value="{{choice.id}}">
         <ul>
             {% for f, name in choice.taken.items %}

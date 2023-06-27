@@ -1,9 +1,21 @@
 name: Extended Capacity (Adept)
 cost: 3
 ranks: 3
-# TODO(#15): Actual requirement is "One adept spell-slot"
-requires: extended-capacity-novice
-# TODO(#15): Implement spell slots
+requires:
+  any:
+    - arcane.spell_slots@2
+    - divine.spell_slots@2
+choices:
+  sphere:
+    name: Bonus Spell Slot
+    description: Choose a sphere of magic to receive an additional Adept spell slot in.
+    limit: 1
+    multi: true
+    limit_is_per_rank: true
+    controller: sphere-bonus
+    controller_data:
+      bonus: spell_slots@2
+      sphere_requires: spell_slots@2
 description: >
   The character chooses one Sphere of magic she has an Adept Spell slot
   for and gains one additional Adept spell-slot in that Sphere and can use

@@ -71,7 +71,7 @@ class CharacterController(ABC):
         return self.model.copy(deep=True)
 
     def display_name(self, id: str) -> str:
-        """Returns the display name of the given feature."""
+        """Returns the display name of the given property."""
         if id in self.ruleset.display_names:
             return self.ruleset.display_names[id]
         if id in self.ruleset.features:

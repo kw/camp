@@ -37,6 +37,11 @@
     <li class="list-group-item">LP: {% get 'lp' %}</li>
     <li class="list-group-item">Spikes: {% get 'spikes' %}</li>
 </ul>
+<ul class="list-group list-group-horizontal">
+{% for sphere, slots in controller.sphere_slots.items %}
+    <li class="list-group-item">{{ sphere }} Spell Slots: {{ slots.0 }} / {{ slots.1 }} / {{ slots.2 }} / {{ slots.3 }}</li>
+{% endfor %}
+</ul>
 
 <!-- Existing Feature Cards -->
 <div class="row">

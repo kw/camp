@@ -1,9 +1,21 @@
 name: Extended Capacity (Greater)
 cost: 4
 ranks: 3
-# TODO(#15): Actual requirement is "One greater spell-slot"
-requires: extended-capacity-adept
-# TODO(#15): Implement spell slots
+requires:
+  any:
+    - arcane.spell_slots@3
+    - divine.spell_slots@3
+choices:
+  sphere:
+    name: Bonus Spell Slot
+    description: Choose a sphere of magic to receive an additional Greater spell slot in.
+    limit: 1
+    multi: true
+    limit_is_per_rank: true
+    controller: sphere-bonus
+    controller_data:
+      bonus: spell_slots@3
+      sphere_requires: spell_slots@3
 description: >
   The character chooses one Sphere of magic she has a Greater Spell slot
   for and gains one additional Greater spell-slot in that Sphere and can

@@ -26,3 +26,44 @@ def test_mage_spellscholar(character: TempestCharacter):
     assert (
         "bolster-shield" in data["features"]["novice-spell-scholar"]["choices"]["spell"]
     )
+
+
+def test_extended_capacity(character: TempestCharacter):
+    """Check that Extended Capacity skills allow a sphere to be selected multiple times."""
+    assert character.apply("mage:2")
+    character.awarded_cp = 10
+    slots = character.get("arcane.spell_slots@1")
+    # Buy 3 ranks of Extended Capacity.
+    assert character.apply("extended-capacity-novice:3")
+
+    # Check that we can choose Arcane.
+    controller = character.feature_controller("extended-capacity-novice")
+    assert controller.choices["sphere"].available_choices().keys() == {"arcane"}
+    assert character.apply(
+        ChoiceMutation(id="extended-capacity-novice", choice="sphere", value="arcane")
+    )
+    assert character.get("arcane.spell_slots@1") == slots + 1
+
+    # Choose Arcane again, we get another slot.
+    assert character.apply(
+        ChoiceMutation(id="extended-capacity-novice", choice="sphere", value="arcane")
+    )
+    assert character.get("arcane.spell_slots@1") == slots + 2
+
+    # What if we dip into Divine?
+
+    character.apply("basic-faith")
+    controller = character.feature_controller("extended-capacity-novice")
+    assert controller.choices["sphere"].available_choices().keys() == {
+        "arcane",
+        "divine",
+    }
+
+    # Choose Divine. We get a slot.
+    character.apply(
+        ChoiceMutation(id="extended-capacity-novice", choice="sphere", value="divine")
+    )
+    assert character.get("divine.spell_slots@1") == 1
+
+    # We should be out of choices now, so there should be none available.
+    assert controller.choices["sphere"].available_choices().keys() == set()

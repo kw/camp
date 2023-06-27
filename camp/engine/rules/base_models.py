@@ -166,7 +166,7 @@ class PropExpression(BoolExpr):
     attribute: str | None = None
     slot: str | None = None
     option: str | None = None
-    value: int | None = None
+    value: int = 1
     single: int | None = None
     less_than: int | None = None
 
@@ -186,12 +186,7 @@ class PropExpression(BoolExpr):
         if not char.has_prop(expr):
             return Decision(success=False, reason=f"{self!r} [{expr} not present]")
         ranks = char.get(expr)
-        if self.value is not None:
-            if ranks < self.value:
-                return Decision(
-                    success=False, reason=f"{self!r} [{ranks} < {self.value}]"
-                )
-        elif self.less_than is not None:
+        if self.less_than is not None:
             if ranks >= self.less_than:
                 return Decision(
                     success=False, reason=f"{self!r} [{ranks} ≥ {self.less_than}]"
@@ -202,9 +197,8 @@ class PropExpression(BoolExpr):
                 return Decision(
                     success=False, reason=f"{self!r} [{max_ranks} < {self.single}]"
                 )
-        else:
-            if ranks < 1:
-                return Decision(success=False, reason=f"{self!r} [ranks={ranks}]")
+        elif ranks < self.value:
+            return Decision(success=False, reason=f"{self!r} [{ranks} < {self.value}]")
         return Decision(success=True)
 
     def identifiers(self) -> set[str]:
@@ -227,7 +221,7 @@ class PropExpression(BoolExpr):
             attr = groups.get("attribute")
             slot = t if (t := groups.get("slot")) else None
             option = o.replace("_", " ") if (o := groups.get("option")) else None
-            value = int(m) if (m := groups.get("value")) else None
+            value = int(m) if (m := groups.get("value")) else 1
             single = int(s) if (s := groups.get("single")) else None
             less_than = int(lt) if (lt := groups.get("less_than")) else None
             return cls(
@@ -248,7 +242,7 @@ class PropExpression(BoolExpr):
         attribute: str = None,
         slot: str | None = None,
         option: str | None = None,
-        value: int | None = None,
+        value: int = 1,
         single: int | None = None,
         less_than: int | None = None,
     ):
@@ -259,7 +253,7 @@ class PropExpression(BoolExpr):
             req += f"@{slot}"
         if option:
             req += f"+{option.replace(' ', '_')}"
-        if value:
+        if value != 1:
             req += f":{value}"
         if single:
             req += f"${single}"

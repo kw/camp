@@ -4,7 +4,15 @@ requires:
   any:
     - basic-arcane
     - basic-faith
-# TODO(#13) - Track spell preparation slots.
+choices:
+  sphere:
+    name: Bonus Spell Preparation
+    description: Choose a sphere of magic to receive an additional spell preparation slot in.
+    limit: 1
+    limit_is_per_rank: true
+    controller: sphere-bonus
+    controller_data:
+      bonus: spells_prepared
 description: >
   The character chooses one Sphere of magic and gains the ability to Prepare
   one additional spell from that Sphere. In conjunction with Extended Capacity,

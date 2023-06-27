@@ -53,6 +53,7 @@ class ChoiceDef(base_models.BaseModel):
             choice. If not provided, the default controller is used.
         controller_args: If provided, a dictionary of arbitrary data to be used
             by the custom controller.
+        multi: Allows a choice to be taken multiple times.
     """
 
     name: str | None = None
@@ -63,6 +64,7 @@ class ChoiceDef(base_models.BaseModel):
     starting_class: bool = False
     controller: str | None = None
     controller_data: dict | None = None
+    multi: bool = False
 
 
 class PowerCard(base_models.BaseModel):

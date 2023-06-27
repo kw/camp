@@ -299,6 +299,16 @@ class TempestCharacter(base_engine.CharacterController):
     def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
         return [self.arcane.spellbook, self.divine.spellbook]
 
+    def sphere_slots(self) -> dict[str, tuple[int]]:
+        spheres = {}
+        for sphere in sorted(self.available_spheres):
+            name = self.display_name(sphere)
+            slots = tuple(
+                self.get(f"{sphere}.spell_slots@{tier}") for tier in range(1, 5)
+            )
+            spheres[name] = slots
+        return spheres
+
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
             case None:
@@ -340,6 +350,19 @@ class TempestCharacter(base_engine.CharacterController):
         if expr.slot:
             name += f" [{expr.slot}]"
         return name
+
+    @property
+    def available_spheres(self) -> set[str]:
+        """Spheres of magic that the character has access to."""
+        # This will do for the moment, but if plot starts adding more
+        # player-accessible spheres that are supposed to work with skills
+        # and classes and such, we'll want to make this more generic.
+        spheres = set()
+        if self.get("basic-arcane"):
+            spheres.add("arcane")
+        if self.get("basic-faith"):
+            spheres.add("divine")
+        return spheres
 
     def clear_caches(self):
         super().clear_caches()

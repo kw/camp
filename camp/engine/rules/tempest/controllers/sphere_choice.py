@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from .. import choice_controller
+from camp.engine.rules.base_models import Discount
+from camp.engine.rules.tempest import engine
+
+from . import choice_controller
 
 
-class SphereBonusChoice(choice_controller.GrantChoice):
-    """Choose a bonus from a magic sphere.
+class SphereGrantChoice(choice_controller.GrantChoice):
+    """Choose a feature to grant from a magic sphere.
 
     This is a special case of a bonus feature chooser where the choices are linked
     to a sphere/class... _maybe_. For example, the Additional Cantrip skill lets you
@@ -57,3 +60,49 @@ class SphereBonusChoice(choice_controller.GrantChoice):
                 return False
 
         return True
+
+
+class SphereBonusChoice(engine.ChoiceController):
+    """Presents a list of spheres of magic that the character can get a bonus for.
+
+    Most choice controllers list features, but this one lists spheres.
+    At time of writing, only Arcane and Divine are supported, but if other spheres
+    become available we'll need to update this to figure out what spheres are available
+    in a more generic way.
+    """
+
+    def available_choices(self) -> dict[str, str]:
+        """Available choices depend, by default, on sphere availability.
+
+        The character controller's `available_spheres` property returns a set of
+        spheres possessed by the character.
+
+        Some choices may require something more, such as attaining a certain spell
+        slot level in the sphere. In that case, the choice definition will contain
+        controller data titled `sphere_requires` that contains a requirement fragment
+        to be applied to the sphere. Only available spheres will be checked.
+        """
+        choices = {}
+        if not self.choices_remaining:
+            return choices
+        controller_data = self.controller_data
+        for sphere in sorted(self._feature.character.available_spheres):
+            if sphere_requires := controller_data.get("sphere_requires", None):
+                requirement = f"{sphere}.{sphere_requires}"
+                if not self._feature.character.meets_requirements(requirement):
+                    continue
+            choices[sphere] = self.describe_choice(sphere)
+        return choices
+
+    def update_propagation(
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
+    ) -> None:
+        super().update_propagation(grants, discounts)
+
+        for choice, ranks in self.choice_ranks().items():
+            bonus = self.definition.controller_data.get("bonus", None)
+            if bonus:
+                choice = f"{choice}.{bonus}"
+            if choice not in grants:
+                grants[choice] = 0
+            grants[choice] += ranks

@@ -5,7 +5,16 @@ requires:
   any:
     - basic-arcane
     - basic-faith
-# TODO(#15): Implement spell slots
+choices:
+  sphere:
+    name: Bonus Spell Slot
+    description: Choose a sphere of magic to receive an additional Novice spell slot in.
+    limit: 1
+    multi: true
+    limit_is_per_rank: true
+    controller: sphere-bonus
+    controller_data:
+      bonus: spell_slots@1
 description: >
   The character chooses one Sphere of magic and gains one additional Novice
   spell-slot in that Sphere and can use it to cast a Prepared spell.

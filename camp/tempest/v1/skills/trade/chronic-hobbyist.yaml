@@ -1,0 +1,14 @@
+name: Chronic Hobbyist
+cost: 2
+option:
+  freeform: true
+  multiple: 3
+  values: [$Professions]
+requires: profession-apprentice
+description: >
+  The character has functional knowledge in a profession. The character can perform all normal functions of the
+  chosen profession and they will show solid knowledge related to it. Most tasks associated with that profession
+  can be performed without aid or supervision. The character can choose one Profession-related Discern question
+  and can ask it at-will (such as “Discern: Which civilization built this?” for a mason). This question should
+  be approved by Staff (between games) and at Staff discretion, the question may be allowed to have the
+  Subtle Modifier.

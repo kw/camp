@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import cached_property
 
 from camp.engine.rules import base_engine
@@ -299,14 +300,22 @@ class TempestCharacter(base_engine.CharacterController):
     def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
         return [self.arcane.spellbook, self.divine.spellbook]
 
-    def sphere_slots(self) -> dict[str, tuple[int]]:
-        spheres = {}
+    def sphere_data(self) -> list[SphereData]:
+        spheres = []
         for sphere in sorted(self.available_spheres):
             name = self.display_name(sphere)
             slots = tuple(
                 self.get(f"{sphere}.spell_slots@{tier}") for tier in range(1, 5)
             )
-            spheres[name] = slots
+            prepared = self.get(f"{sphere}.spells_prepared")
+            spheres.append(
+                SphereData(
+                    name=name,
+                    id=sphere,
+                    slots=slots,
+                    prepared=prepared,
+                )
+            )
         return spheres
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
@@ -367,3 +376,11 @@ class TempestCharacter(base_engine.CharacterController):
     def clear_caches(self):
         super().clear_caches()
         self._features = {}
+
+
+@dataclass
+class SphereData:
+    name: str
+    id: str
+    slots: tuple[int]
+    prepared: int

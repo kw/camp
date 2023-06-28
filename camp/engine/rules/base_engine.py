@@ -80,6 +80,11 @@ class CharacterController(ABC):
             return self.ruleset.attribute_map[id].name
         return id.replace("_", " ").title()
 
+    def plural_name(self, id: str) -> str:
+        """Returns the plural name of the given property."""
+        display_name = self.display_name(id)
+        return self.ruleset.pluralize(display_name)
+
     def display_priority(self, feature_type: str) -> int:
         """Returns the display priority of the given feature type.
 

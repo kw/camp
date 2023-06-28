@@ -298,7 +298,7 @@ def _features(
         if feat.feature_type not in by_type:
             by_type[feat.feature_type] = FeatureGroup(
                 type=feat.feature_type,
-                name=controller.display_name(feat.feature_type),
+                name=controller.plural_name(feat.feature_type),
                 priority=controller.display_priority(feat.feature_type),
             )
         group = by_type[feat.feature_type]

@@ -477,6 +477,7 @@ class BaseRuleset(BaseModel, ABC):
 
     name_overrides: dict[str, str] = pydantic.Field(default_factory=dict)
     _display_names: dict[str, str] = pydantic.PrivateAttr(default_factory=dict)
+    plural_names: dict[str, str] = pydantic.Field(default_factory=dict)
     attributes: ClassVar[Iterable[Attribute]] = []
 
     def __init__(self, **data) -> None:
@@ -515,6 +516,13 @@ class BaseRuleset(BaseModel, ABC):
         breed = 'Lineage'
         """
         return self._display_names
+
+    def pluralize(self, name: str) -> str:
+        """Returns the plural form of the given name.
+
+        If the name is not found, returns the name with an 's' appended.
+        """
+        return self.plural_names.get(name, name + "s")
 
     @property
     def engine(self) -> base_engine.Engine:

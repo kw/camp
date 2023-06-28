@@ -24,18 +24,19 @@ def markdown(value):
 
 
 @register.simple_tag(takes_context=True)
-def get(context: dict, expr: str, controller: CharacterController | None = None) -> int:
+def get(context: dict, expr: str, attr: str | None = None) -> int:
     """Get a value from the character sheet.
 
     If no controller is specified, checks the current context for a CharacterController object
     called 'controller', 'character', or failing that, just checks everything.
     """
-    if not controller:
-        controller = _find_context_controller(
-            context, CharacterController, ("controller", "character")
-        )
+    controller = _find_context_controller(
+        context, CharacterController, ("controller", "character")
+    )
     if not controller:
         raise ValueError("No controller specified and no controller found in context.")
+    if attr:
+        return controller.get(f"{expr}.{attr}")
     return controller.get(expr)
 
 

@@ -303,6 +303,9 @@ class Ruleset(base_models.BaseRuleset):
     }
     spells_known: Table = ScalingTable(base=1, factor=1)
     spells_prepared: Table = ScalingTable(base=1, factor=1)
+    plural_names: dict[str, str] = {
+        "Class": "Classes",
+    }
 
     attributes: ClassVar[Iterable[Attribute]] = [
         Attribute(

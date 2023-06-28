@@ -37,11 +37,18 @@
     <li class="list-group-item">LP: {% get 'lp' %}</li>
     <li class="list-group-item">Spikes: {% get 'spikes' %}</li>
 </ul>
-<ul class="list-group list-group-horizontal">
-{% for sphere, slots in controller.sphere_slots.items %}
-    <li class="list-group-item">{{ sphere }} Spell Slots: {{ slots.0 }} / {{ slots.1 }} / {{ slots.2 }} / {{ slots.3 }}</li>
-{% endfor %}
-</ul>
+{% if controller.sphere_data %}
+{# TODO: Make this look better. #}
+<table class="table table-sm table-bordered">
+    {% for data in controller.sphere_data %}
+    <tr>
+        <th scope="row">{{ data.name }}</th>
+        <td>Spell Slots: {{ data.slots.0 }} / {{ data.slots.1 }} / {{ data.slots.2 }} / {{ data.slots.3 }}</td>
+        <td>Spells Prepared: {{ data.prepared }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
 
 <!-- Existing Feature Cards -->
 <div class="row">
@@ -73,7 +80,7 @@
                         {% endif %}
 
                         {% if f.has_available_choices %}
-                        (Choices Available)
+                        <span class="badge bg-primary">Choices Available</span>
                         {% endif %}
                     </a>
                     {% if f.subfeatures %}

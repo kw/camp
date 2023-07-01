@@ -1,0 +1,15 @@
+name: Quality Control
+cost: 3
+requires: artisan:8
+incant: None
+call: "[Name or Description] Quality Control"
+target: Other Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Event
+effect: Special
+description: >
+  Once per Event, when the Artisan may oversee a crafting recipe of themselves or an ally.
+  If during the crafting process, it should fail, the crafting resources are refunded, as
+  long as the failure condition does not specify otherwise.

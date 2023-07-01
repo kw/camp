@@ -1,0 +1,20 @@
+name: Batch Process
+cost: 3
+requires: artisan:7
+incant: None
+call: Batch Process
+target: None
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: Special
+description: >
+  Artisans, being masters of their trade, craft some plans so often that the patterns have
+  become mere muscle memory, and are so rote that it becomes trivial to build several copies
+  in parallel. Choose one Craft: Alchemy, Arcane Ritual Magic, Divine Ritual Magic, Enchanting,
+  or Tinkering. While producing their chosen craft, the Artisan may call “Batch Process” at the beginning of their crafting attempt to double the number of outputs from the crafting plan.
+  This requires that the Artisan expend double the appropriate resources for the plan they are crafting.
+  <br/>
+  **Note**: The crafting process that requires a Dark Territory card pull, a card must be
+  pulled twice. The first card must be resolved before the second card is pulled, and both cards should be pulled from the same hand.

@@ -1,0 +1,7 @@
+name: Forage II
+cost: 3
+requires: forage-1
+description: >
+  The character can Forage up to 30 Bloom and 14 Night Prizes per Event. In addition, certain resources
+  are gated behind each rank of this skill, allowing those with greater proficiency to gather more
+  difficult to obtain resources.

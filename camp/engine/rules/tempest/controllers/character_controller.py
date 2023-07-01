@@ -219,6 +219,18 @@ class TempestCharacter(base_engine.CharacterController):
             if isinstance(feat, spell_controller.SpellController)
         ]
 
+    @property
+    def martial_powers(self) -> list[feature_controller.FeatureController]:
+        return [
+            feat for feat in self.features.values() if feat.feature_type == "martial"
+        ]
+
+    @property
+    def utilities(self) -> list[feature_controller.FeatureController]:
+        return [
+            feat for feat in self.features.values() if feat.feature_type == "utility"
+        ]
+
     def can_purchase(self, entry: RankMutation | str) -> Decision:
         if not isinstance(entry, RankMutation):
             entry = RankMutation.parse(entry)
@@ -243,7 +255,7 @@ class TempestCharacter(base_engine.CharacterController):
 
     def choose(self, entry: ChoiceMutation) -> Decision:
         if controller := self.feature_controller(entry.id):
-            if entry.unchoose:
+            if entry.remove:
                 return controller.unchoose(entry.choice, entry.value)
             return controller.choose(entry.choice, entry.value)
         return Decision(success=False, reason=f"Unknown feature {entry.id}")

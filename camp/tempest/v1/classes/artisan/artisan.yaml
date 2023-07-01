@@ -1,0 +1,134 @@
+type: class
+category: Basic Class
+name: Artisan
+sphere: martial
+starting_features:
+  - basic-martial-weapons
+  - short-weapons
+  - basic-armor
+multiclass_features:
+  - basic-martial-weapons
+level_grants:
+  7: artisan-max-armor-bonus
+choices:
+  productive-equipment:
+    starting_class: true
+    name: Productive Equipment
+    matcher:
+      id:
+        - apprentice-alchemy
+        - apprentice-tinkering
+        - apprentice-enchanting
+        - apprentice-arcane-ritual
+        - apprentice-divine-ritual
+  path-unfolds:
+    starting_class: true
+    name: A Path Unfolds
+    matcher:
+      id:
+        - path-unfolds-1
+        - path-unfolds-2
+        - path-unfolds-3
+        - path-unfolds-4
+        - apprentice-alchemy
+        - apprentice-tinkering
+        - apprentice-enchanting
+        - apprentice-arcane-ritual
+        - apprentice-divine-ritual
+  land-provides:
+    # Both starting and multiclass artisans get a gathering choice.
+    name: The Land Provides
+    matcher:
+      id:
+        - forage-1
+        - prospect-1
+        - scavenging-1
+description: >
+  It is difficult to simply define an Artisan. Certainly many are actual makers of art, such as painters and sculptors, while
+  others are Artisans in a more “craftsperson” sense, building mechanical devices, exploring the dark corners of alchemy, or
+  mastering the planar dance of enchanting. These examples only begin to encompass the kinds of arts available though. Chefs,
+  chocolatiers, draftspersons, and masters of engineering all fall under the wide umbrella that are Artisans.
+
+  From S.J. Waters, an Engineer in Niven and Barnes’ Dream Park, to a master gardener like Samwise Gamgee, the kinds of people
+  who would be Artisans are myriad. Mad scientists, dedicated scholars, and weird mystics, these characters are unified by their
+  love of what they do and their ability to create. Some create knowledge, others exquisite, edible artwork. Those who become
+  Champion Artisans are true masters of their art and generally the best crafters in the world.
+
+  Artisans can be found in almost any clothing, but simple, traditional garb is most appropriate. Leather aprons, utility
+  gloves, and pouches full of tools and equipment are all common.
+
+  ## Specializations
+
+  ### Artificer
+
+  The combination of human and machine is that the Artificer specializes in. “Ironman, Asami, or James Bond are all examples of
+  Artificers who gain power not from inherent super powers or magic, but rather from their gadgets. Artificers are more likely
+  to be Tinkers than other crafting specialties and make extensive use of Forgesources which can generally only be prepared once
+  every 8 hours. The Artificer is a master of repairing armor and shields in combat, going toe-to-toe with their enemies and
+  coming out alive, and taking up space on the battlefield. If you want to play an Artisan that can participate in combat, this
+  is the specialization for you!
+
+  ### Crafter
+
+  When it comes to the productive makers, there is no equal to the Crafter. They are a skilled craftsman in their field and excel
+  at creating items with more profound and useful benefits than their non-Crafter counterparts. Their toolkit includes many ways
+  to alter the items that they have made, or enhance them to give situational mastery over niche encounters.
+
+  ### Mystic
+
+  When the immaterial speaks, it’s not only the Divine who listens. The Mystic is a ritualist who specializes in the casting of
+  divine or arcane rituals. While any mage or cleric can pick up a scroll and cast it with an objective understanding of what
+  the magic contained may do, it is the Mystic who goes beyond, to enhance themself and their allies farther than that which is
+  written on the crumbling parchments of the ritual scroll.
+---
+id: artisan-max-armor-bonus
+name: +1 Maximum Armor
+type: subfeature
+parent: artisan
+display_type: Bonus
+category: Artisan Bonuses
+description: "The character receives an additional +1 Armor Points on top of their existing armor."
+---
+id: path-unfolds-1
+name: Path of the Professional
+type: subfeature
+parent: artisan
+description: "Apprentice & Journeyman Profession [Your Choice]"
+category: Artisan Starting Skills
+display_type: Path
+grants:
+  - profession-apprentice
+  - profession-journeyman
+---
+id: path-unfolds-2
+name: Path of the Hearthkeeper
+type: subfeature
+parent: artisan
+description: "Basic Medicine and Hearth"
+category: Artisan Starting Skills
+display_type: Path
+grants:
+  - basic-medicine
+  - hearth
+---
+id: path-unfolds-3
+name: Path of the Sage
+type: subfeature
+parent: artisan
+description: "Basic Medicine and Bits & Pieces"
+category: Artisan Starting Skills
+display_type: Path
+grants:
+  - basic-medicine
+  - bits-and-pieces
+---
+id: path-unfolds-4
+name: Path of the Healer
+type: subfeature
+parent: artisan
+description: "Basic Medicine and Soothing Touch"
+category: Artisan Starting Skills
+display_type: Path
+grants:
+  - basic-medicine
+  - soothing-touch

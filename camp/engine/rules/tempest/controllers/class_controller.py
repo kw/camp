@@ -167,6 +167,24 @@ class ClassController(feature_controller.FeatureController):
             return available_dict.get(self.full_id, 0) + available_dict.get(None, 0)
         return 0
 
+    @cached_property
+    def powerbook(self) -> spellbook_controller.PowerbookController | None:
+        if self.martial:
+            return self.character.controller("martial.powerbook")
+        return None
+
+    @property
+    def powers_taken(self) -> spellbook_controller.TierTuple:
+        return self.powerbook.powers_taken_per_class.get(
+            self.full_id, spellbook_controller.EMPTY_TIER
+        )
+
+    @property
+    def powers_available(self) -> spellbook_controller.TierTuple:
+        return self.powerbook.powers_available_per_class.get(
+            self.full_id, spellbook_controller.EMPTY_TIER
+        )
+
     def powers(self, expr: PropExpression) -> int:
         if self.caster:
             return 0
@@ -285,6 +303,14 @@ class ClassController(feature_controller.FeatureController):
                 lines.append(f"Utilities: {self.get('utilities')}")
                 lines.append(
                     f"Powers: {self.get('powers@1')}/{self.get('powers@2')}/{self.get('powers@3')}/{self.get('powers@4')}"
+                )
+                powers_taken = self.powers_taken
+                powers_available = self.powers_available
+                lines.append(
+                    f"Powers taken: {powers_taken[0]}/{powers_taken[1]}/{powers_taken[2]}/{powers_taken[3]}"
+                )
+                lines.append(
+                    f"Powers available: {powers_available[0]}/{powers_available[1]}/{powers_available[2]}/{powers_available[3]}"
                 )
         return lines
 

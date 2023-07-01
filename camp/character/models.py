@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import cast
 
 from django.conf import settings as _settings
@@ -198,7 +199,12 @@ class UndoStackEntry(models.Model):
 
     def load_mutation(self) -> Mutation | None:
         if self.mutation:
-            return load_mutation(self.mutation)
+            try:
+                return load_mutation(self.mutation)
+            except Exception:
+                logging.exception(
+                    "Unable to load undo stack mutation for %s", self.mutation
+                )
         return None
 
     def __str__(self) -> str:

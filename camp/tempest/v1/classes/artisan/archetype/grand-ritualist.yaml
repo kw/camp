@@ -1,0 +1,16 @@
+name: Grand Ritualist
+requires: artisan:6
+description: >
+  While the Artisan is a Primary Ritualist, the Mystic may Sacrifice a Maximum Life Point to redraw a
+  card from the Final Hand of a Dark Territory pull before the effect of the first card is announced.
+
+  If the Artisan has more [Mystic] tagged powers than [Crafter] or [Artificer] Artisan powers the Artisan
+  may grant all participants in any ritual the Artisan is leading 1 Barrier by calling "Grant 1 Barrier to
+  all Ritual Participants" at the conclusion of the Ritual.
+
+  * If the Artisan has at least 5 [Mystic] tagged Artisan powers (Basic, Advanced, or Utility) this power
+    provides 2 Barrier instead of 1.
+  * If the Artisan has at least 8 [Mystic] tagged Artisan powers (Basic, Advanced, or Utility) this power
+    provides 3 Barrier instead of 1.
+  * If the Artisan has at least 11 [Mystic] tagged Artisan powers (Basic, Advanced, or Utility) this power
+    provides 4 Barrier instead of 1.

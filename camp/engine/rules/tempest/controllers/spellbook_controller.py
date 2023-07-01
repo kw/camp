@@ -8,6 +8,9 @@ from camp.engine.rules.base_models import PropExpression
 
 from . import attribute_controllers
 
+TierTuple = tuple[int, int, int, int]
+EMPTY_TIER = (0, 0, 0, 0)
+
 
 class SphereAttribute(attribute_controllers.SumAttribute):
     def __init__(self, prop_id: str, character: base_engine.CharacterController):
@@ -32,6 +35,87 @@ class SphereAttribute(attribute_controllers.SumAttribute):
         if self.sphere != "martial":
             return SpellbookController("spellbook", self.sphere, self.character)
         return None
+
+    @cached_property
+    def powerbook(self) -> PowerbookController | None:
+        if self.sphere == "martial":
+            return PowerbookController("powerbook", self.character)
+        return None
+
+
+class PowerbookController(attribute_controllers.AttributeController):
+    """The Powerbook controller keeps track of martial power capacity.
+
+    It is essentially the martial version of SpellbookController.
+    """
+
+    @property
+    def powers_taken(self) -> int:
+        return sum(self.powers_taken_per_class.values()) + self.bonus
+
+    @property
+    def powers_earned_total(self) -> int:
+        return sum(self.powers_earned_per_class.values())
+
+    @property
+    def value(self) -> int:
+        return self.powers_earned_total
+
+    @property
+    def powers_available_per_class(self) -> dict[str, TierTuple]:
+        powers_available: dict[str, TierTuple] = {}
+        earned = self.powers_earned_per_class
+        taken = self.powers_taken_per_class
+        for class_id in self.martial_classes:
+            class_earned = earned.get(class_id, EMPTY_TIER)
+            class_taken = taken.get(class_id, EMPTY_TIER)
+            if class_earned == EMPTY_TIER and class_taken == EMPTY_TIER:
+                continue
+            rollover = 0
+            tiers = [0] * 4
+            for i in range(len(class_earned)):
+                available_this_tier = class_earned[i] - (class_taken[i] + rollover)
+                # If we have used too many slots this tier but have earned slots in the
+                # next tier, roll the powers over to that tier.
+                if (
+                    available_this_tier < 0
+                    and i + 1 < len(class_earned)
+                    and class_earned[i + 1] > 0
+                ):
+                    rollover = -available_this_tier
+                    available_this_tier = 0
+                else:
+                    rollover = 0
+                tiers[i] = available_this_tier
+            powers_available[class_id] = tuple(tiers)
+        return powers_available
+
+    @property
+    def powers_earned_per_class(self) -> dict[str, TierTuple]:
+        counts: dict[str, TierTuple] = {}
+        for class_id in self.martial_classes:
+            tiers = [0] * 4
+            for tier in range(1, 5):
+                tiers[tier - 1] = self.character.get(f"{class_id}.powers@{tier}")
+            counts[class_id] = tuple(tiers)
+        return {k: v for k, v in counts.items() if any(v)}
+
+    @property
+    def powers_taken_per_class(self) -> dict[str, TierTuple]:
+        """Count the number of martial powers taken per class, per tier."""
+        counts: dict[str, list[int]] = defaultdict(lambda: [0] * 4)
+        for fc in self.character.martial_powers:
+            if fc.parent and fc.parent.feature_type == "class":
+                counts[fc.parent.full_id][fc.tier - 1] += 1
+        return {k: tuple(v) for k, v in counts.items() if any(v)}
+
+    @property
+    def martial_classes(self) -> set[str]:
+        return {
+            f.id
+            for f in self.character.ruleset.features.values()
+            if f.type == "class" and f.sphere == "martial"
+        }
 
 
 class SpellbookController(attribute_controllers.AttributeController):
@@ -87,7 +171,7 @@ class SpellbookController(attribute_controllers.AttributeController):
         free_used = 0
         spells_known = self._count_spells_known()
         spells_in_book = self._count_spells()
-        spells_available: dict[str, None, int] = {}
+        spells_available: dict[str | None, int] = {}
         for claz in self.classes_in_sphere:
             available = spells_known.get(claz, 0) - spells_in_book.get(claz, 0)
             if available >= 0:

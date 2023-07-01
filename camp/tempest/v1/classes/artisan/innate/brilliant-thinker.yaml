@@ -1,0 +1,6 @@
+name: Brilliant Thinker
+requires: artisan:3
+grants: artisan.powers@1:1
+description: >
+  The Artisan learns an additional Basic Power from the Artisan Class Powers,
+  this additional power is already reflected on the Class Table.

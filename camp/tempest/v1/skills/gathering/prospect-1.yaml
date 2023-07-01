@@ -1,0 +1,22 @@
+name: Prospect I
+cost: 3
+description: >
+  The character can prospect for Rare Minerals or metal Ingots from the wilderness. Characters may discover mines that can be used
+  to prospect for Ingots, or deposits where Rare Minerals can be collected.
+
+  At either a mine or a deposit, the character should read the information card (and only characters with this skill can read the
+  information card) at each location for specific information. Normally, the information card will require the Prospector to draw
+  from a “mining deck” which will inform the Prospector of the result of the mining session. By default, the character actively
+  roleplays for a Slow 180 in order to gain anything from it. Roleplaying requires the use of a mining hammer, which if broken as
+  part of prospecting requires repairs before the Prospector may continue. Multiple characters can use the mine or deposit at the same time.
+
+  After the required duration, the character will follow the instructions on the information card, usually drawing from the mining
+  deck and gaining resources or taking an effect or damage that corresponds to the level of Prospecting the character possesses.
+
+  Some of these cards may indicate something bad happening to the character like a rockslide or inhaling poisonous fumes. In these
+  cases the effect will also be written on the card. The character may prospect at each mine or deposit once per Long Rest.
+
+  For Example: Roger finds one deposit, and knows the location of two mines. After a Long Rest, he makes a circuit, stopping at
+  the deposits and mines, spending three minutes at each, to prospect. At each one he receives a number of metal Ingots (mine) or
+  Minerals (deposit), but can’t find any Mithril Ore since he doesn’t have Prospect III. He can’t get anything more from any of
+  those three locations until after the next Long Rest. After the Long Rest, he then can prospect again at each location.

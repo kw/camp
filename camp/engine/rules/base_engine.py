@@ -439,6 +439,8 @@ class CharacterController(ABC):
                 choice = feature.choices.get(mutation.choice)
                 choice_name = getattr(choice, "name", mutation.choice.title())
                 selection = self.display_name(mutation.value)
+                if mutation.unchoose:
+                    return f"Unchose '{selection}' for choice {choice_name} of {feature.display_name()}"
                 return f"Chose '{selection}' for choice {choice_name} of {feature.display_name()}"
             case _:
                 return repr(mutation)

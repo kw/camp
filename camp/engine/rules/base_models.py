@@ -784,7 +784,7 @@ class ChoiceMutation(BaseModel):
     id: str
     choice: str
     value: str
-    unchoose: bool = False
+    remove: bool = False
 
 
 class NoteMutation(BaseModel):

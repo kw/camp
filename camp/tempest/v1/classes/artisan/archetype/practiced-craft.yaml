@@ -1,0 +1,27 @@
+name: Practiced Craft
+requires: artisan:9
+grants:
+  - fortunate-finder
+choices:
+  # TODO(#96): Needs a custom controller to enforce two constraints:
+  journeyman-craft:
+    name: Journeyman Craft
+    matcher:
+      id:
+        - greater-alchemy
+        - greater-enchanting
+        - greater-tinkering
+description: >
+  The Artisan gains an additional rank of the Fortunate Finder skill.
+
+  If the Artisan has more [Crafter] tagged powers than any other type, has at
+  least 9 [Crafter] tagged Artisan powers (Basic, Advanced, Utility), and
+  possesses the pre-requisite Journeyman skill the Artisan also gains one of the
+  following for free:
+
+  * Greater Alchemy (5)
+  * Greater Enchanting (5)
+  * Greater Tinkering (5)
+
+  **Note**: This allows the Artisan to gain a Greater crafting skill one level
+  earlier than would normally be available.

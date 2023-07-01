@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from camp.engine.rules.base_models import Discount
-from camp.engine.rules.tempest import engine
 
 from . import choice_controller
 
@@ -62,7 +61,7 @@ class SphereGrantChoice(choice_controller.GrantChoice):
         return True
 
 
-class SphereBonusChoice(engine.ChoiceController):
+class SphereBonusChoice(choice_controller.ChoiceController):
     """Presents a list of spheres of magic that the character can get a bonus for.
 
     Most choice controllers list features, but this one lists spheres.

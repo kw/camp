@@ -1,0 +1,60 @@
+name: Opus
+requires: artisan:10
+# TODO(#97): Implement giving the subpowers based on specialty.
+description: >
+  Based on the number of Specialization tags that Artisan has, the Opus power
+  changes to reflect the Artisan’s most Specialized aspect:
+---
+id: opus-reforge
+type: subfeature
+display_type: Opus
+name: Reforge
+tags: [crafter]
+description: >
+  The Artisan may reduce the Basic Resource cost of listed Basic Resources in crafting formulae
+  by 1, to a minimum of 1 of each listed Basic Resource. Further, an Artisan with more Crafting
+  Tagged powers than any other Tag, gains the “Reforge” Ability below:
+subcard:
+  incant: None
+  call: '"Grant Event Duration", Explanation'
+  target: Object
+  duration: Event
+  delivery: Touch
+  refresh: Event
+  accent: Lightning  # ???
+  effect: Grant Event Duration
+  description: >
+    Once per Event the Artisan may touch an item, and Sacrifice One Maximum Life
+    Point for the duration of the Event, to extend the duration of an item that
+    will expire this Event, and add one month to the target item’s duration.
+---
+id: opus-aetheric-infusion
+type: subfeature
+display_type: Opus
+name: Aetheric Infusion
+tags: [artificer]
+description: >
+  An Artisan with more Artificer Tagged powers than any other Tag, may expend the
+  listed resource at-will to do one of the following:
+
+  * Expend a Mithril Ore to touch cast “Grant Short Resistance to Shield-Breaking and Shatter.”
+  * Expend an Eternal Blossom to charge 5 Spell-Balls “Heal to Full”
+  * Expend a Raw Scale to touch cast “Explanation, Convert up to 10 points of armor
+    to Natural Armor until your next Short Rest.”
+---
+id: opus-eureka
+type: subfeature
+display_type: Opus
+name: Eureka!
+tags: [mystic]
+incant: None
+call: '"Grant Long Rest by Inspiration", Explanation'
+target: Individual
+delivery: Touch
+accent: Inspiration
+duration: Instantaneous
+refresh: Event
+effect: Grant Long Rest
+description: >
+  Once per Event the Artisan may touch a willing or helpless target,
+  and call “Grant Long Rest by Inspiration.”

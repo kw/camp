@@ -348,7 +348,14 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(
             id="spellbook",
             name="Spellbook",
+            hidden=True,
             scoped=True,
+        ),
+        Attribute(
+            id="powerbook",
+            name="Powerbook",
+            scoped=True,
+            hidden=True,
         ),
         Attribute(
             id="spells_prepared",

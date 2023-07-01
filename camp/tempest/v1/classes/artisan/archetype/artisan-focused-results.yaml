@@ -1,0 +1,10 @@
+name: Focused Results
+requires:
+  - artisan:6
+  - basic-classes<2
+grants:
+  - artisan.powers@1:1
+  - artisan.utilities:1
+description: >
+  The Artisan gains an additional Utility Power and Basic Power from the
+  Artisan Class Powers.

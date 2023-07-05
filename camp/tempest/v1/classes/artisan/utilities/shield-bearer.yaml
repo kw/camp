@@ -1,0 +1,10 @@
+name: Shield Bearer
+tags: [artificer]
+grants: basic-shields
+description: >
+  The Artisan gains the Basic Shield Skill (4).
+  <br/>
+  Additionally, while using a shield the shield may not be disarmed.
+  If the shield would otherwise be affected by a Disarm Effect, the
+  Artisan may instead take two damage (not negatable) to Counter the
+  Disarm Effect.

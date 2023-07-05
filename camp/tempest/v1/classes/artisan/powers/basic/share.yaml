@@ -1,0 +1,24 @@
+name: Share
+tags: [mystic]
+incant: Special
+call: '“[Name or Description] Divine: How do you feel right now?”, “[Name or Description] Cure [Condition or Accent]”'
+target: Individual
+delivery: Verbal
+duration: Instantaneous
+refresh: Short Rest
+accent: None
+effect: Divine, Cure
+description: >
+  This Power can only be used out of combat with another Individual and, ideally, should be
+  done in private. The Artisan connects themself to the emotions of the other sitting in
+  silence with them for at least a minute. After the minute, the Artisan should describe their
+  own emotional state in honest, descriptive terms. They should not convey facts other than
+  about how they feel (i.e. “I feel hurt and betrayed” rather than “Because Triss ended up
+  taking Tymera on his quest instead of me, I feel hurt and betrayed”).
+  <br/>
+  When they feel they have fully described their feelings, they should Call “Divine: How do you
+  feel right now?” The target should then describe their emotional state. After this sharing,
+  until the end of the Event, the Artisan can, once, Cure that character of Dominated, Charmed,
+  or any Condition caused by an emotion-based Accent (by Terror, by Fear, by Rage) as a Verbal
+  Effect. The Artisan can only have the power to Cure any one individual once at any one time
+  (i.e. Share cannot be used multiple times on the same individual to stack the curing effect.)

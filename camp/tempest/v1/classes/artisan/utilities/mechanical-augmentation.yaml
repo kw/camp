@@ -1,0 +1,13 @@
+name: Mechanical Augmentation
+tags: [artificer]
+description: >
+  Once per Power per Long Rest, when the Artisan targets themselves with a Basic or Advanced
+  Artisan power that would require expending a Forgesource, they may instead spend a Spike.
+  <br/>
+  In addition, after a Short Rest, the Artisan may gain a Protect from one of the following:
+  Poison, Agony, or Fear. As long as they have this Protect they are Inherently Slowed.
+  <br/>
+  Finally, the Artisan gains the “Construct” and “Automaton” Qualifiers (not the Type), which
+  makes them subject to calls with those targets.
+  <br/>
+  **For Example**: “5 To Construct by Time” would affect the Artisan.

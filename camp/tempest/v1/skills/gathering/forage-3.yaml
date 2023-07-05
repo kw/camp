@@ -2,7 +2,9 @@ name: Forage III
 cost: 3
 requires:
   - forage-2
-  - level:10
+  - any:
+    - level:10
+    - hunter-gatherer
 description: >
   The character can Forage up to 45 Bloom and 21 Night Prizes per Event. In addition, certain resources
   are gated behind each rank of this skill, allowing those with greater proficiency to gather more

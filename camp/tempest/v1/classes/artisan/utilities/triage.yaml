@@ -1,0 +1,31 @@
+name: Triage
+tags: [mystic]
+requires: basic-medicine
+incant: None
+call: '“[Name or Description] Discern: [Question]”'
+target: Self
+delivery: Verbal
+duration: Passive
+refresh: Immediate
+accent: None
+effect: Discern
+grants:
+  - diagnose
+  - combat-medic
+description: >
+  The Artisan has seen their fair share of combat and served as a healer in those situations.
+  They have learned to quickly see what is wrong and how to best handle the situation.
+  They gain the Diagnose and Combat Medic Skills.
+  <br/>
+  When using the Diagnose skill, the number of questions available to the Artisan are
+  increased. They can even tell some things about the personality of those they diagnose
+  based on their physical condition. The Artisan may, with Diagnose, ask any of the
+  following questions. The wording need not be exact but the question must stay true to
+  the spirit:
+
+  * Are you currently in a heightened state of emotion/stress?
+  * Are you under the effects of mind-altering substances?
+  * Have you been in Spirit Form in the last 12 hours?
+  * Have you ever had your memory altered?
+  * Are you possessed or controlled?
+  * What is your profession/class?

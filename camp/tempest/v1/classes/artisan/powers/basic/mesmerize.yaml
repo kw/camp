@@ -1,0 +1,15 @@
+name: Mesmerize
+tags: [mystic]
+incant: 1 minute of RP with another
+call: '“[Name or Description] Short Charm by Will”'
+target: Individual
+delivery: Verbal
+duration: Short Rest
+refresh: Long Rest
+accent: Will
+effect: Charm
+description: >
+  The Artisan has learned the ways of hypnotism and beguilement.
+  Their words are laced with subtle magic and undercurrents of command. Out-of-combat, after a
+  minute of conversation the Mystic may expend a Spike to call “Short Charm by Will” to the
+  target of their words.

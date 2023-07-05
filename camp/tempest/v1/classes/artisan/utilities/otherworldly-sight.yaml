@@ -1,0 +1,15 @@
+name: Otherworldly Sight
+tags: [mystic]
+incant: Focus Quick 100
+call: '“[Name or Description] Subtle Discern: What is your Primary Breed?” “[Name or Description] Subtle Discern: Are you a [Angel Automaton, Demon, Construct, Hollowed, Undead]”'
+target: Other Individual
+duration: Instantaneous
+delivery: Verbal
+refresh: Immediate
+accent: None
+effect: Discern
+description: >
+  The Artisan can examine an individual and try to discern their nature.
+  Note that, in mass melee and high pressure/speed situations, it may be
+  impossible to Discern things properly and no or erroneous answers may
+  occur.

@@ -1,0 +1,15 @@
+name: Uninterrupted Creativity
+tags: [crafter]
+incant: 'Frustrated RP, For Example: _“So help me god, I will burn this place down, with all of you in it.”_'
+call: '“[Name of Description] Short Repel by Will”'
+target: Individual
+duration: Short Rest
+delivery: Verbal
+accent: Will
+refresh: Immediate
+effect: Repel
+description: >
+  While touching a Crafting Station of any kind (Tinker’s Forge, Planar Weir,
+  or Hermetic Workshop) and actively crafting, the Artisan can make others
+  leave them alone to work. They can use this Power an unlimited number of
+  times, and doing so will not interrupt any Crafting they are doing.

@@ -1,0 +1,27 @@
+name: Custom Creation
+tags: [crafter]
+incant: Focus Quick 100
+call: None
+target: Individual item
+duration: Permanent
+delivery: Touch
+accent: None
+refresh: Immediate
+effect: Special
+description: >
+  This Power has two uses, which can be used at the same time, or separately. The Artisan
+  can alter the structure of any item they have Crafted that has an associated item card
+  and requires Attunement. Spending a few seconds focusing on the item, they can add a
+  requirement to the Attunement of any kind they desire. This might be “Can only be
+  Attuned to Tristan Mageborn” or it might be something more generic such as “Can only be
+  Attuned to a worshiper of Evandra”. The requirement is only relevant in order to Attune
+  to the item; Attunement is not lost if the Attuned owner loses that requirement later
+  (such as converting to a different god).
+  <br/>
+  The Power can also be used to add a specific limitation to an item that requires
+  Attunement and has an information card. This limitation might be “Can only be activated
+  by Humans” or “To activate the item, the character must yell ‘I love Evandra!’” The
+  limitation is up to the Crafter. Limitations that require abusive behavior or
+  non-consensual behavior immediately fail.
+  <br/>
+  For either use of this Power, the item’s card must be updated with the information.

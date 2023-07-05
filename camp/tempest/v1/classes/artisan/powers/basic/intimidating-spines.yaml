@@ -1,0 +1,13 @@
+name: Intimidating Spines
+tags: [artificer]
+call: '“[Name or Description]: Short Repel by Fear”'
+target: Individual
+delivery: Verbal
+duration: Short Rest
+refresh: Short Rest
+accent: Fear
+effect: Repel
+description: >
+  By spending a Spike, the Artisan surrounds themselves with harmful blades, spikes,
+  and whirling implements of doom. For the duration, the affected reels back in fear
+  and refuses to approach them.

@@ -1,0 +1,26 @@
+name: Engineering Knack
+tags: [crafter, artificer]
+incant: None
+call: None
+target: Self
+delivery: Touch
+accent: None
+duration: Passive
+refresh: None
+effect: Special
+description: >
+  The Artisan is a natural at constructing large objects. Any time a Tinkering, Alchemy,
+  or Enchanting project requires a Forgesource as one of its materials the Artisan may
+  spend 1 less (minimum of 1). Additionally, the Artisan counts as 2 Tinkers or 2
+  Alchemists or 2 Enchanters when determining how many individuals are working on the
+  project requiring Forgesources. The Artisan may only count as an Apprentice if they do
+  not normally have the skills for that category, otherwise they count for twice the
+  skills they have.
+  <br/>
+  **For Example**: Trisha the Artisan with Engineering Knack and Journeyman Tinkering is
+  working with members of their town to construct a well. The well requires 2 Journeyman
+  Tinkers, 2 Apprentice Alchemists, and 1 Journeyman Enchanter. Trisha could satisfy
+  either the requirement for both the Journeyman Tinkers or both the Apprentice Alchemists
+  even though Trisha is not an Apprentice Alchemist. Trisha would also reduce the number
+  of Forgesources required to build the well by 1. Trisha could not help with the need for
+  a Journeyman Enchanter.

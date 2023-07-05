@@ -1,0 +1,17 @@
+name: Identify Glyph
+tags: [mystic]
+incant: Focus Quick 100
+call: '“Discern by Mind: What are the properties of this Glyph?”'
+target: Self
+delivery: None
+duration: Instantaneous
+refresh: Short Rest
+accent: None
+effect: Discern
+description: >
+  The Artisan looks over the mystic lines that make up the Glyph, pulling each apart for
+  special meaning and nuance, focusing for a Quick Count of 100. The Artisan should then go to
+  the Glyph information card and read as much as they can from the back. While they are doing
+  this, they will not activate the Glyph. If they take any other actions (trying to go through
+  a door, open a box, answer questions, etc.) then the Glyph will trigger normally (if they are
+  doing something that would trigger it).

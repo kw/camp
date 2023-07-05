@@ -1,0 +1,24 @@
+name: Perfect Practice
+tags: [crafter, mystic]
+ranks: 2
+incant: None
+call: Special
+target: Self
+delivery: Self
+accent: None
+duration: Event
+refresh: Immediate
+effect: Special
+description: >
+  The Artisan gains additional benefits each time they use a Craft of Apprentice level or
+  higher (ie: Supervise Armor Mending would not trigger this Power). The Artisan may gain up to
+  their Artisan class-levels in the effects below during any one Event. In addition, they may
+  gain no more than three instances of any of these effects during an Event.
+
+  * Each time the Artisan completes a Tinkering Plan, they gain 3 to their Living Iron pool.
+  * Each time the Artisan completes an Enchanting Ritual, they may gain a Protect vs Packets.
+  * Each time the Artisan completes an Alchemy Craft, they gain the ability to reduce a Quick
+    100 Count to a Quick 30 Count once.
+  * Each Ritual that the Artisan is a Primary or Secondary Ritualist in that is completed
+    allows the Artisan to charge a spell-ball with Lightning with the Incantation “I charge
+    this with thunder.” The spell-ball will do “Wounding 2 by Lightning” when thrown.

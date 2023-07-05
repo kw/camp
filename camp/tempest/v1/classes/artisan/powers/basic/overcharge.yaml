@@ -1,0 +1,14 @@
+name: Overcharge
+tags: [artificer]
+incant: Focus Quick 100
+call: '“Grant Plus One Spike Damage by Lightning”, “Grant Plus Two Spike Damage by Lightning”'
+target: Self
+delivery: Touch
+duration: Short Rest
+refresh: Long Rest
+accent: Lightning
+effect: Grant Spike Damage
+description: >
+  The Artisan may focus while holding a Forgesource to grant themselves +1 Spike Damage until
+  their next Short Rest. If the Artisan Sacrifices the Forgesource they may instead grant
+  themselves +2 Spike Damage for the same duration.

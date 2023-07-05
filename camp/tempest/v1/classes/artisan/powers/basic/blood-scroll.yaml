@@ -1,0 +1,20 @@
+name: Blood Scroll
+tags: [crafter]
+incant: None
+call: None
+target: Self
+delivery: None
+duration: Instantaneous
+refresh: Long Rest
+accent: None
+effect: Create Novice Scroll
+description: >
+  Normally when an Enchanter creates a scroll using the Scribe Novice Scroll formulae they must
+  use Simple Ink to write the words of the scroll. The Artisan has gained the ability to ignore
+  the alchemical part of this process and through their own blood scribe the magics onto the
+  hide. Using Blood Scroll the Artisan can ignore the need for Simple Ink for up to 2 scrolls
+  when they use Scribe Novice Scroll by Sacrificing 1 Life Point of blood. Sometimes certain
+  beings may be attracted to Artisans that use this process, but perhaps that is only rumor.
+  <br/>
+  **Note**: When turning in resources used for the Scribe Novice Scroll to the Ashbin, the
+  player should include a small note with the character’s name, and the name of this power.

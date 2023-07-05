@@ -1,0 +1,20 @@
+name: Repulsive Ritualist
+tags: [mystic]
+incant: None
+call: '“[Name or Description] Short Repel by Force”'
+target: Individual
+duration: Short Rest
+delivery: Verbal
+refresh: Long Rest
+accent: Force
+effect: Repel
+description: >
+  While the Artisan is a ritualist actively engaged in a ritual, they
+  can Repel other creatures who come near. The Artisan may use this
+  Power without disrupting the ritual they are working on, even if
+  the Ritual would normally be disrupted by the Ritualist using Powers.
+  The Artisan may use the call for this power a number of times equal
+  to the character’s Artisan class-levels.
+  <br/>
+  **Note**: the use of this Power may not be enough to stop them from
+  disrupting a Ritual.

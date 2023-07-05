@@ -1,0 +1,14 @@
+name: Grounded
+tags: [artificer]
+incant: None
+call: Counter, Grounded
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Counter
+description: >
+  The Artisan has so many small trinkets, wires, and other conductive objects, that Lightning
+  based attacks have a significant chance of simply routing into the ground. Once per Short
+  Rest, the Artisan may call “Counter, Grounded” against any effect with the Lightning Accent.

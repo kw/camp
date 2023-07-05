@@ -1,0 +1,34 @@
+name: Detonate
+tags: [artificer]
+incant: Focus Slow 30
+call: '“Imbue Wounding”, Explanation'
+target: Individual
+delivery: RP
+accent: None
+duration: Until Used
+refresh: Short Rest
+effect: Imbue Wounding, Imbue Shatter
+description: >
+  The Artisan can give another character the power to ignite a weapon they are using, by
+  preparing strange fuses, oils, and other ingredients. After the Artisan spends a slow count
+  of 30 role-playing this preparation, the character is ready to detonate their weapon. At any
+  time the target chooses, a melee weapon can be ignited to use the Power below. This should be
+  explained to the target while the preparations are being made. Note that the Role-Playing of
+  this Power may include props or equipment given to the target, or infusing the character’s
+  limb with bizarre oils; the exact details are up to the Artisan. A target can have at most
+  one ongoing instance of this power at a time.
+subcard:
+  call: '“Wounding 8 by Flame”, “Shatter Final to Self”, “Wounding 4 by Flame to Self”'
+  target: Individual, Self
+  delivery: Weapon, None
+  accent: Flame
+  duration: Instantaneous
+  refresh: None
+  effect: Shatter, Wounding
+  description: >
+    A melee weapon can be used to deliver a Wounding Effect for 8 points of Flame damage. This
+    will, unfortunately, also cause a Shatter on the weapon itself and 4 points of Wounding by
+    Flame delivered by Touch to the wielder. This damage is not Weapon-delivered and cannot be
+    stopped by Effects that stop Weapon attacks. This should be explained to the target while
+    the preparations are being made. A weapon may have at most one of these effects on it at
+    any time.

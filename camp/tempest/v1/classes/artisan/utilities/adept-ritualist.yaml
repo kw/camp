@@ -1,0 +1,33 @@
+name: Adept Ritualist
+tags: [mystic]
+incant: None
+call: None
+target: None
+delivery: None
+duration: Passive
+refresh: None
+accent: None
+effect: Special
+choices:
+  rituals:
+    name: Apprentice Ritual Magic
+    matcher:
+      id:
+        - apprentice-arcane-ritual
+        - apprentice-divine-ritual
+description: >
+  The Artisan gains the Apprentice Arcane Ritual Magic or Apprentice Divine Ritual
+  Magic skill.
+  <br/>
+  For the purposes of Rituals, the Adept Ritualist counts as two Participants. For
+  Rituals that give greater benefits for higher numbers of Ritualists (rather than
+  those that need more than one Ritualist to perform all the functions), the Artisan
+  also counts as two Ritualists (Primary & Secondary, or Secondary x2) once they
+  reach 7th level Artisan.
+  <br/>
+  Once they reach 3rd level Artisan, once per Long Rest, they may choose any one
+  Basic Resource (Bloom, Hide, Ingots, or Coin) required for a Ritual and proceed
+  with one less of that Resource, to a minimum of 1.
+  <br/>
+  **Note**: if the Resource has some part of the Ritual to perform, a stand-in item
+  must be used (such as rocks for Ingots, for example).

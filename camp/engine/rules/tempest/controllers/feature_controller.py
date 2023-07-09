@@ -94,11 +94,14 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def cost(self) -> int:
-        return self._cost_for(self.paid_ranks)
+        return self._cost_for(self.paid_ranks, self.granted_ranks)
 
     @property
     def next_cost(self) -> int:
-        return self._cost_for(self.paid_ranks + 1) - self._cost_for(self.paid_ranks)
+        grants = self.granted_ranks
+        return self._cost_for(self.paid_ranks + 1, grants) - self._cost_for(
+            self.paid_ranks, grants
+        )
 
     @property
     def currency_name(self) -> str | None:
@@ -112,7 +115,7 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.currency and self.cost_def:
             if cost is None:
                 cost = self._cost_for(self.paid_ranks + ranks) - self._cost_for(
-                    self.paid_ranks
+                    self.paid_ranks, self.granted_ranks
                 )
             return f"{cost} {self.currency_name}"
         return None
@@ -434,7 +437,9 @@ class FeatureController(base_engine.BaseFeatureController):
         available = self._currency_balance()
         if available is None:
             return _NO_PURCHASE
-        currency_delta = self._cost_for(self.paid_ranks + value) - self.cost
+        currency_delta = (
+            self._cost_for(self.paid_ranks + value, self.granted_ranks) - self.cost
+        )
         if available < currency_delta:
             return Decision(
                 success=False,
@@ -590,45 +595,59 @@ class FeatureController(base_engine.BaseFeatureController):
         else:
             raise NotImplementedError(f"Unexpected discount value: {discounts}")
 
-    def _cost_for(self, ranks: int) -> int:
+    def _cost_for(self, purchased_ranks: int, granted_ranks: int = 0) -> int:
         """Returns the cost for the number of ranks, typically in CP.
 
         This tries to take into account any active discounts applied to this feature.
-
-        This does not handle awards.
         """
         if self.free:
             return 0
+        max_ranks = self.max_ranks
+        effective_ranks = min(max_ranks, purchased_ranks + granted_ranks)
+        grants_used = min(max_ranks, granted_ranks)
+        paid_ranks = effective_ranks - grants_used
+
+        # Compute the CP cost of the paid ranks. This is generally simple
+        # multiplication, but some features have variable-cost ranks. However,
+        # in all of those cases the "cheapest" ranks are the first ones. So,
+        # we'll always assume that purchased ranks are "first" and granted ranks
+        # are "last" for ordering purposes.
         cd = self.cost_def
-        # First account for "normal" purchased ranks
         if cd is None:
+            # If there is no cost definition,
             return 0
         elif isinstance(cd, int):
             # Most powers use a simple "N CP per rank" cost model
-            rank_costs = [cd] * ranks
+            paid_cost = cd * paid_ranks
+            potential_cost = cd * grants_used
+            refund_value = cd
         elif isinstance(cd, defs.CostByRank):
             # But some have to be difficult and specify varying costs per rank.
-            rank_costs = cd.rank_costs(ranks)
+            paid_cost = sum(cd.rank_costs(paid_ranks))
+            potential_cost = sum(cd.rank_costs(effective_ranks)) - paid_cost
+            refund_value = cd.single_rank_cost(max_ranks)
         else:
             raise NotImplementedError(f"Don't know how to compute cost with {cd}")
-        # Apply per-rank discounts.
+
+        # Apply discounts. Discounts apply whether the ranks are actually paid for or not.
+        # The paid cost can't be reduced to below 1 per paid rank.
+        # Granted ranks produce a rebate if discounted. The rebate value can potentially grant
+        # nearly all of the "potential cost" of the granted ranks (all but 1 of the cost per rank).
+        discount_total = 0
+        rebate_total = 0
+        potential_discount = max(paid_cost - paid_ranks, 0)
+        potential_rebate = max(potential_cost - grants_used, 0)
         for discount in self.discounts:
-            ranks = len(rank_costs)
-            if discount.ranks and discount.ranks < ranks:
-                ranks = discount.ranks
-            # For discounts that only affect a limited number of ranks, start from the top,
-            # since later ranks are normally more expensive (if they vary at all).
-            for r in range(ranks):
-                i = -1 - r
-                # Don't try to apply the discount if the rank cost is
-                # already 0. This means if two discounts apply and one of them
-                # has minimum=0, it will "stick" and the other discount won't pop
-                # it back up to 1.
-                if rank_costs[i] > 0:
-                    rank_costs[i] -= discount.discount
-                    if rank_costs[i] < discount.minimum:
-                        rank_costs[i] = discount.minimum
-        return sum(rank_costs)
+            discountable_ranks = discount.ranks or effective_ranks
+            discount_total += discount.discount * min(paid_ranks, discountable_ranks)
+            rebate_total += discount.discount * min(grants_used, discountable_ranks)
+        applied_discount = min(discount_total, potential_discount)
+        applied_rebate = min(rebate_total, potential_rebate)
+
+        # Any grants above and beyond the maximum ranks are refunded.
+        applied_refund = refund_value * max(granted_ranks - grants_used, 0)
+
+        return paid_cost - applied_discount - applied_rebate - applied_refund
 
     def _max_rank_increase(self, available: int = -1) -> int:
         if available < 0:
@@ -642,9 +661,11 @@ class FeatureController(base_engine.BaseFeatureController):
                 # Relatively trivial case
                 return min(available_ranks, math.floor(available / cd))
             case defs.CostByRank():
+                granted_ranks = self.granted_ranks
                 while available_ranks > 0:
                     cp_delta = (
-                        self._cost_for(self.paid_ranks + available_ranks) - current_cost
+                        self._cost_for(self.paid_ranks + available_ranks, granted_ranks)
+                        - current_cost
                     )
                     if cp_delta <= available:
                         return available_ranks

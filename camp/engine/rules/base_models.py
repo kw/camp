@@ -815,7 +815,6 @@ class Discount(BaseModel):
     """
 
     discount: pydantic.PositiveInt
-    minimum: int = 1
     ranks: int | None = None
 
     @classmethod

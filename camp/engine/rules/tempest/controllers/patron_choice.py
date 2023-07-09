@@ -29,4 +29,4 @@ class PatronChoice(choice_controller.BaseFeatureChoice):
                 continue
             if choice not in discounts:
                 discounts[choice] = []
-            discounts[choice].append(Discount(discount=1, minimum=1, ranks=1))
+            discounts[choice].append(Discount(discount=1, ranks=1))

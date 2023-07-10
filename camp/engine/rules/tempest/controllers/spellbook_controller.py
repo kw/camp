@@ -107,7 +107,7 @@ class PowerbookController(attribute_controllers.AttributeController):
         counts: dict[str, list[int]] = defaultdict(lambda: [0] * 4)
         for fc in self.character.martial_powers:
             if fc.parent and fc.parent.feature_type == "class":
-                counts[fc.parent.full_id][fc.tier - 1] += fc.value
+                counts[fc.parent.full_id][fc.tier - 1] += fc.purchased_ranks
         return {k: tuple(v) for k, v in counts.items() if any(v)}
 
     @property

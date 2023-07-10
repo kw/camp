@@ -309,6 +309,7 @@ class Ruleset(base_models.BaseRuleset):
     spells_prepared: Table = ScalingTable(base=1, factor=1)
     plural_names: dict[str, str] = {
         "Class": "Classes",
+        "Utility": "Utilities",
     }
     tags: dict[str, str | None] = Field(default_factory=dict)
 

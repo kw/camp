@@ -140,7 +140,7 @@ class ClassController(feature_controller.FeatureController):
         if not self.caster:
             return 0
         return sum(
-            1
+            c.paid_ranks
             for c in self.taken_children
             if c.feature_type == "cantrip" and c.purchased_ranks > 0
         )
@@ -149,9 +149,14 @@ class ClassController(feature_controller.FeatureController):
         if not self.caster:
             return 0
         return sum(
-            1
-            for c in self.taken_children
-            if c.feature_type == "spell" and c.purchased_ranks > 0
+            c.paid_ranks for c in self.taken_children if c.feature_type == "spell"
+        )
+
+    def utilities_purchased(self) -> int:
+        if not self.martial:
+            return 0
+        return sum(
+            c.paid_ranks for c in self.taken_children if c.feature_type == "utility"
         )
 
     @cached_property

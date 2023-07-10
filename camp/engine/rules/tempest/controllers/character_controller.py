@@ -21,6 +21,7 @@ from . import power_controller
 from . import spell_controller
 from . import spellbook_controller
 from . import subfeature_controller
+from . import utility_controller
 
 _DISPLAY_PRIORITIES = {
     "class": 0,
@@ -358,6 +359,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return spell_controller.SpellController(id, self)
             case "power":
                 return power_controller.PowerController(id, self)
+            case "utility":
+                return utility_controller.UtilityController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

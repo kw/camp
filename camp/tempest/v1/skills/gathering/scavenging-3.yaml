@@ -2,7 +2,9 @@ name: Scavenging III
 cost: 3
 requires:
   - scavenging-2
-  - level:10
+  - any:
+    - level:10
+    - tanner
 description: |
   The NPC will turn over more valuable types of tokens than Scavenging II if a proper skinning knife is used.
   Additionally, the time it takes to Scavenge them is reduced to a Quick 30 plus the time it takes you to receive

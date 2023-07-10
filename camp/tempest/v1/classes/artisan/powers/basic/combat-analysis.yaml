@@ -8,7 +8,7 @@ delivery: None
 accent: Mind
 refresh: Short Rest
 effect: Grant Protect
-description: >
+description: |
   Once per Short Rest, point at a foe, and call out “Quite fascinating…” and then put
   a hand to your chin and call out “Grant Protect vs Weapon by Mind” to give yourself
   a defense against a foe.

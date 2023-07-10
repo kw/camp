@@ -8,13 +8,13 @@ duration: Short Rest
 refresh: Long Rest
 accent: None
 effect: Grant Dark Territory
-description: >
+description: |
   Even a mere candle can be viewed at a great distance in the dead of the night.
   The Artisan calls upon the deep magics of the realms to throw wide the curtain
   dividing this world and the outer Void. This beacon extends only to a single
   individual, but it is enough to attract the attention of dark forces to the
   target while they engage in Enchanting and Ritual Magic.
-  <br/>
+
   Once the target is appropriately marked, the target’s Dark Territory modifier
   is increased by one until their next Long Rest. The target may only be the
   recipient of this boon once per Event from any source.

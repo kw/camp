@@ -7,7 +7,7 @@ delivery: Weapon
 accent: Ice
 duration: Quick 100
 effect: Slow
-description: >
+description: |
   The Druid is able to call forth the freezing cold of winter to hinder their enemy.
   After casting they may do two melee attacks for “Quick Slow by Ice.”
 

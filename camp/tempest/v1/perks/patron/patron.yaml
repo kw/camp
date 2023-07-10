@@ -4,14 +4,14 @@ choices:
   discount:
     name: Discount
     limit: 10
-    description: >
+    description: |
       Perks chosen here cost -1 CP (minimum 1) per rank. If this perk is suppressed
       due to strife with your patron, these perks are also suppressed.
     matcher:
       type: perk
       tags: -no-patron
     controller: patron
-description: >
+description: |
   The character is under the patronage of a powerful supernatural creature. This may be a Fae Lady,
   a god or goddess, a Great Power, an elder demon, or any other creature of significant mystical
   strength. The character has some sort of relationship with their Patron, whether it be servile,

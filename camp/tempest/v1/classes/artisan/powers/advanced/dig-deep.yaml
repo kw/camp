@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Short Rest
 effect: Refresh
-description: >
+description: |
   The Artisan gathers a number of people equal to their Artisan Level and refreshes
   the energy of the group by Focusing for a Slow 30. At the completion of this, the
   Artisan can imbue a reserve of energy within their allies that will let their allies

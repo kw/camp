@@ -6,7 +6,7 @@ duration: Instantaneous
 delivery: Packet (Spell-Ball)
 accent: Will
 effect: Cure Insubstantial
-description: >
+description: |
   The Mage can use this spell to shove an incorporeal creature or object fully onto their plane,
   making it vulnerable to many normal attacks. If the Carnate spell-ball is Prevented, one more
   spell-ball can be charged with this same spell by calling “Spell-ball Charged!”.

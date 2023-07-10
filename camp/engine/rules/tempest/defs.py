@@ -100,6 +100,11 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
             for choice_def in self.choices.values():
                 if choice_def.matcher and choice_def.matcher.id:
                     ruleset.validate_identifiers(choice_def.matcher.id)
+        if self.tags:
+            # Verify that all tags are declared in the ruleset.
+            for tag in self.tags:
+                if tag not in ruleset.tags:
+                    raise ValueError(f"Tag `{tag}` is not defined in the ruleset.")
 
 
 class SubFeatureDef(BaseFeatureDef):
@@ -306,6 +311,7 @@ class Ruleset(base_models.BaseRuleset):
     plural_names: dict[str, str] = {
         "Class": "Classes",
     }
+    tags: dict[str, str | None] = Field(default_factory=dict)
 
     attributes: ClassVar[Iterable[Attribute]] = [
         Attribute(

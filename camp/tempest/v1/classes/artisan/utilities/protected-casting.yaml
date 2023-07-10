@@ -1,6 +1,6 @@
 name: Protected Casting
 tags: [mystic]
-description: >
+description: |
   When casting a ritual, the Artisan is shrouded by a magic circle.
   The circle is only big enough to encompass the Artisan themself,
   to a maximum size of 3 feet in diameter. The circle dissipates
@@ -10,7 +10,7 @@ description: >
   the ritual by weapon delivered damage and effects - the Artisan
   need only say “Counter, Protected Casting” when struck to
   acknowledge the attack, but the ritual remains undisrupted.
-  <br/>
+
   These defenses are lost when the circle dissipates. The Artisan
   is responsible for providing the physical representation of this,
   otherwise the circle does not form.

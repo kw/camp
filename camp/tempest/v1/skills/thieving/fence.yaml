@@ -1,6 +1,6 @@
 name: Fence
 cost: 3
-description: >
+description: |
   The character can turn in treasure and resources to Staff overnight, or between games,
   and sell or trade them. Basic Resources will return 1 Wealth each. Crafted items will
   return either half the value of the components, or 1 Wealth for Apprentice-level recipes,

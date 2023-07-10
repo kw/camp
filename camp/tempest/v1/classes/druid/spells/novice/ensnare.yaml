@@ -7,7 +7,7 @@ delivery: Weapon
 accent: Poison, Ice
 duration: Short Rest
 effect: Root
-description: >
+description: |
   When this spell is cast, the Druid empowers their next strike with the entangling vines of the forest,
   causing the victim to take a “Short Root by Poison.” If the weapon used for this strike is a natural
   weapon (such as a Claw), the wielder of the weapon may use that charge any time they wish, until they

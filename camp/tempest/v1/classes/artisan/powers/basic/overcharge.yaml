@@ -8,7 +8,7 @@ duration: Short Rest
 refresh: Long Rest
 accent: Lightning
 effect: Grant Spike Damage
-description: >
+description: |
   The Artisan may focus while holding a Forgesource to grant themselves +1 Spike Damage until
   their next Short Rest. If the Artisan Sacrifices the Forgesource they may instead grant
   themselves +2 Spike Damage for the same duration.

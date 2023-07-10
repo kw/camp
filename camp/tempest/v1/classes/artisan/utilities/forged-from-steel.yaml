@@ -1,7 +1,7 @@
 name: Forged from Steel
 tags: [artificer]
-description: >
+description: |
   The Artisan gains 1 additional Mend Point per Artisan class-level to their Living Iron pool.
-  <br/>
+
   Additionally, at-will the Artisan may Sacrifice a Forgesource to gain 10 Mend Points to
   their Living Iron pool.

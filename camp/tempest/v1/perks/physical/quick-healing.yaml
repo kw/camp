@@ -1,4 +1,4 @@
 name: Quick Healing
 cost: 3
-description: >
+description: |
   The character Heals 1 Life Point at the end of each Short Rest. Will heal Undead as well as the Living.

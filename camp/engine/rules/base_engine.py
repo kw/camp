@@ -439,7 +439,7 @@ class CharacterController(ABC):
                 choice = feature.choices.get(mutation.choice)
                 choice_name = getattr(choice, "name", mutation.choice.title())
                 selection = self.display_name(mutation.value)
-                if mutation.unchoose:
+                if mutation.remove:
                     return f"Unchose '{selection}' for choice {choice_name} of {feature.display_name()}"
                 return f"Chose '{selection}' for choice {choice_name} of {feature.display_name()}"
             case _:
@@ -591,6 +591,10 @@ class BaseFeatureController(PropertyController):
         if self.definition.parent is None:
             return None
         return self.character.feature_controller(self.definition.parent)
+
+    @property
+    def tags(self) -> set[str]:
+        return self.definition.tags
 
     @property
     def parent_def(self) -> base_models.BaseFeatureDef | None:

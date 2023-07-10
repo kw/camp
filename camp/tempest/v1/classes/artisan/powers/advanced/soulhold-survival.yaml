@@ -8,7 +8,7 @@ accent: None
 duration: Passive
 refresh: Long Rest
 effect: Special
-description: >
+description: |
   When the Artisan draws a Foundation Resource - Death that would normally kill them, they can,
   instead, soulhold it. As long as the Foundation Resource - Death is soulheld, the Artisan
   will remain alive, but the moment it ceases being soulheld, the Artisan will take the death

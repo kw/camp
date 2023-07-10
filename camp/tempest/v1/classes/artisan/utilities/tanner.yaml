@@ -1,23 +1,23 @@
 name: Tanner
 tags: [crafter]
 grants: scavenging-1
-description: >
+description: |
   The Artisan gains their next rank of Scavenging (3) ignoring any Level prerequisites,
   if this would put the character over three ranks, they are instead refunded a rank.
-  <br/>
+
   The Artisan knows their way around a knife and hides. When using the scavenge skill,
   on a creature not currently being scavenged, the Artisan may instantly scavenge a
   creature and it only takes as much time as the portrayer needs to gather the scavenge,
   harvest, and scale for the Artisan to receive it. While the Artisan is waiting for the
   scavenged creature to provide its loot the Artisan may call "Counter, Tanner" to any
   damage received.
-  <br/>
+
   **Note**: this counter may only be called after the scavenging is complete and the
   Artisan is waiting for the portrayer to provide the loot, not going to or coming from
   the body. If the Artisan takes any actions other than waiting to receive the materials
   from the portrayer this power immediately ends. This counter may not be called on damage
   received from the act of scavenging itself.
-  <br/>
+
   Additionally, the Artisan may substitute 1 Bloom for 1 Hide in any crafting that requires
   more than a single Hide once per Long Rest. This represents the Tanner using stretching
   and curing techniques to get more out of less with their Hide.

@@ -8,7 +8,7 @@ accent: Poison
 duration: Event
 refresh: Long Rest
 effect: Imbue Heal
-description: >
+description: |
   The Artisan prepares special totems and can give them to others. This Power will infuse up to
   six small non-liquid items with the ability to heal. With an explanation, these may then be
   handed out to others, but may not then be re-gifted. By using the item, the character gains
@@ -22,7 +22,7 @@ subcard:
   duration: Until consumed
   refresh: None
   effect: Heal
-  description: >
+  description: |
     By using the small, non-liquid totem that they were given by the Artisan, the character
     gains the ability to Heal herself for 1 point before the next time they complete a Long
     Rest. This healing takes a Quick Count of 100, but can be done while the character is

@@ -1,6 +1,6 @@
 name: Extreme Two Weapon Style
 cost: 3
 requires: advanced-two-weapon-style
-description: >
+description: |
   The character can wield two melee weapons at once and be considered proficient
   with both if they are proficient with that weapon type. The weapons may be of any length.

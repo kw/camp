@@ -1,10 +1,10 @@
 name: Good Timing
 tags: [crafter]
 grants: prospect-1
-description: >
+description: |
   The Artisan gains their next rank of Prospecting ignoring any Level prerequisites,
   if this would put the character over three ranks, they are instead refunded a rank.
-  <br/>
+
   Additionally, the Artisan may skip Prospecting during the first Long Rest period and
   instead Prospect twice the next Long Rest period per Mine/Rare Mineral Spring.
 

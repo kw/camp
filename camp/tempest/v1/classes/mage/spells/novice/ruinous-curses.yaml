@@ -6,6 +6,6 @@ delivery: Packet (Spell-Ball)
 accent: Mind
 duration: Quick 100
 effect: Slow, Weakness
-description: >
+description: |
   Ruinous Curse charges two spell-balls simultaneously. One will Slow its target, the other will Weaken
   its target, each for a Quick Count of 100. The spell-balls must be thrown separately.

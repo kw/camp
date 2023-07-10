@@ -11,7 +11,7 @@ choices:
         - greater-alchemy
         - greater-enchanting
         - greater-tinkering
-description: >
+description: |
   The Artisan gains an additional rank of the Fortunate Finder skill.
 
   If the Artisan has more [Crafter] tagged powers than any other type, has at

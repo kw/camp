@@ -8,7 +8,7 @@ duration: Instantaneous
 refresh: Long Rest
 accent: None
 effect: Grant Resistance
-description: >
+description: |
   The Artisan can force an individual to remain on the material plane for a short time,
   anchoring them so they cannot escape. The Artisan can call out “[Name or Description] Short
   Grant Resistance to Insubstantial.”

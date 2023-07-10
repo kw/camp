@@ -68,6 +68,16 @@ class FeatureController(base_engine.BaseFeatureController):
             return f"{self.parent.display_name()} {base_name}"
         return base_name
 
+    @cached_property
+    def tag_names(self) -> list[str]:
+        names = []
+        for tag in self.tags:
+            tag_name = self.character.ruleset.tags.get(tag, None)
+            if tag_name:
+                names.append(tag_name)
+        names.sort()
+        return names
+
     @property
     def feature_list_name(self) -> str:
         """Used in contexts where the type of the feature can be assumed, such as the main feature type lists on the character display.

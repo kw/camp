@@ -8,7 +8,7 @@ delivery: Verbal
 refresh: Immediate
 accent: None
 effect: Discern
-description: >
+description: |
   The Artisan can examine an individual and try to discern their nature.
   Note that, in mass melee and high pressure/speed situations, it may be
   impossible to Discern things properly and no or erroneous answers may

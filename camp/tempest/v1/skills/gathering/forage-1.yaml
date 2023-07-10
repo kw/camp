@@ -1,6 +1,6 @@
 name: Forage I
 cost: 3
-description: >
+description: |
   The character can forage Bloom and Night Prizes from the wilderness. Bloom and Night Prizes may be laying on
   the ground individually, or may be part of a “patch” indicated either by some kind of container or an associated
   information card. A Forager should only take 1 from a patch per Event, unless there are instructions nearby to

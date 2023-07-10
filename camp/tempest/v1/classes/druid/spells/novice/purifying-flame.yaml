@@ -7,7 +7,7 @@ delivery: Touch
 accent: Flame
 duration: Instantaneous
 effect: Cure
-description: >
+description: |
   When casting this spell, the Druid infuses their touch with the burning purity of the sun.
   They may call “Cure [Condition] and 1 by Flame” with a touch cast.
 

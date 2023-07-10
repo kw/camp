@@ -1,7 +1,7 @@
 name: Advanced Great Weapon Style
 cost: 3
 requires: great-weapons
-description: >
+description: |
   The character has trained significantly with great weapons and can hold a second weapon
   in the same hand as a great weapon without impeding the effectiveness of the great weapon.
   For example, a character could hold a polearm and one hand could also hold a short sword,

@@ -8,7 +8,7 @@ accent: None
 duration: Slow 300
 refresh: Long Rest
 effect: Grant Insubstantial
-description: >
+description: |
   While in a Ritual, the Artisan may call “Grant Insubstantial to Self” and Focus for a Slow
   300. Once the Count is complete, the Artisan must call “Dispel Insubstantial to Self.”
 

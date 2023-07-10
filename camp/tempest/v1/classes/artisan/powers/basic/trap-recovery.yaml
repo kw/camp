@@ -8,7 +8,7 @@ duration: Instantaneous
 refresh: Long Rest
 effect: Special
 accent: None
-description: >
+description: |
   The Artisan can spend a Quick 100 gathering the pieces of a trap that they put down themself
   which has since gone off. This will allow a Tinker to remake the trap without any additional
   expenditure of resources. Alternatively, the Artisan can turn in the pieces to Staff to

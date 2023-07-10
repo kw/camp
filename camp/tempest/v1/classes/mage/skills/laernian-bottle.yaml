@@ -9,7 +9,7 @@ accent: Flame
 duration: Short Rest
 refresh: Short Rest
 effect: Piercing
-description: >
+description: |
   When the Laernian Bottle is used, the Mage must come to a stop and place both hands across their
   chest. When struck by an opponent's melee attack, the Mage may call out “[Name or Description]
   Piercing [X] by Flame”, where the target is the foe that struck the Mage, and the amount of damage

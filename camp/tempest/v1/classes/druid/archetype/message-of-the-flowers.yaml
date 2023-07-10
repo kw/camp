@@ -3,6 +3,6 @@ requires: druid:3
 target: Bloom or Night Prize Patch
 duration: Event
 refresh: Immediate
-description: >
+description: |
   The Druid may leave a note locked with a black key sigil and
   "Has Foraging Skill" on it at any Bloom or Night Prize Patch.

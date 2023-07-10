@@ -9,7 +9,7 @@ accent: None
 duration: Event
 refresh: Immediate
 effect: Special
-description: >
+description: |
   The Artisan gains additional benefits each time they use a Craft of Apprentice level or
   higher (ie: Supervise Armor Mending would not trigger this Power). The Artisan may gain up to
   their Artisan class-levels in the effects below during any one Event. In addition, they may

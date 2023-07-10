@@ -9,6 +9,6 @@ accent: Lightning
 duration: Instantaneous
 refresh: Long Rest
 effect: Grant Life
-description: >
+description: |
   Once per Long Rest, the Artificer may sacrifice an ingot to call
   “Grant Life by Lightning” to one individual.

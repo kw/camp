@@ -8,14 +8,14 @@ accent: None
 duration: Long Rest
 refresh: Long Rest
 effect: Imbue Shield-Breaking
-description: >
+description: |
   Out of combat, the Artisan can treat a number of projectiles (arrows or crossbow bolts) with
   a special mixture that will cause them to explode on impact. This mixture is concocted by
   sacrificing two Rare Mineral and two Harvest. The Artisan may prepare a number of projectiles
   equal to three times their Artisan class-levels. These projectiles can then be handed out to
   whomever and each of those recipients will be able to the Shield-Breaking Power below that
   many times.
-  <br/>
+
   For example, Samantha creates 12 Exploding Arrows and gives ten to Ajax and two to Triss. At
   any time before Ajax completes a Long Rest, he could fire ten arrows that are Shield-Breaking
   by Flame; Triss could fire two. The exact projectiles do not need to be tracked or used, but
@@ -31,6 +31,6 @@ subcard:
   duration: Instantaneous
   refresh: None
   effect: Shield-Breaking
-  description: >
+  description: |
     Anytime before the next Long Rest the character can do “Shield-Breaking by Flame”
     with a projectile attack.

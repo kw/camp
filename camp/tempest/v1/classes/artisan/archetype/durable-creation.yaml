@@ -8,7 +8,7 @@ accent: None
 duration: Passive
 refresh: Immediate
 effect: Special
-description: >
+description: |
   Whenever the Artisan creates a tagged item that has a Standard duration,
   items will last for additional Events equal to half the standard recipe
   duration. This alteration should be noted on the item’s information card.

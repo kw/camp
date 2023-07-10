@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Heal
-description: >
+description: |
   The Druid can heal damage to an Individual up to the Druid’s class-level by drawing life from nearby flora.
   This cantrip only works if the Druid is outside.  If the character is inside they must be touching a tree
   with a trunk of at least four inches wide, a character under the effects of an Arboreal Transformation, or

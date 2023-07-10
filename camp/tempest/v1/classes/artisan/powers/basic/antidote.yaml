@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Short Rest
 effect: Cure Poison, Disease, or Tainted
-description: >
+description: |
   By spending about a minute finding, preparing, and applying various ingredients to an
   individual, the Artisan can Cure Poison, Disease, or the Tainted Condition. By expending one
   Bloom during the process, the Artisan can Cure all conditions including ones not listed above

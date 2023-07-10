@@ -1,6 +1,6 @@
 name: Utilitarian
 requires: artisan:5
 grants: artisan.utilities:1
-description: >
+description: |
   The Artisan learns an additional Utility Power from the Artisan Class
   Powers, this additional power is already reflected on the Class Table.

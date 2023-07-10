@@ -6,7 +6,7 @@ delivery: Touch
 accent: None
 duration: Long Rest
 effect: Grant Insubstantial, Cure Insubstantial, Instruction
-description: >
+description: |
   This spell must be cast Out Of Combat and the Mage may only have one active Town Portal trigger and sigil at any one time.
   The Mage inscribes a location, outside, with a symbol of their choosing. The Symbol must be at least 6” by 6” and must be
   visible from at least one angle by a person standing on the ground.

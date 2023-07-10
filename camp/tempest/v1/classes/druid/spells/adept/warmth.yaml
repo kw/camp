@@ -7,7 +7,7 @@ delivery: None
 accent: Flame
 duration: Short Rest
 effect: Grant Resistance, Special
-description: >
+description: |
   The character will not suffer ill effects from in-game cold environments. Although the player
   should be aware of the dangers of actual cold temperatures, this will allow the character to
   travel through freezing cold areas, even other planes, without harm from the ambient cold, as

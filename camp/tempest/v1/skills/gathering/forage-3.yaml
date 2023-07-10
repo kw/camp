@@ -5,7 +5,7 @@ requires:
   - any:
     - level:10
     - hunter-gatherer
-description: >
+description: |
   The character can Forage up to 45 Bloom and 21 Night Prizes per Event. In addition, certain resources
   are gated behind each rank of this skill, allowing those with greater proficiency to gather more
   difficult to obtain resources. Notably, Eternal Blossom for example may only be Foraged by rank 3 Foraging.

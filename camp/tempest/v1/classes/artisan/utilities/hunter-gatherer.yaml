@@ -1,17 +1,17 @@
 name: Hunter Gatherer
 tags: [crafter]
 grants: forage-1
-description: >
+description: |
   The Artisan gains their next rank of Foraging ignoring any Level prerequisites,
   if this would put the character over three ranks, they are instead refunded a
   rank.
-  <br/>
+
   The Artisan is used to walking the land looking for bloom and night prizes.
   Sometimes they even need to defend themselves from threats encountered in the
   wilderness. After picking up at least 1 Bloom or 1 Night Prize through the
   Foraging skill the Artisan gets +1 to Maximum Spike Damage on their next melee
   or ranged attack that uses a Spike.
-  <br/>
+
   Additionally, the Artisan may take an additional Night Prize from a "mushroom
   patch" for every rank of Foraging they possess, this will not allow them to go
   over the limit of Night Prizes they may collect per Event, but does allow them

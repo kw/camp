@@ -5,6 +5,6 @@ requires:
 grants:
   - artisan.powers@1:1
   - artisan.utilities:1
-description: >
+description: |
   The Artisan gains an additional Utility Power and Basic Power from the
   Artisan Class Powers.

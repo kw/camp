@@ -12,7 +12,7 @@ choices:
       parent:
         type: class
     controller: sphere-grant
-description: >
+description: |
   The character can choose one additional cantrip from their class’ cantrip spell-list.
   If the character does not have a class spell-list, they may pick any cantrip but the
   cantrip must be from the same Sphere (Arcane or Divine) as the prerequisite that qualifies

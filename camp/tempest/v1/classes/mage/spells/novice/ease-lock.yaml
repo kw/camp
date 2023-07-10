@@ -6,7 +6,7 @@ delivery: Touch
 accent: Will
 duration: Special
 effect: Special
-description: >
+description: |
   The Mage can allow the target character (who cannot be the Mage themself) to make one
   attempt on a magical lock. The target must be holding a lockwand when the incantation
   is complete, and the Mage must Focus from the moment the incantation is completed until

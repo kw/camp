@@ -8,7 +8,7 @@ delivery: Touch
 accent: None
 refresh: Long Rest
 effect: Create Foundation Resource Infusion
-description: >
+description: |
   Normally when an Enchanter pulls from the Planar Weir the Enchanter may either Soulhold what
   is pulled or place it in a Foundation Resource Infusion and leave the Planar Weir with it.
   The Artisan has gained the ability to ignore the alchemical part of this process and through

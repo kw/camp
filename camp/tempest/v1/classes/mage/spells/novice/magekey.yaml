@@ -6,7 +6,7 @@ delivery: Packet (Spell-Ball)
 accent: Force
 duration: Instantaneous
 effect: Dispel Imprisoned
-description: >
+description: |
   Magekey allows the caster to end the Imprisoned Condition on one Individual.
   This can be to save a friend or to end the protection on a foe. This cannot be
   used while the Mage themself is *imprisoned*.

@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Mend
-description: >
+description: |
   The Artisan gains a pool of mending that can be used between Long Rests called the Living Iron Pool.
   This Living Iron pool is equal to three times the Artisan's class-level.
 
@@ -26,9 +26,9 @@ description: >
   Artisans that have more [Artificer] tagged powers than [Crafter] or [Mystic] Artisan powers gain
   additional points to their Living Iron pool based on the amounts below.
 
-  * If the Artisan has at least 5 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility) the
-    Artisan gains four times the Artisan's class-level per Long Rest.
-  * If the Artisan has at least 8 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility) the
-    Artisan gains five times the Artisan's class-level per Long Rest.
-  * If the Artisan has at least 11 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility) the
-    Artisan gains six times the Artisan's class-level per Long Rest.
+  - If the Artisan has at least 5 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains four times the Artisan's class-level per Long Rest.
+  - If the Artisan has at least 8 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains five times the Artisan's class-level per Long Rest.
+  - If the Artisan has at least 11 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains six times the Artisan's class-level per Long Rest.

@@ -16,6 +16,6 @@ choices:
       parent:
         type: class
     controller: sphere-grant
-description: >
+description: |
   The character can add two Novice spells from a spell-casting class she has levels in and add them to her spellbook.
   If the character does not have a class spell-list, they may pick spells from any class’ spell list.

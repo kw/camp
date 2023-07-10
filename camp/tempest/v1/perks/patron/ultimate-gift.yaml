@@ -1,7 +1,7 @@
 name: Ultimate Gift
 cost: 1
 requires: patron
-description: >
+description: |
   Once, the character can call out a final prayer to her Patron to save those around her.
   She should call out “[Patron’s name], I give the Ultimate Gift!”. She can now use three
   separate powers, at her discretion. She can call out “By My Voice Grant Life to [Names]”

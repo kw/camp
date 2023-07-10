@@ -1,7 +1,7 @@
 name: Unwardable
 award: 5
 requires: -othersleep
-description: >
+description: |
   Whether it is due to a curse, a bloodline corrupted by dark powers, or some more mysterious magic,
   the character cannot be at ease inside a Ward spell or a Haven Ritual. While the character is inside
   an area protected by a Ward spell or Haven Ritual, she is inherently drained and cannot benefit from

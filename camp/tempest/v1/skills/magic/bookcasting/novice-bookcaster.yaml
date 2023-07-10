@@ -4,7 +4,7 @@ requires:
   any:
     - basic-arcane
     - basic-faith
-description: >
+description: |
   The character can cast Novice level spells directly from her spellbook.
   Although the spell will still exhaust a Novice Magic Spell-Slot, it need not
   be Prepared (although it must be a spell the caster could Prepare).

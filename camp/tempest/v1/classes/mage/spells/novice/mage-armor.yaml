@@ -5,6 +5,6 @@ target: Self
 accent: Force
 duration: Long Rest
 effect: Grant Armor
-description: >
+description: |
   The caster grants themself 3 Summoned Armor Points. This is considered a new “suit” or armor and
   is not stackable with other sources of summoned armor.

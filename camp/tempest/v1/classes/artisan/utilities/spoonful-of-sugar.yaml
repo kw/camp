@@ -8,8 +8,8 @@ refresh: Long Rest
 accent: None
 effect: Special
 grants: apprentice-alchemy
-description: >
+description: |
   The Artisan gains the Apprentice Alchemy skill (3).
-  <br/>
+
   Once per Long Rest, the Artisan can remove the “Mana Sickness” detriment
   from a single Alchemical item they produce during the crafting process.

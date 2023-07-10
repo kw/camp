@@ -8,13 +8,13 @@ accent: Acid
 duration: Instantaneous
 refresh: Short Rest
 effect: Wounding
-description: >
+description: |
   Carefully, the Artisan processes a number reagents in sinister ways, adding their lethal
   humors to soak a spell-ball full of materia in a solution that will react over a few minutes,
   making for a powerfully acidic projectile. The Artisan must work on the packet for a Focus
   Quick 100 and may then throw it at any time. If the spell-ball leaves their hand or touches
   any object other than their hand, it will discharge.
-  <br/>
+
   The Artisan may process up to 3 Night Prizes into this solution. For each Night Prize
   processed in this way, the damage of the call is increased by 2. Thus processing 3 Night
   Prizes would result in a call of "Wounding 8 by Acid."

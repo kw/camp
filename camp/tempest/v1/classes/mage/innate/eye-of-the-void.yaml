@@ -2,7 +2,7 @@ name: Eye of the Void
 requires:
   - mage:9
   - apprentice-arcane-ritual
-description: >
+description: |
   When the Mage is a Primary Ritualist in an Arcane Ritual, when they pull their final
   card from the Dark Territory Hand, they may also pull one additional card from the hand.
   When the second card is revealed, the spirits of the Void will give them a premonition

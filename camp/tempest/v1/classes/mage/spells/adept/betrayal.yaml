@@ -6,7 +6,7 @@ duration: Permanent
 delivery: Packet (Spell-Ball)
 accent: Mind
 effect: Berserk
-description: >
+description: |
   The Mage charges two spell-balls with the energy of madness and pain. Each charge will cause
   an individual to strike out at those around it, attempting to harm anyone they can reach.
   A Berserked creature will attack the nearest creature until it is slept or drops to 0 Life Points.

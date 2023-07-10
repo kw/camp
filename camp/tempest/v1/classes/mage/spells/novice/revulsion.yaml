@@ -6,7 +6,7 @@ delivery: Packet (Spell-Ball)
 accent: Fear
 duration: Short Rest
 effect: Repel
-description: >
+description: |
   The Mage reaches out with their will, putting into others a deep compulsion to stay away.
   Upon completion of the incantation, two spell-balls will be charged with the ability to Repel
   others. If this spell is Prepared using an Adept spell-slot, four balls are charged. If it is

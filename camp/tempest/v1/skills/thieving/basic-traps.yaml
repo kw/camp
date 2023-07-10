@@ -1,6 +1,6 @@
 name: Basic Traps
 cost: 5
-description: >
+description: |
   This skill allows a character to attempt to disarm traps.
   See the Traps and Locks chapter for details.
   Without this skill any attempt to manipulate a triggered trap, including moving it,

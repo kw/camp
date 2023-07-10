@@ -7,15 +7,15 @@ duration: Special
 refresh: Immediate
 accent: None
 effect: Special
-description: >
+description: |
   If the Artisan helps another Crafter at a Crafting Station of any kind, handing tools,
   helping follow the Recipe, etc., they can make the process much more streamlined and
   efficient. All repeated tasks have their number of repetitions halved (round up), and
   if a process requires more than one turn of the timer, the number of turns is halved
   (round up).
-  <br/>
+
   In addition, this power can be used during certain specific cases to reduce the time
   to accomplish Counted tasks.
-  <br/>
+
   **Note**: This Power stacks with other time reduction skills for crafting, however,
   no repetitions / turns can be reduced below 1 each.

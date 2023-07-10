@@ -5,7 +5,7 @@ option:
   freeform: true
   multiple: false
   values: [$Professions]
-description: >
+description: |
   The character has some basic knowledge in a profession and can generally perform in that
   profession on basic tasks without journeyman or master supervision. More complex tasks may
   require guidance. The character can perform the basic functions of the chosen profession and

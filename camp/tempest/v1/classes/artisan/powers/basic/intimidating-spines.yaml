@@ -7,7 +7,7 @@ duration: Short Rest
 refresh: Short Rest
 accent: Fear
 effect: Repel
-description: >
+description: |
   By spending a Spike, the Artisan surrounds themselves with harmful blades, spikes,
   and whirling implements of doom. For the duration, the affected reels back in fear
   and refuses to approach them.

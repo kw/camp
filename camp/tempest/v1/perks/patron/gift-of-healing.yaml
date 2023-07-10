@@ -2,7 +2,7 @@ name: Gift of Healing
 cost: 2
 ranks: unlimited
 requires: patron
-description: >
+description: |
   The character can Focus for a Quick 100 to Heal herself or another character within
   Touch range to full Life Points. This can be done once per Event. The Call for this
   is “Heal to full Life Points”.

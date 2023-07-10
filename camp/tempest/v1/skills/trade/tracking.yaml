@@ -1,6 +1,6 @@
 name: Tracking
 cost: 4
-description: >
+description: |
   A character with the Tracking skill can follow a trail.
   Tracking trails will be marked with green flags marked
   with a white circle (called a “Halo”), and these flags must

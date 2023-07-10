@@ -3,7 +3,7 @@ cost: 2
 requires:
   - level:5
   - draconic-heritage-1
-description: >
+description: |
   The character can use a breath weapon once per Long Rest. As a Verbal, this will do four damage,
   plus the number of Draconic Heritage perks taken, to one target that the character could strike
   with a melee weapon. The damage will have the appropriate Accent.

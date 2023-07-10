@@ -8,7 +8,7 @@ accent: None
 duration: Until Used
 refresh: Short Rest
 effect: Imbue Wounding, Imbue Shatter
-description: >
+description: |
   The Artisan can give another character the power to ignite a weapon they are using, by
   preparing strange fuses, oils, and other ingredients. After the Artisan spends a slow count
   of 30 role-playing this preparation, the character is ready to detonate their weapon. At any
@@ -25,7 +25,7 @@ subcard:
   duration: Instantaneous
   refresh: None
   effect: Shatter, Wounding
-  description: >
+  description: |
     A melee weapon can be used to deliver a Wounding Effect for 8 points of Flame damage. This
     will, unfortunately, also cause a Shatter on the weapon itself and 4 points of Wounding by
     Flame delivered by Touch to the wielder. This damage is not Weapon-delivered and cannot be

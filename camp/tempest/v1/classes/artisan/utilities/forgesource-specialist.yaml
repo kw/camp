@@ -1,14 +1,14 @@
 name: Forgesource Specialist
 tags: [artificer, crafter]
 grants: apprentice-tinkering
-description: >
+description: |
   The Artisan gains the skill Apprentice Tinkering (3).
-  <br/>
+
   The Artisan knows the power of creation itself: the power of Forgesources.
   An Artisan with this power may craft two Forgesources at the same time.
-  <br/>
+
   Additionally, the Artisan may make Forgesources when they are only an Apprentice
   Tinker rather than the normal requirement of being a Journeyman Tinker.
-  <br/>
+
   Finally, the Artisan may replace any Uncommon resource (Rare Minerals, Harvest,
   Night Prizes) in a Tinkering Schematic with a Forgesource at-will.

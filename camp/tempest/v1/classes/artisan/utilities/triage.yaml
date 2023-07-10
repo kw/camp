@@ -12,11 +12,11 @@ effect: Discern
 grants:
   - diagnose
   - combat-medic
-description: >
+description: |
   The Artisan has seen their fair share of combat and served as a healer in those situations.
   They have learned to quickly see what is wrong and how to best handle the situation.
   They gain the Diagnose and Combat Medic Skills.
-  <br/>
+
   When using the Diagnose skill, the number of questions available to the Artisan are
   increased. They can even tell some things about the personality of those they diagnose
   based on their physical condition. The Artisan may, with Diagnose, ask any of the

@@ -8,6 +8,6 @@ accent: None
 duration: Instantaneous
 refresh: Long Rest
 effect: Special
-description: >
+description: |
   The Artisan can alter the creation of any alchemical item they are crafting that has an
   associated item card to require 1 less Bloom or 1 less Night Prize (minimum 1).

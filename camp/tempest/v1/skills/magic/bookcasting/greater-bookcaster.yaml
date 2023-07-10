@@ -3,7 +3,7 @@ cost: 3
 # TODO(#15): Add "one greater spell-slot" requirement... if the skill actually develops one.
 requires:
   - adept-bookcaster
-description: >
+description: |
   The character can cast Greater spells directly from her spellbook.
   Although the spell will still exhaust a Greater Spell-Slot, it need not
   be Prepared (although it must be a spell the caster could Prepare).

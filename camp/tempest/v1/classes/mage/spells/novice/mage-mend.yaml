@@ -6,5 +6,5 @@ delivery: Packet (Spell-Ball)
 accent: Force
 duration: Instantaneous
 effect: Mend
-description: >
+description: |
   The target of this spell will mend 5 Armor Points.

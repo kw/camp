@@ -8,7 +8,7 @@ delivery: RP
 accent: Mind
 refresh: Short Rest
 effect: Grant Power
-description: >
+description: |
   Out of combat, the Artisan sits down with a willing creature and puts their hands near the
   other’s temples (remember not to touch unless consent has already been explicitly
   established). They should walk the target through a meditation, or explain how they are

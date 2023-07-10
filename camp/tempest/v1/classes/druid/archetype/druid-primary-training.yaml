@@ -3,5 +3,5 @@ requires: druid:2
 grants:
   - druid.cantrips:1
   - druid.spell_slots@1:1
-description: >
+description: |
   The Druid gains an additional Cantrip from the Druid Class list and an additional Novice Spell Slot.

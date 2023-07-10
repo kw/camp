@@ -8,7 +8,7 @@ accent: Poison
 duration: Instantaneous
 refresh: Short Rest
 effect: Heal
-description: >
+description: |
   This Power can only be used out of combat. By expending one Bloom, the Artisan can provide a
   powerful curative brew for up to six other Individuals, moving from one to the other giving
   each a sip which will heal small wounds and injuries. No one target can be given more than

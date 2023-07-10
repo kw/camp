@@ -1,6 +1,6 @@
 name: Grand Ritualist
 requires: artisan:6
-description: >
+description: |
   While the Artisan is a Primary Ritualist, the Mystic may Sacrifice a Maximum Life Point to redraw a
   card from the Final Hand of a Dark Territory pull before the effect of the first card is announced.
 

@@ -330,6 +330,11 @@ class TempestCharacter(base_engine.CharacterController):
             )
         return spheres
 
+    def display_name(self, expr: str) -> str:
+        if tag_name := self.ruleset.tags.get(expr):
+            return tag_name
+        return super().display_name(expr)
+
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
             case None:

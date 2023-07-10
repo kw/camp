@@ -8,7 +8,7 @@ accent: None
 duration: Permanent
 refresh: Event, Long Rest
 effect: Special
-description: >
+description: |
   The Artisan can alter the creation of a Sharpening Stone they are crafting. If this process
   is used, the resulting creation is called a "Specialist Sharpening Stone" with an expiration
   of 1 year. This item, once per Long Rest, is not consumed on use when the Artisan personally
@@ -17,5 +17,5 @@ description: >
   Sharpening Stone will only function as a standard Sharpening Stone. The Specialist Sharpening
   Stone requires significant dedication to keep up and thus an Artisan may only maintain one at
   a time.
-  <br/>
+
   The item’s card must be updated with these special features.

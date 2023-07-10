@@ -8,7 +8,7 @@ accent: Lightning
 duration: Instantaneous
 refresh: Short Rest
 effect: Wounding
-description: >
+description: |
   Carefully, the Artisan breaks down a Forgesource and pours the energy of it over a
   spell-ball full of materia in a solution that will react over a few minutes, making
   for a powerfully lightning projectile. The Artisan must work on the packet for a

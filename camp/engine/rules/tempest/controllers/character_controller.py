@@ -17,6 +17,7 @@ from . import cantrip_controller
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
+from . import power_controller
 from . import spell_controller
 from . import spellbook_controller
 from . import subfeature_controller
@@ -221,9 +222,7 @@ class TempestCharacter(base_engine.CharacterController):
 
     @property
     def martial_powers(self) -> list[feature_controller.FeatureController]:
-        return [
-            feat for feat in self.features.values() if feat.feature_type == "martial"
-        ]
+        return [feat for feat in self.features.values() if feat.feature_type == "power"]
 
     @property
     def utilities(self) -> list[feature_controller.FeatureController]:
@@ -312,6 +311,10 @@ class TempestCharacter(base_engine.CharacterController):
     def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
         return [self.arcane.spellbook, self.divine.spellbook]
 
+    @cached_property
+    def powerbook(self) -> spellbook_controller.PowerbookController:
+        return self.martial.powerbook
+
     def sphere_data(self) -> list[SphereData]:
         spheres = []
         for sphere in sorted(self.available_spheres):
@@ -353,6 +356,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return cantrip_controller.CantripController(id, self)
             case "spell":
                 return spell_controller.SpellController(id, self)
+            case "power":
+                return power_controller.PowerController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

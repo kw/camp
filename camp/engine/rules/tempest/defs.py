@@ -118,6 +118,10 @@ class ClassDef(BaseFeatureDef):
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
     class_type: Literal["basic", "advanced", "epic"] = "basic"
+
+    # At time of writing, only used for Artisan specialization tags.
+    specializations: set[str] | None = None
+
     # By default, classes have 10 levels.
     ranks: int = 10
 
@@ -207,34 +211,30 @@ class PerkDef(BaseFeatureDef):
     creation_only: bool = False
 
 
-class PowerDef(BaseFeatureDef):
-    type: Literal["power"] = "power"
-
-
-class InnatePower(PowerDef):
+class InnatePower(BaseFeatureDef):
     type: Literal["innate"] = "innate"
 
 
-class ArchetypePower(PowerDef):
+class ArchetypePower(BaseFeatureDef):
     type: Literal["archetype"] = "archetype"
 
 
-class MartialPower(PowerDef):
-    type: Literal["martial"] = "martial"
+class Power(BaseFeatureDef):
+    type: Literal["power"] = "power"
     tier: PositiveInt | None = None
 
 
-class Utility(PowerDef):
+class Utility(BaseFeatureDef):
     type: Literal["utility"] = "utility"
 
 
-class Spell(PowerDef):
+class Spell(BaseFeatureDef):
     type: Literal["spell"] = "spell"
     tier: PositiveInt | None = None
     sphere: Literal["arcane", "divine", None] = None
 
 
-class Cantrip(PowerDef):
+class Cantrip(BaseFeatureDef):
     type: Literal["cantrip"] = "cantrip"
     sphere: Literal["arcane", "divine", None] = None
 
@@ -243,12 +243,11 @@ FeatureDefinitions: TypeAlias = (
     ClassDef
     | SubFeatureDef
     | SkillDef
-    | PowerDef
     | FlawDef
     | PerkDef
     | InnatePower
     | ArchetypePower
-    | MartialPower
+    | Power
     | Spell
     | Cantrip
     | Utility

@@ -63,6 +63,7 @@ class PowerbookController(attribute_controllers.AttributeController):
 
     @property
     def powers_available_per_class(self) -> dict[str, TierTuple]:
+        """The number of powers from each class that can be added to the powerbook at this time."""
         powers_available: dict[str, TierTuple] = {}
         earned = self.powers_earned_per_class
         taken = self.powers_taken_per_class
@@ -106,7 +107,7 @@ class PowerbookController(attribute_controllers.AttributeController):
         counts: dict[str, list[int]] = defaultdict(lambda: [0] * 4)
         for fc in self.character.martial_powers:
             if fc.parent and fc.parent.feature_type == "class":
-                counts[fc.parent.full_id][fc.tier - 1] += 1
+                counts[fc.parent.full_id][fc.tier - 1] += fc.value
         return {k: tuple(v) for k, v in counts.items() if any(v)}
 
     @property

@@ -859,6 +859,10 @@ class ChoiceController(ABC):
         return 1
 
     @property
+    def multi(self) -> bool:
+        return False
+
+    @property
     def choices_remaining(self) -> int:
         if self.limit == "unlimited":
             return 999

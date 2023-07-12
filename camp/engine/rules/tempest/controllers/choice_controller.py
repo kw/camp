@@ -51,6 +51,10 @@ class ChoiceController(base_engine.ChoiceController):
         return self.definition.limit
 
     @property
+    def multi(self) -> bool:
+        return self.definition.multi
+
+    @property
     def choices_remaining(self) -> int:
         if self.limit == "unlimited":
             return 999
@@ -66,7 +70,7 @@ class ChoiceController(base_engine.ChoiceController):
 
     def choose(self, choice: str) -> Decision:
         choice_ranks = self.choice_ranks()
-        if not self.definition.multi and choice in choice_ranks:
+        if not self.multi and choice in choice_ranks:
             return Decision(success=False, reason="Choice already taken.")
 
         if self.limit != "unlimited" and sum(choice_ranks.values()) >= self.limit:

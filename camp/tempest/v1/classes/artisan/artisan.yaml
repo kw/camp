@@ -10,6 +10,10 @@ multiclass_features:
   - basic-martial-weapons
 level_grants:
   7: artisan-max-armor-bonus
+specializations:
+  - artificer
+  - crafter
+  - mystic
 choices:
   productive-equipment:
     starting_class: true

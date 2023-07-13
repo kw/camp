@@ -541,6 +541,11 @@ class FeatureController(base_engine.BaseFeatureController):
             for rank in range(self.value + 1):
                 if grant := self.definition.rank_grants.get(rank):
                     grants.update(self._gather_grants(grant))
+        # Handle conditional grants (grant_if).
+        if self.definition.grant_if:
+            for grant, requires in self.definition.grant_if.items():
+                if self.character.meets_requirements(requires):
+                    grants.update(self._gather_grants(grant))
         # Subclasses might have other grants that the produce. Add them in.
         grants.update(self.extra_grants())
 

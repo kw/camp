@@ -82,6 +82,7 @@ class PowerCard(base_models.BaseModel):
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
+    grant_if: dict[str, base_models.Requirements] | None = None
     rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
     discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
@@ -91,6 +92,14 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
         super().post_validate(ruleset)
         if self.grants:
             ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+        if self.grant_if:
+            ruleset.validate_identifiers(self.grant_if.keys())
+            for grant, req in self.grant_if.items():
+                # Normalize the requirements. This mirrors BaseFeatureDef.post_validate's
+                # handling of the `requirements` field.
+                if req := base_models.parse_req(req):
+                    ruleset.validate_identifiers(list(req.identifiers()))
+                    self.grant_if[grant] = req
         if self.rank_grants:
             grantables = list(self.rank_grants.values())
             ruleset.validate_identifiers(_grantable_identifiers(grantables))
@@ -404,6 +413,12 @@ class Ruleset(base_models.BaseRuleset):
             property_name="basic_classes",
             name="Basic Classes",
             hidden=True,
+        ),
+        Attribute(
+            id="specialization",
+            name="Specialization",
+            hidden=True,
+            scoped=True,
         ),
     ]
 

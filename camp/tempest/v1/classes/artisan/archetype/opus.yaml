@@ -1,9 +1,16 @@
 name: Opus
 requires: artisan:10
-# TODO(#97): Implement giving the subpowers based on specialty.
+grant_if:
+  opus-reforge: artisan.specialization+crafter
+  opus-aetheric-infusion: artisan.specialization+artificer
+  opus-eureka: artisan.specialization+mystic
 description: |
   Based on the number of Specialization tags that Artisan has, the Opus power
   changes to reflect the Artisan’s most Specialized aspect:
+
+  * Crafter: [Reforge](../opus-reforge/)
+  * Artificer: [Aetheric Infusion](../opus-aetheric-infusion/)
+  * Mystic: [Eureka!](../opus-eureka/)
 ---
 id: opus-reforge
 type: subfeature
@@ -56,5 +63,7 @@ duration: Instantaneous
 refresh: Event
 effect: Grant Long Rest
 description: |
+  An Artisan with more Mystic Tagged powers than any other Tag gains the power below:
+
   Once per Event the Artisan may touch a willing or helpless target,
   and call “Grant Long Rest by Inspiration.”

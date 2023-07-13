@@ -312,7 +312,7 @@ class ClassController(feature_controller.FeatureController):
         return len([tag for tag, count in spec_count.items() if count == max_taken]) > 1
 
     @property
-    def specialization(self) -> tuple[str, int] | None:
+    def current_specialization(self) -> tuple[str, int] | None:
         spec_count = self.specialization_counts
         if not spec_count:
             return None
@@ -327,6 +327,12 @@ class ClassController(feature_controller.FeatureController):
             if spec in max_tags:
                 return spec, max_taken
         return None
+
+    def specialization(self, expr: PropExpression) -> int:
+        if spec := self.current_specialization:
+            if expr.option == spec[0]:
+                return spec[1]
+        return 0
 
     @property
     def explain(self) -> list[str]:
@@ -361,7 +367,7 @@ class ClassController(feature_controller.FeatureController):
                 lines.append(
                     f"Powers available: {powers_available[0]}/{powers_available[1]}/{powers_available[2]}/{powers_available[3]}"
                 )
-        if spec := self.specialization:
+        if spec := self.current_specialization:
             lines.append(
                 f"{self.character.display_name(spec[0])}: {spec[1]} powers taken ⭐️"
             )

@@ -169,19 +169,23 @@ class PropExpression(BoolExpr):
     value: int = 1
     single: int | None = None
     less_than: int | None = None
+    prefixes: tuple[str, ...] = ()
 
     @property
     def full_id(self) -> str:
         return self.unparse(
             prop=self.prop,
-            attribute=self.attribute,
             slot=self.slot,
             option=self.option,
+            prefixes=self.prefixes,
         )
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
         expr = self.unparse(
-            prop=self.prop, attribute=self.attribute, slot=self.slot, option=self.option
+            prop=self.prop,
+            slot=self.slot,
+            option=self.option,
+            prefixes=self.prefixes,
         )
         if not char.has_prop(expr):
             return Decision(success=False, reason=f"{self!r} [{expr} not present]")
@@ -202,23 +206,33 @@ class PropExpression(BoolExpr):
         return Decision(success=True)
 
     def identifiers(self) -> set[str]:
-        return set([self.prop])
+        return set(self.prefixes) | set([self.prop])
 
-    def popattr(self, new_attr: str | None = None) -> PropExpression:
-        """Returns a copy of this expression with the property removed and attribute moved into its place."""
-        if not self.attribute:
-            return self.copy()
-        return self.copy(update={"prop": self.attribute, "attribute": new_attr})
+    def pop(self) -> tuple[str | None, PropExpression]:
+        """Takes off the first layer of prefix and returns the prefix and new expression.
+
+        For example, if the prefix is (A, B, C), returns A, PropExpression(prefixes=(B, C), ...)
+        If there are no more prefixes, returns None for the prefix and the original expression.
+        """
+        if self.prefixes:
+            first, *rest = self.prefixes
+            return first, self.copy(update={"prefixes": rest})
+        return None, self
+
+    def noprefix(self) -> PropExpression:
+        """Returns a copy of the expression with no prefixes."""
+        return self.copy(update={"prefixes": ()})
 
     @classmethod
     def parse(cls, req: str | PropExpression) -> PropExpression:
         if isinstance(req, PropExpression):
             # Convenient pass-thru for methods that can take the str or parsed version.
             return req
-        if match := _REQ_SYNTAX.fullmatch(req):
+        *prefixes, expr = req.split(".")
+
+        if match := _REQ_SYNTAX.fullmatch(expr):
             groups = match.groupdict()
             prop = groups["prop"]
-            attr = groups.get("attribute")
             slot = t if (t := groups.get("slot")) else None
             option = o.replace("_", " ") if (o := groups.get("option")) else None
             value = int(m) if (m := groups.get("value")) else 1
@@ -226,12 +240,12 @@ class PropExpression(BoolExpr):
             less_than = int(lt) if (lt := groups.get("less_than")) else None
             return cls(
                 prop=prop,
-                attribute=attr,
                 slot=slot,
                 option=option,
                 value=value,
                 single=single,
                 less_than=less_than,
+                prefixes=prefixes,
             )
         raise ValueError(f"Requirement parse failure for {req}")
 
@@ -239,16 +253,16 @@ class PropExpression(BoolExpr):
     def unparse(
         cls,
         prop: str,
-        attribute: str = None,
         slot: str | None = None,
         option: str | None = None,
         value: int = 1,
         single: int | None = None,
         less_than: int | None = None,
+        prefixes: list[str] = None,
     ):
         req = prop or "unknown"
-        if attribute:
-            req += f".{attribute}"
+        if prefixes:
+            req = ".".join(prefixes) + "." + req
         if slot:
             req += f"@{slot}"
         if option:
@@ -264,12 +278,12 @@ class PropExpression(BoolExpr):
     def __repr__(self) -> str:
         return self.unparse(
             prop=self.prop,
-            attribute=self.attribute,
             slot=self.slot,
             option=self.option,
             value=self.value,
             single=self.single,
             less_than=self.less_than,
+            prefixes=self.prefixes,
         )
 
 

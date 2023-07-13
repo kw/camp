@@ -374,17 +374,6 @@ class TempestCharacter(base_engine.CharacterController):
         # Otherwise, create a controller and for it.
         return self._new_controller(expr.full_id)
 
-    def describe_expr(self, expr: str | PropExpression) -> str:
-        expr = PropExpression.parse(expr)
-        name = self.display_name(expr.prop)
-        if expr.option:
-            name += f" ({expr.option})"
-        if expr.attribute:
-            name += f" {expr.attribute}"
-        if expr.slot:
-            name += f" [{expr.slot}]"
-        return name
-
     @property
     def available_spheres(self) -> set[str]:
         """Spheres of magic that the character has access to."""

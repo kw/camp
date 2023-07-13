@@ -133,11 +133,15 @@ class ChoiceController(base_engine.ChoiceController):
 
     def describe_choice(self, choice: str) -> str:
         expr = PropExpression.parse(choice)
-        display_name = self._feature.character.display_name(expr.prop)
+        character = self._feature.character
+        if expr.prefixes:
+            display_name = " ".join(
+                character.display_name(p) for p in expr.prefixes
+            ) + character.display_name(expr.prop)
+        else:
+            display_name = self._feature.character.display_name(expr.prop)
         if expr.option:
             display_name += f" [{expr.option}]"
-        if expr.attribute:
-            display_name += f" {self._feature.character.display_name(expr.attribute)}"
         if expr.value and expr.value > 1:
             display_name += f" x{expr.value}"
         return display_name

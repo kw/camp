@@ -2,5 +2,5 @@ name: Bookcasting Expertise
 cost: 2
 ranks: 4
 requires: adept-bookcaster
-description: >
+description: |
   Once per Long Rest, the caster can bookcast one spell without using up a spell-slot of any kind.

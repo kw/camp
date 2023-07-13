@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Short
 effect: Wounding
-description: >
+description: |
   Vines with deadly thorns extend from the Druid’s hands and wrap around their melee weapon,
   causing pain but bringing power. When casting this spell, the Druid must Sacrifice a Life Point.
   After casting the Druid may expend a Spike to add the Wounding effect to their next blow. This may

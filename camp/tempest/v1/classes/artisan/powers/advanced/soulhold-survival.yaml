@@ -1,0 +1,19 @@
+name: Soulhold Survival
+tags: [crafter]
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Long Rest
+effect: Special
+description: |
+  When the Artisan draws a Foundation Resource - Death that would normally kill them, they can,
+  instead, soulhold it. As long as the Foundation Resource - Death is soulheld, the Artisan
+  will remain alive, but the moment it ceases being soulheld, the Artisan will take the death
+  effect, unless they immediately put the death back in the Weir and redraw.
+
+  If the Artisan uses the Foundation Resource - Death to craft, they will die once they finish
+  crafting, or if the Death Foundation Resource is transferred to a Foundation Resource
+  Infusion they will survive, but are reduced to zero Life Point, and thus Dying.

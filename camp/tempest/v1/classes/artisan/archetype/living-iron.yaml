@@ -1,0 +1,34 @@
+name: Living Iron
+requires: artisan:2
+incant: By the power of my craft I repair what is broken.
+call: "Mend [X]"
+target: Armor or Shield
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Mend
+description: |
+  The Artisan gains a pool of mending that can be used between Long Rests called the Living Iron Pool.
+  This Living Iron pool is equal to three times the Artisan's class-level.
+
+  Each time this power is used, the Artisan can Mend armor (physical, summoned, or natural) or shield up
+  to the Artisan’s class-level, subtracting the Mending from the Living Iron Pool. Living Iron will not
+  work on the Artisan's own worn armor, but will work if the Artisan removes the armor. Remember that a
+  shield with 0 Shield Points cannot be mended, and must be Rebuilt.
+
+  For example, a 4th level Artisan would have 12 total points of Mending to give out between Long Rests
+  and could use this Power to Mend up to 4 points at a time. There is no limit to the number of points
+  that can be in this pool; however, the pool resets to three times the Artisan’s class-level at the end
+  of a Long Rest. Note that if this Power is gained by a non-Artisan, the amount of Mending is still
+  determined by the number of Artisan class-levels, i.e. zero.
+
+  Artisans that have more [Artificer] tagged powers than [Crafter] or [Mystic] Artisan powers gain
+  additional points to their Living Iron pool based on the amounts below.
+
+  - If the Artisan has at least 5 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains four times the Artisan's class-level per Long Rest.
+  - If the Artisan has at least 8 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains five times the Artisan's class-level per Long Rest.
+  - If the Artisan has at least 11 [Artificer] tagged Artisan powers (Basic, Advanced, or Utility)
+    the Artisan gains six times the Artisan's class-level per Long Rest.

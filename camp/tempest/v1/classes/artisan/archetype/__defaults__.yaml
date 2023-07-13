@@ -1,0 +1,4 @@
+type: archetype
+parent: artisan
+requires: artisan
+category: Artisan Archetype Powers

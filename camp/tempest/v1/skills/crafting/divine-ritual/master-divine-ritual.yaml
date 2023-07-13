@@ -3,6 +3,6 @@ cost: 6
 requires:
   - greater-divine-ritual
   - level:16
-description: >
+description: |
   The character can perform any Master Divine rituals.
   To learn how to cast a Divine ritual, see the Divine Ritual Magic chapter.

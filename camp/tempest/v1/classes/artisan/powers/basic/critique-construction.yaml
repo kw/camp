@@ -1,0 +1,14 @@
+name: Critique Construction
+tags: [artificer]
+incant: Slow 30, RP of explaining vulnerabilities in a shield to the target of the power.
+call: '“Grant Power”, Explanation'
+target: Other Individual
+duration: Short Rest
+delivery: Touch
+accent: None
+refresh: Short Rest
+effect: Grant Power
+description: |
+  The Artisan focuses, examining a shield and picks out a weakness, the Artisan then
+  demonstrates the weakness to another allowing them to exploit that weakness.
+  The recipient of the demonstration may use a single shatter against that specific shield.

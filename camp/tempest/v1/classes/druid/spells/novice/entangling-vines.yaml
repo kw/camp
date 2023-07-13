@@ -7,7 +7,7 @@ delivery: Verbal
 accent: Poison
 duration: Quick 100
 effect: Root, Disable
-description: >
+description: |
   Venomous thorns reach up from the underbrush, or through the cracks in the stones, striking at
   the legs and feet of the Druid’s enemies to disable their foe’s leg.
 

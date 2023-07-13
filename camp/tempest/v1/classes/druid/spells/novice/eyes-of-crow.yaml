@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Short Rest
 effect: Special, Mend
-description: >
+description: |
   Instead of searching a target, the Druid can quickly size up a helpless or willing creature and
   determine where to search. Please note that, like searching, this should not include any actual
   touching without express pre-negotiated consent. The caster can search instantaneously, by calling

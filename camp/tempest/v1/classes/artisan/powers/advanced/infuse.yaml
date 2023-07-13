@@ -1,0 +1,15 @@
+name: Infuse
+tags: [crafter, artificer]
+incant: Focus Quick 100
+call: '“Short Grant [Accent]”, Explanation'
+target: Individual
+delivery: Touch
+accent: Var
+duration: Short Rest
+refresh: Long Rest
+effect: Grant Accent
+description: |
+  The Artisan unravels an Energy Foundation Resource Infusion to treat a weapon, giving it
+  properties beyond its normal. This procedure allows the targeted weapon to change to the
+  chosen Accent at-will for weapon attacks until they complete a Short Rest. The Artisan may,
+  at the time of infusion, choose one of Acid, Flame, Ice, or Lightning.

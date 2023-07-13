@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Wounding
-description: >
+description: |
   The Druid is able to sap the life out of the others through dark nature magics of the woods.
   When casting this spell they may inflict “1 to Living.”
 

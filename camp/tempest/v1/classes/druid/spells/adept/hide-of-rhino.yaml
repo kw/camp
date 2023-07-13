@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Long Rest, Until Discharged
 effect: Grant Natural Armor, Grant Protect
-description: >
+description: |
   The Druid is able to tap into some of the deeper energies of the forest to become more bestial in nature.
   This spell will give the Druid three points of Natural Armor.
 

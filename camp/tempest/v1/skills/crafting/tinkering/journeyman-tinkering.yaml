@@ -3,5 +3,5 @@ cost: 4
 requires:
   - apprentice-tinkering
   - level:4
-description: >
+description: |
   The character can craft Journeyman tier engineering and tinkering items.

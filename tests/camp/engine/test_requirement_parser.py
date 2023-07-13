@@ -38,9 +38,9 @@ def test_parse_propreq(req):
 
 def test_parse_propreq_values():
     """Test that, when parsed, the PropReq has the expected values."""
-    p = PropExpression.parse("feature-id.attr@1+My_Option:23$34<450")
-    assert p.prop == "feature-id"
-    assert p.attribute == "attr"
+    p = PropExpression.parse("foo.bar+baz.attr@1+My_Option:23$34<450")
+    assert p.prefixes == ("foo", "bar+baz")
+    assert p.prop == "attr"
     assert p.slot == "1"
     assert p.option == "My Option"
     assert p.value == 23

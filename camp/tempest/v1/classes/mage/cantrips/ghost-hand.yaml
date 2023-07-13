@@ -6,7 +6,7 @@ duration: Slow Count of 15
 refresh: Focus Slow 300
 accent: Force
 effect: Grant Insubstantial, Cure
-description: >
+description: |
   The caster must immediately drop everything they are holding and will go insubstantial.
   They then have a Slow Count of 15 to perform one action and return to the approximate
   spot where they completed the incant. At the end of the Slow Count of 15 the caster

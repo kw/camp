@@ -1,0 +1,18 @@
+name: Create Infusion
+tags: [crafter]
+incant: None
+call: None
+target: Planar Weir
+duration: Instantaneous
+delivery: Touch
+accent: None
+refresh: Long Rest
+effect: Create Foundation Resource Infusion
+description: |
+  Normally when an Enchanter pulls from the Planar Weir the Enchanter may either Soulhold what
+  is pulled or place it in a Foundation Resource Infusion and leave the Planar Weir with it.
+  The Artisan has gained the ability to ignore the alchemical part of this process and through
+  sheer force of will bind the Foundation Resource into existence so it may leave the Weir as
+  normal. Using Create Infusion the Artisan can ignore the need for a Foundation Resource
+  Infusion when they use Tap Primordial Weir (any level) and create a card for one resource
+  they pulled from the Weir without previously having a Foundation Resource Infusion.

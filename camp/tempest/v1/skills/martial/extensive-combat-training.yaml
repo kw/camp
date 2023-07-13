@@ -3,7 +3,7 @@ cost: 6
 requires: martial
 ranks: 2
 # TODO(#13): Implement bonus powers
-description: >
+description: |
   The character may choose an additional Power from a non-casting class that she has levels in.
   The Power cannot be one the character already has. This is just like an additional Power from the class.
   The Power must be of a tier she could normally take.

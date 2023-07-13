@@ -5,7 +5,7 @@ target: One Page
 delivery: Touch
 duration: Instantaneous
 effect: Special
-description: >
+description: |
   The Mage may, after casting this spell, understand one piece of written work regardless of the
   language it was written in, or any code that has been used to obfuscate the meaning. The work
   to be deciphered may be no longer than one page of script. Documents that can be deciphered in

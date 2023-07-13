@@ -1,0 +1,20 @@
+name: Analysis
+tags: [crafter]
+incant: Focus Quick 100
+call: '“Subtle Discern: What are the properties of this item?”'
+target: Item
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Discern
+description: |
+  The Artisan can inspect any item that has an information card for a Quick Count of
+  100 and then read the information card. This will not make the character immune to
+  any Effects or consequences (reading a Glyph item card, for example, may mean the
+  Artisan is close enough to set off the Glyph). If there is a Player Guide available,
+  the Player Guide may be asked to give the properties of any item, including ones
+  that do not have information cards, but the information given is up to the attending
+  Player Guide.
+
+  **Note**: This power will reveal only the information available on the card, and additional effects may exist that are obfuscated.

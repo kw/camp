@@ -15,6 +15,6 @@ choices:
     controller: sphere-bonus
     controller_data:
       bonus: spell_slots@1
-description: >
+description: |
   The character chooses one Sphere of magic and gains one additional Novice
   spell-slot in that Sphere and can use it to cast a Prepared spell.

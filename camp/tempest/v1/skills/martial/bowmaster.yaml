@@ -6,7 +6,7 @@ requires:
   - any:
     - weapon-specialization+Bow
     - weapon-specialization+Crossbow
-description: >
+description: |
   When the character spends a Quick 10 aiming with a weapon in which she has Weapon Specialization, she may choose to do one of the following:
 
   * One additional point of damage.

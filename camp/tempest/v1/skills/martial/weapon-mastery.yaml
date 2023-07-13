@@ -4,5 +4,5 @@ requires:
   - weapon-specialization
   - basic-martial-weapons
   - martial:13
-description: >
+description: |
   When using the weapon with which the character has Weapon Specialization, the character’s base Spike damage rises by +1.

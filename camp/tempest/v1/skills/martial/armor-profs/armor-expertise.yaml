@@ -1,7 +1,7 @@
 name: Armor Expertise
 cost: 6
 requires: basic-armor
-description: >
+description: |
   The character gains +1 to the Armor Points of any armor they wear,
   even if it normally has an Armor Points of 0. The character must wear
   armor in order to get the benefit.

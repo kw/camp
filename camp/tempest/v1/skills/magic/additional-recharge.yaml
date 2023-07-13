@@ -5,7 +5,7 @@ requires:
   any:
     - basic-arcane
     - basic-faith
-description: >
+description: |
   The character is adept at tapping into her power source.
   Once per Long Rest she can perform a small personal centering ceremony
   (the details of which are up to the caster) which should take about five minutes.

@@ -7,7 +7,7 @@ delivery: Touch
 accent: None
 duration: Instantaneous
 effect: Heal
-description: >
+description: |
   The Druid heals the target of the spell for 3 Life Points.
 
   If the Druid is in the Form of the Rising Sun they also may Cure one of the following conditions

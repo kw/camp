@@ -1,0 +1,6 @@
+name: Technical Expertise
+requires: artisan:8
+grants: artisan.powers@2:1
+description: |
+  The Artisan learns an additional Advanced Power from the Artisan Class
+  Powers, this additional power is already reflected on the Class Table.

@@ -10,7 +10,7 @@ duration: Short Rest
 refresh: Long Rest
 effect: Grant Tracking
 # TODO: Implement the "refund if you buy Tracking" clause.
-description: >
+description: |
   Upon using this power, the character may ask the trees what they have seen,
   and follow specific paths. They can see and follow green flags marked with a
   white circle (called a “Halo”) until they have finished a Short Rest. This

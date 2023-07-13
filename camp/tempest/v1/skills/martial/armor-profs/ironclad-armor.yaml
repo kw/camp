@@ -1,5 +1,5 @@
 name: Ironclad Armor
 cost: 2
 requires: heavy-armor
-description: >
+description: |
   The character can gain up to ten armor points after hit location calculations.

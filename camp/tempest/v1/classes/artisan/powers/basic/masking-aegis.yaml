@@ -1,0 +1,20 @@
+name: Masking Aegis
+tags: [mystic]
+incant: Draw a unique and complex sigil in sand or dirt, mark the target’s forehand with the same sigil.
+call: '“Short Grant Minus One Dark Territory”'
+target: Individual
+delivery: Touch
+duration: Short Rest
+refresh: Long Rest
+accent: None
+effect: Grant Dark Territory
+description: |
+  Cloaked in shadow, the Mystic attempted to draw away the gaze of those who would do harm. The
+  Artisan calls upon the deep magics of the realms to draw closed the curtain dividing this
+  world and the outer Void. This protection extends only to a single individual, but it is
+  enough to divert the attention of dark forces away from the target while they engage in
+  Enchanting and Ritual Magic.
+
+  Once the target is appropriately marked, the target’s Dark Territory modifier is reduced by
+  one until their next Short Rest. This may reduce their modifier below zero. The target may
+  only be the recipient of this boon once per Event from any source.

@@ -1,0 +1,14 @@
+name: It's Alive!
+cost: 7
+requires: artisan:10
+incant: None
+call: "[Name or Description]: Grant Life by Lightning"
+target: Individual
+delivery: Verbal
+accent: Lightning
+duration: Instantaneous
+refresh: Long Rest
+effect: Grant Life
+description: |
+  Once per Long Rest, the Artificer may sacrifice an ingot to call
+  “Grant Life by Lightning” to one individual.

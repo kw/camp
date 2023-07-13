@@ -6,7 +6,7 @@ duration: Instantaneous
 delivery: Packet (Spell-Ball)
 accent: Agony
 effect: Piercing
-description: >
+description: |
   The Mage, by spending a Spike, may call forth a Doombolt doing Piercing 4 by
   Agony. If this spell is cast with a Greater spell-slot, it will do Piercing 6
   Agony instead. If cast with a Master spell-slot, it will do Piercing 8 by Agony.

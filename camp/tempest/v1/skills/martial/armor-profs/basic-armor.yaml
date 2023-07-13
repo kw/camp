@@ -1,4 +1,4 @@
 name: Basic Armor
 cost: 2
-description: >
+description: |
   The character can gain up to two armor points after hit location calculations.

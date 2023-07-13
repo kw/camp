@@ -7,6 +7,6 @@ cost: 3
 #   - breedcap:-1
 # (or something like that)
 tags: [no-patron]
-description: >
+description: |
   You may choose one Breed and get 3 Breed Points to spend on Breed Advantages.
   You may not buy Breed Advantages from any other Breeds than the one chosen.

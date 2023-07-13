@@ -6,7 +6,7 @@ duration: Instantaneous
 delivery: Packet (Spell-Ball)
 accent: None
 effect: Dispel
-description: >
+description: |
   This powerful spell can be used to end the duration of many Spells or Powers,
   including Spells like Elemental Node or protective circles. It can be used in
   one of the following ways:

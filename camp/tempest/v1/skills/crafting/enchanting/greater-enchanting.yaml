@@ -3,5 +3,5 @@ cost: 5
 requires:
   - journeyman-enchanting
   - level:10
-description: >
+description: |
   The character can pull multiple pieces of foundational energy from the ether and enchant even more advanced items.

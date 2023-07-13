@@ -6,5 +6,5 @@ requires:
 grants:
   - mage.cantrips:1
   - mage.spell_slots@1:1
-description: >
+description: |
   The Mage gains an additional Cantrip from the Mage Class list and an additional Novice Spell Slot.

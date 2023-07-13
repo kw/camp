@@ -1,6 +1,6 @@
 name: Cold Dead Hands
 cost: 3
-description: >
+description: |
   The character will not involuntarily let go of their own possessions at any time,
   even when Slept, Dying, or even Dead. The player should call “Cold Dead Hands” whenever
   someone tries to remove a possession from the character's hand. If the character’s arm is

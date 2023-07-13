@@ -3,6 +3,6 @@ cost: 6
 requires:
   - greater-arcane-ritual
   - level:16
-description: >
+description: |
   The character can perform any Master Arcane rituals.
   To learn how to cast a Arcane ritual, see the Arcane Ritual Magic chapter.

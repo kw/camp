@@ -6,7 +6,7 @@ delivery: Packet (Spell-Ball)
 accent: Force
 duration: Short Rest
 effect: Disable
-description: >
+description: |
   The target of this spell feels their limb twisted and crushed by an invisible force. An arm will become
   useless and will be forced to drop whatever that hand is holding. A disabled leg is unable to hold weight.
   When the packet strikes the target, the caster must choose a limb and make the call. If the packet appears

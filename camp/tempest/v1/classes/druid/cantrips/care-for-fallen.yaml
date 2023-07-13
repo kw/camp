@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Stabilize, Heal
-description: >
+description: |
   A simple trick taught by Druids of the past to prevent the transition to death, the caster can Stabilize the dying.
 
   If the Druid is in the Form of the Rising Sun, they may instead call “Heal 1 to Dying.”

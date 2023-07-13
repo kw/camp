@@ -9,7 +9,7 @@ accent: None
 duration: Special
 refresh: Special, Short Rest
 effect: Grant Insubstantial, Dispel Insubstantial
-description: >
+description: |
   The Druid may protect themself from harm by drawing a camouflaging cloak about them and
   melding with the forest. They are empowered to seek shelter within the wood of a tree,
   becoming insubstantial to the real world so long as they do not move.

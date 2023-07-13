@@ -1,0 +1,19 @@
+name: Good Timing
+tags: [crafter]
+grants: prospect-1
+description: |
+  The Artisan gains their next rank of Prospecting ignoring any Level prerequisites,
+  if this would put the character over three ranks, they are instead refunded a rank.
+
+  Additionally, the Artisan may skip Prospecting during the first Long Rest period and
+  instead Prospect twice the next Long Rest period per Mine/Rare Mineral Spring.
+
+  ---
+
+  ### CMA Notes
+
+  Only Prospect I will be granted, but the character will receive the appropriate refund
+  if it is already known so that you can buy Prospect II or Prospect III instead. If you
+  have this power, the level requirement for Prospect III is waived.
+
+# See https://github.com/kw/camp/issues/99 for more details.

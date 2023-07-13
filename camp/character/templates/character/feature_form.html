@@ -22,6 +22,9 @@
     {% if feature.category %}
     <p class="fw-lighter fs-5">{{ feature.category }}</p>
     {% endif %}
+    {% if feature.tag_names %}
+    <p class="fw-lighter fs-5">{{ feature.tag_names | join:", " }}</p>
+    {% endif %}
 </h2>
 
 {% if feature.parent %}

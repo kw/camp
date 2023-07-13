@@ -2,7 +2,7 @@ name: Severe Allergy
 award:
   $Uncommon Allergens: 2
   $Common Allergens: 3
-description: >
+description: |
   The character has a supernatural allergy to gold, silver, iron, magic, or other substances which must
   be approved by Staff. Each time the character goes from not touching an object made of the material to
   touching it with skin, it will cause Piercing 1 by Agony (even cloth will prevent this damage). So a

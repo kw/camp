@@ -7,7 +7,7 @@ delivery: Self
 duration: Long Rest
 effect: Special
 accent: None
-description: >
+description: |
   The Druid knows how to take from the land without ruining its natural beauty or despoiling its resources
   permanently. In return for this treatment, the land is kinder to the Druid. Until the Druid's next Long Rest,
   the next time the Druid would suffer negative consequences of gathering, the character may avoid them.

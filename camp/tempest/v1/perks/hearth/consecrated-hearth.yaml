@@ -1,7 +1,7 @@
 name: Consecrated Hearth
 cost: 5
 requires: hearth
-description: >
+description: |
   When the character creates a Hearth, she may spend an additional minute or so on the rite,
   deep in prayer and meditation. She can cause the area of her Hearth to be Consecrated Ground
   until the end of the Event. The Hearth cannot also be designated as an Arcane Locus.

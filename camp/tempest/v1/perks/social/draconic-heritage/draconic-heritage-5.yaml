@@ -3,5 +3,5 @@ cost: 2
 requires:
   - level:20
   - draconic-heritage-4
-description: >
+description: |
   The character may choose to Counter any Effects, or Damage, of the chosen Accent that they take. They may do this at-will.

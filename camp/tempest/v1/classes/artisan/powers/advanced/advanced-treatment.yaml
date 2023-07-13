@@ -1,0 +1,20 @@
+name: Advanced Treatment
+tags: [mystic, crafter]
+incant: RP Focus Slow 10 per individual
+call: '“Heal to Full by Poison, Cure All Conditions by Poison”'
+target: Up to Six Individuals
+delivery: Touch
+accent: Poison
+duration: Instantaneous
+refresh: Short Rest
+effect: Heal
+description: |
+  This Power can only be used out of combat. By expending one Bloom per target, the Artisan can
+  provide a powerful curative brew for up to six Individuals, moving from one to the other
+  giving each a sip which will heal their wounds and injuries. No one target can be given more
+  than one sip. The Artisan must Focus for at least 10 seconds over each character to be
+  Treated. All targets are Healed to full Life Points and cured of all conditions. The Bloom
+  should be deposited in an Ashbin at the earliest opportunity.
+
+  **Note**: During particular marshaled encounters, such as mods, planar travel, etc, this
+  Power may not be available, as the entire encounter may be considered “In-combat.”

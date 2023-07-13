@@ -1,0 +1,19 @@
+name: Hiatus
+tags: [mystic]
+incant: None
+call: Hiatus, Grant Insubstantial to Self
+target: Self
+delivery: None
+accent: None
+duration: Slow 300
+refresh: Long Rest
+effect: Grant Insubstantial
+description: |
+  While in a Ritual, the Artisan may call “Grant Insubstantial to Self” and Focus for a Slow
+  300. Once the Count is complete, the Artisan must call “Dispel Insubstantial to Self.”
+
+  While Insubstantial, the Artisan can pause a ritual in progress in which they are the Primary
+  Ritualist. If their Focus is broken, the Slow Count is completed, or at the Artisan’s
+  discretion, whichever comes first, the Ritual resumes as normal, and the Artisan must call
+  “Dispel Insubstantial to Self.” Any actions taken during the Focus period should be ignored
+  by the attending Ritual Marshal for the purposes of determining failure or Dark Territory.

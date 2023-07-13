@@ -7,7 +7,7 @@ accent: Force
 duration: Instantaneous
 refresh: Focus Quick 100
 effect: Disarm
-description: >
+description: |
   A creature stuck by the spell has the named item or item held by the named limb
   forcibly removed and dropped to the ground. If the specified equipment is a shield
   (or the limb is wearing a shield) the arm must be straightened so that it is pointing

@@ -1,7 +1,7 @@
 name: Fortunate Finder
 cost: 3
 ranks: 2
-description: >
+description: |
   The character can avoid the negative consequences of Gathering (Skinning, Prospecting, or Foraging).
   The character can put back a card and re-draw when Prospecting, or can ignore the negative effects
   of Skinning a monster or beast. This can be done once per Long Rest for each time this Perk is purchased.

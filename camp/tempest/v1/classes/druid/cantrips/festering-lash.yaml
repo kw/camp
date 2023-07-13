@@ -8,7 +8,7 @@ accent: Disease
 duration: Instantaneous, Quick 100
 refresh: Focus Quick 100
 effect: Disarm, Disable
-description: >
+description: |
   By calling the toxic wrath of nature the Druid can lash out disarming foes that seek to harm them.
   By Sacrificing one Life Point, the caster may call “Disarm [Weapon] by Disease.”
 

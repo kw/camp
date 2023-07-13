@@ -7,7 +7,7 @@ delivery: Touch
 accent: Will
 duration: Short Rest
 effect: Grant Maximum Life Points
-description: >
+description: |
   This spell augments the target, increasing the life essence within, increasing their Maximum Life
   Point total by one. The Druid may not cast this on themselves.
 

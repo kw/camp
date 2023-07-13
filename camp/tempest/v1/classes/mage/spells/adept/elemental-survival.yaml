@@ -6,7 +6,7 @@ duration: Short Rest
 delivery: Touch
 accent: None
 effect: Resistance
-description: >
+description: |
   Elemental Survival must be cast focusing on one of the Elemental Planes (Fire, Air,
   Water, Earth). The caster designates 3 targets to gain traits based on the plane chosen.
   If this spell is cast with a Greater spell-slot, it will last until the character

@@ -8,7 +8,7 @@ accent: Flame
 duration: Short Rest
 refresh: Spell, Immediate
 effect: Heal
-description: >
+description: |
   Upon casting this spell the Druid may keep their right foot planted, while doing so, they may
   charge a weapon strike with “Heal 2 by Flame” a number of times equal to their Maximum Life Points.
 

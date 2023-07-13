@@ -1,7 +1,7 @@
 name: Advanced Two Weapon Style
 cost: 2
 requires: two-weapon-style
-description: >
+description: |
   The character can wield two melee weapons at once and be considered
   proficient with both if they are proficient with that weapon type.
   The weapons may be up to 48” in length.

@@ -7,6 +7,6 @@ accent: Force
 duration: Instantaneous
 refresh: Immediate
 effect: None, only damage
-description: >
+description: |
   This minor cantrip charges a packet of materia with an explosive burst which will do 1 point of
   Force damage to those it hits.

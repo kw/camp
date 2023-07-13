@@ -82,6 +82,7 @@ class PowerCard(base_models.BaseModel):
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     grants: Grantable | None = None
+    grant_if: dict[str, base_models.Requirements] | None = None
     rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
     discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
@@ -91,6 +92,14 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
         super().post_validate(ruleset)
         if self.grants:
             ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+        if self.grant_if:
+            ruleset.validate_identifiers(self.grant_if.keys())
+            for grant, req in self.grant_if.items():
+                # Normalize the requirements. This mirrors BaseFeatureDef.post_validate's
+                # handling of the `requirements` field.
+                if req := base_models.parse_req(req):
+                    ruleset.validate_identifiers(list(req.identifiers()))
+                    self.grant_if[grant] = req
         if self.rank_grants:
             grantables = list(self.rank_grants.values())
             ruleset.validate_identifiers(_grantable_identifiers(grantables))
@@ -100,6 +109,11 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
             for choice_def in self.choices.values():
                 if choice_def.matcher and choice_def.matcher.id:
                     ruleset.validate_identifiers(choice_def.matcher.id)
+        if self.tags:
+            # Verify that all tags are declared in the ruleset.
+            for tag in self.tags:
+                if tag not in ruleset.tags:
+                    raise ValueError(f"Tag `{tag}` is not defined in the ruleset.")
 
 
 class SubFeatureDef(BaseFeatureDef):
@@ -113,6 +127,10 @@ class ClassDef(BaseFeatureDef):
     starting_features: Grantable | None = None
     multiclass_features: Grantable | None = None
     class_type: Literal["basic", "advanced", "epic"] = "basic"
+
+    # At time of writing, only used for Artisan specialization tags.
+    specializations: set[str] | None = None
+
     # By default, classes have 10 levels.
     ranks: int = 10
 
@@ -202,34 +220,30 @@ class PerkDef(BaseFeatureDef):
     creation_only: bool = False
 
 
-class PowerDef(BaseFeatureDef):
-    type: Literal["power"] = "power"
-
-
-class InnatePower(PowerDef):
+class InnatePower(BaseFeatureDef):
     type: Literal["innate"] = "innate"
 
 
-class ArchetypePower(PowerDef):
+class ArchetypePower(BaseFeatureDef):
     type: Literal["archetype"] = "archetype"
 
 
-class MartialPower(PowerDef):
-    type: Literal["martial"] = "martial"
+class Power(BaseFeatureDef):
+    type: Literal["power"] = "power"
     tier: PositiveInt | None = None
 
 
-class Utility(PowerDef):
+class Utility(BaseFeatureDef):
     type: Literal["utility"] = "utility"
 
 
-class Spell(PowerDef):
+class Spell(BaseFeatureDef):
     type: Literal["spell"] = "spell"
     tier: PositiveInt | None = None
     sphere: Literal["arcane", "divine", None] = None
 
 
-class Cantrip(PowerDef):
+class Cantrip(BaseFeatureDef):
     type: Literal["cantrip"] = "cantrip"
     sphere: Literal["arcane", "divine", None] = None
 
@@ -238,12 +252,11 @@ FeatureDefinitions: TypeAlias = (
     ClassDef
     | SubFeatureDef
     | SkillDef
-    | PowerDef
     | FlawDef
     | PerkDef
     | InnatePower
     | ArchetypePower
-    | MartialPower
+    | Power
     | Spell
     | Cantrip
     | Utility
@@ -305,7 +318,9 @@ class Ruleset(base_models.BaseRuleset):
     spells_prepared: Table = ScalingTable(base=1, factor=1)
     plural_names: dict[str, str] = {
         "Class": "Classes",
+        "Utility": "Utilities",
     }
+    tags: dict[str, str | None] = Field(default_factory=dict)
 
     attributes: ClassVar[Iterable[Attribute]] = [
         Attribute(
@@ -348,7 +363,14 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(
             id="spellbook",
             name="Spellbook",
+            hidden=True,
             scoped=True,
+        ),
+        Attribute(
+            id="powerbook",
+            name="Powerbook",
+            scoped=True,
+            hidden=True,
         ),
         Attribute(
             id="spells_prepared",
@@ -391,6 +413,12 @@ class Ruleset(base_models.BaseRuleset):
             property_name="basic_classes",
             name="Basic Classes",
             hidden=True,
+        ),
+        Attribute(
+            id="specialization",
+            name="Specialization",
+            hidden=True,
+            scoped=True,
         ),
     ]
 

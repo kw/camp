@@ -1,5 +1,5 @@
 name: Thrown Weapons
 cost: 3
 requires: basic-martial-weapons
-description: >
+description: |
   The character has proficiency with thrown weapons.

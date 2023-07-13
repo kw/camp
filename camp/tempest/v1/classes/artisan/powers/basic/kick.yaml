@@ -1,0 +1,24 @@
+name: Kick
+tags: [crafter]
+incant: None
+call: None
+target: Alchemy Craft
+delivery: Touch
+duration: Instantaneous
+refresh: Short Rest
+accent: None
+effect: Imbue Heal, Imbue Barrier, Imbue Cure, Intoxicate
+description: |
+  An Artisan can take an existing potion (any quaffed liquid created with alchemy or found in
+  the world) and add a little kick to it. After spending a minute or so adding to, mixing, and
+  enhancing the potion, they may choose one of four benefits that will take place when the
+  potion is imbibed:
+
+  * Heal 1 Life Point
+  * Grant 1 Point of Barrier
+  * Cure Poison
+  * Cause the Intoxicate Effect
+
+  No Potion can be Kicked more than once. The Kick effect should be added to the information
+  card for the item if it has one. If there is no information card, either one must be made, or
+  only the Artisan can get the Kick effects.

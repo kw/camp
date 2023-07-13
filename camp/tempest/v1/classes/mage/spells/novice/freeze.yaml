@@ -6,7 +6,7 @@ delivery: Packet (Spell-Ball)
 accent: Ice
 duration: Quick 100
 effect: Imprison
-description: >
+description: |
   When this spell is cast, it will charge two spell-balls at the same time.
   The spell-balls must be thrown separately. When struck by this spell, the
   target is immediately encased in ice. For the duration, the block of ice

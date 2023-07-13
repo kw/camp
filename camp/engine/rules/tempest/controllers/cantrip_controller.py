@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Literal
 
 from camp.engine.rules.decision import Decision
-from camp.engine.rules.tempest.controllers import class_controller
 
 from .. import defs
 from . import character_controller
@@ -21,7 +20,7 @@ class CantripController(feature_controller.FeatureController):
             )
 
     def _cantrips_available(self) -> int:
-        if isinstance(self.parent, class_controller.ClassController):
+        if self.parent and self.parent.feature_type == "class":
             purchased = self.parent.cantrips_purchased()
             return self.parent.get("cantrips") - purchased
         return 0

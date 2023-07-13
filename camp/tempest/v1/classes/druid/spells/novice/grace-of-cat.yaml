@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Short Rest
 effect: Special
-description: >
+description: |
   While under the effects of Cat’s Grace, the character can Counter the Damage and Effects
   from falling by Sacrificing two Life Points.
 

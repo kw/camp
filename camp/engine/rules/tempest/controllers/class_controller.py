@@ -4,11 +4,13 @@ from functools import cached_property
 from typing import Literal
 
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_models import Discount
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
 from .. import defs
 from . import character_controller
+from . import choice_controller
 from . import feature_controller
 from . import spellbook_controller
 
@@ -140,7 +142,7 @@ class ClassController(feature_controller.FeatureController):
         if not self.caster:
             return 0
         return sum(
-            1
+            c.paid_ranks
             for c in self.taken_children
             if c.feature_type == "cantrip" and c.purchased_ranks > 0
         )
@@ -149,9 +151,14 @@ class ClassController(feature_controller.FeatureController):
         if not self.caster:
             return 0
         return sum(
-            1
-            for c in self.taken_children
-            if c.feature_type == "spell" and c.purchased_ranks > 0
+            c.paid_ranks for c in self.taken_children if c.feature_type == "spell"
+        )
+
+    def utilities_purchased(self) -> int:
+        if not self.martial:
+            return 0
+        return sum(
+            c.paid_ranks for c in self.taken_children if c.feature_type == "utility"
         )
 
     @cached_property
@@ -166,6 +173,24 @@ class ClassController(feature_controller.FeatureController):
             available_dict = spellbook.spells_available_per_class
             return available_dict.get(self.full_id, 0) + available_dict.get(None, 0)
         return 0
+
+    @cached_property
+    def powerbook(self) -> spellbook_controller.PowerbookController | None:
+        if self.martial:
+            return self.character.controller("martial.powerbook")
+        return None
+
+    @property
+    def powers_taken(self) -> spellbook_controller.TierTuple:
+        return self.powerbook.powers_taken_per_class.get(
+            self.full_id, spellbook_controller.EMPTY_TIER
+        )
+
+    @property
+    def powers_available(self) -> spellbook_controller.TierTuple:
+        return self.powerbook.powers_available_per_class.get(
+            self.full_id, spellbook_controller.EMPTY_TIER
+        )
 
     def powers(self, expr: PropExpression) -> int:
         if self.caster:
@@ -262,6 +287,54 @@ class ClassController(feature_controller.FeatureController):
         return grants
 
     @property
+    def specialization_counts(self) -> dict[str, int]:
+        """Return a dict mapping specialization IDs to the number of times they're taken."""
+        tags = self.definition.specializations
+        if tags is None:
+            return {}
+        counts = {tag: 0 for tag in tags}
+
+        for feature in self.children:
+            for tag in tags:
+                if tag in feature.tags:
+                    counts[tag] += feature.value
+        return counts
+
+    @property
+    def specialization_tied(self) -> bool:
+        """Return True if there's a tie for the most specialization tag counts."""
+        spec_count = self.specialization_counts
+        if not spec_count:
+            return False
+        max_taken = max(spec_count.values())
+        if max_taken == 0:
+            return False
+        return len([tag for tag, count in spec_count.items() if count == max_taken]) > 1
+
+    @property
+    def current_specialization(self) -> tuple[str, int] | None:
+        spec_count = self.specialization_counts
+        if not spec_count:
+            return None
+        max_taken = max(spec_count.values())
+        max_tags = [tag for tag, count in spec_count.items() if count == max_taken]
+        if len(max_tags) == 1:
+            return max_tags[0], max_taken
+        elif self.model.choices and (
+            tiebreaker := self.model.choices.get("specialization")
+        ):
+            spec = tiebreaker[0]
+            if spec in max_tags:
+                return spec, max_taken
+        return None
+
+    def specialization(self, expr: PropExpression) -> int:
+        if spec := self.current_specialization:
+            if expr.option == spec[0]:
+                return spec[1]
+        return 0
+
+    @property
     def explain(self) -> list[str]:
         lines = super().explain
         if self.value > 0:
@@ -286,6 +359,25 @@ class ClassController(feature_controller.FeatureController):
                 lines.append(
                     f"Powers: {self.get('powers@1')}/{self.get('powers@2')}/{self.get('powers@3')}/{self.get('powers@4')}"
                 )
+                powers_taken = self.powers_taken
+                powers_available = self.powers_available
+                lines.append(
+                    f"Powers taken: {powers_taken[0]}/{powers_taken[1]}/{powers_taken[2]}/{powers_taken[3]}"
+                )
+                lines.append(
+                    f"Powers available: {powers_available[0]}/{powers_available[1]}/{powers_available[2]}/{powers_available[3]}"
+                )
+        if spec := self.current_specialization:
+            lines.append(
+                f"{self.character.display_name(spec[0])}: {spec[1]} powers taken ⭐️"
+            )
+
+        # List counts for other specialization tags.
+        for tag, count in self.specialization_counts.items():
+            if not spec or spec[0] != tag:
+                lines.append(
+                    f"{self.character.display_name(tag)}: {count} powers taken"
+                )
         return lines
 
     @property
@@ -293,6 +385,8 @@ class ClassController(feature_controller.FeatureController):
         choices = super().choices or {}
         if not self.is_archetype and self.is_legal_archetype:
             choices["archetype"] = ArchetypeChoiceController(self)
+        if self.specialization_tied:
+            choices["specialization"] = SpecializationChoiceController(self)
         return choices
 
     def __str__(self) -> str:
@@ -346,4 +440,46 @@ class ArchetypeChoiceController(base_engine.ChoiceController):
         return Decision.NO
 
     def update_propagation(self, *args, **kwargs) -> None:
+        pass
+
+
+class SpecializationChoiceController(choice_controller.ChoiceController):
+    """Breaks ties between specialization tag counts.
+
+    This choice is only shown if the character has a tie for the most
+    specialization tag counts. The player can choose among them which
+    should be the specialization. The value is remembered if the tie
+    is later broken and re-emerges. It can be un-chosen as long as the
+    tie exists.
+    """
+
+    name = "Specialization"
+    description = "You have a tie for the most specialization tag counts. Select which should be your specialization."
+    limit = 1
+    multi = False
+    _class: ClassController
+
+    def __init__(self, class_controller: ClassController):
+        super().__init__(class_controller, "specialization")
+        self._class = class_controller
+
+    def available_choices(self) -> dict[str, str]:
+        if self.taken_choices():
+            return {}
+
+        specs = self._class.specialization_counts
+        max_count = max(specs.values())
+        max_specs = {
+            tag: self._class.character.display_name(tag)
+            for tag, count in specs.items()
+            if count == max_count
+        }
+        # We only show this choice if there's a tie for the most specialization tag counts.
+        if len(max_specs) > 1:
+            return max_specs
+        return {}
+
+    def update_propagation(
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
+    ) -> None:
         pass

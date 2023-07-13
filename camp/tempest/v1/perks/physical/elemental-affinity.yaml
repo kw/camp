@@ -7,7 +7,7 @@ option:
     - Ice
     - Lightning
     - Acid
-description: >
+description: |
   Once per Long Rest, the character can focus for a Quick 100 to infuse herself with elemental energy.
   The element she can attune to is determined when the Perk is taken and must be chosen from Flame,
   Ice, Lightning, or Acid. The attunement only lasts until the end of the next Short Rest. While attuned,

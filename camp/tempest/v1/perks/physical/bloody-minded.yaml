@@ -1,6 +1,6 @@
 name: Bloody Minded
 cost: 3
-description: >
+description: |
   The character has Resistance to Charm Effects. This will last until the
   character has resisted a number of these Effects equal to her character level.
   After that she is affected by them normally until she completes a Long Rest.

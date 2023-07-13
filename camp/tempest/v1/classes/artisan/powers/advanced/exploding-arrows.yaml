@@ -1,0 +1,36 @@
+name: Exploding Arrows
+tags: [artificer]
+incant: Special
+call: '“Imbue Shield-Breaking”, Explanation'
+target: Individuals
+delivery: Touch
+accent: None
+duration: Long Rest
+refresh: Long Rest
+effect: Imbue Shield-Breaking
+description: |
+  Out of combat, the Artisan can treat a number of projectiles (arrows or crossbow bolts) with
+  a special mixture that will cause them to explode on impact. This mixture is concocted by
+  sacrificing two Rare Mineral and two Harvest. The Artisan may prepare a number of projectiles
+  equal to three times their Artisan class-levels. These projectiles can then be handed out to
+  whomever and each of those recipients will be able to the Shield-Breaking Power below that
+  many times.
+
+  For example, Samantha creates 12 Exploding Arrows and gives ten to Ajax and two to Triss. At
+  any time before Ajax completes a Long Rest, he could fire ten arrows that are Shield-Breaking
+  by Flame; Triss could fire two. The exact projectiles do not need to be tracked or used, but
+  the actual projectiles must be handed out. The arrow will only work for the person the
+  Artisan gives it to, that person may not then pass it on to others. All this needs to be
+  explained when the Artisan hands out the arrows.
+subcard:
+  incant: None
+  call: "Shield-Breaking by Flame"
+  target: Individual
+  delivery: Weapon
+  accent: Flame
+  duration: Instantaneous
+  refresh: None
+  effect: Shield-Breaking
+  description: |
+    Anytime before the next Long Rest the character can do “Shield-Breaking by Flame”
+    with a projectile attack.

@@ -1,6 +1,6 @@
 name: Arcane Study
 requires: mage:1
-description: >
+description: |
   The Mage can meditate and commune with the Weave to rebuild focus and refresh their spell slots.
   The Mage can spend a Short Rest studying their spell-book, making notes on spells, or practicing their incants quietly.
 

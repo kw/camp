@@ -1,5 +1,5 @@
 name: Light Armor
 cost: 3
 requires: basic-armor
-description: >
+description: |
   The character can gain up to four armor points after hit location calculations.

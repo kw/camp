@@ -6,7 +6,7 @@ delivery: Packet (Spell-ball)
 accent: Force
 duration: Short Rest
 effect: Grant Shield-Points
-description: >
+description: |
   Bolster Shield adds a sheath of magical power around up to three shields, giving them
   additional hardness, adding 2 shield-points to the touched shields. This can take a
   shield above its maximum Shield Points. These points will last only until lost (i.e.

@@ -2,7 +2,7 @@ name: Peacecaster
 cost: 5
 # TODO(#15): Actually requires a novice-level spell slot
 requires: caster
-description: >
+description: |
   The caster can heal one additional point with all healing Spells (not cantrips) she casts.
   If the spell grants multiple charges then this skill will only increase the healing of one
   charge, no matter how it is delivered.

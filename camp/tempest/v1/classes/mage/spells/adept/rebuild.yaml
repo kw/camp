@@ -6,7 +6,7 @@ duration: Instantaneous
 delivery: Touch
 accent: Force
 effect: Rebuild
-description: >
+description: |
   The Mage can bring back to usefulness an item that has been Shattered or
   otherwise broken. The majority of the item is required, so an item lost
   into lava, misplaced, etc., will not be rebuildable.

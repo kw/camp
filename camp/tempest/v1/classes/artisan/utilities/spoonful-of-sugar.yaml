@@ -1,0 +1,15 @@
+name: A Spoonful of Sugar
+tags: [crafter]
+incant: None
+target: One Alchemical Item
+delivery: None
+duration: Permanent
+refresh: Long Rest
+accent: None
+effect: Special
+grants: apprentice-alchemy
+description: |
+  The Artisan gains the Apprentice Alchemy skill (3).
+
+  Once per Long Rest, the Artisan can remove the “Mana Sickness” detriment
+  from a single Alchemical item they produce during the crafting process.

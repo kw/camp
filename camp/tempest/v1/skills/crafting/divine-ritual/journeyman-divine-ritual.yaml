@@ -3,6 +3,6 @@ cost: 4
 requires:
   - apprentice-divine-ritual
   - level:4
-description: >
+description: |
   The character can perform any Journeyman Divine rituals.
   To learn how to cast a Divine ritual, see the Divine Ritual Magic chapter.

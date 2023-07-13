@@ -1,0 +1,14 @@
+name: Cosmic Balance
+tags: [mystic]
+incant: Short Pep Talk
+call: '“Mend Summoned Armor to Full and Grant Three Barrier by Mind”'
+target: Other Individual
+duration: Instantaneous
+delivery: Touch
+refresh: Short Rest
+accent: Mind
+effect: Mend, Grant Barrier
+description: |
+  Out-of-combat, the Artisan reviews the target's mystical alignment and realigns their spirit
+  to ensure it’s maximal protection. The Artisan can Touch an ally and call “Mend Summoned
+  Armor to Full and Grant Three Barrier by Mind.”

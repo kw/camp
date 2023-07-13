@@ -7,7 +7,7 @@ delivery: None, Verbal
 accent: Poison
 duration: Short Rest, Instantaneous
 effect: None, only damage
-description: >
+description: |
   Until the Druid’s next Short Rest, each time the caster deals Poison accented damage by melee
   weapon delivery on a conscious foe and the target doesn’t Prevent it, the caster may call "Charged."
 

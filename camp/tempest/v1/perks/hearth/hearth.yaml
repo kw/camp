@@ -1,6 +1,6 @@
 name: Hearth
 cost: 1
-description: >
+description: |
   The character can perform an easy rite, taking only a few seconds, which will sanctify a particular room.
   The character should pick a special item like a horseshoe, banner, or other significant, meaningful item,
   and place it inside the room to designate it as a Hearth. If the item is removed from the room for any

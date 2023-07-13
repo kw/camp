@@ -1,7 +1,7 @@
 name: Basic Arcane
 cost: 4
 grants: arcane.spellbook:4
-description: >
+description: |
   The character learns how to record Arcane spells into a spellbook and Prepare them.
   She can add four Novice-tier Arcane spells into her spellbook. If the character has
   levels in an Arcane spell-casting class, these spells must all be spells from one of those classes.

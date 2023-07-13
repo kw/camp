@@ -1,7 +1,7 @@
 name: Famous
 cost: 3
 requires: minor-fame
-description: >
+description: |
   In their life, the character has become famous for some reason. This might be one very
   significant event, a series of small but related events, or even just due to their position in life.
   This reason should be a part of the character’s backstory, and should be Staff-approved. The character

@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Refresh
-description: >
+description: |
   This Power gives the Druid a limited ability to Refresh spent spell-slots.
   The Druid can spend a Short Rest in prayer, either alone or with others,
   re-focusing on their faith and the Greater power to whom they owe fealty.

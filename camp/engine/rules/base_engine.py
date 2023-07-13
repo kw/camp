@@ -196,24 +196,26 @@ class CharacterController(ABC):
     ) -> PropertyController | None:
         expr = base_models.PropExpression.parse(expr)
         controller: PropertyController | None = None
+        prefix, expr = expr.pop()
+        if prefix:
+            # Follow the prefix path to the appropriate controller.
+            controller = self.controller(prefix)
+            while prefix:
+                prefix, expr = expr.pop()
+                if prefix:
+                    controller = controller.subcontroller(prefix)
+            return controller.subcontroller(expr.full_id)
+
         if expr.prop in self.ruleset.features:
             # Feature controllers are retrieved by prop and option. Do not
             # include attribute or slot in the request.
-            if expr.attribute or expr.slot:
-                feature_expr = expr.copy(update={"attribute": None, "slot": None})
-            else:
-                feature_expr = expr
-            controller = self.feature_controller(feature_expr)
+            return self.feature_controller(expr)
         elif attr := self.ruleset.attribute_map.get(expr.prop):
             if attr.scoped:
                 raise ValueError(
                     f"Attribute {expr.prop} is scoped and can not be requested without a containing property."
                 )
-            controller = self.attribute_controller(expr)
-        if controller:
-            if expr.attribute:
-                controller = controller.subcontroller(expr.popattr())
-            return controller
+            return self.attribute_controller(expr)
         return None
 
     @abstractmethod
@@ -265,7 +267,7 @@ class CharacterController(ABC):
         """
         expr = base_models.PropExpression.parse(expr)
         if controller := self.controller(expr):
-            return controller.get(expr)
+            return controller.get(expr.noprefix())
         return 0
 
     @cached_property
@@ -439,6 +441,8 @@ class CharacterController(ABC):
                 choice = feature.choices.get(mutation.choice)
                 choice_name = getattr(choice, "name", mutation.choice.title())
                 selection = self.display_name(mutation.value)
+                if mutation.remove:
+                    return f"Unchose '{selection}' for choice {choice_name} of {feature.display_name()}"
                 return f"Chose '{selection}' for choice {choice_name} of {feature.display_name()}"
             case _:
                 return repr(mutation)
@@ -491,29 +495,23 @@ class PropertyController(ABC):
 
     def get(self, expr: str | base_models.PropExpression) -> int:
         expr = base_models.PropExpression.parse(expr)
-        if expr.prop != self.id and expr.attribute != self.id:
-            sub = self.subcontroller(expr)
-            if sub:
-                return sub.get(expr)
-        if expr.single is not None:
-            return self.max_value
-        return self.value
+        prefix, expr = expr.pop()
+        controller = self
+        while prefix:
+            controller = controller.subcontroller(prefix)
+            prefix, expr = expr.pop()
+
+        if controller is self:
+            if expr.single is not None:
+                return self.max_value
+            return self.value
+        return controller.get(expr)
 
     def reconcile(self) -> None:
         """Override to update computations on change."""
 
     def propagate(self, data: PropagationData) -> None:
         """Used to accept things like granted ranks from other sources."""
-        if data.target.prop == self.id and data.target.attribute:
-            # This is a scoped attribute. We need to propagate it to the
-            # appropriate subcontroller.
-            if subcontroller := self.subcontroller(data.target):
-                subcontroller.propagate(data)
-                return
-            else:
-                raise ValueError(
-                    f"Could not propagate {data}, subcontroller target not found."
-                )
         if not data and data.source not in self._propagation_data:
             return
         if data:
@@ -532,11 +530,14 @@ class PropertyController(ABC):
         SimpleAttributeWrapper.
         """
         expr = base_models.PropExpression.parse(expr)
-        attr_id = expr.attribute or expr.prop
+        if expr.prefixes:
+            raise ValueError(
+                f"Prefix path parsing is not available in `subcontroller` (expr={expr})."
+            )
         controller: PropertyController | None = None
         if controller := self._subcontrollers.get(expr.full_id):
             return controller
-        if attr := self.character.engine.attribute_map.get(attr_id):
+        if attr := self.character.engine.attribute_map.get(expr.prop):
             # There are a few different ways an attribute might be stored or computed.
             if not attr.scoped:
                 # Global attributes are never stored on property controllers.
@@ -550,9 +551,7 @@ class PropertyController(ABC):
                 if isinstance(attr_value, PropertyController):
                     controller = attr_value
                 else:
-                    controller = SimpleAttributeWrapper(
-                        repr(expr.popattr()), self.character, self
-                    )
+                    controller = SimpleAttributeWrapper(expr, self.character, self)
         self._subcontrollers[expr.full_id] = controller
         return controller
 
@@ -589,6 +588,10 @@ class BaseFeatureController(PropertyController):
         if self.definition.parent is None:
             return None
         return self.character.feature_controller(self.definition.parent)
+
+    @property
+    def tags(self) -> set[str]:
+        return self.definition.tags
 
     @property
     def parent_def(self) -> base_models.BaseFeatureDef | None:
@@ -851,6 +854,10 @@ class ChoiceController(ABC):
     @property
     def limit(self) -> int | Literal["unlimited"]:
         return 1
+
+    @property
+    def multi(self) -> bool:
+        return False
 
     @property
     def choices_remaining(self) -> int:

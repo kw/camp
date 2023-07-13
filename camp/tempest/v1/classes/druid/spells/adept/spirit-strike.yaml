@@ -6,7 +6,7 @@ target: Individual
 delivery: Weapon
 duration: Instantaneous, Short Rest
 effect: None, only damage
-description: >
+description: |
   The Druid can use this spell to briefly cause their melee weapons to pierce the veil between
   this world and the next. The Druid gains a number of charges of “2 to Insubstantial” equal to their Maximum Life Points.
 

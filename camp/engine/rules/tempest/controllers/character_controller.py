@@ -17,9 +17,11 @@ from . import cantrip_controller
 from . import class_controller
 from . import feature_controller
 from . import flaw_controller
+from . import power_controller
 from . import spell_controller
 from . import spellbook_controller
 from . import subfeature_controller
+from . import utility_controller
 
 _DISPLAY_PRIORITIES = {
     "class": 0,
@@ -219,6 +221,16 @@ class TempestCharacter(base_engine.CharacterController):
             if isinstance(feat, spell_controller.SpellController)
         ]
 
+    @property
+    def martial_powers(self) -> list[feature_controller.FeatureController]:
+        return [feat for feat in self.features.values() if feat.feature_type == "power"]
+
+    @property
+    def utilities(self) -> list[feature_controller.FeatureController]:
+        return [
+            feat for feat in self.features.values() if feat.feature_type == "utility"
+        ]
+
     def can_purchase(self, entry: RankMutation | str) -> Decision:
         if not isinstance(entry, RankMutation):
             entry = RankMutation.parse(entry)
@@ -243,7 +255,7 @@ class TempestCharacter(base_engine.CharacterController):
 
     def choose(self, entry: ChoiceMutation) -> Decision:
         if controller := self.feature_controller(entry.id):
-            if entry.unchoose:
+            if entry.remove:
                 return controller.unchoose(entry.choice, entry.value)
             return controller.choose(entry.choice, entry.value)
         return Decision(success=False, reason=f"Unknown feature {entry.id}")
@@ -300,6 +312,10 @@ class TempestCharacter(base_engine.CharacterController):
     def spellbooks(self) -> list[spellbook_controller.SpellbookController]:
         return [self.arcane.spellbook, self.divine.spellbook]
 
+    @cached_property
+    def powerbook(self) -> spellbook_controller.PowerbookController:
+        return self.martial.powerbook
+
     def sphere_data(self) -> list[SphereData]:
         spheres = []
         for sphere in sorted(self.available_spheres):
@@ -317,6 +333,11 @@ class TempestCharacter(base_engine.CharacterController):
                 )
             )
         return spheres
+
+    def display_name(self, expr: str) -> str:
+        if tag_name := self.ruleset.tags.get(expr):
+            return tag_name
+        return super().display_name(expr)
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
@@ -336,6 +357,10 @@ class TempestCharacter(base_engine.CharacterController):
                 return cantrip_controller.CantripController(id, self)
             case "spell":
                 return spell_controller.SpellController(id, self)
+            case "power":
+                return power_controller.PowerController(id, self)
+            case "utility":
+                return utility_controller.UtilityController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 
@@ -348,17 +373,6 @@ class TempestCharacter(base_engine.CharacterController):
             return controller
         # Otherwise, create a controller and for it.
         return self._new_controller(expr.full_id)
-
-    def describe_expr(self, expr: str | PropExpression) -> str:
-        expr = PropExpression.parse(expr)
-        name = self.display_name(expr.prop)
-        if expr.option:
-            name += f" ({expr.option})"
-        if expr.attribute:
-            name += f" {expr.attribute}"
-        if expr.slot:
-            name += f" [{expr.slot}]"
-        return name
 
     @property
     def available_spheres(self) -> set[str]:

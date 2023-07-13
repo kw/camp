@@ -1,6 +1,6 @@
 name: The Dance of Dawn and Dusk
 requires: druid:4
-description: >
+description: |
   While in the Form of the Rising Sun, the Druid gains +1 Maximum Life Points.
   In addition, the Druid may alter existing Accents to Flame by expending a Spike.
 

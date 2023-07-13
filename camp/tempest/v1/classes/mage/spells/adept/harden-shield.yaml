@@ -6,6 +6,6 @@ duration: Until Used
 delivery: Touch
 accent: Force
 effect: Grant Protect
-description: >
+description: |
   The target shield gains a Protect against Shield Breaking and another against
   Shatter effects targeting the shield.

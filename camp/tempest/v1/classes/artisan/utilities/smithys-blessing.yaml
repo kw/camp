@@ -1,0 +1,14 @@
+name: Smithy's Blessing
+tags: [artificer]
+incant: None
+call: "Mend 1 to [Armor / Shield]"
+target: Self
+duration: Instantaneous
+delivery: RP
+refresh: Immediate
+accent: None
+effect: Mend
+description: |
+  Having been in a number of tight spots, the Artisan has learned to make resources stretch
+  where others could not. When the Artisan administers a Health Draught to another, they can
+  immediately Mend 1 to their own armor or shield.

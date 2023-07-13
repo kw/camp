@@ -4,7 +4,7 @@ cost: 3
 requires:
   - arcane
   - divine
-description: >
+description: |
   The character has learned how to pair the meditative cycles of arcane re-attunement and
   the prayers of divine refreshment. When the character would use a Short Rest power that
   refreshes her spell slots (ex: Arcane Study, Refreshing Prayer, etc.) she may refresh

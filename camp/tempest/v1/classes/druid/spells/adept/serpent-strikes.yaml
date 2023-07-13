@@ -7,7 +7,7 @@ delivery: Weapon
 accent: Poison
 duration: Short Rest
 effect: Weakness
-description: >
+description: |
   After casting this spell, the Druid may do a single melee attack for “Short Weakness by Poison”
   anytime before they take a Short Rest. If the Druid uses claws, the number of charges goes up by one.
 

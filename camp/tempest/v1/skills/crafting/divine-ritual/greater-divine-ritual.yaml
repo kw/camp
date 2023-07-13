@@ -3,6 +3,6 @@ cost: 5
 requires:
   - journeyman-divine-ritual
   - level:10
-description: >
+description: |
   The character can perform any Ritualist-tier Divine rituals.
   To learn how to cast a Divine ritual, see the Divine Ritual Magic chapter.

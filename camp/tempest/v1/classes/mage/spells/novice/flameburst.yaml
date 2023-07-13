@@ -6,7 +6,7 @@ delivery: Packet (Spell-Ball)
 accent: Flame
 duration: Instantaneous
 effect: Wounding
-description: >
+description: |
   Flameburst charges two spell-balls with a dreadful arcane flame.
   These spell-balls will do “2 Flame” each, and must be thrown separately.
   However, if the caster expends a Spike, the effect changes to “Wounding 2 by Flame” for both Spell balls.

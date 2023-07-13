@@ -6,7 +6,7 @@ delivery: None, Weapon
 accent: Fear
 duration: Short Rest
 effect: Wounding, Counter
-description: >
+description: |
   While wielding a staff and calling upon the power of the darkest night, the Druid’s staff is covered in
   writhing ethereal tendrils. The Druid can expend a Spike to do “Wounding 2 by Fear”, or alternatively,
   can expend a Spike to Counter any Effect that hits the staff by calling “Counter.”

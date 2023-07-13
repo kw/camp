@@ -7,7 +7,7 @@ delivery: Packet (Spell-Ball), Weapon
 accent: Acid
 duration: Instantaneous
 effect: Wounding
-description: >
+description: |
   Casting this spell, the Druid infuses the packet with the destructive power of Acid.
   The spell does Wounding 2 by Acid.
 

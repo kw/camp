@@ -5,7 +5,7 @@ requires:
   - spell-preparation
   - greater-bookcaster
   # TODO(#15): One master-level spell slot
-description: >
+description: |
   Every spell for a single Base Class in the character’s spellbook is
   considered Prepared at all times. Any instances of Spell Preperation the
   character has may either be applied to another classes’ spell list, or can

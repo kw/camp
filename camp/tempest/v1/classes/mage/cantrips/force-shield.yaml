@@ -5,6 +5,6 @@ target: Self
 duration: Until Used
 refresh: Focus Quick 100
 effect: Grant Protect
-description: >
+description: |
   The Mage throws up a shield of energy to protect themself from Force and Mind.
   Applying this Protect to Force or Mind can be chosen in the moment (not at the time of casting).

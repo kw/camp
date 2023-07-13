@@ -1,0 +1,4 @@
+type: innate
+parent: artisan
+category: Artisan Innate Powers
+requires: artisan

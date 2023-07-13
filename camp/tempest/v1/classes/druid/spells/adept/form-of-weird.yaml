@@ -7,7 +7,7 @@ delivery: None
 accent: Will
 duration: Short Rest
 effect: Grant Water Breathing, Grant Water Walk
-description: >
+description: |
   By taking on aspects of a creature that is the embodiment of the sea, the Druid becomes amphibious and
   able to swiftly swim, breathe water through newly erupted gills, and even skim along the surface of the water
   for short distances.

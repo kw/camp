@@ -1,6 +1,6 @@
 name: Inheritance
 cost: 4
-description: >
+description: |
   The character has a valuable item or sum of money left to her by her family or other benefactor.
   The character gets a significant bonus to their starting wealth and adds 100 Wealth at the beginning
   of her first Event.

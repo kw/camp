@@ -1,7 +1,7 @@
 name: Great Weapons
 cost: 5
 requires: basic-martial-weapons
-description: >
+description: |
   The character has proficiency with great weapons (48”-90”).
   When a character uses a great weapon to perform a Spike,
   the wielder may choose to either do 1 additional point of

@@ -1,0 +1,17 @@
+name: Spark of Doom
+tags: [artificer]
+incant: RP, Focus Quick 100
+call: Wounding 4 by Lightning
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Lightning
+duration: Instantaneous
+refresh: Short Rest
+effect: Wounding
+description: |
+  Carefully, the Artisan breaks down a Forgesource and pours the energy of it over a
+  spell-ball full of materia in a solution that will react over a few minutes, making
+  for a powerfully lightning projectile. The Artisan must work on the packet for a
+  Focus Quick 100 and may then throw it at any time. If the spell-ball leaves their
+  hand or touches any object other than their hand, it will discharge. Deposit the
+  Forgesource in the Ashbin after the battle.

@@ -7,7 +7,7 @@ duration: Long Rest
 refresh: Long Rest, Event
 accent: None
 effect: Grant Protect, Piercing, Grant Type
-description: >
+description: |
   While in the Form of the Rising Sun, the Druid’s may Focus for a Quick 100
   and expend a Spike to Grant themselves a Protect vs Packets a number of times
   per Long Rest equal to their Maximum Life Points.

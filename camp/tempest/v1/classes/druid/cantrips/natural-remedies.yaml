@@ -8,7 +8,7 @@ accent: None
 duration: Instantaneous
 refresh: Immediate
 effect: Cure
-description: >
+description: |
   From the deep lore of the woods, Druids have found ways to cure any number of poisons,
   toxins, and venoms with ease. Out of combat, the Druid may incant, and then call
   “Cure Poison or Disease.”

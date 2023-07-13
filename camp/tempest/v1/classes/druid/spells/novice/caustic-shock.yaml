@@ -7,7 +7,7 @@ delivery: Weapon
 accent: Acid
 duration: Short Rest
 effect: Disable
-description: >
+description: |
   The caster can release a blast of power through a melee weapon that they are holding.
   When the caster strikes another creature or their equipment, they can release the energy
   causing “Short Disable [Arm] by Acid.”

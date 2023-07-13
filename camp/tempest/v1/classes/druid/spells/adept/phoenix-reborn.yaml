@@ -7,7 +7,7 @@ delivery: Touch
 accent: Flame
 duration: Instantaneous
 effect: Grant Life
-description: >
+description: |
   This powerful spell washes the target in flame and magical life. If the target is a corpse, it will bring
   it back to the living with 1 Life Point. If used on an Undead, it will cause the creature to immediately
   discorporate and take Spirit Form. Upon casting this spell the Druid suffers a Death Final effect. This spell

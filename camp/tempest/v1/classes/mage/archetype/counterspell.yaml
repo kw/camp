@@ -5,7 +5,7 @@ target: Self
 duration: Instantaneous
 refresh: Immediate
 effect: Counter
-description: >
+description: |
   If the Mage is struck by a spell-packet that matches the Effect call of one
   of their prepared spells, the Mage may expend that spell slot immediately
   and call “Counter” as long as the call includes the Effect in a spell that

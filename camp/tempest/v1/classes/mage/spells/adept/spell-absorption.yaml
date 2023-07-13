@@ -6,7 +6,7 @@ duration: Short Rest, Instantaneous
 delivery: None, Packet (Spell-Ball)
 accent: Force
 effect: Grant Protect, Refresh, Wounding
-description: >
+description: |
   This spell gives the Mage a limited ability to absorb magical power and use
   it themself. They gain a Protect against Packets that do damage. When the
   Protect is used, it will also absorb the magic of the attack. The amount of

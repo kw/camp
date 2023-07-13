@@ -6,7 +6,7 @@ delivery: Touch
 duration: Instantaneous
 refresh: Immediate
 effect: Refresh
-description: >
+description: |
   This minor cantrip takes the power out of a spell-ball (or multiple spell-balls) that
   has already been charged and returns that power to the caster. The spell-ball becomes
   inert, and the caster refreshes the spell-slot that was used to charge the spell-ball.

@@ -1,7 +1,7 @@
 name: Library Use
 cost: 1
 requires: basic-scholarship
-description: >
+description: |
   The character knows her way around a library and can find tomes, discover ancient texts,
   and generally learn things that are unavailable to the normal folk. This allows the
   character to discover additional information above and beyond what is normally available

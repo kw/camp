@@ -6,5 +6,5 @@ delivery: Touch
 accent: Force
 duration: Until Used
 effect: Grant Barrier, Grant Protect
-description: >
+description: |
   Mageskin summons two points of Barrier for the target and grants them one Protect against Weapons by Force.

@@ -6,7 +6,6 @@ from camp.engine.rules.decision import Decision
 
 from .. import defs
 from . import character_controller
-from . import class_controller
 from . import feature_controller
 
 
@@ -29,7 +28,7 @@ class SpellController(feature_controller.FeatureController):
         return self.definition.tier
 
     def _spells_available(self) -> int:
-        if isinstance(self.parent, class_controller.ClassController):
+        if self.parent and self.parent.feature_type == "class":
             return self.parent.spellbook_available
         # TODO: Handle spells from other sources.
         return 0

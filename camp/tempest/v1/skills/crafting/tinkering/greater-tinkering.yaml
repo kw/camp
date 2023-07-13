@@ -3,5 +3,5 @@ cost: 5
 requires:
   - journeyman-tinkering
   - level:10
-description: >
+description: |
   The character can craft Greater tier engineering and tinkering items.

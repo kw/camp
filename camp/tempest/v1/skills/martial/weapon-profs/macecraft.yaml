@@ -1,7 +1,7 @@
 name: Macecraft
 cost: 4
 requires: short-weapons
-description: >
+description: |
   The character has a special skill with a mace and can use it to destroy shields.
   A mace is a special short weapon (22”-36”) that must have an obvious “head” and
   must have its center of balance closer to the head than the pommel.

@@ -2,7 +2,7 @@ name: Honor Debt
 award:
   Single Favor: 1
   Life Debt: 2
-description: >
+description: |
   The character has a debt of honor or blood that must be repaid. Perhaps the character’s
   life or family was saved by another. Perhaps, in a time of need, a favor was provided.
   Whatever the debt, it is one that hangs over the character and can be collected upon at any time.

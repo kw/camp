@@ -1,7 +1,7 @@
 name: Basic Faith
 cost: 4
 grants: divine.spellbook:4
-description: >
+description: |
   The character learns how to record Divine spells into a spellbook and Prepare them.
   She can add four Novice-tier Divine spells into her spellbook. If the character has
   levels in a Divine spell-casting class, these spells must all be spells from one of those classes.

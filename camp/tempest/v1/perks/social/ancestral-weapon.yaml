@@ -1,7 +1,7 @@
 name: Ancestral Weapon
 cost: 4
 requires: ancestral-relic
-description: >
+description: |
   The item that the character has chosen as her Ancestral Relic is a weapon that is
   bonded to the soul of the character. The arm holding the item is immune to Disable
   (“No Effect” should be called) and the weapon cannot be physically taken from the

@@ -1,0 +1,4 @@
+type: skill
+parent: artisan
+requires: artisan
+category: Artisan Class Skills

@@ -7,7 +7,7 @@ delivery: Weapon
 accent: Ice
 duration: Short Rest
 effect: Silence
-description: >
+description: |
   This spell charges the Druid’s melee weapon to curse the victim with a drowning death. Once cast, the Druid may
   do a single melee attack for “Short Silence by Ice.”
 

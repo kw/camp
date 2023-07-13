@@ -6,7 +6,7 @@ duration: Instantaneous, Short Rest
 delivery: Touch, Packet (Spell-Ball)
 accent: Acid, Flame, Ice, or Lightning
 effect: Wounding
-description: >
+description: |
   This spell must be cast while inside a white cord, rope, or the like that is
   no longer than 10 feet long that has been laid down to make a continuous shape
   (usually a circle). At the completion of the Incantation, the lain rope cannot

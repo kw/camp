@@ -1,7 +1,7 @@
 name: Lucent Hearth
 cost: 3
 requires: consecrated-hearth
-description: >
+description: |
   When the character creates a Consecrated Hearth, she may spend an additional minute or
   so on the rite, constructing or assembling a simple prayer shrine to at least one deity.
   If a named member of the Hearth conducts a Divine Ritual within the confines of the Hearth,

@@ -1,0 +1,18 @@
+name: Trap Recovery
+tags: [artificer]
+incant: None
+call: None
+target: One expended trap
+delivery: RP
+duration: Instantaneous
+refresh: Long Rest
+effect: Special
+accent: None
+description: |
+  The Artisan can spend a Quick 100 gathering the pieces of a trap that they put down themself
+  which has since gone off. This will allow a Tinker to remake the trap without any additional
+  expenditure of resources. Alternatively, the Artisan can turn in the pieces to Staff to
+  convert them into all the resources that were required to make the trap, minus one (i.e. the
+  Artisan must choose one resource used to make the trap and sacrifice it). At 10 Artisan
+  class-levels they can salvage any trap into its component resources in the above listed
+  manner.

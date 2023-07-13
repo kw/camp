@@ -213,3 +213,6 @@ default_flags:
     - Bar
   Option B:
     - Xyzzy
+
+tags:
+  no-patron: null

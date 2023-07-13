@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Instantaneous, Short Rest
 effect: Refresh Spike, Mend
-description: >
+description: |
   The Druid is able to call upon the feral nature of the wild beasts of the wood.
   Upon casting this spell the Druid will be able to Refresh one Spike and Mend 2 Armor.
 

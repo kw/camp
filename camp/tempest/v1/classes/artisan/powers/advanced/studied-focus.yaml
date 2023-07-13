@@ -1,0 +1,13 @@
+name: Studied Focus
+choices:
+  power:
+    name: Basic Artisan Power
+    limit: 2
+    matcher:
+      type: martial
+      parent: artisan
+      tier: 1
+  # TODO(#100): Custom tag chooser
+description: |
+  Instead of taking an Advanced Power, the Artisan can choose two Basic-tier Powers
+  from the Artisan Base Class with the same Artisan Tag (ie: Artificer, Crafter, Mystic).

@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Long Rest, Special
 effect: Special
-description: >
+description: |
   While this spell is active, and the Druid has their feet planted, the Druid gains the
   Plant Type and may count for any tree size requirements for spells for the caster and
   other character’s requirements. Keep in mind that the caster is not to be touched without

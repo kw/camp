@@ -7,7 +7,7 @@ delivery: Packet (Spell-Ball)
 accent: Fear
 duration: Long Rest
 effect: Obey
-description: >
+description: |
   Woe unto the enemy of the Druid who takes from the land in a way unsustainable. The Druid may charge a spell-ball
   with a powerful curse that prevents the individual from gathering from the land and using either their Prospecting,
   Foraging, or Scavenging skill until the next Long Rest or until the Druid that cast the spell removes the curse from

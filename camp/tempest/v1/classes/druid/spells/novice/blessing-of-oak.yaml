@@ -7,7 +7,7 @@ delivery: Touch
 accent: None
 duration: Until Used
 effect: Grant Protect
-description: >
+description: |
   The Druid may bestow the blessings of the mighty oak to bolster their allies' fortitude granting
   a Protect against Poison and Disease. The Druid may expend a Spike to add one additional Target.
 

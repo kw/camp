@@ -5,7 +5,7 @@ duration: Special
 accent: Force
 delivery: Packet (Spell-Ball)
 effect: Special
-description: >
+description: |
   This spell must be cast upon a spell-ball that has been marked with a symbol that is special to the caster.
   The packet is then thrown and once it comes to rest, the Mage can briefly touch the ground to create an ethereal,
   translucent bridge of pure magical power that extends from that spot to the thrown spell-ball.

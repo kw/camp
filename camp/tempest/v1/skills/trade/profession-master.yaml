@@ -5,7 +5,7 @@ requires: profession-journeyman
 option:
   multiple: false
   inherit: profession-journeyman
-description: >
+description: |
   The character has mastered her chosen profession. She can perform the most
   complicated tasks and has a deep knowledge of lore associated with that mastery.
   The character’s mastery earns income represented by earning 6 Wealth at the beginning

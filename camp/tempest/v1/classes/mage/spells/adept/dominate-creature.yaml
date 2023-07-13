@@ -6,7 +6,7 @@ duration: Short Rest
 delivery: Packet (Spell-Ball)
 accent: Mind
 effect: Dominate
-description: >
+description: |
   The target of the spell will feel their attitude change and shift, becoming
   compliant to the caster’s will. The target is Dominated to the caster for a
   Short Rest, or until the target is reduced to zero Life Points. This spell is

@@ -1,7 +1,7 @@
 name: Othersleep
 cost: 1
 requires: -unwardable
-description: >
+description: |
   The character does not sleep on the prime plane. When she slumbers (true deep sleep,
   not normally napping) the character fades out the world, disappearing from this plane.
   Her equipment and clothing all stays, but she is gone until the morning comes.

@@ -16,7 +16,7 @@ choices:
     controller_data:
       bonus: spell_slots@2
       sphere_requires: spell_slots@2
-description: >
+description: |
   The character chooses one Sphere of magic she has an Adept Spell slot
   for and gains one additional Adept spell-slot in that Sphere and can use
   it to cast a Prepared spell.

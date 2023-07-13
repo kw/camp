@@ -9,7 +9,7 @@ accent: None
 duration: Instantaneous, Long Rest
 refresh: Long Rest
 effect: Grant Form
-description: >
+description: |
   The Druid may alter their Form with this power after performing a rite to renew
   their dedication to nature and regain its blessings. This rite grants the Druid
   any Form they have access to from the Druid Base Class. The Commune with Nature

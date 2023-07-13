@@ -7,7 +7,7 @@ delivery: None
 accent: None
 duration: Short Rest
 effect: Grant Resistance
-description: >
+description: |
   The Druid is able to tap into some of the deeper energies of the forest to become more
   bestial in nature. This spell will give the Druid the ability to resist the snares and
   traps that would slow or pin them down. The Druid may spend a Spike to Resist Root and

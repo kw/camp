@@ -5,7 +5,7 @@ requires:
   - any:
     - weapon-specialization+Bow
     - weapon-specialization+Crossbow
-description: >
+description: |
   When using the weapon with which the character has Weapon Specialization,
   the character, if she misses with a projectile while using a Power, can immediately
   (before making any other attacks or using other Powers) retry the same Power with a

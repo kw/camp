@@ -1,0 +1,29 @@
+name: Strange Totem
+tags: [mystic]
+incant: None
+call: Explanation
+target: Object
+delivery: RP
+accent: Poison
+duration: Event
+refresh: Long Rest
+effect: Imbue Heal
+description: |
+  The Artisan prepares special totems and can give them to others. This Power will infuse up to
+  six small non-liquid items with the ability to heal. With an explanation, these may then be
+  handed out to others, but may not then be re-gifted. By using the item, the character gains
+  the ability to heal themself. This healing is taxing, however, and the character will then be
+  drained until they complete a Short Rest. The type of totem need not be all the same.
+subcard:
+  incant: None
+  call: None
+  delivery: RP
+  accent: Poison
+  duration: Until consumed
+  refresh: None
+  effect: Heal
+  description: |
+    By using the small, non-liquid totem that they were given by the Artisan, the character
+    gains the ability to Heal herself for 1 point before the next time they complete a Long
+    Rest. This healing takes a Quick Count of 100, but can be done while the character is
+    dying. After the healing is complete, the character is drained until they complete a Short Rest.

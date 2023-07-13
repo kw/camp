@@ -21,32 +21,32 @@ choices:
         - budding-wisdom-2
         - budding-wisdom-3
         - budding-wisdom-4
-description: >
+description: |
   The Druid is a formidable warrior, summoning magic found deep within the wilds of nature;
   weaving spells to enhance their weapons, or unleashing claws as the need arises. In addition,
   Druids are able to communicate with the animals and plants that inhabit the area. Through these
   interactions, they might track their quarry by relying on the many eyes and ears of the forests,
-  or learn of imminent attacks upon the lands they call home.<br/>
+  or learn of imminent attacks upon the lands they call home.
 
   Druids place nature at the center of their beliefs, drawing their spells and abilities from a
   mystical bond with the earth itself. Even though some may not worship any deities at all,
   reserving their devotion only for the natural world, they are not forbidden from doing so,
-  and those who do, find that the balance between the two brings them a sense of calm.<br/>
+  and those who do, find that the balance between the two brings them a sense of calm.
 
   Fiercely protective of the lands they have chosen to protect, few can withstand the fury of
   an enraged Druid: fearsome claws, vines that bind and tear, and elemental blasts of fire and
-  ice make the Druid a force to be reckoned with.<br/>
+  ice make the Druid a force to be reckoned with.
 
   **Note**: Some Druid powers reference a Form, which all druids have availability to as they level.
   Base Class Druids have access to Form of the Rising Sun and Form of the Waning Moon, and Powers
   that reference these forms are tagged Rising Sun or Waning Moon. Druids also have access to spells
-  that grant a Beast Shape, which are tagged as Beast Shape.<br/>
+  that grant a Beast Shape, which are tagged as Beast Shape.
 
   ### Base Incant
 
-    > “By dawning growth that blooms in Spring, from budding earth and insect sting.<br/>
-    > By Summer’s heat in brightest day, from stalking beast and fleeing prey.<br/>
-    > By spirits of the fallen leaf, from Autumn fires’ ashen grief.<br/>
+    > “By dawning growth that blooms in Spring, from budding earth and insect sting.
+    > By Summer’s heat in brightest day, from stalking beast and fleeing prey.
+    > By spirits of the fallen leaf, from Autumn fires’ ashen grief.
     > By torrent’s chill and dying light, from howling storm and Winter’s bite…”
 ---
 id: budding-wisdom-1

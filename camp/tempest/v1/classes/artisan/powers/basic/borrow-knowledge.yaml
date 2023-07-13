@@ -1,0 +1,17 @@
+name: Borrow Knowledge
+tags: [mystic]
+incant: Explanation
+call: '“Grant Power By Mind”, Explanation'
+target: Touch
+duration: Short Rest
+delivery: RP
+accent: Mind
+refresh: Short Rest
+effect: Grant Power
+description: |
+  Out of combat, the Artisan sits down with a willing creature and puts their hands near the
+  other’s temples (remember not to touch unless consent has already been explicitly
+  established). They should walk the target through a meditation, or explain how they are
+  sifting through the other’s skills and talents. When they are done with the role-play, the
+  Artisan gains all the Lore skills the target of this Power until completing their next Short
+  Rest. The target of the power loses those skills until they complete a Short Rest.

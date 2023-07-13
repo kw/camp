@@ -1,7 +1,7 @@
 name: Advanced Traps
 cost: 4
 requires: basic-traps
-description: >
+description: |
   This skill allows a character three specific benefits. First, when disarming a Triggered Trap,
   they may keep the trap card if they disarm the Trap successfully. Secondly, if they disarm a
   Latch Trap they may keep the Latch Card to use again. Third, characters that have unused Latch

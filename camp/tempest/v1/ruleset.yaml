@@ -232,6 +232,22 @@ name_overrides:
   lp: LP
   breedcap: Max Breeds
 
+# Tag declarations. All tags used in features must be declared here.
+# The value of the tag is the name of the tag as it will appear in the UI.
+# Tags with a null name are internal and will not be displayed.
+tags:
+  # Artisan specializations.
+  artificer: Artificer
+  crafter: Crafter
+  mystic: Mystic
+  # Druid form tags.
+  form: Form
+  rising-sun: Rising Sun
+  waning-moon: Waning Moon
+  beast-shape: Beast Shape
+  # Special Patron tag that excludes a perk from being taken with Patron.
+  no-patron: null
+
 default_flags:
   # Used in Mild Allergy and Severe Allergy
   Uncommon Allergens:

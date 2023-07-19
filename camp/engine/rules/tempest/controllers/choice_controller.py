@@ -191,7 +191,7 @@ class BaseFeatureChoice(ChoiceController):
             )
         return super().choose(choice)
 
-    def _matching_features(self):
+    def _matching_features(self) -> set[str]:
         return {
             choice
             for choice in self._feature.character.ruleset.features
@@ -241,6 +241,32 @@ class GrantChoice(BaseFeatureChoice):
             grants[choice] += 1
 
 
+class SameTagChoice(GrantChoice):
+    """Used only by the Artisan power Studied Focus.
+
+    Allows the character to choose multiple powers to be granted, but they must all share a tag.
+    """
+
+    @property
+    def tags(self) -> set[str]:
+        selections = list(self.taken_choices().keys())
+        if not selections:
+            return set()
+        ruleset = self._feature.character.ruleset
+        tags = ruleset.features.get(selections.pop()).tags
+        for selection in selections:
+            if feature_def := ruleset.features.get(selection):
+                tags = tags & feature_def.tags
+        return tags
+
+    def _matching_features(self) -> set[str]:
+        ruleset = self._feature.character.ruleset
+        features = super()._matching_features()
+        if tags := self.tags:
+            return {feat for feat in features if tags & ruleset.features[feat].tags}
+        return features
+
+
 def make_controller(
     feature: base_engine.BaseFeatureController, choice_id: str
 ) -> ChoiceController:
@@ -259,6 +285,8 @@ def make_controller(
             from . import patron_choice
 
             return patron_choice.PatronChoice(feature, choice_id)
+        case "same-tag":
+            return SameTagChoice(feature, choice_id)
         case None:
             return GrantChoice(feature, choice_id)
         case _:

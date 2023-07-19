@@ -6,7 +6,7 @@ target: Individual
 delivery: Touch
 accent: Var
 duration: Short Rest
-refresh: Long Rest
+refresh: Short Rest
 effect: Grant Accent
 description: |
   The Artisan unravels an Energy Foundation Resource Infusion to treat a weapon, giving it

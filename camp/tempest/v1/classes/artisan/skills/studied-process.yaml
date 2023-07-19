@@ -9,6 +9,13 @@ accent: None
 duration: Passive
 refresh: None
 effect: Special
+option:
+  values:
+    - Alchemy
+    - Arcane Ritual Magic
+    - Divine Ritual Magic
+    - Enchanting
+    - Tinkering
 description: |
   After many hours spent honing and perfecting their craft, the Artisan has found certain shortcuts
   and efficiencies in the everyday Plans they create. Choose one Craft: Alchemy, Arcane Ritual Magic,

@@ -267,6 +267,25 @@ class SameTagChoice(GrantChoice):
         return features
 
 
+class PracticedCraftChoice(GrantChoice):
+    def _matching_features(self) -> set[str]:
+        character = self._feature.character
+        if req := self.definition.controller_data.get("requires"):
+            if not character.meets_requirements(req):
+                return set()
+
+        choice_reqs: dict[str, str]
+        if choice_reqs := self.definition.controller_data.get("choice-requires"):
+            features = super()._matching_features()
+            available_feats = set()
+            for feat in features:
+                if (req := choice_reqs.get(feat)) and character.meets_requirements(req):
+                    available_feats.add(feat)
+            return available_feats
+
+        return set()
+
+
 def make_controller(
     feature: base_engine.BaseFeatureController, choice_id: str
 ) -> ChoiceController:
@@ -287,6 +306,8 @@ def make_controller(
             return patron_choice.PatronChoice(feature, choice_id)
         case "same-tag":
             return SameTagChoice(feature, choice_id)
+        case "practiced-craft":
+            return PracticedCraftChoice(feature, choice_id)
         case None:
             return GrantChoice(feature, choice_id)
         case _:

@@ -3,14 +3,24 @@ requires: artisan:9
 grants:
   - fortunate-finder
 choices:
-  # TODO(#96): Needs a custom controller to enforce two constraints:
-  journeyman-craft:
-    name: Journeyman Craft
+  craft:
+    name: Greater Craft
+    description: |
+      If Crafter is your current specialty and you have at least 9 tagged Crafter
+      powers, you can receive a Greater craft for free. You must also have the
+      pre-requisite Journeyman skill.
     matcher:
       id:
         - greater-alchemy
         - greater-enchanting
         - greater-tinkering
+    controller: practiced-craft
+    controller_data:
+      requires: artisan.specialization+crafter:9
+      choice-requires:
+        greater-alchemy: journeyman-alchemy
+        greater-enchanting: journeyman-enchanting
+        greater-tinkering: journeyman-tinkering
 description: |
   The Artisan gains an additional rank of the Fortunate Finder skill.
 

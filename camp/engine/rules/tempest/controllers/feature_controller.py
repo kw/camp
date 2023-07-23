@@ -89,12 +89,21 @@ class FeatureController(base_engine.BaseFeatureController):
         return f"{super().feature_list_name}"
 
     @property
+    def option_controllers(self) -> dict[str, FeatureController]:
+        if not self.option_def:
+            return {}
+        return {
+            c.option: c
+            for c in self.character.features.values()
+            if c.id == self.id and c.option and c.value > 0
+        }
+
+    @property
     def taken_options(self) -> dict[str, int]:
-        options = {}
-        for controller in self.character.features.values():
-            if controller.id == self.id and controller.option and controller.value > 0:
-                options[controller.option] = controller.value
-        return options
+        return {
+            option: controller.value
+            for option, controller in self.option_controllers.items()
+        }
 
     @property
     def cost_def(self) -> defs.CostDef:
@@ -273,16 +282,26 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def choices(self) -> dict[str, base_engine.ChoiceController] | None:
-        if not self.definition.choices or self.value < 1:
-            return None
-        choices = {
-            key: choice_controller.make_controller(self, key)
-            for key in self.definition.choices
-        }
-        if not self.is_starting:
+        if self.definition.choices and self.value > 0:
             choices = {
-                k: v for k, v in choices.items() if not v.definition.starting_class
+                key: choice_controller.make_controller(self, key)
+                for key in self.definition.choices
             }
+            if not self.is_starting:
+                choices = {
+                    k: v for k, v in choices.items() if not v.definition.starting_class
+                }
+        else:
+            choices = {}
+        if (
+            self.option_def
+            and not self.option
+            and self.bonus
+            and self.option_controllers
+        ):
+            choices["option-bonus"] = choice_controller.OptionBonusRouter(
+                self, "option-bonus"
+            )
         return choices
 
     def choose(self, choice: str, selection: str) -> Decision:

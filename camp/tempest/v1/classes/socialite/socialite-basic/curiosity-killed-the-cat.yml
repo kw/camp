@@ -1,0 +1,13 @@
+name: Curiosity Killed the Cat
+incant: Focus Slow 120
+call: '“[Name or Description] 4”' or '“[Name or Description] 6 by Flame”'
+target: Individual
+delivery: Verbal
+accent: Flame
+duration: Instantaneous
+refresh: Upon Discharge
+effect: None, only damage
+description: |
+The Socialite can booby trap a personal container. The Socialite can only have one such container active at a time. The Socialite should spend a Slow Count of 120 preparing their container with the trap. They may decide whether to build a mechanical or chemical trap at the time of creation. If the container is searched before the next Long Rest by anyone other than the Socialite , the trap is considered active, and must be disarmed normally. The Socialite may open the container and it is automatically considered disarmed.
+
+A mechanical trap will do 4 points of damage to the searcher. A chemical trap will do 6 points of Flame damage to the searcher, but also destroy all flammable objects in the container. These traps make a snap sound when they go off. This trap acts like the '“Triggered Base Trap”' from the Tinkering Power, They are represented by mousetraps, party poppers, and snaps. See the Traps and Locks chapter for more information on this item (Triggered Base Trap).

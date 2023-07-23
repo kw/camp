@@ -1,0 +1,10 @@
+name: Sizing Up the Opposition
+incant: Focus Quick 100
+call: '“[Name or Description], Subtle Discern: Do you intend to harm us?”', '“[Name or Description], Subtle Discern: Are you willing to negotiate a peaceful resolution?”', or '“[Name or Description], Subtle Discern: Will you accept a bribe?”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Discern
+description: Sizing up a potential threat, the Socialite can determine if they are under an immediate threat, and if they can negotiate their way out of it. Each question can only be asked once per Individual per Short Rest.

@@ -1,0 +1,12 @@
+name: This Is My Bodyguard
+cost: 1
+requires: socialite:6, the-right-hand
+incant: RP: Explaining that your Bodyguard is going with you wherever you’re going.
+call: '“[Name or Description] Obey by Fear: Let my Bodyguard in with me if I am allowed in.”'
+target: Individual
+delivery: Verbal
+accent: Fear
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Obey
+description: The Socialite may use this power to ensure that the Bodyguard is allowed in any spaces that they are. If a space would try to prohibit the Bodyguard from entering with the Socialite, the Socialite may pull the contract to ensure their passage.

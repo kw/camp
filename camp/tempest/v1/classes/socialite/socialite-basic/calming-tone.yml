@@ -1,0 +1,10 @@
+name: Calming Tone
+incant: RP; Slow 60
+call: None
+target: Individual
+delivery: RP
+accent: Will
+duration: Instantaneous
+refresh: Short Rest
+effect: Cure, Special
+description: Out of combat, the Socialite sits down with a willing creature and engages them in a dialog for at least a minute. While doing so, the Socialite should attempt to calm the emotions of the target using a calm and relaxing manner. After completing the conversation, the Socialite may Cure the target of one condition from the Will, Mind, Fear, or Illusion accents. Additionally, this power can be used to cure the negative effects of the Nightmare Challenge.

@@ -1,0 +1,10 @@
+name: Fortress of the Mind
+incant: Focus Quick 100
+call: '“Dispel [Charm or Dominate] to Self by Will”'
+target: Self
+delivery: None
+accent: Will
+duration: Instantatious
+refresh: Long Rest
+effect: Dispel
+description: The Socialite can keep a certain part of their mind separate and inviolate. This part will watch over the character’s personality, even if that personality is suborned by enchantment magic. While Charmed or Dominated, the character may at any time call '“Dispel [Charm or Dominate] to Self by Will”'. This can be done even if the character has been ordered not to.

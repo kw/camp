@@ -1,0 +1,15 @@
+name: Stern Willed 
+cost: 0
+requires: socialite:4
+incant: RP: Heartfelt verbal complaints which include at least 10 words.
+call: None
+target: Self
+delivery: None
+accent: None                                
+duration: Quick 100
+refresh: Short Rest
+effect: Special
+description: |
+While few can boast as well as the Socialite, there are still powers that can overcome even the most… stubborn… of minds. However, that doesn’t mean the Socialite is bound forever - by picking apart the threads of a geas, curse, or domination, the Socialite can worm their way out of the binding, eventually freeing herself. After verbally complaining about the nature of their mental confinement or predicament and disparaging their captor, the Socialite may call Cure [Condition] to Self, where the condition is from the following list: [Berserk, Charm, Dominate.]
+
+Note: This power may be used while Berserked, but the Socialite is still under all other effects of that condition.

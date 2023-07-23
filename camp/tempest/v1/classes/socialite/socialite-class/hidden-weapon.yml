@@ -1,0 +1,16 @@
+name: Hidden Weapon
+cost: 0
+requires: socialite:6, The Right Hand
+incant: None
+# This incantation natively uses both apostrophes and quotation marks in the text
+call: '“[Name or Description] Imbue: ‘Obey: Ignore this concealed weapon.’”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Short Rest
+refresh: Long Rest
+effect: Imbue: Obey
+description: |
+Bodyguards aren’t particularly useful if they cannot defend the Socialite, and so the pair are used to taking advantage of the Socialite’s quick diversions to sneak in contraband weapons in places they are normally forbidden.
+
+Choose one weapon the Bodyguard is making an attempt to sneak into a place weapons have been forbidden. For the duration of a Short Rest, the Bodyguard may use '“[Name or Description] Obey: Ignore this concealed weapon.”' If the bodyguard enters combat, the power ends.

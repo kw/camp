@@ -1,0 +1,13 @@
+name: Rise Above This
+cost: 1
+requires: the-right-hand
+incant: RP: Encouraging their bodyguard to get up
+# Quoted call below has posessive apostrophe; see Description text as well
+call: '“[Bodyguard’s Name or Description] Heal 1 to Dying”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Heal
+description: The Socialite knows how to rouse their companions, and their words can keep even the most disparate from teetering from the ledge. They may call upon their natural guile to aid the infirm and support them to rise again. After verbally supporting their bodyguard (Or disparaging, depending on their individual interactions), they may call '“[Bodyguard’s Name or Description] Heal 1 to Dying.”'

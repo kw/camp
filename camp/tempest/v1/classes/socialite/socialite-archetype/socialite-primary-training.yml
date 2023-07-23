@@ -1,0 +1,3 @@
+name: Primary Training 
+requires: socialite:2
+description: The Socialite gains an additional Utility Power and Basic Power from the Socialite Class Powers.

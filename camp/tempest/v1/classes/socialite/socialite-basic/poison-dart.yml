@@ -1,0 +1,15 @@
+name: Poison Dart
+incant: Q30 preparing a poison dart (thrown weapon in the form of a dart or dagger), Q10 Aim
+call: '“Short Drain by Poison”'
+target: Individual
+delivery: Thrown Weapon or Packet (Spell-ball)
+accent: Poison
+duration: Short Rest
+refresh: Short Rest
+effect: Drain
+description: |
+The only difference between murder and an assassination is the intended target and their perceived importance. The Socialite knows this all too well. When timelines get short, sometimes they find that they cannot simply hire it done, and they need to do things themselves, even when their preferred subtleties might not be applicable.
+
+This Power can only be used with a Packet or Thrown Weapon and it can only be used out of combat, generally to start a fight.
+
+This ability does not require the Thrown Weapons Skill. The Socialite may target and prepare the poison dart, and lining up the shot. Such attempts are unlikely to get a second attempt, so it must either work, or fail horribly. After proper preparations, and spending a Spike, the Socialite may throw the dart and call '“Short Drain by Poison.”' If the character has the Thrown Weapon Skill, they need not aim.

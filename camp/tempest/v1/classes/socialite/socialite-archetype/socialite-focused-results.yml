@@ -1,0 +1,4 @@
+name: Focused Results 
+# Note unusual single-class requirements here
+requires: socialite:6, 0 Levels in any other Base Class
+description: The Socialite gains an additional Utility Power and Basic Power from the Socialite Class Powers.

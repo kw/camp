@@ -1,0 +1,13 @@
+name: Let’s You and Them Fight
+incant: RP: Short Distracting Phrase
+call: '“[Name or Description] Quick Dominate by Illusion”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Quick 100
+refresh: Short Rest
+effect: Dominate
+description: |
+Socialites are quite adept at diverting the focus of their foes when the need arises. With a bit of flair, this can take the focus off the Socialite, and place it on someone else... more suitable to violence.
+
+The Socialite may, after being struck in melee combat, target their attacker and utter a quick diversionary phrase (ex, '“Look over there!”'), and then cause the target to seek vengeance elsewhere with a '“[Name or Description] Quick Dominate.”' The only command the Socialite may give the dominated foe is '“Attack someone else!”'

@@ -1,0 +1,11 @@
+name: Sharp Dagger, Sharper Tongue 
+requires: socialite:8
+incant: RP: Insult the target using at least 10 words
+call: '“[Name or Description] Taunt 1 by Will“'
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Instantaneous
+refresh: Long Rest
+effect: Taunt
+description: Social butterflies with bright garish colors make for excellent distractions, especially for the Bodyguard with a sharp poisoned knife. By using this power, the Socialite may draw the attention, briefly, of an opponent while their Bodyguard sneaks in for the kill.

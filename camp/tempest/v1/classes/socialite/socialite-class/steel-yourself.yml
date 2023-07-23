@@ -1,0 +1,13 @@
+name: Steel Yourself
+cost: 1
+requires: the-right-hand
+incant: RP: Short pep talk
+# Quoted call below has posessive apostrophe
+call: '“[Bodyguard’s Name or Description] Grant Protect vs [Will or Mind]”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Until Used
+refresh: Short Rest
+effect: Protect
+description: The Socialite knows how to convince their bodyguard that everything will be alright. After giving their Bodyguard a short pep talk, they may grant them one Protect vs [Will or Mind].

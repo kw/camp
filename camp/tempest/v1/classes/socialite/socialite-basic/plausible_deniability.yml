@@ -1,0 +1,13 @@
+name: Plausible Deniability
+incant: RP: Character must give a vaguely reasonable alibi for a thing they are accused of.
+call: '“[Names or Description] Short Obey by Will: Believe the reason I gave you until I break line of sight.”'
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Short Rest
+refresh: Short Rest
+effect: Obey
+description: |
+The Socialite’s ability with words is highly prized. They have mastered the art of speaking with such confidence that they can make even the wittiest believe them, if only for a short while.
+
+It’s not about outrunning the bear, it’s about outrunning your friend who’s slower than you. Socialites have mastered the tactic of getting out of Khettashi when the coins are down. After explaining for a Quick 30 that they could not have possibly done the thing- that they likely did - and provided a... relatively believable excuse- '“Couldn't have been me, I was blind that day. Eyes got eaten by birds.”' The socialite may force their victims to believe their lie, long enough for them to escape unharmed.

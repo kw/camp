@@ -1,0 +1,10 @@
+name: Gathering of the Moot
+incant: None
+call: '“By My Voice, Grant 3 Barrier, to each person who told a story at this gathering, by Mind.”'
+target: Individuals
+delivery: Voice
+accent: Mind
+duration: Special
+refresh: Long Rest
+effect: Grant Barrier
+description: Out of Combat, the Socialite gathers together at least ten people in a public area, each telling stories of their recent trials and tribulations. The story tellers gather these stories and lessons, reflecting on them, and offer wisdom to those gathered. Each person who told a story and heard the collective wisdom shared may benefit. Those who did not tell a story or did not stay gain no benefit.

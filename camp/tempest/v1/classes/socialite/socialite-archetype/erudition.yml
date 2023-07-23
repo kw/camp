@@ -1,0 +1,11 @@
+name: Erudition 
+requires: socialite:9
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: Special
+description: The Socialite learns an additional Advanced Power gains an additional Advanced Power Slot from the Socialite Class Powers.

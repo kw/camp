@@ -1,0 +1,10 @@
+name: Enticing Opulence
+incant: RP: Must give an item worth at least 5 Wealth to the target.
+call: '“[Name or Description] Charm by Will”', Explanation
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Explanation
+refresh: Long Rest
+effect: Charm
+description: Fine jewelry and expensive silks are the staple of the Socialite, and often, these items are carried in abundance by them. Gift giving is a Socialite favorite, and the giving of expensive gifts even more-so. When the Socialite uses this power, they must show their target an item worth 5 Wealth. When they do, they may offer it out as a gift to their target, and, should their target take the item, the Socialite may immediately call '“[Name or Description] Charm by Will.”' The Socialite must explain that the target is under the effects of this Charm until they are no longer in possession of the item given to them, or the end of the Event, whichever comes first.

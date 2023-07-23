@@ -1,0 +1,61 @@
+name: Party Planner
+incant: None
+call: None
+target: One party
+delivery: RP
+accent: Will
+duration: Special
+refresh: Event
+effect: Obey, Discern, Expose, Sleep, Heal
+description: |
+The Socialite, after spending at least twenty minutes preparing for hosting a party in a specific location, the Socialite gains special powers for the event that will go away only when the party ends or the Socialite leaves the location of the party.
+
+The Socialite can use any of the following at-will:
+
+'“It can be believed that your drink is now alcoholic.”'
+Touch, One beverage.
+
+'“It can be believed that you are now totally sober.”'
+Touch. One individual.
+
+'“[Name or Description] Obey: Leave this venue and do not return for one hour.”'
+Verbal, One Individual
+An Individual may only be targeted by this effect once per party.
+
+'“By My Voice, Expose Intoxicated”'
+Intoxication is up to the player and could be in any form of inebriation.
+Verbal, By My Voice
+
+'“[Name or Description] Subtle Discern by Mind: Do you mean imminent harm to anyone here?”'
+Verbal, One Individual
+
+'“[Name or Description] Long Obey: If you have had any food or drink from this party, you may not initiate harm to anyone at this party while you are here.”'
+Verbal, One Individual
+
+The Socialite can also do each of the following once per party:
+
+'“[Name or Description] Short Sleep by Will”'
+Verbal, Individual.
+
+'“[Name or Description] Heal to Full by Will”'
+Verbal, Individual.
+
+'“By My Voice, Heal 1 to Dying by Will”'
+Verbal, By My Voice.
+
+'“[Name or Description] Grant Protect vs Weapon Damage”'
+Verbal, Individual
+
+'“[Name or Description] Grant Protect vs Packet Effect”'
+Verbal, Individual
+
+'“[Name or Description] Grant Protect vs Verbal or Voice”'
+Verbal, Individual
+
+As long as the party has lasted at least 45 minutes, the Socialite can do the following once:
+
+'“By My Voice to Party Guests: Heal to Full by Will”'
+
+As long as the party has lasted at least 20 minutes, and is then interrupted, the Socialite can do the following once:
+
+'“By My Voice to Party Guests: Grant Three Barrier”'

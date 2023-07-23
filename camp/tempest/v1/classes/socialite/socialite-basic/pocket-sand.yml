@@ -1,0 +1,11 @@
+name: Pocket Sand
+incant: RP reaching into bag or pocket and tossing a packet.
+call: '“Short Weakness by Agony”'
+target: Individual
+delivery: Packet (Spell-ball) 
+accent: Agony
+duration: Short Rest
+refresh: Short Rest
+effect: Weakness
+description: |
+Sometimes things don’t go as planned, and sometimes things really don’t go as planned. In such scenarios the Socialite must out think, out maneuver, and outperform the opposition. By thinking fast enough, time seems to slow to a crawl, in the moment of truth the Socialite looks for a way out, then Pocket Sand! A common enough implement, and passed off as drying sand for a fountain pen, a pouch full of sand is innocent enough, but just the thing to allow for a hasty escape. 

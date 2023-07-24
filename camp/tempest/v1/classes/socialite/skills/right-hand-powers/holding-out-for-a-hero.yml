@@ -10,9 +10,9 @@ duration: Long Rest
 refresh: Event
 effect: Imbue, Discern
 description: |
-  After speaking at length with an individual, the Socialite may ask them '“Subtle Discern: Would you come for me, if I were in danger?”' If the individual says yes, the Socialite may forge a trust bond with the individual and Imbue them the Save the Day power below.
+  After speaking at length with an individual, the Socialite may ask them “Subtle Discern: Would you come for me, if I were in danger?” If the individual says yes, the Socialite may forge a trust bond with the individual and Imbue them the Save the Day power below.
 
-  **Note**: If the individual says anything other than a flavor of ‘"yes,"’ the Socialite takes 1 Piercing by Agony as their heart breaks a little.
+  **Note**: If the individual says anything other than a flavor of "yes," the Socialite takes 1 Piercing by Agony as their heart breaks a little.
 
 subcard:
   name: Save The Day

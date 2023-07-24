@@ -13,34 +13,34 @@ description: |
   The Socialite can use any of the following at-will:
 
   * “It can be believed that your drink is now alcoholic.”
-    * Touch, One beverage.
+      * Touch, One beverage.
   * “It can be believed that you are now totally sober.”
-    * Touch. One individual.
+      * Touch. One individual.
   * “[Name or Description] Obey: Leave this venue and do not return for one hour.”
-    * Verbal, One Individual
+      * Verbal, One Individual
   * An Individual may only be targeted by this effect once per party.
-    * “By My Voice, Expose Intoxicated”'
+      * “By My Voice, Expose Intoxicated”'
   * Intoxication is up to the player and could be in any form of inebriation.
-    * Verbal, By My Voice
+      * Verbal, By My Voice
   * “[Name or Description] Subtle Discern by Mind: Do you mean imminent harm to anyone here?”
-    * Verbal, One Individual
+      * Verbal, One Individual
   * “[Name or Description] Long Obey: If you have had any food or drink from this party, you may not initiate harm to anyone at this party while you are here.”
-    * Verbal, One Individual
+      * Verbal, One Individual
 
   The Socialite can also do each of the following once per party:
 
-  “[Name or Description] Short Sleep by Will”
-    * Verbal, Individual.
-  “[Name or Description] Heal to Full by Will”
-    * Verbal, Individual.
+  * “[Name or Description] Short Sleep by Will”
+      * Verbal, Individual.
+  * “[Name or Description] Heal to Full by Will”
+      * Verbal, Individual.
   * “By My Voice, Heal 1 to Dying by Will”
-    * Verbal, By My Voice.
+      * Verbal, By My Voice.
   * “[Name or Description] Grant Protect vs Weapon Damage”
-    * Verbal, Individual
+      * Verbal, Individual
   * “[Name or Description] Grant Protect vs Packet Effect”
-    * Verbal, Individual
+      * Verbal, Individual
   * “[Name or Description] Grant Protect vs Verbal or Voice”
-    * Verbal, Individual
+      * Verbal, Individual
 
   As long as the party has lasted at least 45 minutes, the Socialite can do the following once:
 

@@ -1,0 +1,13 @@
+name: Magical Empowerment
+cost: 2
+requires: the-right-hand
+incant: 'RP: Conversing with the Bodyguard.'
+call: '“Refresh 1 Novice or Adept Spell Slot”'
+target: Individual (Bodyguard)
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Refresh
+description: |
+  The Socialite can empower their bodyguard to cast additional spells. After a quick discussion, the Socialite can inspire their bodyguard to think a little harder, and pull on their inner reserves of magical power to cast more.

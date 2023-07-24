@@ -1,0 +1,11 @@
+name: Inspiring Performance
+incant: 'RP: Showing off'
+call: '“[Name or Description] Refresh Novice Spell or Basic Power,” Explanation'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Refresh
+description: |
+  By presenting a work of art, trinket, or performance to a number of Individuals the Socialite can give a boost of energy and strength for up to four people present for the duration. The socialite must declare up to four individuals to receive their boon. Those four people can Refresh one expended Novice spell-slot or Basic-tier Power (which must have a Refresh of Short Rest or shorter and may not have the Refresh Effect). When the character has 10 Socialite-levels, they can provide the benefit for six people. At 15 Socialite-levels, they can benefit eight, and at 20 Socialite-levels, they can benefit ten. The Socialite themself cannot benefit from their own Great Work.

@@ -1,0 +1,23 @@
+name: Soothe
+incant: 'RP: Slow 300, [Description of Roleplay]'
+call: '“[Name or Description] Subtle Discern by Mind: [Question]”, “[Name or Description] Heal 5”, “[Name or Description] Cure All Conditions”'
+target: Individual, Member of [Group Name]
+delivery: Verbal
+accent: Mind
+duration: Instantaneous
+refresh: Immediate, Long Rest
+effect: Discern, Heal, Cure
+description: |
+  A Socialite may speak with members of a group that they are the "Heart" of and after extensive roleplay asking them how they are doing and attempting to be a supportive force in their life, ask as many of the following as they wish. If the target of this power does not engage with the Socialite the Discern questions may not be asked. Only a single slow count 300 roleplay is needed during any one sitting of this power to ask as many of these questions as the Socialite would like.
+
+  “[Name or Description] Subtle Discern to Members of [Group Name]:"
+
+  * "Are you under the effects of any Charm, Dominate, or Obey effects, if so which ones?"
+  * “Have you been affected by the Agony, Fear, Mind, or Will Accents during this Long Rest, if so which ones?"
+  * “Have you lied to me in the last five minutes?”
+  * "Is this your true form?"
+  * “Are you under the effects of any curses, if so which ones?"
+  * “How are you feeling generally?"
+  * "Is there anything you wish you could tell me about, but haven't out of fear, social pressure, or desire to not be a burden to me, If so what is it?”
+
+  Once per Long Rest, at the end of such a session the Socialite may choose to either Heal the target for 5 or Cure All Conditions on the target.

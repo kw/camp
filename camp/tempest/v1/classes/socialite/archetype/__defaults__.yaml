@@ -1,0 +1,4 @@
+type: archetype
+parent: socialite
+requires: socialite
+category: Socialite Archetype Powers

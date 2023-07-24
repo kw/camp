@@ -1,0 +1,11 @@
+name: Grace Under Duress
+incant: Focus Quick 100
+call: '“Grant Protect vs [Fear, Will, or Mind]”'
+target: Self
+delivery: None
+accent: None
+duration: Short Rest, Until Used
+refresh: Long Rest, Instantaneous
+effect: Grant Protect
+description: |
+  The Socialite is the master of their mind and is able to steel themself against the mental trials that they must endure. Choose one of the following options when this power is used: Fear, Will, or Mind. Then, for the duration of this power, the Socialite may Focus for a Quick 100 to Grant themselves a Protect vs the chosen Accent. They may re-apply this Protect by Focusing for a Quick 100 until their next completed Short Rest.

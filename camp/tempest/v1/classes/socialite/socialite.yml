@@ -1,0 +1,64 @@
+type: class
+category: Basic Class
+name: Socialite
+starting_features:
+  - basic-martial-weapons
+  - basic-scholarship
+  - basic-armor
+  - lore
+  - profession-apprentice
+  - profession-journeyman
+multiclass_features:
+  - lore
+  - basic-scholarship
+  - poisoner
+choices:
+  opportunities-abound:
+    starting_class: true
+    name: Opportunities Abound
+    matcher:
+      id:
+        - opportunities-abound-1
+        - opportunities-abound-2
+        - opportunities-abound-3
+description: |
+  Found in the great courts of the lands, in every bar or pub, and in shadowy dens where information is the only currency, the Socialite dwells… trading on words, gestures, and emotions. These manipulators of the spoken tongue garner aid from the willing and otherwise through subtle inflections, outright slander, and traitorous misdirection.
+
+  As masters of words both subtle and overt, these cunning manipulators can dissuade attackers, subdue the vengeful, and entice the stalwart. While wealth and power are appealing to most, they are merely tools to the Socialite; chips in a high stakes game where the greatest rewards are even greater heights of power, prestige, and realized ambitions.
+
+  Furthermore, the Socialite is the pinnacle of Subtle Discernment and information gathering. They are often found sussing out facts and truths from simple conversations - frequently without their quarry’s notice. Using guile and a keen mind, the Socialite may separate fact from fiction, gain insight into another's motives, and even force another to act as the Socialite’s pawn for a time.
+
+  In addition, many Socialites leverage their resources into hiring a Bodyguard; a specific bonded individual whom they are able to empower in key moments. These bodyguards are never to be trifled with. After all, as the Socialite grows in ability, so do their protectors… often in subtle ways that only become apparent when they decide to play their hand.
+---
+id: opportunities-abound-1
+type: subfeature
+parent: socialite
+name: Market Connections
+description: "Fence (3), Contact (2)"
+category: Socialite Starting Skills
+display_type: Opportunity
+grants:
+  - fence
+  - contact
+---
+id: opportunities-abound-2
+type: subfeature
+parent: socialite
+name: Family Connections
+description: "Minor Nobility (4), Minor Fame (1)"
+category: Socialite Starting Skills
+display_type: Opportunity
+grants:
+  - minor-nobility
+  - minor-fame
+---
+id: opportunities-abound-3
+type: subfeature
+parent: socialite
+name: Training Connections
+description: "Short Weapons (3), Connections (2)"
+category: Socialite Starting Skills
+display_type: Opportunity
+grants:
+  - short-weapons
+  - connections

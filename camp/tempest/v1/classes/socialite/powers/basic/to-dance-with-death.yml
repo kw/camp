@@ -1,0 +1,13 @@
+name: To Dance with Death
+incant: 'RP: Dance for at least 1 minute with target individual'
+call: '“[Name or Description] Piercing [X] by Poison, Short Taint by Poison”'
+target: Individual
+delivery: Verbal
+accent: Poison
+duration: Short Rest
+refresh: Short Rest
+effect: Taint, Poison
+description: |
+  Dancing can be such an intimate time, so many opportunities to subtly betray one so close. The Socialite is not one to sleep on such an opportunity.
+
+  While dancing for a full minute or more, the Socialite may conclude the dance by calling “[Name or Description] Piercing [X] by Poison, Short Taint by Poison,” where X is equal to the character’s levels in Socialite. This power cannot be used in combat, must be used on their most recent dance partner, and that character must have engaged you in dance back.

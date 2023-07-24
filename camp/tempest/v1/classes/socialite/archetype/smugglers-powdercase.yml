@@ -1,0 +1,12 @@
+name: Smuggler’s Powdercase
+requires: socialite:2
+incant: None
+call: None
+target: None
+delivery: None
+accent: None
+duration: Passive
+refresh: Immediate
+effect: Counter
+description: |
+  The Socialite may designate one pouch (no more than 8” in any one dimension) as being their Powdercase. The Powdercase can only contain Wealth, Hide, Harvest, Ingots, Rare Minerals, Bloom, and Night Prizes. They must mark the pouch with a Halo Sigil. The contents of the pouch are immune to searches and Powers and are excluded when answering Discern questions. You do not need to announce you are using this power. The Socialite herself can ignore the Halo Sigil on their pouch.

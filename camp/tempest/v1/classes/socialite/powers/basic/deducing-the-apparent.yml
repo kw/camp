@@ -1,0 +1,23 @@
+name: Deducing the Apparent
+incant: None
+call: '“[Name of Description] Subtle Discern: [Question]”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Discern
+description: |
+  The Socialite can make certain observations about individuals to learn things that are hidden. This Power must be used out of combat and generally within normal social distance (i.e., the characters must be able to have a normal conversation). The Socialite may ask a number of questions equal to their levels in Socialite per Long Rest.
+
+  The possible questions are:
+
+  * “[Name of Description] Subtle Discern: Have you killed a living creature in the last hour?
+  * “[Name of Description] Subtle Discern: Have you killed a living creature in the last hour?
+  * “[Name of Description] Subtle Discern: Have you killed a living creature in the last hour?
+  * “[Name of Description] Subtle Discern: Do you think of yourself as a generally honest person?”
+  * “[Name of Description] Subtle Discern: Where did you most recently come from?”
+  * “[Name of Description] Subtle Discern: What Class Archetype are you?”
+  * “[Name of Description] Subtle Discern: What are your Professions?”
+  * “[Name of Description] Subtle Discern: What Culture are you from?”
+  * “[Name of Description] Subtle Discern: What Religion do you practice?”

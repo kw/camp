@@ -1,0 +1,11 @@
+name: Enduring Inspiration
+requires: socialite:10
+incant: 'RP Pep Talk: Slow 30'
+call: '“Heal to Full”, “Cure All Conditions”, “Refresh All Spikes”, Explanation'
+target: Other Individual
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Special
+description: Once this power is used, the target undergoes a massive transformation, altering their abilities significantly. The target is Healed to Full, Cure All Conditions, and has their Spikes Refreshed. They also may choose a power to be Refreshed that has the duration of Short Rest or Long Rest.

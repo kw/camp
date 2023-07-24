@@ -1,0 +1,11 @@
+name: Don’t You Know Who I Am?
+incant: 'RP: Short sentence.'
+call: '“It Has Been Told [True Statement]”'
+target: Individual
+delivery: Verbal
+accent: Mind
+duration: Instantaneous
+refresh: Short Rest
+effect: '“It Has Been Told”'
+description: |
+  The Socialite is well known across various social circles, and their reputation precedes them - even if sometimes their audience might need a gentle reminder. The Socialite may include in conversation a single sentence in the “It has been told..." format when the audience seems to doubt their credentials, status, or station. The sentence must be factually true (i.e., from an approved backstory, the situation occurred in-game, or in a BGE), but may be reasonably embellished for good roleplay.

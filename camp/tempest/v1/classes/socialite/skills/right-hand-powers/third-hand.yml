@@ -1,0 +1,15 @@
+name: Third Hand
+cost: 2
+requires:
+  - socialite:6
+  - the-right-hand
+incant: 'RP: Explaining how they are going to hold the spell for the bodyguard'
+call: '“Charged”, Explanation'
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+refresh: Short Rest
+effect: Special
+description: |
+  The Socialite is able to hold charged spell packets that the Bodyguard has cast beforehand. While the Socialite is holding the Spell Packet, they are subject to all casting rules for packets. Until the packet is retrieved by the Socialites Bodyguard, or a Short Rest, the Socialite may freely carry the charged spell packet as if they had cast the spell themselves. The Bodyguard that cast the spell must be the bodyguard that retrieves the spell.

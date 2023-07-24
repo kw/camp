@@ -1,0 +1,4 @@
+type: innate
+parent: socialite
+requires: socialite
+category: Socialite Innate Powers

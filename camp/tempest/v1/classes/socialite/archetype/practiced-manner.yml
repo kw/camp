@@ -1,0 +1,10 @@
+name: Practiced Manner
+requires: socialite:5
+incant: None
+call: None
+accent: None
+duration: Passive
+refresh: None
+effect: Special
+grants: socialite.powers@1:1
+description: The Socialite learns an additional Basic Power from the Socialite Class Powers.

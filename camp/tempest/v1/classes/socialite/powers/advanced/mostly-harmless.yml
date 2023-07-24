@@ -1,0 +1,11 @@
+name: Mostly Harmless
+incant: None
+call: '“[Name or Description] Quick Obey by Will: Don’t attack me until I attack you.”'
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Quick 100
+refresh: Quick 100
+effect: Obey
+description: |
+  Nobody wants to stomp the flowers... usually. The Socialite is adept at convincing others that there are bigger fish to fry in the theater of war or any bar fight. While not brandishing any Melee weapons, the Socialite may call “Quick Obey by Will: Don’t attack me until I attack you,” to a creature who they believe is about to attack them. The Socialite may use this power a number of times each Long Rest equal to their Socialite class level.

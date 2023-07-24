@@ -1,0 +1,4 @@
+type: skill
+requires: socialite
+parent: socialite
+category: Socialite Class Skills

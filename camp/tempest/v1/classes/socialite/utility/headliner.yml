@@ -1,0 +1,8 @@
+name: Headliner
+requires: profession-journeyman
+grants:
+  - profession-master
+description: |
+  The Socialite has mastered their trade and expanded their business throughout the region. They gain the Profession - Master skill.
+
+  In addition, they have the complete support of a small caravan who will take them wherever they would like, so long as they are willing to flex their chosen trade or charismatic acumen for them from time to time. This caravan counts as an additional movement action during BGEs, and may be used in conjunction with Steed.

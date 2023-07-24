@@ -1,0 +1,15 @@
+name: Additional Bodyguard
+cost: 3
+requires:
+  - socialite:4
+  - the-right-hand
+incant: RP
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Refresh
+description: |
+  The Socialite has mastered the arts of social manipulation such that they may have an additional Bodyguard. The Socialite may use The Right Hand power to designate one other individual as their Bodyguard.

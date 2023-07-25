@@ -106,21 +106,15 @@ class CharacterController(ABC):
             for id, fc in self.features.items():
                 if type and fc.definition.type != type:
                     continue
-                if fc.value <= 0:
-                    continue
                 if available and not fc.can_increase():
                     continue
-                if fc.option_def and not fc.option:
-                    # This is feature controller belongs to an option feature
-                    # that doesn't have an option selected. It represents the
-                    # "raw" skill and should appear in the "untaken" list even
-                    # though it has a value associated.
-                    continue
-                yield fc
+                if fc.should_show_in_list:
+                    yield fc
         else:
             for id, definition in self.ruleset.features.items():
-                if id in self.features and self.get(id) > 0:
-                    continue
+                if id in self.features and (fc := self.feature_controller(id)):
+                    if fc.should_show_in_list:
+                        continue
                 if type and definition.type != type:
                     continue
                 fc = self.feature_controller(id)
@@ -577,7 +571,7 @@ class BaseFeatureController(PropertyController):
 
     @cached_property
     def expr(self) -> base_models.PropExpression:
-        return base_models.PropExpression.parse(self.id)
+        return base_models.PropExpression.parse(self.full_id)
 
     @cached_property
     def definition(self) -> base_models.BaseFeatureDef:
@@ -659,8 +653,24 @@ class BaseFeatureController(PropertyController):
         return self.character.display_name(self.feature_type)
 
     @property
+    def option(self) -> str | None:
+        if option_def := self.definition.option:
+            if option_def.inherit:
+                # The inherit field names a real option skill. We should report the
+                # name of that option.
+                template = self.character.feature_controller(option_def.inherit)
+                options = template.taken_options.keys()
+                if len(options) == 1:
+                    return list(options)[0]
+                return "???"
+            return self.expr.option
+        return None
+
+    @property
     def option_def(self) -> base_models.OptionDef | None:
-        return self.definition.option
+        if (option_def := self.definition.option) and not option_def.inherit:
+            return option_def
+        return None
 
     @property
     def purchase_cost_string(self) -> str | None:
@@ -722,9 +732,11 @@ class BaseFeatureController(PropertyController):
             and taken >= self.option_def.multiple
         ):
             return False
-        if self.option_def.inherit:
-            return True
         return True
+
+    @property
+    def badges(self) -> list[tuple[str, str]]:
+        return []
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -737,6 +749,15 @@ class BaseFeatureController(PropertyController):
         return sorted(
             self.character.options_values_for_feature(self.id, exclude_taken=True)
         )
+
+    @property
+    def should_show_in_list(self) -> bool:
+        """Whether the feature should be shown in the list of "taken" features.
+
+        Subclasses may want to override this to show features that have no current
+        value but need to be displayed for some other reason.
+        """
+        return self.value > 0 and not self.is_option_template
 
     @property
     def available_ranks(self) -> int:

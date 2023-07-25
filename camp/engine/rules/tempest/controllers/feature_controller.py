@@ -20,6 +20,7 @@ _NO_RESPEND = Decision(success=False, reason="Respend not currently available.")
 _NO_PURCHASE = Decision(success=False, reason="Feature cannot be purchased.")
 
 _SUBFEATURE_TYPES: set[str] = {"subfeature", "innate", "archetype"}
+_OPTION_BONUS = "__option__"
 
 
 class FeatureController(base_engine.BaseFeatureController):
@@ -107,9 +108,7 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def cost_def(self) -> defs.CostDef:
-        if not hasattr(self.definition, "cost"):
-            return None
-        return self.definition.cost
+        return getattr(self.definition, "cost", None)
 
     @property
     def cost(self) -> int:
@@ -117,6 +116,8 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def next_cost(self) -> int:
+        if self.unused_bonus > 0:
+            return 0
         grants = self.granted_ranks
         return self._cost_for(self.paid_ranks + 1, grants) - self._cost_for(
             self.paid_ranks, grants
@@ -133,8 +134,13 @@ class FeatureController(base_engine.BaseFeatureController):
     ) -> str | None:
         if self.currency and self.cost_def:
             if cost is None:
-                cost = self._cost_for(self.paid_ranks + ranks) - self._cost_for(
-                    self.paid_ranks, self.granted_ranks
+                if self.is_option_template:
+                    grants = 0
+                else:
+                    grants = self.granted_ranks
+                ranks = max(0, ranks - self.unused_bonus)
+                cost = self._cost_for(self.paid_ranks + ranks, grants) - self._cost_for(
+                    self.paid_ranks, grants
                 )
             return f"{cost} {self.currency_name}"
         return None
@@ -205,7 +211,7 @@ class FeatureController(base_engine.BaseFeatureController):
                 if data.grants > 0:
                     source = self.character.display_name(source_id)
                     if data.grants == 1:
-                        reasons.append(f"Granted by {source}.")
+                        reasons.append(f"Granted by [{source}](../{source_id}).")
                     else:
                         reasons.append(
                             f"Granted {data.grants} {self.rank_name(data.grants)} from {source}."
@@ -273,6 +279,15 @@ class FeatureController(base_engine.BaseFeatureController):
         return True
 
     @property
+    def badges(self) -> list[tuple[str, str]] | None:
+        badges = super().badges
+        if self.unused_bonus:
+            badges.append(("success", "Bonus Available"))
+        elif self.has_available_choices:
+            badges.append(("primary", "Choices Available"))
+        return badges
+
+    @property
     def has_available_choices(self) -> bool:
         if choices := self.choices:
             for choice in choices.values():
@@ -281,7 +296,7 @@ class FeatureController(base_engine.BaseFeatureController):
         return False
 
     @property
-    def choices(self) -> dict[str, base_engine.ChoiceController] | None:
+    def choices(self) -> dict[str, choice_controller.ChoiceController] | None:
         if self.definition.choices and self.value > 0:
             choices = {
                 key: choice_controller.make_controller(self, key)
@@ -293,14 +308,9 @@ class FeatureController(base_engine.BaseFeatureController):
                 }
         else:
             choices = {}
-        if (
-            self.option_def
-            and not self.option
-            and self.bonus
-            and self.option_controllers
-        ):
-            choices["option-bonus"] = choice_controller.OptionBonusRouter(
-                self, "option-bonus"
+        if self.option_def and not self.option and self.bonus:
+            choices[_OPTION_BONUS] = choice_controller.OptionBonusRouter(
+                self, _OPTION_BONUS
             )
         return choices
 
@@ -340,9 +350,8 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Sum any ranks the character has in instances of it.
             total: int = 0
-            for feat, controller in self.character.features.items():
-                if feat.startswith(f"{self.id}+"):
-                    total += controller.value
+            for controller in self.option_controllers.values():
+                total += controller.value
             return total
         if self._effective_ranks is None:
             self.reconcile()
@@ -356,11 +365,10 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Return the value of the highest instance.
             current: int = 0
-            for feat, controller in self.character.features.items():
-                if feat.startswith(f"{self.id}+"):
-                    new_value = controller.value
-                    if new_value > current:
-                        current = new_value
+            for controller in self.option_controllers.values():
+                new_value = controller.value
+                if new_value > current:
+                    current = new_value
             return current
         return super().max_value
 
@@ -411,7 +419,7 @@ class FeatureController(base_engine.BaseFeatureController):
         # Is this an option skill without an option specified?
         if (
             self.option_def
-            and self.option
+            and self.expr.option
             and not self.definition.option.freeform
             and self.purchased_ranks == 0
         ):
@@ -419,13 +427,13 @@ class FeatureController(base_engine.BaseFeatureController):
             options_available = self.character.options_values_for_feature(
                 self.id, exclude_taken=True
             )
-            if self.option not in options_available:
+            if self.expr.option not in options_available:
                 return Decision(
                     success=False,
-                    reason=f"'{self.option}' not a valid option for {self.id}",
+                    reason=f"'{self.expr.option}' not a valid option for {self.id}",
                 )
         # Is this a non-option skill and an option was specified anyway?
-        if not self.option_def and self.option:
+        if not self.option_def and self.expr.option:
             return Decision(
                 success=False, reason=f"Feature {self.id} does not accept options."
             )
@@ -490,16 +498,32 @@ class FeatureController(base_engine.BaseFeatureController):
                 reason=f"Can't sell back {value} ranks when you've only purchased {purchases} ranks.",
                 amount=(value - purchases),
             )
+        # There's no use in selling back ranks if the feature is already fully refunded.
+        if self.granted_ranks >= self.max_ranks:
+            return Decision(success=False, reason="Feature is already fully refunded.")
         return Decision.OK
 
     def increase(self, value: int) -> Decision:
+        if (oc := self.option_parent) and oc.unused_bonus:
+            if oc.model.choices is None:
+                oc.model.choices = {}
+            oc.model.choices[_OPTION_BONUS] = [self.full_id]
+            oc.reconcile()
+            return Decision(success=True, amount=1, mutation_applied=True)
         if not (rd := self.can_increase(value)):
             return rd
         if rd.needs_option:
             return Decision.NEEDS_OPTION_FAIL
         self.purchased_ranks += value
         self.reconcile()
+
         return Decision(success=True, amount=self.value, mutation_applied=True)
+
+    @property
+    def option_parent(self) -> FeatureController | None:
+        if self.option_def and self.option:
+            return self.character.controller(self.id)
+        return None
 
     def decrease(self, value: int) -> Decision:
         if not (rd := self.can_decrease(value)):
@@ -533,6 +557,25 @@ class FeatureController(base_engine.BaseFeatureController):
             for choice_id in self.choice_defs:
                 if self.value > 0 and choice_id not in self.model.choices:
                     self.model.choices[choice_id] = []
+
+    @property
+    def unused_bonus(self) -> int:
+        """Returns the number of bonus ranks that can be used to get free options."""
+        if self.bonus and self.option_def and not self.option:
+            if (choices := self.choices) and (
+                option_bonus := choices.get(_OPTION_BONUS)
+            ):
+                return option_bonus.choices_remaining
+            return self.bonus
+        return 0
+
+    @property
+    def should_show_in_list(self) -> bool:
+        if super().should_show_in_list:
+            return True
+        if self.is_option_template and self.unused_bonus and self.can_take_new_option:
+            return True
+        return False
 
     def _perform_propagation(self) -> None:
         props = self._gather_propagation()
@@ -584,7 +627,7 @@ class FeatureController(base_engine.BaseFeatureController):
             data = props[expr] = base_engine.PropagationData(
                 source=self.full_id, target=PropExpression.parse(expr)
             )
-            if self.value > 0:
+            if self.value > 0 or self.is_option_template:
                 if g := grants.get(expr):
                     data.grants = g
                 if d := discounts.get(expr):
@@ -634,8 +677,9 @@ class FeatureController(base_engine.BaseFeatureController):
 
         This tries to take into account any active discounts applied to this feature.
         """
-        if self.free:
+        if self.free or not (cd := self.cost_def):
             return 0
+
         max_ranks = self.max_ranks
         effective_ranks = min(max_ranks, purchased_ranks + granted_ranks)
         grants_used = min(max_ranks, granted_ranks)
@@ -646,11 +690,7 @@ class FeatureController(base_engine.BaseFeatureController):
         # in all of those cases the "cheapest" ranks are the first ones. So,
         # we'll always assume that purchased ranks are "first" and granted ranks
         # are "last" for ordering purposes.
-        cd = self.cost_def
-        if cd is None:
-            # If there is no cost definition,
-            return 0
-        elif isinstance(cd, int):
+        if isinstance(cd, int):
             # Most powers use a simple "N CP per rank" cost model
             paid_cost = cd * paid_ranks
             potential_cost = cd * grants_used

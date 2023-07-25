@@ -32,6 +32,10 @@
 {% endif %}
 
 {% if purchase_form %}
+{% if feature.unused_bonus > 0 %}
+<p>You have {{ feature.unused_bonus }} unused bonus rank(s). Your next purchase is free.</p>
+{% endif %}
+
 <form method="post" id="purchaseForm">
     {% csrf_token %}
         {{ purchase_form | crispy }}
@@ -70,7 +74,7 @@
 <h3>Granted Features</h3>
 <ul>
 {% for subfeat in feature.granted_features %}
-<li><a href="{% url 'character-feature-view' character.id subfeat.id %}">{{ subfeat.formal_name }}</a></li>
+<li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}">{{ subfeat.formal_name }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}

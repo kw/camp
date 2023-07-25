@@ -93,9 +93,9 @@
                           {% endif %}
                         {% endif %}
 
-                        {% if f.has_available_choices %}
-                        <span class="badge bg-primary">Choices Available</span>
-                        {% endif %}
+                        {% for level, badge in f.badges %}
+                        <span class="badge bg-{{level}}">{{badge}}</span>
+                        {% endfor %}
                     </a>
                     {% if f.subfeatures %}
                     <ul>

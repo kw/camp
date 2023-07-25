@@ -184,46 +184,14 @@ def test_inherited_option_skill(starter: TempestCharacter):
     assert not starter.can_purchase("inherited-option+One")
 
     assert starter.apply("specific-options+One")
-    assert starter.apply("specific-options+Two")
 
-    assert starter.can_purchase("inherited-option").needs_option
-    assert starter.options_values_for_feature(
-        "inherited-option", exclude_taken=True
-    ) == {"One", "Two"}
-    assert starter.can_purchase("inherited-option+One")
-    assert starter.apply("inherited-option+One")
-    assert starter.options_values_for_feature(
-        "inherited-option", exclude_taken=True
-    ) == {"Two"}
-    assert starter.apply("inherited-option+Two")
+    assert starter.can_purchase("inherited-option")
+    assert starter.apply("inherited-option")
+    inherited = starter.feature_controller("inherited-option")
+    assert inherited.option == "One"
 
     # After purchasing all available options, the skill no longer registers as purchasable
     rd = starter.can_purchase("inherited-option")
-    assert not rd.success
-    assert not rd.needs_option
-
-
-def test_inherited_option_with_ranks(starter: TempestCharacter):
-    """If the inherited option feature is specified with a rank value, values from that feature
-    are only valid choices if they have that many ranks.
-    """
-    starter.awarded_cp = 5
-    assert starter.apply("specific-options+One")
-    assert starter.apply("specific-options+Two:4")
-
-    assert starter.can_purchase("inherited-with-ranks").needs_option
-    assert starter.options_values_for_feature(
-        "inherited-with-ranks", exclude_taken=True
-    ) == {"Two"}
-    assert not starter.can_purchase("inherited-with-ranks+One")
-    assert starter.can_purchase("inherited-with-ranks+Two")
-    assert not starter.apply("inherited-with-ranks+One")
-    assert starter.apply("inherited-with-ranks+Two")
-    assert not starter.options_values_for_feature(
-        "inherited-with-ranks", exclude_taken=True
-    )
-
-    rd = starter.can_purchase("inherited-with-ranks")
     assert not rd.success
     assert not rd.needs_option
 

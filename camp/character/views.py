@@ -302,15 +302,15 @@ def _features(
                 priority=controller.display_priority(feat.feature_type),
             )
         group = by_type[feat.feature_type]
-        if feat.is_option_template:
+        if feat.should_show_in_list:
+            if not feat.internal:
+                group.taken.append(feat)
+        elif feat.is_option_template:
             # Option templates should only appear in the available list,
             # and only if another option is available.
             if feat.can_take_new_option:
                 group.add_available(feat)
             # Otherwise, we don't care about them.
-        elif feat.value > 0:
-            if not feat.internal:
-                group.taken.append(feat)
         else:
             group.add_available(feat)
     groups: list[FeatureGroup] = list(t for t in by_type.values() if t)

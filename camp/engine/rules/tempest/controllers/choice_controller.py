@@ -104,7 +104,10 @@ class ChoiceController(base_engine.ChoiceController):
 
     def _record_choice(self, choice: str) -> None:
         choice_ranks = self.choice_ranks()
-        choices = self._feature.model.choices.get(self._choice) or []
+        if model_choices := self._feature.model.choices:
+            choices = model_choices.get(self._choice) or []
+        else:
+            choices = []
 
         if choice in choice_ranks:
             # Already taken. If this is a multi-choice, we need to increment the value.
@@ -121,6 +124,8 @@ class ChoiceController(base_engine.ChoiceController):
             # Not yet taken. Add it to the list.
             choices.append(choice)
 
+        if self._feature.model.choices is None:
+            self._feature.model.choices = {}
         self._feature.model.choices[self._choice] = choices
         self._feature.reconcile()
 
@@ -297,6 +302,10 @@ class OptionBonusRouter(GrantChoice):
     def _matching_features(self) -> set[str]:
         return {c.full_id for c in self._feature.option_controllers.values()}
 
+    def _matches(self, choice: str) -> bool:
+        expr = PropExpression.parse(choice)
+        return expr.prop == self._feature.id and expr.option
+
     @property
     def name(self) -> str:
         return f"Bonus {self._feature.display_name()}"
@@ -308,6 +317,21 @@ class OptionBonusRouter(GrantChoice):
     @property
     def limit(self) -> int:
         return self._feature.bonus
+
+    @property
+    def multi(self) -> bool:
+        return self._feature.option_def.multiple
+
+    def update_propagation(
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
+    ) -> None:
+        if not self.multi:
+            # This skill only gets a single option ever, so all bonuses should be directed
+            # to it instead of just the one that the GrantChoice would normally give.
+            if choices := self.taken_choices().keys():
+                grants[list(choices)[0]] = self._feature.granted_ranks
+        else:
+            super().update_propagation(grants, discounts)
 
 
 def make_controller(

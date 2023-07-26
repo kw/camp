@@ -368,6 +368,7 @@ class OptionDef(BaseModel):
     requires: dict[str, Requirements] | None = None
     inherit: str | None = None
     multiple: bool | pydantic.PositiveInt = True
+    descriptions: dict[str, str] | None = None
 
 
 class BaseFeatureDef(BaseModel):

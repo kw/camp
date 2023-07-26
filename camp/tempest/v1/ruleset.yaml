@@ -267,9 +267,11 @@ default_flags:
     - Cloth
     - Magic
     - Materia
-  # Used in Profession - Apprentice
+  # Used in Profession - Apprentice and Chronic Hobbyist
   Professions:
     - Soldier
+    - Mercenary
+    - Scout
     - Hunter
     - Sailor
     - Wagoneer
@@ -281,7 +283,10 @@ default_flags:
     - Herbalist
     - Undertaker
     - Executioner
+    - Lumberjack
     - Merchant
+    - Miner
+    - Quarrier
     - Charlatan
     - Chirurgeon
     - Teacher

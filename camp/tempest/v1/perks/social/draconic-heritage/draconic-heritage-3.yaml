@@ -3,5 +3,7 @@ cost: 2
 requires:
   - level:10
   - draconic-heritage-2
+option:
+  inherit: draconic-heritage-1
 description: |
   The character may choose to Resist effects from their chosen Element. They may do this at will.

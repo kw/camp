@@ -11,3 +11,22 @@ option:
     - Religious
     - Shadow
     - Undead
+  descriptions:
+    Arcane: |
+      Magic and its uses, magical tools and applications, magical constructs, spell creation.
+    Historical: |
+      Major events, dates, interactions of events and casualties, historical figures.
+    Nature: |
+      Animals and their habits, woodcraft, myths and legends about the natural world, plants and their uses. This also includes creatures and monsters that are native to the region.
+    Noble: |
+      Etiquette, titles, traditions and customs, noble names and families, history of ruling families, especially the Great Houses.
+    Planar: |
+      Planar geography, the natures of different planes and their interactions, moving between planes, and the ruling creatures of those planes.
+    Religious: |
+      Gods and their domains, afterlife beliefs, church traditions, cultural attitudes towards the gods.
+    Shadow: |
+      Underworld and underworld etiquette, power players, customs and mores, connections, illicit substances and their uses, cons and crimes.
+    Undead: |
+      Undead in their various forms, their powers and characteristics. Major undead players in the area or setting.
+description: |
+  The character has learned about a specific area of study, with each area of study considered a separate skill. Lore confers a level of knowledge that is both deep and detailed, although not quite encyclopedic, and represents a long commitment to education on the topic. The more granular the area of knowledge, the more specific the knowledge is likely to be. The following is a list of suggested areas of study. Players should feel free to choose ones not in this list as long as they are appropriate to the setting.

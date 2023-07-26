@@ -1,6 +1,13 @@
-name: Draconic Heritage
+name: Draconic Heritage I
 cost: 2
 creation_only: true
+option:
+  multiple: false
+  values:
+    - Lightning
+    - Flame
+    - Ice
+    - Acid
 description: |
   The character has dragon ancestors. This manifests in a number of ways and the character’s
   draconic blood can express itself more as the character rises in level. The character should

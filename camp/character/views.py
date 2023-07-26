@@ -234,7 +234,7 @@ def _try_apply_purchase(
         rm = RankMutation(
             id=expr.prop,
             ranks=ranks,
-            option=pf.cleaned_data.get("option") or expr.option,
+            option=pf.selected_option() or expr.option,
         )
         try:
             if result := _apply_mutation(rm, sheet, controller):

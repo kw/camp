@@ -118,7 +118,7 @@ class FeatureController(base_engine.BaseFeatureController):
     def next_cost(self) -> int:
         if self.unused_bonus > 0:
             return 0
-        grants = self.granted_ranks
+        grants = 0 if self.is_option_template else self.granted_ranks
         return self._cost_for(self.paid_ranks + 1, grants) - self._cost_for(
             self.paid_ranks, grants
         )
@@ -474,9 +474,8 @@ class FeatureController(base_engine.BaseFeatureController):
         available = self._currency_balance()
         if available is None:
             return _NO_PURCHASE
-        currency_delta = (
-            self._cost_for(self.paid_ranks + value, self.granted_ranks) - self.cost
-        )
+        grants = 0 if self.is_option_template else self.granted_ranks
+        currency_delta = self._cost_for(self.paid_ranks + value, grants) - self.cost
         if available < currency_delta:
             return Decision(
                 success=False,

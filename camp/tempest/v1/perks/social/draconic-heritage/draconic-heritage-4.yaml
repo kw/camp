@@ -3,6 +3,8 @@ cost: 2
 requires:
   - level:15
   - draconic-heritage-3
+option:
+  inherit: draconic-heritage-1
 description: |
   The dragon’s natural magical resistance expresses itself. After completing a Short Rest, the
   character automatically gains a Protect against Packets. This Protect lasts until it is used

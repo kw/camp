@@ -74,31 +74,37 @@ class FeatureForm(forms.Form):
                 label=f"New {c.rank_name_labels[0].title()}",
             )
 
+    def selected_option(self) -> str | None:
+        if "option" in self.cleaned_data and self.cleaned_data["option"] != "__other__":
+            return self.cleaned_data["option"]
+        if "option_freeform" in self.cleaned_data:
+            return self.cleaned_data["option_freeform"]
+        return None
+
     def _make_option_field(self, c: FeatureController):
-        if not c.option and c.option_def:
+        if not c.option and (option_def := c.option_def):
             available = c.available_options
-            if c.option_def.freeform:
-                if c.option_def.freeform:
-                    if available:
-                        widget = DatalistTextInput(available)
-                        help = f"This {c.type_name.lower()} takes a custom option. Enter it here. Suggestions: {', '.join(available)}."
-                    else:
-                        widget = forms.TextInput
-                        help = f"This {c.type_name.lower()} takes a custom option. Enter it here."
-                    self.fields["option"] = forms.CharField(
-                        max_length=100,
-                        label="Option",
-                        widget=widget,
-                        help_text=help,
-                    )
-            elif available:
-                # If the option has both choices *and* freeform. The choices are basically
-                # just a suggestion, so we'll let the user enter whatever they want and provide a
-                # datalist.
+            if available:
+                if d := option_def.descriptions:
+                    options = [(a, f"{a}: {d[a]}" if a in d else a) for a in available]
+                else:
+                    options = [(a, a) for a in available]
+                help_text = "Select an option."
+                if option_def.freeform:
+                    options.append(("__other__", "Other"))
+                    help_text = "Select an option, or Other to enter a custom option."
                 self.fields["option"] = forms.ChoiceField(
-                    choices=[(a, a) for a in available],
+                    widget=forms.RadioSelect,
+                    choices=options,
                     label="Options",
-                    help_text="Select an option. If you don't see the option you want, ask plot staff.",
+                    help_text=help_text,
+                )
+            if option_def.freeform:
+                self.fields["option_freeform"] = forms.CharField(
+                    max_length=100,
+                    label="Custom Option",
+                    required=not (available),
+                    help_text=f"This {c.type_name.lower()} takes a custom option. Enter it here.",
                 )
 
 

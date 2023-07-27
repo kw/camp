@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from pydantic import Field
 
 
-class Decision(BaseModel):
+class Decision(BaseModel, frozen=True):
     """
     Attributes:
         success: True if the mutation succeeds or query succeeds.
@@ -43,22 +43,21 @@ class Decision(BaseModel):
     NEEDS_OPTION: ClassVar[Decision]
     NEEDS_OPTION_FAIL: ClassVar[Decision]
 
-    @pydantic.root_validator(pre=True)
-    def _capture_traceback(cls, values: dict[str, Any]) -> dict[str, Any]:
-        success: bool | None = values.get("success")
-        traceback: str | None | bool = values.get("traceback")
-        if traceback is True or (traceback is None and not success):
-            traceback = "".join(tb.format_stack(limit=5)[:-1])
-        else:
-            traceback = None
-        values["traceback"] = traceback
-        return values
+    @pydantic.model_validator(mode="before")
+    @classmethod
+    def _capture_traceback(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            success: bool | None = data.get("success")
+            traceback: str | None | bool = data.get("traceback")
+            if traceback is True or (traceback is None and not success):
+                traceback = "".join(tb.format_stack(limit=5)[:-1])
+            else:
+                traceback = None
+            data["traceback"] = traceback
+        return data
 
     def __bool__(self) -> bool:
         return self.success
-
-    class Config:
-        allow_mutation = False
 
 
 Decision.OK = Decision(success=True)

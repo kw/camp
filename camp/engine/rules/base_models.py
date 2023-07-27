@@ -36,9 +36,8 @@ FlagValue: TypeAlias = bool | int | float | str | None
 FlagValues: TypeAlias = list[FlagValue] | FlagValue
 
 
-class BaseModel(pydantic.BaseModel):
-    class Config:
-        extra = pydantic.Extra.forbid
+class BaseModel(pydantic.BaseModel, extra="forbid"):
+    """Base model for all ruleset models."""
 
 
 class Attribute(BaseModel):
@@ -164,7 +163,7 @@ class PropExpression(BoolExpr):
 
     prop: str
     attribute: str | None = None
-    slot: str | None = None
+    slot: str | int | None = None
     option: str | None = None
     value: int = 1
     single: int | None = None
@@ -216,12 +215,12 @@ class PropExpression(BoolExpr):
         """
         if self.prefixes:
             first, *rest = self.prefixes
-            return first, self.copy(update={"prefixes": rest})
+            return first, self.model_copy(update={"prefixes": rest})
         return None, self
 
     def noprefix(self) -> PropExpression:
         """Returns a copy of the expression with no prefixes."""
-        return self.copy(update={"prefixes": ()})
+        return self.model_copy(update={"prefixes": ()})
 
     @classmethod
     def parse(cls, req: str | PropExpression) -> PropExpression:
@@ -234,6 +233,11 @@ class PropExpression(BoolExpr):
             groups = match.groupdict()
             prop = groups["prop"]
             slot = t if (t := groups.get("slot")) else None
+            if slot:
+                try:
+                    slot = int(slot)
+                except ValueError:
+                    pass
             option = o.replace("_", " ") if (o := groups.get("option")) else None
             value = int(m) if (m := groups.get("value")) else 1
             single = int(s) if (s := groups.get("single")) else None
@@ -292,10 +296,10 @@ class PropExpression(BoolExpr):
 # to be poked to know the reference is ready, so update them as well.
 Requirement: TypeAlias = AnyOf | AllOf | NoneOf | PropExpression | str
 Requirements: TypeAlias = list[Requirement] | Requirement | None
-AnyOf.update_forward_refs()
-AllOf.update_forward_refs()
-NoneOf.update_forward_refs()
-PropExpression.update_forward_refs()
+AnyOf.model_rebuild()
+AllOf.model_rebuild()
+NoneOf.model_rebuild()
+PropExpression.model_rebuild()
 
 
 class Table(ABC):
@@ -326,17 +330,17 @@ class Table(ABC):
         return high
 
 
-class DictTable(Table, BaseModel):
-    __root__: dict[int, int]
+class DictTable(Table, pydantic.RootModel):
+    root: dict[int, int]
 
     def evaluate(self, key: int) -> int:
-        return utils.table_lookup(self.__root__, key)
+        return utils.table_lookup(self.root, key)
 
     def bounds(self) -> tuple[int, int]:
-        return min(self.__root__.keys()), max(self.__root__.keys())
+        return min(self.root.keys()), max(self.root.keys())
 
     def reverse_lookup(self, value: int) -> int:
-        return utils.table_reverse_lookup(self.__root__, value)
+        return utils.table_reverse_lookup(self.root, value)
 
 
 class OptionDef(BaseModel):
@@ -428,7 +432,7 @@ class BaseFeatureDef(BaseModel):
 
     @classmethod
     def type_key(cls) -> str:
-        return cls.__fields__["type"].type_.__args__[0]
+        return cls.model_fields["type"].annotation.__args__[0]
 
     @property
     def has_ranks(self) -> bool:
@@ -473,10 +477,10 @@ class BadDefinition(BaseModel):
     """
 
     path: str
-    data: typing.Any
-    raw_data: typing.Any
-    exception_type: str
-    exception_message: str
+    data: typing.Any | None = None
+    raw_data: typing.Any | None = None
+    exception_type: str | None = None
+    exception_message: str | None = None
 
 
 class BaseRuleset(BaseModel, ABC):
@@ -586,7 +590,7 @@ class BaseRuleset(BaseModel, ABC):
                     )
 
 
-class FeatureMatcher(BaseModel):
+class FeatureMatcher(BaseModel, extra="allow"):
     """Matcher for checking if a particular feature can be used in some context.
 
     Generally this is used in choice definitions that want to say something like
@@ -612,19 +616,20 @@ class FeatureMatcher(BaseModel):
     parent: FeatureMatcher | str | None = None
     attrs: dict[str, Any] = pydantic.Field(default_factory=dict)
 
-    class Config:
-        extra = pydantic.Extra.allow
+    @pydantic.model_validator(mode="before")
+    @classmethod
+    def _build_attrs(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            defined_fields = {
+                field.alias or name for name, field in cls.model_fields.items()
+            }
 
-    @pydantic.root_validator(pre=True)
-    def _build_attrs(cls, values: dict[str, Any]) -> dict[str, Any]:
-        defined_fields = {field.alias for field in cls.__fields__.values()}
-
-        attrs: dict[str, Any] = values.get("attrs", {})
-        for field, value in values.items():
-            if field not in defined_fields:
-                attrs[field] = value
-        values["attrs"] = attrs
-        return values
+            attrs: dict[str, Any] = data.get("attrs", {})
+            for field, value in data.items():
+                if field not in defined_fields:
+                    attrs[field] = value
+            data["attrs"] = attrs
+        return data
 
     def matches(self, feature: BaseFeatureDef) -> bool:
         """Does this feature match the matcher?
@@ -719,8 +724,8 @@ class CharacterMetadata(BaseModel):
             see certain secret purchase options, and so on.
     """
 
-    id: str = pydantic.Field(default_factory=make_uuid)
-    player_id: str | None = None
+    id: str | int = pydantic.Field(default_factory=make_uuid)
+    player_id: str | int | None = None
     character_name: str | None = None
     player_name: str | None = None
     awards: dict[str, int] = pydantic.Field(default_factory=dict)
@@ -755,7 +760,7 @@ class CharacterModel(BaseModel, ABC):
             base currency values, special flags, etc.
     """
 
-    id: str = pydantic.Field(default_factory=make_uuid)
+    id: str | int = pydantic.Field(default_factory=make_uuid)
     ruleset_id: str
     ruleset_version: str
     metadata: CharacterMetadata = pydantic.Field(default_factory=CharacterMetadata)

@@ -81,4 +81,4 @@ def test_serialize_ruleset(pkg):
     assert ruleset_json
     reloaded_ruleset = loader.deserialize_ruleset(ruleset_json)
     assert reloaded_ruleset.features
-    assert ruleset == reloaded_ruleset
+    assert ruleset.model_dump() == reloaded_ruleset.model_dump()

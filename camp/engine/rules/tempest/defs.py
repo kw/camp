@@ -140,7 +140,7 @@ class ChildPurchaseDef(base_models.BaseModel):
 
 
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
-    cost: CostDef
+    cost: CostDef = None
     grants: Grantable | None = None
     grant_if: dict[str, base_models.Requirements] | None = None
     rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
@@ -298,7 +298,7 @@ FeatureDefinitions: TypeAlias = (
 
 
 class Ruleset(base_models.BaseRuleset):
-    engine_class = "camp.engine.rules.tempest.engine.TempestEngine"
+    engine_class: str = "camp.engine.rules.tempest.engine.TempestEngine"
     features: dict[str, FeatureDefinitions] = Field(default_factory=dict)
     breed_count_cap: int = 2
     breed_primary_bp_cap: int = 10

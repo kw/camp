@@ -115,7 +115,8 @@ class ClassController(feature_controller.FeatureController):
             return 0
         if expr is None or expr.slot is None:
             return sum(
-                self.spell_slots(expr.copy(update={"slot": t})) for t in (1, 2, 3, 4)
+                self.spell_slots(expr.model_copy(update={"slot": t}))
+                for t in (1, 2, 3, 4)
             )
         slot = int(expr.slot)
         if 1 <= slot <= 4:
@@ -196,7 +197,9 @@ class ClassController(feature_controller.FeatureController):
         if self.caster:
             return 0
         if expr is None or expr.slot is None:
-            return sum(self.powers(expr.copy(update={"slot": t})) for t in (1, 2, 3, 4))
+            return sum(
+                self.powers(expr.model_copy(update={"slot": t})) for t in (1, 2, 3, 4)
+            )
         slot = int(expr.slot)
         if 1 <= slot <= 4:
             tier_table = self.character.ruleset.powers[slot]

@@ -12,7 +12,6 @@ from typing import Iterable
 from typing import Literal
 from typing import Type
 
-import pydantic
 from packaging import version
 
 from ..utils import dump_dict
@@ -53,7 +52,7 @@ class CharacterController(ABC):
 
         Typically used to repair the model after a mutation has failed validation.
         """
-        self.model = self._dumped_model.copy(deep=True)
+        self.model = self._dumped_model.model_copy(deep=True)
         self.clear_caches()
 
     def dump_dict(self) -> dict:
@@ -68,7 +67,7 @@ class CharacterController(ABC):
 
     def dump_model(self) -> base_models.CharacterModel:
         """Returns a copy of the current model."""
-        return self.model.copy(deep=True)
+        return self.model.model_copy(deep=True)
 
     def display_name(self, id: str) -> str:
         """Returns the display name of the given property."""
@@ -990,7 +989,7 @@ class Engine(ABC):
                 were originally written with.
         """
         updated_data = self.update_data(data)
-        model = pydantic.parse_obj_as(self.sheet_type, updated_data)
+        model = self.sheet_type(**updated_data)
         c = self.character_controller(self, model)
         c.reconcile()
         return c

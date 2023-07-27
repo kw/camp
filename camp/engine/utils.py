@@ -81,7 +81,7 @@ class JSONEncoder(json.JSONEncoder):
 def dump_dict(
     data: pydantic.BaseModel, exclude_unset=True, exclude_defaults=False
 ) -> dict:
-    return data.dict(
+    return data.model_dump(
         by_alias=True,
         exclude_none=True,
         exclude_unset=exclude_unset,

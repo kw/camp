@@ -41,7 +41,7 @@ def test_parse_propreq_values():
     p = PropExpression.parse("foo.bar+baz.attr@1+My_Option:23$34<450")
     assert p.prefixes == ("foo", "bar+baz")
     assert p.prop == "attr"
-    assert p.slot == "1"
+    assert p.slot == 1
     assert p.option == "My Option"
     assert p.value == 23
     assert p.single == 34

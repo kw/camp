@@ -92,7 +92,7 @@ def load_ruleset(
                 )
             else:
                 feature_dict[model.id] = model
-    ruleset = ruleset.copy(
+    ruleset = ruleset.model_copy(
         update={
             "features": ruleset.features | feature_dict,
             "bad_defs": bad_defs,
@@ -163,7 +163,7 @@ def _parse_ruleset_dict(ruleset_dict: dict):
     ruleset_model = utils.import_name(ruleset_def)
     if not issubclass(ruleset_model, base_models.BaseRuleset):
         raise ValueError(f"{ruleset_def} does not implement BaseRuleset")
-    return pydantic.parse_obj_as(ruleset_model, ruleset_dict)
+    return ruleset_model(**ruleset_dict)
 
 
 def _parse_directory(
@@ -286,7 +286,7 @@ def _parse(
                 raise TypeError(
                     f'No feature model corresponding to type key "{type_key}"'
                 )
-            obj = pydantic.parse_obj_as(model, data)
+            obj = model(**data)
             yield obj
         except (TypeError, pydantic.ValidationError) as exc:
             if with_bad_defs:

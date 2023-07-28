@@ -72,10 +72,10 @@ class PowerController(feature_controller.FeatureController):
         return super().feature_list_name
 
     @property
-    def _type_name(self) -> str:
+    def type_name(self) -> str:
         if tier := self.tier_name:
             if self.parent:
-                return f"{tier} {self.parent.display_name()}"
+                return f"{self.parent.display_name()} {tier} Power"
             return tier
         return super().formal_name
 

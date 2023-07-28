@@ -1,6 +1,0 @@
-name: Improved Combat Training
-cost: 6
-requires: extensive-combat-training
-# TODO(#13): Implement bonus powers
-description: |
-  The Character gains one additional Active Power.

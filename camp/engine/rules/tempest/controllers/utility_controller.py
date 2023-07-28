@@ -20,7 +20,8 @@ class UtilityController(feature_controller.FeatureController):
     def _utilities_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":
             purchased = self.parent.utilities_purchased()
-            return self.parent.get("utilities") - purchased
+            utilties = self.character.get(f"{self.parent.full_id}.utilities")
+            return utilties - purchased
         return 0
 
     def can_afford(self, value: int = 1) -> Decision:
@@ -29,7 +30,7 @@ class UtilityController(feature_controller.FeatureController):
         elif self.parent:
             return Decision(
                 success=False,
-                reason=f"Already purchased max {self.parent.display_name} utilities",
+                reason=f"Already purchased max {self.parent.display_name()} utilities",
             )
         else:
             return Decision(success=False)

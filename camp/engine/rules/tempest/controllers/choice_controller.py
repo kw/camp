@@ -296,6 +296,42 @@ class PracticedCraftChoice(GrantChoice):
         return set()
 
 
+class AccessibleClassPowerChoice(GrantChoice):
+    def _matches(self, choice: str) -> bool:
+        character = self._feature.character
+
+        if not super()._matches(choice):
+            return False
+        # Powers granted by this controller must be:
+        # 1. Of a class and tier that the character normally has access to.
+        # 2. Not a power that the character already has.
+        feat = self._feature.character.feature_controller(choice)
+        if feat.value > 0:
+            return False
+
+        if not (parent := feat.parent) or parent.feature_type != "class":
+            # Don't grant anything that didn't come from a class, for now.
+            return False
+
+        if parent.value == 0:
+            # ...and only if the character has taken the class.
+            return False
+
+        # TODO: Add a generic "the character could take this power" check to features.
+        if feat.feature_type == "power" and (tier := getattr(feat, "tier", None)):
+            # If the power has a tier, it must be one that the character has access to in its parent class.
+            if character.get(f"{parent.full_id}.powers@{tier}") <= 0:
+                return False
+        elif feat.feature_type == "utility":
+            if character.get(f"{parent.full_id}.utilities") <= 0:
+                return False
+        else:
+            # Don't grant anything that isn't a power or utility.
+            return False
+
+        return True
+
+
 class OptionBonusRouter(GrantChoice):
     show_description: bool = False
 
@@ -356,6 +392,8 @@ def make_controller(
             return SameTagChoice(feature, choice_id)
         case "practiced-craft":
             return PracticedCraftChoice(feature, choice_id)
+        case "accessible-powers":
+            return AccessibleClassPowerChoice(feature, choice_id)
         case None:
             return GrantChoice(feature, choice_id)
         case _:

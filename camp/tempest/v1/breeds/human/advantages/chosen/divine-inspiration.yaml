@@ -1,0 +1,11 @@
+name: Divine Inspiration
+cost: 2
+requires: -divine
+choices:
+  divine-cantrip:
+    name: Cleric Cantrip
+    matcher:
+      type: cantrip
+      parent: cleric
+description: |
+  A Chosen might opt for a path outside of clerical duties, but that does not prevent them from channeling divine power, though it might be limited in scope. The Chosen may learn one divine cantrip from the Base Cleric Class without needing a spellbook. The Chosen may not take any classes that give Divine Sphere spellcasting.

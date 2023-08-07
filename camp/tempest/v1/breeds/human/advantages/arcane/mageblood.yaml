@@ -1,0 +1,11 @@
+name: Mageblood
+cost: 2
+requires: -arcane
+choices:
+  arcane-cantrip:
+    name: Arcane Cantrip
+    matcher:
+      type: cantrip
+      parent: mage
+description: |
+  Even if the Arcane chooses not to explore extended magical study, the Manifestation provides some magical power in of itself. The Arcane may learn one Arcane cantrip from the Basic Mage Class without needing a spellbook. The Arcane may not take any classes that give Arcane Sphere spellcasting.

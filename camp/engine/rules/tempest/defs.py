@@ -299,6 +299,46 @@ class DevotionPower(BaseFeatureDef):
     level: Literal["bonus", "basic", "advanced"]
 
 
+class Breed(BaseFeatureDef):
+    type: Literal["breed"] = "breed"
+
+
+class Subbreed(BaseFeatureDef):
+    type: Literal["subbreed"] = "subbreed"
+
+
+class BreedChallenge(BaseFeatureDef):
+    type: Literal["breedchallenge"] = "breedchallenge"
+    subbreed: str | None = None
+    award: int | dict[str, int] = Field(default=0)
+
+    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
+        super().post_validate(ruleset)
+        if self.subbreed:
+            ruleset.validate_identifiers(self.subbreed)
+
+    @property
+    def option(self) -> base_models.OptionDef | None:
+        if self.option_def:
+            return self.option_def
+        if isinstance(self.award, dict):
+            return base_models.OptionDef(
+                values=set(self.award.keys()),
+                multiple=False,
+            )
+        return None
+
+
+class BreedAdvantage(BaseFeatureDef):
+    type: Literal["breedadvantage"] = "breedadvantage"
+    subbreed: str | None = None
+
+    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
+        super().post_validate(ruleset)
+        if self.subbreed:
+            ruleset.validate_identifiers(self.subbreed)
+
+
 FeatureDefinitions: TypeAlias = (
     ClassDef
     | SubFeatureDef
@@ -315,6 +355,10 @@ FeatureDefinitions: TypeAlias = (
     | InheritancePower
     | Religion
     | DevotionPower
+    | Breed
+    | Subbreed
+    | BreedChallenge
+    | BreedAdvantage
 )
 
 

@@ -54,6 +54,10 @@ class Attribute(BaseModel):
     compute: str | None = None
     property_name: str | None = None
 
+    @property
+    def property_id(self) -> str:
+        return self.property_name or self.id.replace("-", "_")
+
 
 class BoolExpr(BaseModel, ABC):
     @abstractmethod

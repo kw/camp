@@ -172,6 +172,12 @@ def feature_view(request, pk, feature_id):
                     return redirect(
                         "character-feature-view", pk=pk, feature_id=feature_id
                     )
+                if parent := feature_controller.parent:
+                    return redirect(
+                        "character-feature-view",
+                        pk=pk,
+                        feature_id=parent.full_id,
+                    )
                 return redirect("character-detail", pk=pk)
         else:
             data = None

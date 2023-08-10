@@ -25,6 +25,9 @@ _SUBFEATURE_TYPES: set[str] = {
     "archetype",
     "inheritance",
     "devotion",
+    "subbreed",
+    "breedchallenge",
+    "breedadvantage",
 }
 _OPTION_BONUS = "__option__"
 
@@ -95,16 +98,6 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.parent:
             return f"{super().feature_list_name} [{self.parent.display_name()}]"
         return f"{super().feature_list_name}"
-
-    @property
-    def option_controllers(self) -> dict[str, FeatureController]:
-        if not self.option_def:
-            return {}
-        return {
-            c.option: c
-            for c in self.character.features.values()
-            if c.id == self.id and c.option and c.value > 0
-        }
 
     @property
     def taken_options(self) -> dict[str, int]:

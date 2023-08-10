@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Iterable
 
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_engine import CharacterController
 
 
 class AttributeController(base_engine.AttributeController):
@@ -115,3 +116,40 @@ class CharacterPointController(AttributeController):
         for flaw in list(self.character.flaws.values()):
             total += flaw.overcome_cp
         return total
+
+
+class BreedPointController(AttributeController):
+    character: base_engine.CharacterController
+    primary: bool
+
+    def __init__(self, primary: bool, character: CharacterController):
+        super().__init__("bp-primary" if primary else "bp-secondary", character)
+        self.primary = primary
+
+    @property
+    def bp_cap(self) -> int:
+        return (
+            self.character.ruleset.breed_primary_bp_cap
+            if self.primary
+            else self.character.ruleset.breed_secondary_bp_cap
+        )
+
+    @property
+    def awarded_bp(self) -> int:
+        return min(self.bp_cap, self.challenge_award_bp)
+
+    @property
+    def challenge_award_bp(self) -> int:
+        total: int = 0
+        if (
+            breed := self.character.primary_breed
+            if self.primary
+            else self.character.secondary_breed
+        ):
+            for challenge in breed.taken_challenges:
+                total += challenge.award_bp
+        return total
+
+    @property
+    def value(self) -> int:
+        return self.awarded_bp + super().value

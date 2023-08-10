@@ -1,6 +1,7 @@
 type: subbreed
 parent: human
 name: Chosen
+short_description: One related to or watched by the divine.
 description: |
   A chosen of the gods, these humans might have angelic or deific blood in their lineage, be the focus of an ancient prophecy, or are watched by one of the gods (for good or for ill). While others may earn the attention of otherworldly patrons in their lifetimes, very few are watched from birth. Most of those who are, claim at least some human descent.
 

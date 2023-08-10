@@ -1,6 +1,7 @@
 type: subbreed
 parent: human
 name: Arcane
+short_description: Humans with blood ties to ancient magics.
 description: |
   Tracing their blood back to ancient clans of sourcerers, witches, warlocks, and the like, the Arcane simply breathe magic as if it were second nature. The life of an Arcane takes an abrupt turn around the age of ten, as the once human child manifests their innate powers, often in spectacular fashion: tales of childhood homes erupting in flames, bullies having limbs broken by unseen forces, and lost children guided from dark forests by supernatural guidance are common among the Arcane.
 

@@ -311,6 +311,11 @@ class BreedChallenge(BaseFeatureDef):
     type: Literal["breedchallenge"] = "breedchallenge"
     subbreed: str | None = None
     award: int | dict[str, int] = Field(default=0)
+    award_mods: dict[str, int] | None = None
+
+    @classmethod
+    def default_name(cls) -> str:
+        return "Breed Challenge"
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
@@ -332,6 +337,10 @@ class BreedChallenge(BaseFeatureDef):
 class BreedAdvantage(BaseFeatureDef):
     type: Literal["breedadvantage"] = "breedadvantage"
     subbreed: str | None = None
+
+    @classmethod
+    def default_name(cls) -> str:
+        return "Breed Advantage"
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
@@ -414,7 +423,18 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="lp", name="Life Points", abbrev="LP", default_value=2),
         Attribute(id="cp", name="Character Points", abbrev="CP", default_value=0),
         Attribute(id="breedcap", name="Max Breeds", default_value=2, hidden=True),
-        Attribute(id="bp", name="Breed Points", scoped=True, default_value=0),
+        Attribute(
+            id="bp-primary",
+            name="Breed Points (Primary)",
+            scoped=False,
+            default_value=0,
+        ),
+        Attribute(
+            id="bp-secondary",
+            name="Breed Points (Secondary)",
+            scoped=False,
+            default_value=0,
+        ),
         Attribute(id="spikes", name="Spikes", default_value=0),
         Attribute(id="utilities", name="Utilities", scoped=True),
         Attribute(id="cantrips", name="Cantrips", scoped=True),
@@ -500,7 +520,6 @@ class Ruleset(base_models.BaseRuleset):
         ),
         Attribute(
             id="basic-classes",
-            property_name="basic_classes",
             name="Basic Classes",
             hidden=True,
         ),

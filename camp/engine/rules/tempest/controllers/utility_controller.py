@@ -3,19 +3,11 @@ from __future__ import annotations
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 
 class UtilityController(feature_controller.FeatureController):
     definition: defs.Utility
-
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.Utility):
-            raise ValueError(
-                f"Expected {full_id} to be a utility but was {type(self.definition)}"
-            )
 
     def _utilities_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":

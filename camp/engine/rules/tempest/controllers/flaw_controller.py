@@ -6,7 +6,6 @@ from camp.engine import utils
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 _NO_RESPEND = Decision(success=False, reason="Respend not currently available.")
@@ -18,13 +17,6 @@ _ALREADY_OVERCOME = Decision(success=False)
 
 class FlawController(feature_controller.FeatureController):
     definition: defs.FlawDef
-
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.FlawDef):
-            raise ValueError(
-                f"Expected {full_id} to be a flaw, but was {type(self.definition)}"
-            )
 
     @property
     def value(self) -> int:

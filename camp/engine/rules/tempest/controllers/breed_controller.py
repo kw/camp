@@ -15,13 +15,6 @@ class BreedController(feature_controller.FeatureController):
     definition: defs.Breed
     supports_child_purchases: bool = True
 
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.Breed):
-            raise ValueError(
-                f"Expected {full_id} to be a breed but was {type(self.definition)}"
-            )
-
     @property
     def formal_name(self) -> str:
         if sbi := self.subbreed_id:

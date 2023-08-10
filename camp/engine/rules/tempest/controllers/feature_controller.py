@@ -45,6 +45,18 @@ class FeatureController(base_engine.BaseFeatureController):
     def __init__(self, full_id: str, character: base_engine.CharacterController):
         super().__init__(full_id, character)
         self._effective_ranks = None
+        assert isinstance(
+            self.definition, (expected_type := self._definition_type())
+        ), f"Expected {self.definition} to be of type {expected_type} but was {type(self.definition)}"  # nosec assert_used
+
+    @classmethod
+    def _definition_type(cls) -> Type[defs.BaseFeatureDef]:
+        annotation = cls.__annotations__.get("definition")
+        defs_name, typename = annotation.split(".")
+        if defs_name != "defs":
+            # Let's not think too hard about this if we don't recognize the defs module.
+            return defs.BaseFeatureDef
+        return getattr(defs, typename)
 
     @property
     def subfeatures(self) -> list[FeatureController]:

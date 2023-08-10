@@ -5,20 +5,12 @@ from typing import cast
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 
 class DevotionController(feature_controller.FeatureController):
     definition: defs.DevotionPower
     currency: str = "cp"
-
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.DevotionPower):
-            raise ValueError(
-                f"Expected {full_id} to be a devotion power but was {type(self.definition)}"
-            )
 
     @property
     def type_name(self) -> str:

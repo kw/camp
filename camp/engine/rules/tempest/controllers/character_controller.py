@@ -181,7 +181,11 @@ class TempestCharacter(base_engine.CharacterController):
         return None
 
     @property
-    def breeds(self) -> list[breed_controller.BreedController]:
+    def breeds(self) -> int:
+        return len(self.all_breeds)
+
+    @property
+    def all_breeds(self) -> list[breed_controller.BreedController]:
         breeds: list[breed_controller.BreedController] = []
         for feature in self.features.values():
             if feature.feature_type == "breed" and feature.value > 0:
@@ -191,14 +195,14 @@ class TempestCharacter(base_engine.CharacterController):
 
     @property
     def primary_breed(self) -> breed_controller.BreedController | None:
-        for breed in self.breeds:
+        for breed in self.all_breeds:
             if breed.is_primary:
                 return breed
         return None
 
     @property
     def secondary_breed(self) -> breed_controller.BreedController | None:
-        for breed in self.breeds:
+        for breed in self.all_breeds:
             if not breed.is_primary:
                 return breed
         return None
@@ -408,10 +412,10 @@ class TempestCharacter(base_engine.CharacterController):
             )
         return spheres
 
-    def display_name(self, expr: str) -> str:
+    def display_name(self, expr: str, use_abbrev: bool = False) -> str:
         if tag_name := self.ruleset.tags.get(expr):
             return tag_name
-        return super().display_name(expr)
+        return super().display_name(expr, use_abbrev)
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
@@ -445,6 +449,8 @@ class TempestCharacter(base_engine.CharacterController):
                 return breed_controller.BreedController(id, self)
             case "subbreed":
                 return breed_controller.SubbreedController(id, self)
+            case "breedadvantage":
+                return breed_controller.BreedAdvantageController(id, self)
             case "breedchallenge":
                 return breed_controller.BreedChallengeController(id, self)
             case _:

@@ -127,6 +127,14 @@ class BreedPointController(AttributeController):
         self.primary = primary
 
     @property
+    def breed(self) -> base_engine.BaseFeatureController | None:
+        return (
+            self.character.primary_breed
+            if self.primary
+            else self.character.secondary_breed
+        )
+
+    @property
     def bp_cap(self) -> int:
         return (
             self.character.ruleset.breed_primary_bp_cap
@@ -136,20 +144,24 @@ class BreedPointController(AttributeController):
 
     @property
     def awarded_bp(self) -> int:
-        return min(self.bp_cap, self.challenge_award_bp)
+        return min(self.bp_cap, self.challenge_award_bp) + self.bonus
 
     @property
     def challenge_award_bp(self) -> int:
         total: int = 0
-        if (
-            breed := self.character.primary_breed
-            if self.primary
-            else self.character.secondary_breed
-        ):
+        if breed := self.breed:
             for challenge in breed.taken_challenges:
                 total += challenge.award_bp
         return total
 
     @property
+    def advantage_cost_bp(self) -> int:
+        total: int = 0
+        if breed := self.breed:
+            for advantage in breed.taken_advantages:
+                total += advantage.cost
+        return total
+
+    @property
     def value(self) -> int:
-        return self.awarded_bp + super().value
+        return self.awarded_bp - self.advantage_cost_bp

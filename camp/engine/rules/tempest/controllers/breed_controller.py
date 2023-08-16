@@ -12,6 +12,7 @@ from . import feature_controller
 
 
 class BreedController(feature_controller.FeatureController):
+    character: character_controller.TempestCharacter
     definition: defs.Breed
     supports_child_purchases: bool = True
 
@@ -21,6 +22,12 @@ class BreedController(feature_controller.FeatureController):
             sb_name = self.character.display_name(sbi)
             return f"{self.definition.name} [{sb_name}]"
         return self.definition.name
+
+    @property
+    def feature_list_name(self) -> str:
+        if bp_controller := self.bp:
+            return f"{self.formal_name} ({bp_controller.advantage_cost_bp}/{bp_controller.awarded_bp} BP)"
+        return self.formal_name
 
     @property
     def subbreed_id(self) -> str | None:
@@ -38,8 +45,24 @@ class BreedController(feature_controller.FeatureController):
 
     @property
     def is_primary(self) -> bool:
-        # TODO: Manage primary breed selection
-        return True
+        return self.model.is_primary_breed
+
+    @is_primary.setter
+    def is_primary(self, value: bool) -> None:
+        old = self.model.is_primary_breed
+        self.model.is_primary_breed = value
+        if value:
+            # There can be only one primary breed
+            for controller in self.character.all_breeds:
+                if controller.full_id != self.full_id:
+                    controller.is_primary = False
+        elif old:
+            # This _was_ the primary breed, but now it isn't.
+            # Check for another breed and promote it.
+            for controller in self.character.all_breeds:
+                if controller.full_id != self.full_id:
+                    controller.model.is_primary_breed = True
+                    break
 
     @property
     def taken_challenges(self) -> list[BreedChallengeController]:
@@ -47,11 +70,26 @@ class BreedController(feature_controller.FeatureController):
             c for c in self.taken_children if isinstance(c, BreedChallengeController)
         ]
 
+    @property
+    def taken_advantages(self) -> list[BreedAdvantageController]:
+        return [
+            c for c in self.taken_children if isinstance(c, BreedAdvantageController)
+        ]
+
+    def increase(self, value: int) -> Decision:
+        if not (rd := super().increase(value)):
+            return rd
+        if not self.character.primary_breed:
+            self.is_primary = True
+        return rd
+
     def all_subbreeds(self) -> list[feature_controller.FeatureController]:
         return [c for c in self.children if c.feature_type == "subbreed"]
 
     def can_afford(self, value: int = 1) -> Decision:
-        if len(self.character.breeds) < 2:
+        if self.character.get("purebred") and self.character.breeds > 0:
+            return Decision.NO
+        if self.character.breeds < 2:
             return Decision.OK
         return Decision.NO
 
@@ -62,8 +100,18 @@ class BreedController(feature_controller.FeatureController):
         return grants
 
     @property
+    def bp(self) -> attribute_controllers.BreedPointController | None:
+        if self.value <= 0:
+            return None
+        if self.is_primary:
+            return self.character.bp_primary
+        return self.character.bp_secondary
+
+    @property
     def explain(self) -> list[str]:
         reasons = super().explain
+        if self.value <= 0:
+            return reasons
 
         if self.is_primary:
             primary_or_secondary = "primary"
@@ -108,8 +156,8 @@ class BreedController(feature_controller.FeatureController):
             reasons.append(
                 f"You have taken {bp_challenges} BP worth of challenges, of which you receive {bp_awards} BP."
             )
-        if bp_controller.bonus:
-            reasons.append(f"You have received {bp_controller.bonus} bonus BP")
+        if bonus := bp_controller.bonus:
+            reasons.append(f"You have received {bonus} bonus BP")
 
         reasons.append(f"You have {bp_balance} BP to spend on breed advantages.")
         return reasons
@@ -141,16 +189,69 @@ class SubbreedController(feature_controller.FeatureController):
         return self._NO_TAKE
 
 
-class BreedChallengeController(feature_controller.FeatureController):
-    definition: defs.BreedChallenge
-    parent: BreedController | None
+class BreedAdvantageController(feature_controller.FeatureController):
+    character: character_controller.TempestCharacter
+    definition: defs.BreedAdvantage
+    parent: BreedController
+    _WRONG_BREED = Decision(success=False, reason="Breed not taken")
+    _WRONG_SUBBREED = Decision(success=False, reason="Subbreed not taken")
 
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.BreedChallenge):
-            raise ValueError(
-                f"Expected {full_id} to be a breed challenge but was {type(self.definition)}"
-            )
+    @property
+    def currency(self) -> str:
+        if not self.parent.value > 0:
+            return "bp"
+        if self.parent.is_primary:
+            return "bp-primary"
+        return "bp-secondary"
+
+    @property
+    def type_name(self) -> str:
+        if sb := self.subbreed:
+            return f"{sb.display_name()} Advantage"
+        return f"{self.parent.display_name()} Advantage"
+
+    @property
+    def subbreed_id(self) -> str | None:
+        return self.definition.subbreed
+
+    @property
+    def subbreed(self) -> feature_controller.FeatureController | None:
+        if sbi := self.subbreed_id:
+            return self.character.controller(sbi)
+        return None
+
+    @property
+    def meets_requirements(self) -> Decision:
+        if not (rd := super().meets_requirements):
+            return rd
+        if not self.parent.value > 0:
+            return self._WRONG_BREED
+        if (sb := self.subbreed) and (sb.value <= 0):
+            return self._WRONG_SUBBREED
+        return Decision.OK
+
+
+class BreedChallengeController(feature_controller.FeatureController):
+    character: character_controller.TempestCharacter
+    definition: defs.BreedChallenge
+    parent: BreedController
+
+    @property
+    def meets_requirements(self) -> bool:
+        if not (rd := super().meets_requirements):
+            return rd
+        if self.subbreed_id:
+            # The primary breed must be this breed
+            if not (pb := self.character.primary_breed):
+                # No primary breed selected, can't be this one.
+                return Decision.NO
+            if not pb.full_id == self.parent.full_id:
+                # Wrong breed is primary
+                return Decision(
+                    success=False,
+                    reason="Subbreed challenges can only be taken for your primary breed.",
+                )
+        return Decision.OK
 
     @property
     def subbreed_id(self) -> str | None:
@@ -159,18 +260,8 @@ class BreedChallengeController(feature_controller.FeatureController):
     @property
     def type_name(self) -> str:
         if sb := self.subbreed:
-            return sb.display_name()
-        return super().type_name
-
-    @property
-    def feature_list_name(self) -> str:
-        if sb := self.subbreed:
-            name = f"{super().feature_list_name} [{sb.display_name()}]"
-        else:
-            name = f"{super().feature_list_name}"
-        if self.paid_ranks:
-            name = f"{name} ({self.award_bp} BP)"
-        return name
+            return f"{sb.display_name()} Challenge"
+        return f"{self.parent.display_name()} Challenge"
 
     @property
     def subbreed(self) -> feature_controller.FeatureController | None:

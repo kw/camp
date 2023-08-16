@@ -127,6 +127,10 @@ class FeatureController(base_engine.BaseFeatureController):
         return self._cost_for(self.paid_ranks, self.bonus)
 
     @property
+    def cost_string(self) -> str | None:
+        return self.purchase_cost_string(cost=self.cost)
+
+    @property
     def next_cost(self) -> int:
         if self.unused_bonus > 0:
             return 0
@@ -138,7 +142,7 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def currency_name(self) -> str | None:
         if self.currency:
-            return self.character.display_name(self.currency)
+            return self.character.display_name(self.currency, use_abbrev=True)
         return None
 
     def purchase_cost_string(
@@ -789,6 +793,14 @@ class FeatureController(base_engine.BaseFeatureController):
                 return self.character.cp.value
             case None:
                 return None
+            case "bp":
+                # This is a placeholder for features where the breed
+                # is not taken, and thus neither primary or secondary yet.
+                return 0
+            case "bp-primary":
+                return self.character.bp_primary.value
+            case "bp-secondary":
+                return self.character.bp_secondary.value
             case _:
                 return 0
 

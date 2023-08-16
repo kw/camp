@@ -19,6 +19,10 @@ class SpellController(feature_controller.FeatureController):
     def tier(self) -> int | None:
         return self.definition.tier
 
+    @property
+    def category_priority(self) -> float:
+        return super().category_priority + (self.tier or 0)
+
     def _spells_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":
             return self.parent.spellbook_available

@@ -208,7 +208,9 @@ def feature_view(request, pk, feature_id):
 
     if feature_controller.value > 0 and feature_controller.supports_child_purchases:
         subfeatures = feature_controller.subfeatures
-        subfeatures_available = feature_controller.subfeatures_available
+        subfeatures_available = _features(
+            controller, feature_controller.subfeatures_available, hide_internal=False
+        )
     else:
         subfeatures = []
         subfeatures_available = []
@@ -384,8 +386,7 @@ class FeatureGroup:
     def add_available(self, feat: BaseFeatureController):
         if feat.category:
             self.available_categories[feat.category].append(feat)
-            if hasattr(feat, "tier"):
-                self.category_priority[feat.category] = feat.tier
+            self.category_priority[feat.category] = feat.category_priority
         else:
             self.available.append(feat)
 

@@ -1,2 +1,4 @@
 type: breedadvantage
 parent: human
+category: Human General Advantages
+category_priority: 1

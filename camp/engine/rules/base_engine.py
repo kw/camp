@@ -69,8 +69,10 @@ class CharacterController(ABC):
         """Returns a copy of the current model."""
         return self.model.model_copy(deep=True)
 
-    def display_name(self, id: str) -> str:
+    def display_name(self, id: str, use_abbrev: bool = False) -> str:
         """Returns the display name of the given property."""
+        if use_abbrev and (abbrev := self.ruleset.abbreviated_name(id)):
+            return abbrev
         if id in self.ruleset.display_names:
             return self.ruleset.display_names[id]
         if id in self.ruleset.features:
@@ -702,6 +704,10 @@ class BaseFeatureController(PropertyController):
     @property
     def category(self) -> str | None:
         return self.definition.category
+
+    @property
+    def category_priority(self) -> float:
+        return self.definition.category_priority
 
     @property
     def is_concrete(self) -> bool:

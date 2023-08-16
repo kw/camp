@@ -1,3 +1,4 @@
 type: breedchallenge
 parent: human
-category: Human Breed Challenges
+category: Human General Challenges
+category_priority: 1

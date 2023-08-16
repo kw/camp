@@ -52,6 +52,9 @@ class FeatureModel(base_models.BaseModel):
     is_archetype_class: bool = False
     is_starting_class: bool = False
 
+    # Breed-specific attributes
+    is_primary_breed: bool = False
+
     def should_keep(self) -> bool:
         """Should return True if the model has been populated with something worth saving."""
         return bool(

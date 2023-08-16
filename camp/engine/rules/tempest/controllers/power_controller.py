@@ -14,6 +14,10 @@ class PowerController(feature_controller.FeatureController):
         return self.definition.tier
 
     @property
+    def category_priority(self) -> float:
+        return super().category_priority + (self.tier or 0)
+
+    @property
     def _powers_available(self) -> int:
         if (
             self.parent

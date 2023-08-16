@@ -297,6 +297,7 @@ class Religion(BaseFeatureDef):
 class DevotionPower(BaseFeatureDef):
     type: Literal["devotion"] = "devotion"
     level: Literal["bonus", "basic", "advanced"]
+    parent: str  # Parent is _required_
 
 
 class Breed(BaseFeatureDef):
@@ -305,6 +306,7 @@ class Breed(BaseFeatureDef):
 
 class Subbreed(BaseFeatureDef):
     type: Literal["subbreed"] = "subbreed"
+    parent: str  # Parent is _required_
 
 
 class BreedChallenge(BaseFeatureDef):
@@ -312,6 +314,7 @@ class BreedChallenge(BaseFeatureDef):
     subbreed: str | None = None
     award: int | dict[str, int] = Field(default=0)
     award_mods: dict[str, int] | None = None
+    parent: str  # Parent is _required_
 
     @classmethod
     def default_name(cls) -> str:
@@ -422,16 +425,19 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="level", name="Character Level", hidden=True, is_tag=True),
         Attribute(id="lp", name="Life Points", abbrev="LP", default_value=2),
         Attribute(id="cp", name="Character Points", abbrev="CP", default_value=0),
-        Attribute(id="breedcap", name="Max Breeds", default_value=2, hidden=True),
+        Attribute(id="breeds", name="Breeds Taken", hidden=True),
+        Attribute(id="bp", name="Breed Points", abbrev="BP", default_value=0),
         Attribute(
             id="bp-primary",
             name="Breed Points (Primary)",
+            abbrev="BP",
             scoped=False,
             default_value=0,
         ),
         Attribute(
             id="bp-secondary",
             name="Breed Points (Secondary)",
+            abbrev="BP",
             scoped=False,
             default_value=0,
         ),

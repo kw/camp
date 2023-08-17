@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
+from typing import Any
 
 from camp.engine import utils
 from camp.engine.rules.decision import Decision
@@ -75,6 +76,29 @@ class BreedController(feature_controller.FeatureController):
         return [
             c for c in self.taken_children if isinstance(c, BreedAdvantageController)
         ]
+
+    @property
+    def available_advantages(self) -> list[BreedAdvantageController]:
+        return [
+            c
+            for c in self.children
+            if isinstance(c, BreedAdvantageController) and c.can_increase()
+        ]
+
+    @property
+    def badges(self) -> list[tuple[str, str]] | None:
+        badges = super().badges
+        if ("primary", "Purchases Available") in badges:
+            # Don't show this badge if the breed is "full"
+            # That is, if it is at BP cap and no advantages can be purchased.
+            if bp_controller := self.bp:
+                if bp_controller.awarded_bp >= bp_controller.bp_cap:
+                    if not self.available_advantages:
+                        badges.remove(("primary", "Purchases Available"))
+        return badges
+
+    def sort_key(self) -> Any:
+        return (not self.is_primary, self.display_name())
 
     def increase(self, value: int) -> Decision:
         if not (rd := super().increase(value)):

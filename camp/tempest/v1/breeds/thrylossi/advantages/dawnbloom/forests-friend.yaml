@@ -1,0 +1,16 @@
+name: Forest's Friend
+cost: 3
+description: |
+  A Dawnbloom can find peace in any shred of nature. Gaining the Forest’s Friend power below.
+subcard:
+  name: Forest's Friend [Breed]
+  incant: None, Eye Contact and Focus Quick 100
+  call: '“Short Obey: ‘Do not attack until threatened or attacked’ to animals.”'
+  target: Individual
+  duration: Short
+  delivery: Packet (Spell-Packet)
+  refresh: Short Rest
+  accent: N/A
+  effect: Obey
+  description: |
+    By locking eyes with an animal and focusing for a Quick 100 the Dawnbloom can use “Obey: ‘Do not attack until threatened or attacked’ to animals”, once per Short Rest.

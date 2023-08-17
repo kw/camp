@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from camp.engine.rules.decision import Decision
 
 from .. import defs
@@ -16,6 +18,9 @@ class PowerController(feature_controller.FeatureController):
     @property
     def category_priority(self) -> float:
         return super().category_priority + (self.tier or 0)
+
+    def sort_key(self) -> Any:
+        return (self.tier, self.display_name())
 
     @property
     def _powers_available(self) -> int:

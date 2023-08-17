@@ -833,6 +833,9 @@ class BaseFeatureController(PropertyController):
             return max_ranks - self.bonus
         return 0
 
+    def sort_key(self) -> Any:
+        return self.display_name()
+
     def rank_name(self, value: int | None = None):
         if value is None:
             value = self.value

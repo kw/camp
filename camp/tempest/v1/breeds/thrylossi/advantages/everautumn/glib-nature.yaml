@@ -1,0 +1,16 @@
+name: Glib Nature
+cost: 4
+description: |
+  Some Everautumn are chosen by the Worldsoul to be gifted with the power to understand the needs and wants of natural animals they might encounter. They gain the Nature’s Tongue power below:
+subcard:
+  name: Glib Nature [Breed]
+  incant: '"The Worldsoul asks you to speak small one.”'
+  call: '“Discern by Radiance: Are you an Animal? ”then “[Name or Description] Discern to Animal: Why are you here?” or “[Name or Description] Discern to Animal: What do you need at this moment?”'
+  target: Individual
+  duration: Instantaneous
+  delivery: Verbal
+  refresh: Instant
+  accent: Radiance
+  effect: Discern
+  description: |
+    This power allows the character to determine if a targeted creature is a natural Animal. Additionally, it can be used to find out why a natural animal is present or what they need at this moment, but only if the Everautumn has already used this Power to ask the first question.

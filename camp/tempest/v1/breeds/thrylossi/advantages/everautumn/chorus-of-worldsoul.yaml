@@ -1,0 +1,16 @@
+name: Chorus of the Worldsoul
+cost: 6
+description: |
+  The Everautumn’s kindness and generosity knows no bounds and can call upon the Worldsoul to heal the wounds of everyone around them. The Everautumn gains the Chorus of the Worldsoul Power below:
+subcard:
+  name: Chorus of the Worldsoul [Breed]
+  incant: '"I call upon the Worldsoul to aid those in need.”'
+  call: '“By My Voice, Heal 1 By Radiance” “Piercing X to Self Final”'
+  target: Voice
+  duration: Instantaneous
+  delivery: Verbal
+  refresh: Long Rest
+  accent: Radiance
+  effect: Heal, Damage
+  description: |
+    Once per Long Rest the Everautumn may cry out to the Worldsoul with the incant, and then use a “By My Voice Heal 1 by Radiance'' but then take Final Piercing damage equal to the Everautumn Thrylossi’s maximum health.

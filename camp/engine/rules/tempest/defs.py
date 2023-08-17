@@ -314,6 +314,7 @@ class BreedChallenge(BaseFeatureDef):
     subbreed: str | None = None
     award: int | dict[str, int] = Field(default=0)
     award_mods: dict[str, int] | None = None
+    costuming: set[str] | None = None
     parent: str  # Parent is _required_
 
     @classmethod

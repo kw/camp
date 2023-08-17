@@ -69,8 +69,10 @@ class CharacterController(ABC):
         """Returns a copy of the current model."""
         return self.model.model_copy(deep=True)
 
-    def display_name(self, id: str) -> str:
+    def display_name(self, id: str, use_abbrev: bool = False) -> str:
         """Returns the display name of the given property."""
+        if use_abbrev and (abbrev := self.ruleset.abbreviated_name(id)):
+            return abbrev
         if id in self.ruleset.display_names:
             return self.ruleset.display_names[id]
         if id in self.ruleset.features:
@@ -244,10 +246,8 @@ class CharacterController(ABC):
             if attr.scoped:
                 # Scoped attributes are never stored on the character controller.
                 pass
-            elif hasattr(self, attr.property_name or attr.id):
-                attr_value: PropertyController | Callable | int = getattr(
-                    self, attr.property_name or attr.id
-                )
+            elif (attr_value := getattr(self, attr.property_id, None)) is not None:
+                attr_value: PropertyController | Callable | int
                 if isinstance(attr_value, PropertyController):
                     controller = attr_value
                 else:
@@ -546,12 +546,10 @@ class PropertyController(ABC):
             if not attr.scoped:
                 # Global attributes are never stored on property controllers.
                 return None
-            if hasattr(self, attr.property_name or attr.id):
+            if (attr_value := getattr(self, attr.property_id, None)) is not None:
                 # If the attribute is stored on this controller, we can just return it.
                 # If it's a 'simple' attribute (it just returns an integer)
-                attr_value: PropertyController | int = getattr(
-                    self, attr.property_name or attr.id
-                )
+                attr_value: PropertyController | int
                 if isinstance(attr_value, PropertyController):
                     controller = attr_value
                 else:
@@ -603,16 +601,19 @@ class BaseFeatureController(PropertyController):
 
     @property
     def children(self) -> list[BaseFeatureController]:
-        children = [
-            self.character.feature_controller(expr)
-            for expr in self.definition.child_ids
-        ]
-        children.sort(key=lambda f: f.full_id)
+        children: list[BaseFeatureController] = []
+        for expr in self.definition.child_ids:
+            fc = self.character.feature_controller(expr)
+            children.append(fc)
+            if fc.is_option_template:
+                children.extend(fc.option_controllers.values())
+        children.sort(key=lambda f: f.display_name())
+        children.sort(key=lambda f: self.character.display_priority(f.feature_type))
         return children
 
     @property
     def taken_children(self) -> list[BaseFeatureController]:
-        return [c for c in self.children if c.value > 0]
+        return [c for c in self.children if c.value > 0 and not c.is_option_template]
 
     @property
     def meets_requirements(self) -> Decision:
@@ -687,12 +688,26 @@ class BaseFeatureController(PropertyController):
         return None
 
     @property
+    def option_controllers(self) -> dict[str, BaseFeatureController]:
+        if not self.option_def:
+            return {}
+        return {
+            c.option: c
+            for c in self.character.features.values()
+            if c.id == self.id and c.option and c.value > 0
+        }
+
+    @property
     def purchase_cost_string(self) -> str | None:
         return None
 
     @property
     def category(self) -> str | None:
         return self.definition.category
+
+    @property
+    def category_priority(self) -> float:
+        return self.definition.category_priority
 
     @property
     def is_concrete(self) -> bool:
@@ -817,6 +832,9 @@ class BaseFeatureController(PropertyController):
         if self.bonus < max_ranks:
             return max_ranks - self.bonus
         return 0
+
+    def sort_key(self) -> Any:
+        return self.display_name()
 
     def rank_name(self, value: int | None = None):
         if value is None:
@@ -994,7 +1012,7 @@ class SimpleAttributeWrapper(AttributeController):
         base_value = super().value
         controller = self._subcontroller or self.character
         attr = self.definition
-        if attr_value := getattr(controller, attr.property_name or attr.id, None):
+        if (attr_value := getattr(controller, attr.property_id, None)) is not None:
             if isinstance(attr_value, PropertyController):
                 raise RuntimeError(
                     f"SimpleAttributeWrapper should only wrap simple attributes; {attr.id} has property controller {attr_value}"

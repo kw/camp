@@ -5,19 +5,11 @@ from typing import Literal
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 
 class CantripController(feature_controller.FeatureController):
     definition: defs.Cantrip
-
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.Cantrip):
-            raise ValueError(
-                f"Expected {full_id} to be a cantrip but was {type(self.definition)}"
-            )
 
     def _cantrips_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":

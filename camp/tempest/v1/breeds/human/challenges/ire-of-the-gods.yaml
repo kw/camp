@@ -1,0 +1,10 @@
+name: Ire of the Gods
+award: 1
+requires:
+  - -human-chosen
+  - -divine
+  - -spellmute
+  - -apprentice-divine-ritual
+grants: undevoted
+description: |
+  While humans make up a bulk of any given deities’ worship, some human family lines have lost the favor of the Gods. Belonging to one of those family lines, this Character can’t cast Divine spells or Rituals. They may not choose the Chosen human sub-breed, nor take any Religion option other than the Undevoted. This challenge is mutually exclusive with Spellmute.

@@ -1,0 +1,16 @@
+name: Return to the Earth
+cost: 5
+description: |
+  Some Duskgloom can call upon the powers of the Worldsoul to return a dead creature to the earth so they may not be misused any longer. The Duskgloom gains the Return to the Earth Power below:
+subcard:
+  name: Return to the Earth [Breed]
+  incant: '"May the twilight of night return you to the earth.”'
+  call: '“Shatter Corpse to Undead by Darkness.” “Grant Undead Immunity to Corpse by Darkness.”'
+  target: Individual
+  duration: Instantaneous, Permanent
+  delivery: Touch
+  refresh: Immediate
+  accent: Darkness
+  effect: '“Shatter Corpse to Undead.” “Grant Undead Immunity to Corpse.”'
+  description: |
+    It can be used to make the undead discorporate immediately (“Shatter Corpse to Undead”) and/or put a living creature at rest and make sure it cannot come back as the undead: “Grant Undead Immunity to Corpse.” The Duskgloom may choose which of the two options they want to use at the time of casting.

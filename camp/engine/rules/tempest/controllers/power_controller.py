@@ -1,25 +1,26 @@
 from __future__ import annotations
 
+from typing import Any
+
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 
 class PowerController(feature_controller.FeatureController):
     definition: defs.Power
 
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.Power):
-            raise ValueError(
-                f"Expected {full_id} to be a power but was {type(self.definition)}"
-            )
-
     @property
     def tier(self) -> int | None:
         return self.definition.tier
+
+    @property
+    def category_priority(self) -> float:
+        return super().category_priority + (self.tier or 0)
+
+    def sort_key(self) -> Any:
+        return (self.tier, self.display_name())
 
     @property
     def _powers_available(self) -> int:

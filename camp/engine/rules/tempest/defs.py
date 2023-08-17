@@ -297,6 +297,59 @@ class Religion(BaseFeatureDef):
 class DevotionPower(BaseFeatureDef):
     type: Literal["devotion"] = "devotion"
     level: Literal["bonus", "basic", "advanced"]
+    parent: str  # Parent is _required_
+
+
+class Breed(BaseFeatureDef):
+    type: Literal["breed"] = "breed"
+
+
+class Subbreed(BaseFeatureDef):
+    type: Literal["subbreed"] = "subbreed"
+    parent: str  # Parent is _required_
+
+
+class BreedChallenge(BaseFeatureDef):
+    type: Literal["breedchallenge"] = "breedchallenge"
+    subbreed: str | None = None
+    award: int | dict[str, int] = Field(default=0)
+    award_mods: dict[str, int] | None = None
+    costuming: set[str] | None = None
+    parent: str  # Parent is _required_
+
+    @classmethod
+    def default_name(cls) -> str:
+        return "Breed Challenge"
+
+    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
+        super().post_validate(ruleset)
+        if self.subbreed:
+            ruleset.validate_identifiers(self.subbreed)
+
+    @property
+    def option(self) -> base_models.OptionDef | None:
+        if self.option_def:
+            return self.option_def
+        if isinstance(self.award, dict):
+            return base_models.OptionDef(
+                values=set(self.award.keys()),
+                multiple=False,
+            )
+        return None
+
+
+class BreedAdvantage(BaseFeatureDef):
+    type: Literal["breedadvantage"] = "breedadvantage"
+    subbreed: str | None = None
+
+    @classmethod
+    def default_name(cls) -> str:
+        return "Breed Advantage"
+
+    def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
+        super().post_validate(ruleset)
+        if self.subbreed:
+            ruleset.validate_identifiers(self.subbreed)
 
 
 FeatureDefinitions: TypeAlias = (
@@ -315,6 +368,10 @@ FeatureDefinitions: TypeAlias = (
     | InheritancePower
     | Religion
     | DevotionPower
+    | Breed
+    | Subbreed
+    | BreedChallenge
+    | BreedAdvantage
 )
 
 
@@ -369,8 +426,22 @@ class Ruleset(base_models.BaseRuleset):
         Attribute(id="level", name="Character Level", hidden=True, is_tag=True),
         Attribute(id="lp", name="Life Points", abbrev="LP", default_value=2),
         Attribute(id="cp", name="Character Points", abbrev="CP", default_value=0),
-        Attribute(id="breedcap", name="Max Breeds", default_value=2, hidden=True),
-        Attribute(id="bp", name="Breed Points", scoped=True, default_value=0),
+        Attribute(id="breeds", name="Breeds Taken", hidden=True),
+        Attribute(id="bp", name="Breed Points", abbrev="BP", default_value=0),
+        Attribute(
+            id="bp-primary",
+            name="Breed Points (Primary)",
+            abbrev="BP",
+            scoped=False,
+            default_value=0,
+        ),
+        Attribute(
+            id="bp-secondary",
+            name="Breed Points (Secondary)",
+            abbrev="BP",
+            scoped=False,
+            default_value=0,
+        ),
         Attribute(id="spikes", name="Spikes", default_value=0),
         Attribute(id="utilities", name="Utilities", scoped=True),
         Attribute(id="cantrips", name="Cantrips", scoped=True),
@@ -456,7 +527,6 @@ class Ruleset(base_models.BaseRuleset):
         ),
         Attribute(
             id="basic-classes",
-            property_name="basic_classes",
             name="Basic Classes",
             hidden=True,
         ),

@@ -1,0 +1,16 @@
+name: Empathic Nature
+cost: 2
+description: |
+  Due to the deep connection to the Worldsoul the Thrylossi gains the Empathic Nature power:
+subcard:
+  name: Empathic Nature [Breed]
+  incant: One Minute of Roleplay
+  call: '“[Name or Description] Discernby Mind: What emotion are you feeling?”'
+  target: Individual
+  delivery: Verbal
+  accent: Mind
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Discern
+  description: |
+    After spending one minute in conversation with a sentient creature, this social Power allows the character to determine what emotions a targeted creature is feeling at that point in time.

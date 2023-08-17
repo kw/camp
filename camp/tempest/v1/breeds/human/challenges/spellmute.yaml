@@ -1,0 +1,9 @@
+name: Spellmute
+award: 1
+requires:
+  - -human-arcane
+  - -arcane
+  - -ire-of-the-gods
+  - -apprentice-arcane-ritual
+description: |
+  Long ago, an ancient curse befell a human king, dooming his people to lose grasp of the magics they wielded. This Character is a descendant of one of those people and can’t cast Arcane spells or rituals. They may not choose the Arcane Human sub-breed. This challenge is mutually exclusive with Ire of the Gods.

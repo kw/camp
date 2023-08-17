@@ -1,11 +1,7 @@
 name: Purebred
 cost: 3
-# TODO: Enable after implementing breeds
-# requires: breeds<2
-# grants:
-#   - bp@1:3
-#   - breedcap:-1
-# (or something like that)
+requires: breeds<2
+grants: bp-primary:3
 tags: [no-patron]
 description: |
   You may choose one Breed and get 3 Breed Points to spend on Breed Advantages.

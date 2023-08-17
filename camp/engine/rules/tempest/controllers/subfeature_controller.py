@@ -4,7 +4,6 @@ from camp.engine.rules.decision import Decision
 
 from .. import defs
 from .. import models
-from . import character_controller
 from . import feature_controller
 
 _NO_PURCHASE = Decision(success=False)
@@ -20,13 +19,6 @@ class SubfeatureController(feature_controller.FeatureController):
         if self.definition.cost is not None:
             return "cp"
         return None
-
-    def __init__(self, id: str, character: character_controller.TempestCharacter):
-        super().__init__(id, character)
-        if not isinstance(self.definition, defs.SubFeatureDef):
-            raise ValueError(
-                f"Expected {id} to be a subfeature, but was {type(self.definition)}"
-            )
 
     @property
     def type_name(self) -> str:

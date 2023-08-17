@@ -21,13 +21,6 @@ class ClassController(feature_controller.FeatureController):
     currency = None
     rank_name_labels: tuple[str, str] = ("level", "levels")
 
-    def __init__(self, id: str, character: character_controller.TempestCharacter):
-        super().__init__(id, character)
-        if not isinstance(self.definition, defs.ClassDef):
-            raise ValueError(
-                f"Expected {id} to be a class, but was {type(self.definition)}"
-            )
-
     @property
     def class_type(self) -> Literal["basic", "advanced", "epic"]:
         return self.definition.class_type

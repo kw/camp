@@ -1,23 +1,16 @@
 from __future__ import annotations
 
+from typing import Any
 from typing import Literal
 
 from camp.engine.rules.decision import Decision
 
 from .. import defs
-from . import character_controller
 from . import feature_controller
 
 
 class SpellController(feature_controller.FeatureController):
     definition: defs.Spell
-
-    def __init__(self, full_id: str, character: character_controller.TempestCharacter):
-        super().__init__(full_id, character)
-        if not isinstance(self.definition, defs.Spell):
-            raise ValueError(
-                f"Expected {full_id} to be a spell but was {type(self.definition)}"
-            )
 
     @property
     def sphere(self) -> Literal["arcane", "divine", None]:
@@ -26,6 +19,13 @@ class SpellController(feature_controller.FeatureController):
     @property
     def tier(self) -> int | None:
         return self.definition.tier
+
+    def sort_key(self) -> Any:
+        return (self.tier, self.display_name())
+
+    @property
+    def category_priority(self) -> float:
+        return super().category_priority + (self.tier or 0)
 
     def _spells_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":

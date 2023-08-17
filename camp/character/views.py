@@ -168,9 +168,20 @@ def feature_view(request, pk, feature_id):
             if success:
                 # If we purchased a feature and it has a choice that can be made,
                 # stay on the feature page. Otherwise, return to the character page.
-                if feature_controller.has_available_choices:
+                if (
+                    feature_controller.has_available_choices
+                    or feature_controller.subfeatures_available
+                ):
                     return redirect(
                         "character-feature-view", pk=pk, feature_id=feature_id
+                    )
+                if feature_controller.internal and (
+                    parent := feature_controller.parent
+                ):
+                    return redirect(
+                        "character-feature-view",
+                        pk=pk,
+                        feature_id=parent.full_id,
                     )
                 return redirect("character-detail", pk=pk)
         else:
@@ -202,7 +213,11 @@ def feature_view(request, pk, feature_id):
 
     if feature_controller.value > 0 and feature_controller.supports_child_purchases:
         subfeatures = feature_controller.subfeatures
-        subfeatures_available = feature_controller.subfeatures_available
+        subfeatures_available = _features(
+            controller,
+            feature_controller.subfeatures_available,
+            hide_internal=False,
+        )
     else:
         subfeatures = []
         subfeatures_available = []
@@ -313,7 +328,7 @@ def _features(
         if hide_internal and feat.internal:
             continue
 
-        if use_type_name:
+        if use_type_name or feat.feature_type == "subfeature":
             feature_type = feat.type_name
         else:
             feature_type = feat.feature_type
@@ -378,8 +393,7 @@ class FeatureGroup:
     def add_available(self, feat: BaseFeatureController):
         if feat.category:
             self.available_categories[feat.category].append(feat)
-            if hasattr(feat, "tier"):
-                self.category_priority[feat.category] = feat.tier
+            self.category_priority[feat.category] = feat.category_priority
         else:
             self.available.append(feat)
 
@@ -391,14 +405,14 @@ class FeatureGroup:
 
     def sort(self):
         # Sort the base taken/available lists by name.
-        self.taken.sort(key=lambda f: f.display_name())
-        self.available.sort(key=lambda f: f.display_name())
+        self.taken.sort(key=lambda f: f.sort_key())
+        self.available.sort(key=lambda f: f.sort_key())
         # Sort the categories themselves
         cats = self.available_categories
         self.available_categories = {k: cats[k] for k in sorted(cats)}
         # Sort the items in each category
         for cat in self.available_categories.values():
-            cat.sort(key=lambda f: f.display_name())
+            cat.sort(key=lambda f: f.sort_key())
         # Sort the categories themselves. This is mostly by name, but a few categories
         # (those that contain tiered abilities) have priority equal to their tier.
         cats = sorted(

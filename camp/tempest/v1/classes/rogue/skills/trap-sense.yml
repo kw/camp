@@ -1,0 +1,13 @@
+name: Trap Sense
+cost: 2
+requires: rogue:6
+incant: None
+call: '“Counter, Trap Sense”'
+target: One Trap Effect
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Special
+description: |
+    Any time the Rogue is affected by a trap, they can use this power as a Counter, although it does not completely negate the effects of the trap. If the trap does enough damage that the Rogue would drop to 0 or fewer Life Points, instead they are reduced to one Life Point. If the Rogue takes a Death Effect, they take a Drain Effect and drop to one Life Point instead. Any other Effects and damage are taken normally. A Final trap effect cannot be stopped by Trap Sense.

@@ -84,7 +84,7 @@ def load_ruleset(
                 bad_defs.append(
                     base_models.BadDefinition(
                         path=model.def_path,
-                        data=model.dump(as_json=False),
+                        data=model.model_dump(),
                         raw_data=None,
                         exception_type="NonUniqueId",
                         exception_message=f"Non-unique ID {model.id}. Existing: {duplicate}",

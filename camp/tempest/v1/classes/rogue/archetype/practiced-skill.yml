@@ -1,0 +1,12 @@
+name: Practiced Skill
+requires: rogue:6
+incant: None
+call: None
+target: None
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: None
+description: |
+    The Rogue has become an expert in their work. For every 3 Rogue Class-levels they may choose one Rogue Basic Power that can be taken multiple times and count as having that power an additional time. These additional powers do not count towards the maximum number of powers active. This power does not let you exceed the number of times you can take a selected power.

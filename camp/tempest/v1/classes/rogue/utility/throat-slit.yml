@@ -1,0 +1,17 @@
+name: Throat Slit
+grants:
+    - deathgrip
+    - holding-on
+description: |
+    The Rogue gains the Deathgrip (1) and Holding On (1) Physical Perks, as well as the Execute Ability:
+subcard:
+    name: Execute
+    incant: None
+    call: '“Death to Helpless”'
+    target: Helpless Individual
+    delivery: Weapon
+    accent: None
+    duration: Instantaneous
+    refresh: Immediate
+    effect: Death
+    description: Instead of doing a Death Blow, the character can instead use Execute to instantly kill a Helpless creature.

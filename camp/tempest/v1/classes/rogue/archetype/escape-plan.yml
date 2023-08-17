@@ -1,0 +1,12 @@
+name: Escape Plan
+requires: rogue:8
+incant: None
+call: '“Insubstantial to Self”, “Dispel Insubstantial to Self”'
+target: Self
+delivery: None
+accent: None
+duration: Slow 60
+refresh: Event
+effect: Insubstantial, Dispel Insubstantial
+description: |
+    The character can escape from a space they would otherwise have difficulty escaping from. Once per Event, they can go insubstantial by calling “Insubstantial to Self” and must then immediately walk slowly out of the space. Once outside the space, they no longer need to walk, and can remain insubstantial for a Slow 60 before calling “Dispel Insubstantial to Self.”

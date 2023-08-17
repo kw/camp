@@ -1,0 +1,5 @@
+name: Unkempt Thicket
+cost: 4
+requires: full-bloom
+description: |
+  Some Dawnbloom are blessed with a particularly dense and fast growing array of plant life, such that it can protect them briefly from harm. Dawnbloom with the [Full Bloom](../full-bloom) Challenge gains the following: after completing a Short Rest, the character automatically gains a Protect vs Weapons as the plant life that covers them thickens and hardens.

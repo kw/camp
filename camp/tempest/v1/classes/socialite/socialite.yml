@@ -36,7 +36,7 @@ parent: socialite
 name: Market Connections
 description: "Fence (3), Contact (2)"
 category: Socialite Starting Skills
-display_type: Opportunity
+display_type: Path
 grants:
   - fence
   - contact
@@ -47,7 +47,7 @@ parent: socialite
 name: Family Connections
 description: "Minor Nobility (4), Minor Fame (1)"
 category: Socialite Starting Skills
-display_type: Opportunity
+display_type: Path
 grants:
   - minor-nobility
   - minor-fame
@@ -58,7 +58,7 @@ parent: socialite
 name: Training Connections
 description: "Short Weapons (3), Connections (2)"
 category: Socialite Starting Skills
-display_type: Opportunity
+display_type: Path
 grants:
   - short-weapons
   - connections

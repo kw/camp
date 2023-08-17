@@ -1,0 +1,14 @@
+name: Backstab
+requires: rogue:2
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None, Long Rest
+effect: None
+description: |
+    Whenever the Rogue performs a basic Spike attack from behind or performs a Sinister Strike, the blow does +1 Base Damage.
+
+    In addition, if the blow is not Countered, the Rogue may refresh a Spike. This Refresh may be done a number of times equal to the Rogue’s Maximum Spikes per Long Rest. However, each unique target may only grant one Spike Refresh to the Rogue; this limitation is reset when the Rogue Short Rests.

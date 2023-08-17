@@ -1,0 +1,11 @@
+name: Breach
+incant: Focus Quick 30
+call: '“Grant Insubstantial”, “Dispel Insubstantial”'
+target: Self
+delivery: None
+accent: None
+duration: Slow 10
+refresh: Long Rest
+effect: Grant Insubstantial, Slow, Dispel Insubstantial
+description: |
+    After a moment’s focus (Focus Quick 30) the character can cause themself to go insubstantial for a Slow Count of 30. During this time, although insubstantial, the character is also slowed. The Power is often used to get past enemy lines, especially through tight, guarded doorways. While the character is insubstantial, they need to be very careful not to push past others, especially given the limited duration of the Power. At the end of the count they must call “Dispel Insubstantial”. The rogue may end the count early by making the “Dispel Insubstantial” call.

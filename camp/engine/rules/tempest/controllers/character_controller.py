@@ -13,6 +13,7 @@ from .. import defs
 from .. import engine  # noqa: F401
 from .. import models
 from . import attribute_controllers
+from . import breed_controller
 from . import cantrip_controller
 from . import class_controller
 from . import culture_controller
@@ -29,6 +30,9 @@ from . import utility_controller
 _DISPLAY_PRIORITIES = {
     "class": 0,
     "breed": 1,
+    "subbreed": 1.1,
+    "breedchallenge": 1.2,
+    "breedadvantage": 1.3,
     "culture": 2,
     "religion": 3,
     "flaw": 4,
@@ -126,6 +130,14 @@ class TempestCharacter(base_engine.CharacterController):
         return attribute_controllers.CharacterPointController("cp", self)
 
     @cached_property
+    def bp_primary(self) -> attribute_controllers.BreedPointController:
+        return attribute_controllers.BreedPointController(True, self)
+
+    @cached_property
+    def bp_secondary(self) -> attribute_controllers.BreedPointController:
+        return attribute_controllers.BreedPointController(False, self)
+
+    @cached_property
     def level(self) -> attribute_controllers.SumAttribute:
         return attribute_controllers.SumAttribute("level", self, "class")
 
@@ -166,6 +178,33 @@ class TempestCharacter(base_engine.CharacterController):
         for feature in self.features.values():
             if feature.feature_type == "culture" and feature.value > 0:
                 return feature
+        return None
+
+    @property
+    def breeds(self) -> int:
+        return len(self.all_breeds)
+
+    @property
+    def all_breeds(self) -> list[breed_controller.BreedController]:
+        breeds: list[breed_controller.BreedController] = []
+        for feature in self.features.values():
+            if feature.feature_type == "breed" and feature.value > 0:
+                breeds.append(feature)
+        breeds.sort(key=lambda b: b.is_primary, reverse=True)
+        return breeds
+
+    @property
+    def primary_breed(self) -> breed_controller.BreedController | None:
+        for breed in self.all_breeds:
+            if breed.is_primary:
+                return breed
+        return None
+
+    @property
+    def secondary_breed(self) -> breed_controller.BreedController | None:
+        for breed in self.all_breeds:
+            if not breed.is_primary:
+                return breed
         return None
 
     @property
@@ -373,10 +412,10 @@ class TempestCharacter(base_engine.CharacterController):
             )
         return spheres
 
-    def display_name(self, expr: str) -> str:
+    def display_name(self, expr: str, use_abbrev: bool = False) -> str:
         if tag_name := self.ruleset.tags.get(expr):
             return tag_name
-        return super().display_name(expr)
+        return super().display_name(expr, use_abbrev)
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:
         match self._feature_type(id):
@@ -406,6 +445,14 @@ class TempestCharacter(base_engine.CharacterController):
                 return religion_controller.ReligionController(id, self)
             case "devotion":
                 return devotion_controller.DevotionController(id, self)
+            case "breed":
+                return breed_controller.BreedController(id, self)
+            case "subbreed":
+                return breed_controller.SubbreedController(id, self)
+            case "breedadvantage":
+                return breed_controller.BreedAdvantageController(id, self)
+            case "breedchallenge":
+                return breed_controller.BreedChallengeController(id, self)
             case _:
                 return feature_controller.FeatureController(id, self)
 

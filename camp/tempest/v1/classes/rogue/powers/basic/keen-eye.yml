@@ -1,0 +1,12 @@
+name: Keen Eye
+ranks: 3
+incant: Focus Quick 100
+call: '“Keen Eye”'
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Special
+description: |
+    The Rogue looks over the chest or container, picking up on any potential subtleties, Focusing for a Quick Count of 100. The Rogue should then go to the Item information card and read the appropriate information. The Rogue can use this Power once per Long Rest.

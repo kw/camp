@@ -25,6 +25,9 @@ _SUBFEATURE_TYPES: set[str] = {
     "archetype",
     "inheritance",
     "devotion",
+    "subbreed",
+    "breedchallenge",
+    "breedadvantage",
 }
 _OPTION_BONUS = "__option__"
 
@@ -42,6 +45,18 @@ class FeatureController(base_engine.BaseFeatureController):
     def __init__(self, full_id: str, character: base_engine.CharacterController):
         super().__init__(full_id, character)
         self._effective_ranks = None
+        assert isinstance(
+            self.definition, (expected_type := self._definition_type())
+        ), f"Expected {self.definition} to be of type {expected_type} but was {type(self.definition)}"  # nosec assert_used
+
+    @classmethod
+    def _definition_type(cls) -> Type[defs.BaseFeatureDef]:
+        annotation = cls.__annotations__.get("definition")
+        defs_name, typename = annotation.split(".")
+        if defs_name != "defs":
+            # Let's not think too hard about this if we don't recognize the defs module.
+            return defs.BaseFeatureDef
+        return getattr(defs, typename)
 
     @property
     def subfeatures(self) -> list[FeatureController]:
@@ -97,16 +112,6 @@ class FeatureController(base_engine.BaseFeatureController):
         return f"{super().feature_list_name}"
 
     @property
-    def option_controllers(self) -> dict[str, FeatureController]:
-        if not self.option_def:
-            return {}
-        return {
-            c.option: c
-            for c in self.character.features.values()
-            if c.id == self.id and c.option and c.value > 0
-        }
-
-    @property
     def taken_options(self) -> dict[str, int]:
         return {
             option: controller.value
@@ -122,6 +127,10 @@ class FeatureController(base_engine.BaseFeatureController):
         return self._cost_for(self.paid_ranks, self.bonus)
 
     @property
+    def cost_string(self) -> str | None:
+        return self.purchase_cost_string(cost=self.cost)
+
+    @property
     def next_cost(self) -> int:
         if self.unused_bonus > 0:
             return 0
@@ -133,7 +142,7 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def currency_name(self) -> str | None:
         if self.currency:
-            return self.character.display_name(self.currency)
+            return self.character.display_name(self.currency, use_abbrev=True)
         return None
 
     def purchase_cost_string(
@@ -784,6 +793,14 @@ class FeatureController(base_engine.BaseFeatureController):
                 return self.character.cp.value
             case None:
                 return None
+            case "bp":
+                # This is a placeholder for features where the breed
+                # is not taken, and thus neither primary or secondary yet.
+                return 0
+            case "bp-primary":
+                return self.character.bp_primary.value
+            case "bp-secondary":
+                return self.character.bp_secondary.value
             case _:
                 return 0
 

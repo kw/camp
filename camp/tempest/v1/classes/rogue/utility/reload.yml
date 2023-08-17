@@ -1,0 +1,11 @@
+name: Reload
+incant: None
+call: '“Insubstantial”, “Dispel Insubstantial”'
+target: Self
+delivery: None
+accent: None
+duration: Special
+refresh: Short Rest
+effect: Grant Insubstantial, Dispel Insubstantial
+description: |
+    The Rogue can only use this ability after moving off to a location removed from combat. They then go insubstantial and can return to the battle and collect their personally owned projectile ammunition, thrown weapons, spell-packets, or spell-balls. Once they have collected a maximum of six, they must return to their original location and Dispel their insubstantial Condition by calling "Dispel Insubstantial." While insubstantial the rogue can do nothing besides collect their personal objects listed above.

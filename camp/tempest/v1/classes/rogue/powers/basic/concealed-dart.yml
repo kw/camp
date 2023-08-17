@@ -1,0 +1,11 @@
+name: Concealed Dart
+incant: Focus Quick Count 30
+call: '“Wounding [Life Point Maximum]” or “Quick Sleep”, or “Short Silence”'
+target: Individual
+delivery: Thrown Weapon
+accent: None
+duration: Instantaneous, Quick 100, Short Rest
+refresh: Short Rest
+effect: Sleep, Wounding, Silence
+description: |
+    This Power can only be used with a Thrown weapon and it can only be used out of combat, generally to start a fight. The attack can be used to do one of three effects. It can do a Wounding attack that does damage equal to the Rogue’s Maximum Life Point total, it can do a Quick Sleep Effect, or it can cause a Short Silence Effect.

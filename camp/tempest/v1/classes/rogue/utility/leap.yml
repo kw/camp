@@ -1,0 +1,15 @@
+name: Leap
+incant: 'RP: Running and Jumping a big gap'
+call: '“Leap”'
+target: Self
+delivery: RP
+accent: None
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Special
+description: |
+    The Rogue can make an enormous leap. In any situation where it can be done safely (for the player, not the character) the Rogue may make a single leap that is the length of one jump and one step. The player can take one leap and then an additional step (one foot must stay on the ground during the step) to get to the location that the character is leaping to.
+
+    Alternatively, the Rogue can make a vertical leap to reach something three feet above their head.
+
+    The Rogue should let out a loud grunt or other sound of exertion when he leaps and should role-play both the jump and the landing.

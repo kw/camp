@@ -1,0 +1,11 @@
+name: Precision Strike
+incant: None
+call: '“Piercing 3“'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Piercing
+description: |
+    While making an attack from behind, the Rogue can expend a Spike to call “Piercing 3,” this call cannot be altered. If this power is Prevented, this power immediately Refreshes, but must be used on a different target.

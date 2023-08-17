@@ -1,0 +1,16 @@
+name: Blessings of Dusk Springs
+cost: 5
+description: |
+  Occasionally Duskgloom that have deep connections to the Worldsoul manifest the ability to bless water to cure the ills of others. These Duskgloom gain the Blessings of Dusk Springs power below:
+subcard:
+  name: Blessings of Dusk Springs [Breed]
+  incant: '"May the twilight of night bless this water to make you whole. Cure [Condition] by Darkness”'
+  call: '“Cure [Condition] by Darkness”'
+  target: Individual
+  duration: Instantaneous, Slow 60
+  delivery: Ingested
+  refresh: Long Rest
+  accent: Darkness
+  effect: Cure Condition
+  description: |
+    This Power blesses water in a standard sized container (no more than 16 oz) for a Slow 60. Upon completion of the incant, the caster chooses a condition out loud, and is cured of that condition. For each other person that drinks from the container within that time, the caster may cure that one Condition. This will not work on the Imprisoned effect, as the water cannot be ingested by the imprisoned creature.

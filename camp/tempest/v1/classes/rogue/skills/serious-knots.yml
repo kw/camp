@@ -1,0 +1,13 @@
+name: Serious Knots
+cost: 3
+requires: rogue:3
+incant: 'RP Slow 60: Tying a set of Bindings'
+call: '“[Name or Description] Short Instruction: You may not get out of these bindings without help.”'
+target: One Helpless Individual
+delivery: RP
+accent: None
+duration: Short Rest
+refresh: Focus Quick 100
+effect: Instruction
+description: |
+    The Rogue can tie people up so well that it is almost impossible for them to escape on their own, this may only be done on someone that is Helpless. The bindings can be shackles, ropes, or similar, but the person tied up will not be able to get out without outside aid - remember that the character should be restrained, and not the player.

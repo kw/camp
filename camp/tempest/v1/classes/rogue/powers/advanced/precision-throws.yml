@@ -1,0 +1,12 @@
+name: Precision Throws
+ranks: 2
+incant: None
+call: '“Grant Wounding”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Short Rest
+refresh: Long Rest
+effect: Wounding
+description: |
+    Once used, this power can continue to be used until the end of the Rogue completes a Short Rest. Thrown weapons the Rogue uses gain the Wounding effect, however, their damage is limited to a maximum of 2. A Rogue may choose to not use the Wounding effect on a thrown attack if they wish to receive a higher damage from a different source.

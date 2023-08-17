@@ -1,0 +1,11 @@
+name: Size Up
+incant: Focus Quick 100
+call: '“[Name or Description], Subtle Discern: Do you have [X] or more Wealth on you right now?”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Instantaneous
+refresh: Immediate
+effect: Discern
+description: |
+    The Rogue has a practiced eye in finding “big fish” and can, with careful observation, tell a lot about how much wealth a person is carrying. They use various clues and all their senses to tell if someone is carrying more than [X] Wealth with them, where [X] is a number of their choice. They must observe the target carefully for a Focus Quick 100 before making the Call. This skill may only be used once per Short Rest on any given target.

@@ -1,0 +1,11 @@
+name: Acquired Resistance
+incant: None
+call: '”Resist”'
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Short Rest
+effect: Resistance
+description: |
+    The Rogue has spent time taking micro-doses of poison in order to build up a mild resistance. Once per Short Rest, the Rogue may resist one Poison-accented Attack or Effect.

@@ -54,6 +54,10 @@ class Attribute(BaseModel):
     compute: str | None = None
     property_name: str | None = None
 
+    @property
+    def property_id(self) -> str:
+        return self.property_name or self.id.replace("-", "_")
+
 
 class BoolExpr(BaseModel, ABC):
     @abstractmethod
@@ -413,6 +417,7 @@ class BaseFeatureDef(BaseModel):
     type: str
     parent: str | None = None
     category: str | None = None
+    category_priority: float = 100.0
     requires: Requirements = None
     def_path: str | None = None
     tags: set[str] = pydantic.Field(default_factory=set)
@@ -535,6 +540,12 @@ class BaseRuleset(BaseModel, ABC):
         breed = 'Lineage'
         """
         return self._display_names
+
+    def abbreviated_name(self, id) -> str | None:
+        if attr := self.attribute_map.get(id, None):
+            if attr.abbrev:
+                return attr.abbrev
+        return None
 
     def pluralize(self, name: str) -> str:
         """Returns the plural form of the given name.

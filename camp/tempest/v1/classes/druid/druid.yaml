@@ -55,7 +55,7 @@ parent: druid
 name: Budding Knowledge
 description: "Extended Capacity - Novice (2), Lore: Nature (2), Profession - Apprentice (1)"
 category: Druid Starting Skills
-display_type: Budding Wisdom
+display_type: Path
 grants:
   - extended-capacity-novice
   - lore+Nature
@@ -67,7 +67,7 @@ parent: druid
 name: Budding Endurance
 description: "Additional Recharge (5)"
 category: Druid Starting Skills
-display_type: Budding Wisdom
+display_type: Path
 grants:
   - additional-recharge
 ---
@@ -77,7 +77,7 @@ parent: druid
 name: Budding Power
 description: "Warcaster (5)"
 category: Druid Starting Skills
-display_type: Budding Wisdom
+display_type: Path
 grants:
   - warcaster
 ---
@@ -87,7 +87,7 @@ parent: druid
 name: Budding Mender
 description: "Peacecaster (3), Lore: Nature (2)"
 category: Druid Starting Skills
-display_type: Budding Wisdom
+display_type: Path
 grants:
   - peacecaster
   - lore+Nature

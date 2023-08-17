@@ -1,0 +1,11 @@
+name: Keen Hearing
+requires: rogue:6
+incant: Focus Quick 100
+call: '“By My Voice, Expose Living”'
+target: Area
+delivery: Voice
+accent: Sound
+duration: Instantaneous
+refresh: Short Rest
+effect: Expose
+description: The Rogue can listen intently for a moment and then pinpoint living creatures around them, even those hidden in the shadows or bushes.

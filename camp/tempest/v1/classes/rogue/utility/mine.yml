@@ -1,0 +1,13 @@
+name: Mine
+incant: Focus Slow 120
+call: '“[Name or Description] 8” or “[Name or Description] 12 by Poison”'
+target: Individual, Self
+delivery: Verbal
+accent: None, Poison
+duration: Instantaneous
+refresh: Upon Discharge
+effect: Special
+description: |
+    The Rogue can booby trap themself so that they are the only one who can access their equipment and pouches. The Rogue should spend a Slow Count of 120 preparing their pouches, pockets and garb with the trap. They may decide whether to build a mechanical or chemical trap at the time of creation.
+
+    If the Rogue is searched before the next Long Rest, a mechanical trap will do 8 points of damage (as a Verbal) to the searcher. A chemical trap will do 12 points of Poison damage to the searcher. Either trap should be called as soon as someone starts a search of the Rogue (whether conscious or not).

@@ -1,0 +1,11 @@
+name: Reflexive Strike
+incant: None
+call: '“Wounding 2”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Instantaneous
+refresh: Instantaneous
+effect: Wounding
+description: |
+    Whenever the Rogue uses a defense that has the call “Dodge”, they may immediately make an attack with the call “Wounding 2.” This attack must be the next attack the Rogue makes, or this power is wasted.

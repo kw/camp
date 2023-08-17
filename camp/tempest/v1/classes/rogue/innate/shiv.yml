@@ -1,0 +1,12 @@
+name: Shiv
+requires: rogue:3
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None, Long Rest
+effect: None
+description: |
+  Whenever the Rogue performs a basic Spike attack from behind or performs a Sinister Strike, if they use a Hand weapon, they may increase their Base Damage by +1 for that attack.

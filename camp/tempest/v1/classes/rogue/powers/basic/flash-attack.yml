@@ -1,0 +1,11 @@
+name: Flash Attack
+ranks: 3
+incant: None
+call: '“Short Weakness”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Short Rest
+refresh: Short Rest
+effect: Weakness
+description: The Rogue can land a blow slicing the tendons of an enemy in an attempt to weaken the target.

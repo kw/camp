@@ -1,0 +1,11 @@
+name: Incapacitate
+incant: None
+call: '“Sleep by Force”'
+target: Individual
+delivery: Weapon
+accent: Force
+duration: Permanent
+refresh: Long Rest
+effect: Sleep
+description: |
+    When attacking from behind, the rogue may make an attack that will knock out an enemy. If this power is Prevented, this power immediately Refreshes, but must be used on a different target.

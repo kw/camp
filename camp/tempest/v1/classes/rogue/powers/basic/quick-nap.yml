@@ -1,0 +1,11 @@
+name: Quick Nap
+incant: None
+call: '“Heal 1”, “Cure Slept”'
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Heal, Cure
+description: |
+    Anytime after the character has been Dying or Slept for a Slow Count of 30, they may Heal themself for 1 Life Point (and thus is no longer considered Dying), and the Slept condition is Cured. The character need not be conscious to use this Power.

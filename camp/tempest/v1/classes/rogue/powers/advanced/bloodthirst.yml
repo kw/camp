@@ -1,0 +1,11 @@
+name: Bloodthirst
+incant: None
+call: None
+target: Self
+delivery: RP
+accent: None
+duration: Passive
+refresh: Special
+effect: Special
+description: |
+    Whenever the Rogue Deathblows a Helpless creature, and it is not Prevented, they may Refresh one Spike. This includes uses of the Throat Slit utility power. This Power refreshes after a Short Rest, or after the Rogue makes a "from behind" attack against an opponent.

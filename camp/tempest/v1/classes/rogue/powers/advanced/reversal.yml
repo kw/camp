@@ -1,0 +1,10 @@
+name: Reversal
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Immediate
+effect: Refresh
+description: Whenever the Rogue uses a defense that has the call '“Dodge”', they may Refresh a Spike.

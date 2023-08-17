@@ -1,0 +1,12 @@
+name: Dodge
+requires: rogue:4
+incant: None
+call: '“Counter, Dodge”'
+target: One attack by Weapon or Packet delivery
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Counter
+description: |
+    Dodge is a Counter to any attack made with a Weapon or Packet delivery. Upon being struck with such an attack the player should call “Counter, Dodge” and consider the attack Prevented.

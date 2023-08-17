@@ -22,7 +22,8 @@ class CantripController(feature_controller.FeatureController):
     def _cantrips_available(self) -> int:
         if self.parent and self.parent.feature_type == "class":
             purchased = self.parent.cantrips_purchased()
-            return self.parent.get("cantrips") - purchased
+            cantrips = self.character.get(f"{self.parent.full_id}.cantrips")
+            return cantrips - purchased
         return 0
 
     @property

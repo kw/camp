@@ -1,0 +1,12 @@
+name: Blunt End
+ranks: 2
+incant: None
+call: '“Quick Sleep by Force”'
+target: Individual
+delivery: Thrown Weapon
+accent: Force
+duration: Quick 100
+refresh: Long Rest
+effect: Sleep
+description: |
+    The Rogue is pretty handy with their Throw Weapons, and knows just how to handle them to make the flat of the blade strike their opponent. While not damaging, the strike is still effective, weakening their foe for a short time.

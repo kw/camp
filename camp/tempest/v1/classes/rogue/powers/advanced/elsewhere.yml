@@ -1,0 +1,11 @@
+name: Elsewhere
+incant: Focus Quick 100
+call: '“Grant Insubstantial”'
+target: Self
+delivery: None
+accent: None
+duration: Special
+refresh: Event
+effect: Insubstantial
+description: |
+    The Rogue allows their desire to escape the situation to pull them past the bounds of life itself. They take Spirit Form, carrying their equipment with them, and head to the Spirit Well. Once there the Rogue’s player should talk to Staff, who will find a time and place for the Rogue to re-enter the world of the Living. Until they complete a Long Rest, they will be inherently drained by their experience in the other form. The Rogue cannot use this Power to escape captivity as it will not allow the Spirit to walk through walls or bars, or to escape bonds. The Rogue may remove the Inherent Drain by completing a two hour NPC shift.

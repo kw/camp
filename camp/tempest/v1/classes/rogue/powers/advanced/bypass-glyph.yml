@@ -1,0 +1,11 @@
+name: Bypass Glyph
+incant: None
+call: '“Bypass Glyph”'
+target: Self
+delivery: None
+accent: None
+duration: Special, 60 Seconds
+refresh: Long Rest
+effect: Special
+description: |
+    The Rogue can use this Power to perform actions that would normally activate a Glyph, without activating it. Bypass Glyph can only be used on any one Glyph once per Long Rest, but for sixty seconds, it will not activate because of the Rogue’s actions.

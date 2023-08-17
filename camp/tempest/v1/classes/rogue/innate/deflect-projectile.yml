@@ -1,0 +1,12 @@
+name: Deflect Projectile
+requires: rogue:1
+incant: None
+call: '“Counter, Deflect!”'
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Focus Quick 100
+effect: Counter
+description: |
+    The Rogue can Counter any thrown weapon or projectile attack made from another character as long as the Rogue catches or deflects with their hands the Thrown Weapon or Projectile before it hits a part of the Rogue that isn’t their hands, ground, or comes to rest.

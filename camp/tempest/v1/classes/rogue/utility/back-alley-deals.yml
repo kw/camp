@@ -1,0 +1,22 @@
+name: Back Alley Deals
+incant: None
+call: None
+target: Special
+delivery: Special
+accent: None
+duration: Instantaneous
+refresh: Event
+effect: Special
+grants: fence
+description: |
+    The Rogue gains the Fence Skill (3). In addition, the Rogue has a number of shady underworld contacts who can provide various favors and services. Once per Event, the Rogue can go to Staff, and bring up to three allies, and ask for one of each the following favors, pay the required cost, and get what they are looking for:
+
+    - **Bard** - Spread rumor information: 6 Wealth.
+    - **Barkeep** - Get rumor information on one named individual: 10 Wealth.
+    - **Priest** - Heal to full: 4 Wealth. The Rogue may pay this price for each character that comes with them to perform their Back Alley Deals up to 3 additional Characters)
+    - **Fence** - Sell an item at 100% of standard value, minus any duration or charges used: 2 Wealth.
+    - **Medium** - Get a prophetic answer to a question: 8 Wealth.
+    - **Pusher** - Get one dose of an Apprentice level Alchemy preparation: 8 Wealth.
+    - **Smuggler** - Get 3 of any one Basic Resource: 6 Wealth.
+
+    If the Rogue uses this skill as part of their Pre-Registration, the costs are halved.

@@ -1,0 +1,12 @@
+name: Loot
+requires: rogue:4
+incant: None
+call: '“Instruction to Helpless: Give me your valuables.”'
+target: Individual
+delivery: Touch
+accent: None
+duration: Instantaneous
+refresh: Special
+effect: Instruction
+description: |
+    Instead of searching a target, the Rogue can quickly size up a helpless or willing creature and determine where to search. Please note that, like searching, this should not include any actual touching without express pre-negotiated consent. The Rogue can search instantaneously, rather than waiting the Quick 100. This ability refreshes when loot is collected or the target indicates they have none.

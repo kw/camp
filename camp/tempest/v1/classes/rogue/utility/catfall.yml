@@ -1,0 +1,14 @@
+name: Catfall
+incant: None
+call: '“Counter, Catfall”'
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Focus Quick 100
+effect: Counter
+grants: agility
+description: |
+    The Rogue gains the Agility Character Perk. In addition, the character may sacrifice a Life Point to Counter the damage and effects from one fall.
+
+    **For Example**: Avana, climbing across a narrow ledge, slips and falls forty feet to the sharp rocks below, normally taking 10 damage and a Disable to both legs. Instead, they sacrifice one Life Point to call “Counter, Catfall” and negate the effects of the environmental damage from the fall.

@@ -1,0 +1,12 @@
+name: Sinister Strike
+requires: rogue:10
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: None
+description: |
+    Whenever the Rogue makes an attack from behind, they may choose to expend a Spike to instead make an attack with the Effect Double X, where X is the Rogue’s Base Damage. Recall that the Rogue’s Base Damage is altered by Backstab and Shiv (and possibly other skills).

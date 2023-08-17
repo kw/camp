@@ -1,0 +1,11 @@
+name: Scavenge Armor
+incant: Focus Quick 100
+call: '“Mend 2”'
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Immediate
+effect: Mend
+description: |
+    If the Rogue searches or Scavenges a creature and finds a Scavenging Token or sees that the creature is wearing physical armor, they can immediately use parts of the armor or Scavenging Token to “Mend 2” points of their own armor. When the Rogue finds a Token and uses this power, it expends the Token, and that Token should be taken to the Ashbin when possible.

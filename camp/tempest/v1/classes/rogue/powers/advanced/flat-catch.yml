@@ -1,0 +1,13 @@
+name: Flat Catch
+incant: None
+call: '“Counter, Flat Catch”'
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Immediate
+effect: Counter
+description: |
+    As long as the Rogue has nothing in hand and no shield attached to the arm, they can Counter any melee damage that hits that lower arm (from the elbow to the tips of the fingers). They can only Counter attacks that do damage; any weapon-delivered Effect including Wounding and Piercing cannot be Countered with this Power. The Rogue should call “Counter, Flat Catch” when countering an attack with this.
+
+    A player using Flat Catch must have adequate protection on their arm, such as a bracer, cloth wraps or otherwise to ensure that the player is not injured by repeated blows to the same area over the course of an event. Such padding should be checked in with a Weapon Marshal, however, Staff has final say on appropriate protection for this skill.

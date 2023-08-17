@@ -1,0 +1,11 @@
+name: Elude
+incant: None
+call: '“Counter, Elude”'
+target: One attack not by By My Voice Delivery
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Counter
+description: |
+    Elude may counter any attack that is delivered by a Weapon, Packet, Verbal, or “to Room”. Upon being struck with such an attack the player should call “Counter, Elude.”

@@ -1,0 +1,11 @@
+name: Hamstring
+ranks: 3
+incant: None
+call: '“Short Root by Force”'
+target: Individual
+delivery: Weapon
+accent: Force
+duration: Short Rest
+refresh: Short Rest
+effect: Root
+description: The Rogue can land a blow of force and surprising fury, pinning the target so that the Rogue can escape.

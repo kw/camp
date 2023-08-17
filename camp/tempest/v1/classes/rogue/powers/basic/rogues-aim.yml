@@ -1,0 +1,12 @@
+name: Rogue’s Aim
+ranks: 3
+incant: None
+call: '“Wounding [X]”'
+target: Individual
+delivery: Thrown Weapon
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Wounding
+description: |
+    The Rogue may add the Wounding effect to one thrown weapon once per Short Rest. If the attack already has Wounding this changes the Wounding effect to Double. This call can’t otherwise be modified in any way.

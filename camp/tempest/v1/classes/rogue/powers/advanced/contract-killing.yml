@@ -1,0 +1,19 @@
+name: Contract Killing
+incant: 'RP: “Bounty against [Individual’s Name]”'
+call: '“Grant Bounty”'
+target: Individual
+delivery: None
+accent: None
+duration: Event
+refresh: Event
+effect: Grant Plus Damage
+description: |
+    The Rogue may place a contract on a named individual by going to the Plot Staff and paying a Bounty of 20 Wealth. This Bounty will be held by Plot Staff, and may be added to by characters and NPCs as outlined below.
+
+    For the duration, all characters who have this power (or similar ones), may provide proof to the Plot Staff of the death of the target, and collect the Bounty.
+
+    For the duration of the Bounty, the Rogue gains +1 Base Damage against the Target. They may only have one bonus against a single target at any one time.
+
+    For this Bounty to be active, the Rogue must post the individual’s name, likeness, and description in at least three conspicuous locations. If the posters are removed and the Rogue does not replace them after becoming aware, the Bonus is removed and Bounty ends.
+
+    If a Rogue has this power, and finds a Bounty poster, they may add 10 Wealth to the Bounty (by going to Plot) to gain the same Bonus without expending their use of this power.

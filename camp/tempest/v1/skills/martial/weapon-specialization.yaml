@@ -2,6 +2,7 @@ name: Weapon Specialization
 cost: 4
 requires: basic-martial-weapons
 option:
+  multiple: false
   values:
     - Shortsword
     - Longsword

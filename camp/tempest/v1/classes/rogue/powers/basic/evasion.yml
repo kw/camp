@@ -1,0 +1,11 @@
+name: Evasion
+incant: None
+call: '“Counter, Dodge”'
+target: One Attack
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Counter
+description: |
+    While the Rogue has no Maximum Armor and no Barrier, the Rogue may, once per Short Rest, Counter a Weapon or Packet attack that hits them. The appropriate call for this Counter is “Counter, Dodge.”

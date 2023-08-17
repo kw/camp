@@ -1,0 +1,11 @@
+name: Waylay
+incant: None
+call: '“Short Sleep”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Short Rest
+refresh: Focus Quick 100
+effect: Sleep
+description: |
+    This Power can only be used out of combat. The Rogue can expend a Spike to use a Hand Weapon to make an attack from behind which will knock out the target, causing the Sleep Effect. If the Rogue places their weapon against their target (while validly “from behind”) and leaves it there, they can Call the attack at any time, including the initiation and first moments of combat. Note: the weapon should be placed against a valid hit location, not against the throat or head.

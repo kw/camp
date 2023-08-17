@@ -1,0 +1,11 @@
+name: Hidden Soul
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: Immediate
+effect: Counter
+description: |
+    The Rogue can choose to expend a Spike to become Obfuscated vs Discern to a single question. When Discern is used against them, they may choose to answer however they like, and need not indicate that this power was used.

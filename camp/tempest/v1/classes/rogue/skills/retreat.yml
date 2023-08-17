@@ -1,0 +1,13 @@
+name: Retreat
+cost: 3
+requires: rogue:8
+incant: None
+call: '“Grant Insubstantial by Darkness”, “Dispel Insubstantial”'
+target: Self
+delivery: None
+accent: Darkness
+duration: Slow 30
+refresh: Immediate
+effect: Grant Insubstantial, Dispel Insubstantial
+description: |
+    After the character has recovered from a Dying state (not Dead), they may immediately go insubstantial for a Slow 30. They must move towards a location that is outside melee range of any perceived enemies. At the end of thirty seconds, they must Dispel their insubstantial Condition by calling "Dispel Insubstantial." Recall that when insubstantial, the player has a duty to inform anyone that inspects, closely interacts with, or plans to attack their character.

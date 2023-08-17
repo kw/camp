@@ -1,0 +1,8 @@
+name: Focused Results
+requires:
+  - rogue:6
+  - basic-classes<2
+grants:
+  - rogue.powers@1:1
+  - rogue.utilities:1
+description: The Rogue gains an additional Utility Power and Basic Power from the Rogue Class Powers.

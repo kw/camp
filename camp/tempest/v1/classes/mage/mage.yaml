@@ -11,7 +11,7 @@ multiclass_features:
   - basic-arcane
 level_grants:
   2: cancel
-  7: spikes:1
+  7: mage-spikes-bonus
 choices:
   magical-specialty:
     starting_class: true
@@ -54,13 +54,21 @@ description: |
     > From planes beyond, my power's Source, By Word and Will I give it force.
     > My Word as law, my Will supreme, I fuse the strength of truth and dream…”
 ---
+id: mage-spikes-bonus
+type: subfeature
+parent: mage
+name: +1 Max Spikes
+display_type: Bonus
+category: Mage Class Bonuses
+grants: spikes:1
+---
 id: mage-magical-specialty-1
 type: subfeature
 parent: mage
 name: Spellcasting Specialist
 description: Grants Spell Preparation, Extended Capacity - Novice, Library Use
 category: Mage Starting Skills
-display_type: Magical Specialty
+display_type: Path
 grants:
   - spell-preparation
   - extended-capacity-novice
@@ -72,7 +80,7 @@ parent: mage
 name: Bookcasting Specialist
 description: Grants Additional Recharge, Novice Bookcaster
 category: Mage Starting Skills
-display_type: Magical Specialty
+display_type: Path
 grants:
   - additional-recharge
   - novice-bookcaster
@@ -83,6 +91,6 @@ parent: mage
 name: Cantrip Specialist
 description: Grants Additional Cantrip
 category: Mage Starting Skills
-display_type: Magical Specialty
+display_type: Path
 grants:
   - additional-cantrip

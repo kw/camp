@@ -1,0 +1,16 @@
+name: Rogue’s Touch
+requires: rogue:5
+incant: None
+call: '“Rogue’s Touch”'
+target: Special
+delivery: RP
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Special
+description: |
+    While attempting a mundane lock, the character can call “Rogue’s Touch” if there is some negative effect to failing the lock, or failing to pick it in a certain amount of time. This will not Counter the negative effect, but will allow the character to try again from the beginning. So if the Rogue had to pick a lock within one minute or take a Death Effect, they could take the minute, and as soon as the fact that there was a consequence for failure announced, they could call “Rogue’s Touch” and take another minute. If they do not immediately re-start the attempt or totally disengage from the lock, the consequence occurs.
+
+    While attempting a magical lock, the Rogue can continue to attempt the lock even if they touch the wire with their lock wand by expending a use of this ability. They must move the lock wand so that the alarm is no longer triggered and then may continue on without restarting.
+
+    At 10th level, the Rogue may do this twice on the same lock.

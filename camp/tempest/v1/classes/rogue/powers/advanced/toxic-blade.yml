@@ -1,0 +1,13 @@
+name: Toxic Blade
+incant: None
+call: '“Grant Poison”'
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+refresh: Short Rest
+effect: Grant
+description: |
+    The Rogue may coat their blades, either thrown or melee with a poison they’ve made from the local flora. By Sacrificing a Night Prize, the Rogue  While this power is active, the Rogue may alter any unaccented attack to the Poison Accent.
+
+    When making an attack from behind, the Rogue may increase their Spike Damage by 1 if their accent remains unchanged from Poison.

@@ -1,0 +1,11 @@
+name: Ambush
+incant: None
+call: '“Short Drain by Agony”'
+target: Individual
+delivery: Weapon
+accent: Agony
+duration: Short Rest
+refresh: Short Rest
+effect: Drain
+description: |
+    When attacking from behind, the Rogue can spend the effort to ensure their blow is particularly effective at removing their opponent’s abilities. When the Rogue makes an attack from behind, they may call “Short Drain by Agony.”

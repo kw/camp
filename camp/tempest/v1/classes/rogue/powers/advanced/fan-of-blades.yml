@@ -1,0 +1,12 @@
+name: Fan of Blades
+ranks: 3
+incant: None
+call: '“Double 3”'
+target: Individual
+delivery: Thrown Weapon
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Double
+description: |
+    The rogue may throw several weapons in rapid succession with exceptional accuracy. The Rogue may make an attack with a thrown weapon with the call “Double 3.” This call may not be altered.

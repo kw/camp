@@ -136,6 +136,10 @@ class BreedPointController(AttributeController):
 
     @property
     def bp_cap(self) -> int:
+        return self.character.get(f"{self.id}.cap")
+
+    @property
+    def cap(self) -> int:
         return (
             self.character.ruleset.breed_primary_bp_cap
             if self.primary
@@ -160,6 +164,15 @@ class BreedPointController(AttributeController):
         if breed := self.breed:
             for advantage in breed.taken_advantages:
                 total += advantage.cost
+        return total
+
+    @property
+    def costuming(self) -> int:
+        total: int = 0
+        if breed := self.breed:
+            for challenge in breed.taken_challenges:
+                if challenge.definition.costuming:
+                    total += challenge.award_bp
         return total
 
     @property

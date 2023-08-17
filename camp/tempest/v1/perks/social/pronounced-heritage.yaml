@@ -1,9 +1,10 @@
 name: Pronounced Heritage
 cost: 3
-# TODO: I guess we need to tag breed challenges by whether they have costuming?
-# requires: "At least 3 Breed Points with a costuming requirement in your Secondary Breed."
-# grants: bp@2:3
 tags: [no-patron]
+requires:
+  - breeds:2
+  - bp-secondary.costuming:3
+grants: bp-secondary.cap:3
 description: |
   You may earn a maximum of 3 additional Breed points in your secondary Breed up to a maximum of 8.
   You may only buy this Character Option if you have more than one Breed and may only be spent on the Breed chosen.

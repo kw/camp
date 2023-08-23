@@ -305,6 +305,8 @@ class BreedChallengeController(feature_controller.FeatureController):
                 return Decision.OK
             if self.parent.subbreed_id != sbi:
                 return Decision(success=False, reason="Subbreed mismatch")
+        if not self.parent.value > 0:
+            return Decision.NO
         return Decision.OK
 
     @cached_property

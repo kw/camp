@@ -332,7 +332,10 @@ def _features(
 ) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        if hide_internal and feat.internal:
+        if hide_internal and feat.internal and feat.parent and feat.parent.value > 0:
+            # Don't include internal features in the list, since they will appear
+            # nested under their parents. But, if the parent would not be shown
+            # because it doesn't exist or doesn't have ranks, show it anyway.
             continue
 
         if use_type_name or feat.feature_type == "subfeature":

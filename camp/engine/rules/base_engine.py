@@ -105,7 +105,7 @@ class CharacterController(ABC):
     ) -> Iterable[BaseFeatureController]:
         """List all features of the given type."""
         if taken:
-            for id, fc in self.features.items():
+            for id, fc in list(self.features.items()):
                 if not fc.value > 0:
                     # It's not actually taken...
                     continue

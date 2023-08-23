@@ -64,6 +64,7 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
             controller, chain(taken_features, available_features)
         )
         context["undo"] = sheet.last_undo
+        context["issues"] = controller.issues()
 
         if not (rd := controller.validate()):
             messages.error(self.request, "Error validating character: %s" % rd.reason)
@@ -147,6 +148,7 @@ def feature_view(request, pk, feature_id):
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
     feature_controller = controller.feature_controller(feature_id)
+    issues = feature_controller.issues() or []
 
     can_dec = feature_controller.can_decrease()
     if can_dec:
@@ -221,6 +223,10 @@ def feature_view(request, pk, feature_id):
     else:
         subfeatures = []
         subfeatures_available = []
+    for sf in subfeatures:
+        if sf_issues := sf.issues():
+            issues.extend(sf_issues)
+
     choices = feature_controller.choices
     context = {
         "character": character,
@@ -233,6 +239,7 @@ def feature_view(request, pk, feature_id):
         if choices
         else {},
         "purchase_form": pf,
+        "issues": issues,
     }
     if not can_inc:
         context["no_purchase_reason"] = can_inc.reason

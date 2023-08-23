@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import dataclasses
 import re
 import types
 import typing
 from abc import ABC
 from abc import abstractmethod
+from functools import cached_property
 from typing import Any
 from typing import ClassVar
 from typing import Iterable
@@ -900,3 +902,53 @@ def parse_req(req: Requirements) -> BoolExpr | None:
         else:
             return PropExpression.parse(req)
     raise ValueError(f"Requirement parse failure for {req}")
+
+
+@dataclasses.dataclass(frozen=True)
+class Issue:
+    """A problem that requires attention.
+
+    Issues typically arise from regressive character edits. For example,
+    if you remove a skill that grants an additional power slot, you may
+    now have more powers than slots, and a controller responsible for keeping
+    track of such things would generate an Issue to report it. Since issues do
+    not prevent operating on a character in the way that a validation failure
+    does, the player is free to resolve this either by removing one of the powers
+    of their choice or purchasing some other way of granting that power slot.
+
+    There are various reasons that we may need to uniquely identify an issue,
+    which might include a member of plot or logisitcs looking at a character
+    registered for a game, deciding that the issue is actually intended, and
+    muting it so that the character can be played.
+
+    Attributes:
+        feature_id: The ID string identifying the source feature controller.
+            If no feature is responsible for this validation issue, None.
+        choice: If the validation issues comes from a choice controller
+            within the feature, the ID of the choice. Othewise, None.
+        issue_code: A code identifying the issue. This allows specific
+            issues that might happen within a feature or choice to be
+            identified.
+    """
+
+    issue_code: str
+    reason: str
+    feature_id: str | None = None
+    choice: str | None = None
+
+    @cached_property
+    def expr(self) -> PropExpression:
+        """Parsed feature ID expression."""
+        return PropExpression.parse(self.feature_id)
+
+    @property
+    def qualified_issue_code(self) -> str:
+        """Qualified issue code, of the format `feature:choice:issue`.
+
+        Any missing component will be empty.
+        Examples:
+        - cleric::too-many-powers
+        - extra-choices:choice1:too-many-choices
+        - ::not-enough-cp
+        """
+        return f"{self.feature_id or ''}:{self.choice or ''}:{self.issue_code}"

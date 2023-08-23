@@ -50,6 +50,7 @@ class TempestCharacter(base_engine.CharacterController):
     engine: engine.TempestEngine
     ruleset: defs.Ruleset
     _features: dict[str, feature_controller.FeatureController] | None = None
+    _costuming: models.CostumingData | None = None
 
     @property
     def xp(self) -> int:
@@ -325,7 +326,6 @@ class TempestCharacter(base_engine.CharacterController):
                 rd = controller.increase(entry.ranks)
             elif entry.ranks < 0:
                 rd = controller.decrease(-entry.ranks)
-            # self.clear_caches()
             return rd
         return Decision(
             success=False, reason=f"Purchase not implemented: {entry.expression}"
@@ -479,9 +479,23 @@ class TempestCharacter(base_engine.CharacterController):
             spheres.add("divine")
         return spheres
 
+    def get_costuming(self) -> models.CostumingData:
+        if self._costuming is not None:
+            return self._costuming
+        all_costuming = models.CostumingData()
+        for feature in self.list_features(
+            taken=True, available=False, filter_subfeatures=False
+        ):
+            feature: feature_controller.FeatureController
+            if costuming := feature.get_costuming():
+                all_costuming = all_costuming.add(costuming)
+        self._costuming = all_costuming
+        return self._costuming
+
     def clear_caches(self):
         super().clear_caches()
         self._features = {}
+        self._costuming = None
         for feature in list(self.features.values()):
             feature.reconcile()
 

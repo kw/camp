@@ -8,6 +8,7 @@ from typing import Type
 from camp.engine import utils
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import Discount
+from camp.engine.rules.base_models import Issue
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
@@ -817,6 +818,25 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def explain_list(self) -> list[str]:
         return []
+
+    def get_costuming(self) -> models.CostumingData | None:
+        return None
+
+    def issues(self) -> list[Issue] | None:
+        issues = super().issues() or []
+        if self.paid_ranks > 0 and (parent := self.parent) and not parent.value:
+            # The feature has been purchased, but not the parent.
+            # While certain circumstances can grant a feature beneath a parent,
+            # there should probably not be any where the feature is directly purchased
+            # in that state.
+            issues.append(
+                Issue(
+                    issue_code="parent-not-purchased",
+                    reason=f"{self.display_name()} shouldn't be purchased without {parent.display_name()}",
+                    feature_id=self.full_id,
+                )
+            )
+        return issues
 
 
 class SkillController(FeatureController):

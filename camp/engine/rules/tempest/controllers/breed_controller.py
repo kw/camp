@@ -4,7 +4,9 @@ from functools import cached_property
 from typing import Any
 
 from camp.engine import utils
+from camp.engine.rules.base_models import Issue
 from camp.engine.rules.decision import Decision
+from camp.engine.rules.tempest import models
 
 from .. import defs
 from . import attribute_controllers
@@ -383,3 +385,32 @@ class BreedChallengeController(feature_controller.FeatureController):
         if self.award_bp:
             reasons.append(f"You receive {self.award_bp} BP from this flaw.")
         return reasons
+
+    def issues(self) -> list[Issue] | None:
+        issues = super().issues() or []
+        if costuming := self.character.get_costuming():
+            for tag, ids in costuming.conflicts.items():
+                if self.full_id in ids:
+                    # This conflicts with other costuming items.
+                    names = ", ".join(
+                        self.character.display_name(f)
+                        for f in ids.difference({self.full_id})
+                    )
+                    location = self.character.display_name(tag)
+                    issues.append(
+                        Issue(
+                            issue_code=f"costuming-conflict-{tag}",
+                            reason=f"{self.display_name()} conflicts with {names} for costuming location {location}",
+                            feature_id=self.full_id,
+                        )
+                    )
+        return issues
+
+    def get_costuming(self) -> models.CostumingData | None:
+        if self.definition.costuming is True:
+            return models.CostumingData(untagged={self.full_id})
+        elif self.definition.costuming:
+            return models.CostumingData(
+                tags={tag: self.full_id for tag in self.definition.costuming}
+            )
+        return None

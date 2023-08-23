@@ -388,7 +388,7 @@ class BreedChallengeController(feature_controller.FeatureController):
 
     def issues(self) -> list[Issue] | None:
         issues = super().issues() or []
-        if costuming := self.character.get_costuming():
+        if self.value > 0 and (costuming := self.character.get_costuming()):
             for tag, ids in costuming.conflicts.items():
                 if self.full_id in ids:
                     # This conflicts with other costuming items.

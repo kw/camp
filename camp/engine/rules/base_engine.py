@@ -198,9 +198,7 @@ class CharacterController(ABC):
 
     def issues(self) -> list[base_models.Issue]:
         issues: list[base_models.Issue] = []
-        for feature in self.list_features(
-            taken=True, available=False, filter_subfeatures=False
-        ):
+        for feature in self.features.values():
             if new_issues := feature.issues():
                 issues.extend(new_issues)
         return issues

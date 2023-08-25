@@ -97,11 +97,11 @@ class SpellController(feature_controller.FeatureController):
         for spellbook in self.character.spellbooks:
             available = spellbook.spells_available_per_class
             for claz, count in available.items():
-                if claz is None:
+                if claz is None and count != 0:
                     explain.append(
                         f"{count} {self.character.display_name(spellbook.sphere)} spells available."
                     )
-                elif count > 0:
+                elif count != 0:
                     explain.append(
                         f"{count} {self.character.display_name(claz)} spells available."
                     )

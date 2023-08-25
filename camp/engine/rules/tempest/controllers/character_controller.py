@@ -5,6 +5,7 @@ from functools import cached_property
 
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import ChoiceMutation
+from camp.engine.rules.base_models import Issue
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.decision import Decision
@@ -491,6 +492,20 @@ class TempestCharacter(base_engine.CharacterController):
                 all_costuming = all_costuming.add(costuming)
         self._costuming = all_costuming
         return self._costuming
+
+    def issues(self) -> list[Issue]:
+        issues = super().issues()
+        for spellbook in (self.arcane.spellbook, self.divine.spellbook):
+            if not spellbook:
+                continue
+            if excess := spellbook.excess_spells:
+                issues.append(
+                    Issue(
+                        issue_code=f"excess-spells-{spellbook.sphere}",
+                        reason=f"Too many {self.display_name(spellbook.sphere)} spells known ({excess})",
+                    )
+                )
+        return issues
 
     def clear_caches(self):
         super().clear_caches()

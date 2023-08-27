@@ -101,15 +101,19 @@ class CharacterController(ABC):
         type: str | None = None,
         taken: bool = True,
         available: bool = True,
+        filter_subfeatures: bool = True,
     ) -> Iterable[BaseFeatureController]:
         """List all features of the given type."""
         if taken:
-            for id, fc in self.features.items():
+            for id, fc in list(self.features.items()):
+                if not fc.value > 0:
+                    # It's not actually taken...
+                    continue
                 if type and fc.definition.type != type:
                     continue
                 if available and not fc.can_increase():
                     continue
-                if fc.should_show_in_list:
+                if fc.should_show_in_list or not filter_subfeatures:
                     yield fc
         else:
             for id, definition in self.ruleset.features.items():
@@ -188,8 +192,27 @@ class CharacterController(ABC):
         for feature in features:
             feature.reconcile()
         for feature in features:
-            if not (rd := feature.hard_validate()):
+            if not (rd := feature.validate()):
                 return rd
+        return Decision.OK
+
+    def issues(self) -> list[base_models.Issue]:
+        issues: list[base_models.Issue] = []
+        for feature in self.features.values():
+            if new_issues := feature.issues():
+                issues.extend(new_issues)
+        return issues
+
+    def fully_valid(self) -> Decision:
+        if not (rd := self.validate()):
+            return rd
+        if issues := self.issues():
+            if len(issues) == 1:
+                return Decision(success=False, reason=issues[0].reason)
+            return Decision(
+                success=False,
+                reason=f"{len(issues)} issues detected, including: {issues[0].reason}",
+            )
         return Decision.OK
 
     def has_prop(self, expr: str | base_models.PropExpression) -> bool:
@@ -306,7 +329,9 @@ class CharacterController(ABC):
     def choose(self, entry: base_models.ChoiceMutation) -> Decision:
         ...
 
-    def meets_requirements(self, requirements: base_models.Requirements) -> Decision:
+    def meets_requirements(
+        self, requirements: base_models.Requirements, prop_id: str | None = None
+    ) -> Decision:
         messages: list[str] = []
         for req in maybe_iter(requirements):
             if isinstance(req, str):
@@ -316,7 +341,13 @@ class CharacterController(ABC):
             if not (rd := req.evaluate(self)):
                 messages.append(rd.reason)
         if messages:
-            messages = ["Not all requirements are met."] + messages
+            if prop_id:
+                header = (
+                    f"Not all requirements are met for {self.display_name(prop_id)}."
+                )
+            else:
+                header = "Not all requirements are met."
+            messages = [header] + messages
         return Decision(
             success=not (messages), reason="\n".join(messages) if messages else None
         )
@@ -617,7 +648,7 @@ class BaseFeatureController(PropertyController):
 
     @property
     def meets_requirements(self) -> Decision:
-        return self.character.meets_requirements(self.definition.requires)
+        return self.character.meets_requirements(self.definition.requires, self.full_id)
 
     @property
     def next_value(self) -> int | None:
@@ -765,7 +796,13 @@ class BaseFeatureController(PropertyController):
 
     @property
     def badges(self) -> list[tuple[str, str]]:
-        return []
+        badges = []
+        if issues := self.issues():
+            if len(issues) == 1:
+                badges.append(("warning", "1 issue"))
+            else:
+                badges.append(("warning", f"{len(issues)} issues"))
+        return badges
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -889,7 +926,7 @@ class BaseFeatureController(PropertyController):
             return f"{self.display_name()} x{self.value}"
         return self.display_name()
 
-    def hard_validate(self) -> Decision:
+    def validate(self) -> Decision:
         """Check that the feature is valid.
 
         What does validity really mean? For the purposes of this app, let's consider _hard_ and _soft_ validity.
@@ -901,6 +938,7 @@ class BaseFeatureController(PropertyController):
         Soft validity means that things must _eventually_ be true. You can't add a new Advanced Power if you don't
         have a slot for it, but if you suddenly find yourself with fewer Advanced Powers than you have slots, the
         response is not "you can't do that, abort mutation", but rather "OK, but now you need to pick a power to remove."
+        For soft validitiy, see the `issues` method below.
 
         In general, hard validity is intended to be checked every time you do anything to the character, and if it fails,
         the thing did not happen to the character. If a character ends up persisted in a hard-invalid state and you can't
@@ -914,13 +952,21 @@ class BaseFeatureController(PropertyController):
             # Note that this means a feature can be granted without needing to meet its prerequisites.
             return Decision.OK
         # By default, the only validation needed is that the feature's requirements are still met.
-        if not self.meets_requirements:
+        if not (rd := self.meets_requirements):
             # TODO: Nice rendering for the actual requirements issue would be nice, but for now, just
             # identify the feature that has been offended.
-            return Decision(
-                success=False, reason=f"Requirements not met for {self.display_name()}"
-            )
+            return rd
         return Decision.OK
+
+    def issues(self) -> list[base_models.Issue] | None:
+        """Reports issues with the feature (aka, soft validation).
+
+        Unlike validation, the presence of an issue is exepcted to only
+        be _eventually_ solved (generally before registration).
+
+        Plot/logistics might also be able to waive a particular issue if it suits their needs.
+        """
+        return None
 
     def __str__(self) -> str:
         return self.feature_list_name
@@ -966,6 +1012,9 @@ class ChoiceController(ABC):
         if self.limit == "unlimited":
             return 999
         return self.limit - len(self.taken_choices())
+
+    def issues(self) -> list[base_models.Issue] | None:
+        return None
 
     @abstractmethod
     def available_choices(self) -> dict[str, str]:

@@ -5,6 +5,7 @@ from typing import Literal
 
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import Discount
+from camp.engine.rules.base_models import Issue
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.decision import Decision
 
@@ -176,15 +177,36 @@ class ClassController(feature_controller.FeatureController):
 
     @property
     def powers_taken(self) -> spellbook_controller.TierTuple:
+        if not self.powerbook:
+            return spellbook_controller.EMPTY_TIER
         return self.powerbook.powers_taken_per_class.get(
             self.full_id, spellbook_controller.EMPTY_TIER
         )
 
     @property
     def powers_available(self) -> spellbook_controller.TierTuple:
+        if not self.powerbook:
+            return spellbook_controller.EMPTY_TIER
         return self.powerbook.powers_available_per_class.get(
             self.full_id, spellbook_controller.EMPTY_TIER
         )
+
+    def issues(self) -> list[Issue] | None:
+        issues = super().issues() or []
+        # Are too many powers taken?
+        # This should be checked whether or not the class has actually been taken,
+        # since a player could take a class, take powers from it, and then remove
+        # the class.
+        for i, available in enumerate(self.powers_available):
+            if available < 0:
+                issues.append(
+                    Issue(
+                        issue_code="too-many-powers",
+                        reason=f"Too many tier {i+1} or lower {self.display_name()} powers taken ({abs(available)}). Please remove some.",
+                        feature_id=self.full_id,
+                    )
+                )
+        return issues
 
     def powers(self, expr: PropExpression) -> int:
         if self.caster:

@@ -64,6 +64,7 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
             controller, chain(taken_features, available_features)
         )
         context["undo"] = sheet.last_undo
+        context["issues"] = controller.issues()
 
         if not (rd := controller.validate()):
             messages.error(self.request, "Error validating character: %s" % rd.reason)
@@ -147,6 +148,7 @@ def feature_view(request, pk, feature_id):
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
     feature_controller = controller.feature_controller(feature_id)
+    issues = feature_controller.issues() or []
 
     can_dec = feature_controller.can_decrease()
     if can_dec:
@@ -168,10 +170,16 @@ def feature_view(request, pk, feature_id):
             if success:
                 # If we purchased a feature and it has a choice that can be made,
                 # stay on the feature page. Otherwise, return to the character page.
-                if (
-                    feature_controller.has_available_choices
-                    or feature_controller.subfeatures_available
-                ):
+                stay = False
+                if feature_controller.has_available_choices:
+                    messages.info(request, "Choices are available for this feature.")
+                    stay = True
+                if feature_controller.subfeatures_available:
+                    messages.info(
+                        request, "Purchases are available within this feature."
+                    )
+                    stay = True
+                if stay:
                     return redirect(
                         "character-feature-view", pk=pk, feature_id=feature_id
                     )
@@ -221,6 +229,10 @@ def feature_view(request, pk, feature_id):
     else:
         subfeatures = []
         subfeatures_available = []
+    for sf in subfeatures:
+        if sf_issues := sf.issues():
+            issues.extend(sf_issues)
+
     choices = feature_controller.choices
     context = {
         "character": character,
@@ -233,6 +245,7 @@ def feature_view(request, pk, feature_id):
         if choices
         else {},
         "purchase_form": pf,
+        "issues": issues,
     }
     if not can_inc:
         context["no_purchase_reason"] = can_inc.reason
@@ -325,7 +338,10 @@ def _features(
 ) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
     for feat in feats:
-        if hide_internal and feat.internal:
+        if hide_internal and feat.internal and feat.parent and feat.parent.value > 0:
+            # Don't include internal features in the list, since they will appear
+            # nested under their parents. But, if the parent would not be shown
+            # because it doesn't exist or doesn't have ranks, show it anyway.
             continue
 
         if use_type_name or feat.feature_type == "subfeature":

@@ -19,6 +19,23 @@
 <p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
 {% endif %}
 
+{% if issues %}
+<!-- Issues -->
+<ul class="list-group">
+    {% for issue in issues %}
+    {% if issue.feature_id %}
+    <li class="list-group-item list-group-item-warning">
+        <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issue.feature_id %}">
+            {{issue.reason | markdown}}
+        </a>
+    </li>
+    {% else %}
+    <li class="list-group-item list-group-item-warning">{{issue.reason | markdown}}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if purchase_form %}
 {% if feature.unused_bonus > 0 %}
 <p>You have {{ feature.unused_bonus }} unused bonus rank(s). Your next purchase is free.</p>

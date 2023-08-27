@@ -5,6 +5,7 @@ from functools import cached_property
 
 from camp.engine.rules import base_engine
 from camp.engine.rules.base_models import ChoiceMutation
+from camp.engine.rules.base_models import Issue
 from camp.engine.rules.base_models import PropExpression
 from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.decision import Decision
@@ -50,6 +51,7 @@ class TempestCharacter(base_engine.CharacterController):
     engine: engine.TempestEngine
     ruleset: defs.Ruleset
     _features: dict[str, feature_controller.FeatureController] | None = None
+    _costuming: models.CostumingData | None = None
 
     @property
     def xp(self) -> int:
@@ -325,7 +327,6 @@ class TempestCharacter(base_engine.CharacterController):
                 rd = controller.increase(entry.ranks)
             elif entry.ranks < 0:
                 rd = controller.decrease(-entry.ranks)
-            # self.clear_caches()
             return rd
         return Decision(
             success=False, reason=f"Purchase not implemented: {entry.expression}"
@@ -479,9 +480,37 @@ class TempestCharacter(base_engine.CharacterController):
             spheres.add("divine")
         return spheres
 
+    def get_costuming(self) -> models.CostumingData:
+        if self._costuming is not None:
+            return self._costuming
+        all_costuming = models.CostumingData()
+        for feature in self.list_features(
+            taken=True, available=False, filter_subfeatures=False
+        ):
+            feature: feature_controller.FeatureController
+            if costuming := feature.get_costuming():
+                all_costuming = all_costuming.add(costuming)
+        self._costuming = all_costuming
+        return self._costuming
+
+    def issues(self) -> list[Issue]:
+        issues = super().issues()
+        for spellbook in (self.arcane.spellbook, self.divine.spellbook):
+            if not spellbook:
+                continue
+            if excess := spellbook.excess_spells:
+                issues.append(
+                    Issue(
+                        issue_code=f"excess-spells-{spellbook.sphere}",
+                        reason=f"Too many {self.display_name(spellbook.sphere)} spells known ({excess})",
+                    )
+                )
+        return issues
+
     def clear_caches(self):
         super().clear_caches()
         self._features = {}
+        self._costuming = None
         for feature in list(self.features.values()):
             feature.reconcile()
 

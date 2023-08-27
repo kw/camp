@@ -17,11 +17,17 @@ class SphereGrantChoice(choice_controller.GrantChoice):
     at least one of to take the skill).
     """
 
-    def _matches(self, choice: str) -> bool:
+    def _matches(self, choice: str, already_chosen: bool = False) -> bool:
         """In addition to the normal feature match, does the rest of the filtering described above."""
         # Rule 0: The choice must match the normal feature match.
-        if not super()._matches(choice):
+        if not super()._matches(choice, already_chosen=already_chosen):
             return False
+
+        # The following rules only apply at the time when the choice is made. Having a spellcasting
+        # class can invalidate some choices, but only if you have the class at the time the choice
+        # is made.
+        if already_chosen:
+            return True
 
         character = self._feature.character
         feat = character.feature_controller(choice)
@@ -82,7 +88,7 @@ class SphereBonusChoice(choice_controller.ChoiceController):
         to be applied to the sphere. Only available spheres will be checked.
         """
         choices = {}
-        if not self.choices_remaining:
+        if not self.choices_remaining > 0:
             return choices
         controller_data = self.controller_data
         for sphere in sorted(self._feature.character.available_spheres):

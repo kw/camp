@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+
 from pydantic import Field
 
 from .. import base_models
@@ -75,3 +77,24 @@ class FeatureModel(base_models.BaseModel):
 
 class CharacterModel(base_models.CharacterModel):
     features: dict[str, FeatureModel] = Field(default_factory=dict)
+
+
+@dataclasses.dataclass(frozen=True)
+class CostumingData:
+    tags: dict[str, str] = dataclasses.field(default_factory=dict)
+    untagged: set[str] = dataclasses.field(default_factory=set)
+    conflicts: dict[str, set[str]] = dataclasses.field(default_factory=dict)
+
+    def add(self, other: CostumingData) -> CostumingData:
+        untagged = self.untagged | other.untagged
+        tags = self.tags | other.tags
+        conflicts = self.conflicts | other.conflicts
+        new_conflicts = set(self.tags.keys()).intersection(other.tags.keys())
+        for c in new_conflicts:
+            conflict_set = conflicts.get(c) or set()
+            conflict_set = conflict_set | {self.tags[c], other.tags[c]}
+            conflicts[c] = conflict_set
+        return CostumingData(tags=tags, untagged=untagged, conflicts=conflicts)
+
+    def __bool__(self) -> bool:
+        return bool(self.tags or self.untagged)

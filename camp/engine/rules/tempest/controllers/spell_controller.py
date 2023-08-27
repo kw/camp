@@ -11,6 +11,7 @@ from . import feature_controller
 
 class SpellController(feature_controller.FeatureController):
     definition: defs.Spell
+    can_buy_without_parent: bool = True
 
     @property
     def sphere(self) -> Literal["arcane", "divine", None]:

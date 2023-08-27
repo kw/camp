@@ -85,7 +85,7 @@ class AnyOf(BoolExpr):
                 raise TypeError(f"Expression '{expr}' expected to be parsed by now.")
             if rd := expr.evaluate(char):
                 return rd
-            messages.extend(rd.reason or "[unspecified failure reason]")
+            messages.append(rd.reason or "[unspecified failure reason]")
         return Decision(success=False, reason=f"AnyOf({'; '.join(messages)})")
 
     def identifiers(self) -> set[str]:
@@ -192,8 +192,6 @@ class PropExpression(BoolExpr):
             option=self.option,
             prefixes=self.prefixes,
         )
-        if not char.has_prop(expr):
-            return Decision(success=False, reason=f"{self!r} [{expr} not present]")
         ranks = char.get(expr)
         if self.less_than is not None:
             if ranks >= self.less_than:

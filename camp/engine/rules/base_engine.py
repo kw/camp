@@ -329,7 +329,9 @@ class CharacterController(ABC):
     def choose(self, entry: base_models.ChoiceMutation) -> Decision:
         ...
 
-    def meets_requirements(self, requirements: base_models.Requirements) -> Decision:
+    def meets_requirements(
+        self, requirements: base_models.Requirements, prop_id: str | None = None
+    ) -> Decision:
         messages: list[str] = []
         for req in maybe_iter(requirements):
             if isinstance(req, str):
@@ -339,7 +341,13 @@ class CharacterController(ABC):
             if not (rd := req.evaluate(self)):
                 messages.append(rd.reason)
         if messages:
-            messages = ["Not all requirements are met."] + messages
+            if prop_id:
+                header = (
+                    f"Not all requirements are met for {self.display_name(prop_id)}."
+                )
+            else:
+                header = "Not all requirements are met."
+            messages = [header] + messages
         return Decision(
             success=not (messages), reason="\n".join(messages) if messages else None
         )
@@ -640,7 +648,7 @@ class BaseFeatureController(PropertyController):
 
     @property
     def meets_requirements(self) -> Decision:
-        return self.character.meets_requirements(self.definition.requires)
+        return self.character.meets_requirements(self.definition.requires, self.full_id)
 
     @property
     def next_value(self) -> int | None:
@@ -1004,6 +1012,9 @@ class ChoiceController(ABC):
         if self.limit == "unlimited":
             return 999
         return self.limit - len(self.taken_choices())
+
+    def issues(self) -> list[base_models.Issue] | None:
+        return None
 
     @abstractmethod
     def available_choices(self) -> dict[str, str]:

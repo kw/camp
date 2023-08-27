@@ -170,10 +170,16 @@ def feature_view(request, pk, feature_id):
             if success:
                 # If we purchased a feature and it has a choice that can be made,
                 # stay on the feature page. Otherwise, return to the character page.
-                if (
-                    feature_controller.has_available_choices
-                    or feature_controller.subfeatures_available
-                ):
+                stay = False
+                if feature_controller.has_available_choices:
+                    messages.info(request, "Choices are available for this feature.")
+                    stay = True
+                if feature_controller.subfeatures_available:
+                    messages.info(
+                        request, "Purchases are available within this feature."
+                    )
+                    stay = True
+                if stay:
                     return redirect(
                         "character-feature-view", pk=pk, feature_id=feature_id
                     )

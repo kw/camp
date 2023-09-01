@@ -91,13 +91,6 @@
                 <li class="list-group-item">
                     <a href="{% url 'character-feature-view' character.id f.full_id %}">
                         {{ f.feature_list_name }}
-                        {% if f.can_increase %}
-                        ⇧
-                          {% if f.purchase_cost_string %}
-                            ({{ f.purchase_cost_string }})
-                          {% endif %}
-                        {% endif %}
-
                         {% for level, badge in f.badges %}
                         <span class="badge bg-{{level}}">{{badge}}</span>
                         {% endfor %}
@@ -108,13 +101,6 @@
                         <li>
                             <a href="{% url 'character-feature-view' character.id sf.full_id%}">
                                 {{ sf.formal_name }}
-                                {% if sff.can_increase %}
-                                ⇧
-                                  {% if sf.purchase_cost_string %}
-                                    ({{ sf.purchase_cost_string }})
-                                  {% endif %}
-                                {% endif %}
-
                                 {% for level, badge in sf.badges %}
                                 <span class="badge bg-{{level}}">{{badge}}</span>
                                 {% endfor %}

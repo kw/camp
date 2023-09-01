@@ -130,7 +130,19 @@ class FeatureController(base_engine.BaseFeatureController):
 
     @property
     def cost_string(self) -> str | None:
-        return self.purchase_cost_string(cost=self.cost)
+        # Things that cost (or grant) currency should show a cost.
+        if (cost := self.cost) or self.paid_ranks:
+            return self.purchase_cost_string(cost=cost)
+        # Things that don't normally cost a currency may still be on some other budget,
+        # so explicitly call out the ons that are granted.
+        elif (
+            self.value
+            and not self.paid_ranks
+            and not self.cost_def
+            and not self.internal
+        ):
+            return "Granted"
+        return None
 
     @property
     def next_cost(self) -> int:
@@ -295,6 +307,10 @@ class FeatureController(base_engine.BaseFeatureController):
     @property
     def badges(self) -> list[tuple[str, str]] | None:
         badges = super().badges
+
+        if self.can_increase():
+            badges.append(("primary", "⇧"))
+
         if self.unused_bonus:
             badges.append(("success", "Bonus Available"))
         elif (
@@ -308,6 +324,10 @@ class FeatureController(base_engine.BaseFeatureController):
             badges.append(("primary", "Purchases Available"))
         elif self.has_available_choices:
             badges.append(("primary", "Choices Available"))
+
+        if cost := self.cost_string:
+            badges.append(("secondary", cost))
+
         return badges
 
     @property

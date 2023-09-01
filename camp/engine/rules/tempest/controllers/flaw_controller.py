@@ -161,7 +161,15 @@ class FlawController(feature_controller.FeatureController):
         self.reconcile()
         return Decision.OK
 
+    @property
+    def cost_string(self) -> str | None:
+        if (cost := self.award_cp) or self.paid_ranks:
+            return self.purchase_cost_string(cost=cost)
+        return None
+
     def purchase_cost_string(self, ranks: int = 1, cost: int | None = None) -> str:
+        if cost is not None:
+            return f"+{cost} CP"
         match self.definition.award:
             case int():
                 return f"+{self.definition.award} CP"

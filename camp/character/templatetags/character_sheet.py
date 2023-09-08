@@ -16,11 +16,31 @@ from camp.engine.rules.base_engine import PropertyController
 register = template.Library()
 
 
+class _StripOuterP(md.postprocessors.Postprocessor):
+    def run(self, text) -> str:
+        if text.startswith("<p>"):
+            return text[3:-4]
+        return text
+
+
+class _Extension(md.extensions.Extension):
+    def extendMarkdown(self, md):
+        # Register instance of 'mypattern' with a priority of 175
+        md.registerExtension(self)
+        md.postprocessors.register(_StripOuterP(md), "stripouterp", 175)
+
+
+_MD = md.Markdown(
+    output="html",
+    extensions=["tables", "smarty", _Extension()],
+)
+
+
 @register.filter()
 @mark_safe
 @stringfilter
 def markdown(value):
-    return nh3.clean(md.markdown(value, extensions=["tables", "smarty"]))
+    return nh3.clean(_MD.convert(value))
 
 
 @register.simple_tag(takes_context=True)

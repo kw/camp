@@ -64,9 +64,7 @@
 {% endif %}
 
 
-{% if feature.description %}
-<p>{{ feature.description | markdown }}</p>
-{% endif %}
+{% include "character/card_snippet.html" with card=feature.power_card %}
 
 {% if explain_ranks %}
 <h3>Details</h3>

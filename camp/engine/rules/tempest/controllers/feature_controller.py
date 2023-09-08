@@ -145,6 +145,18 @@ class FeatureController(base_engine.BaseFeatureController):
         return None
 
     @property
+    def power_card(self) -> defs.PowerCard | None:
+        return self.definition
+
+    @property
+    def sub_cards(self) -> list[defs.PowerCard]:
+        if isinstance(self.definition.subcard, list):
+            return list(self.definition.subcard)
+        elif self.definition.subcard:
+            return self.definition.subcard
+        return []
+
+    @property
     def next_cost(self) -> int:
         if self.unused_bonus > 0:
             return 0

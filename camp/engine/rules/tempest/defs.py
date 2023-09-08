@@ -133,6 +133,18 @@ class PowerCard(base_models.BaseModel):
     effect: str | None = None
     description: str | None = None
 
+    def should_format_as_card(self) -> bool:
+        return (
+            self.incant
+            or self.call
+            or self.accent
+            or self.target
+            or self.duration
+            or self.delivery
+            or self.refresh
+            or self.effect
+        )
+
 
 class ChildPurchaseDef(base_models.BaseModel):
     basis: str | None = None

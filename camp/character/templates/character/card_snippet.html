@@ -1,0 +1,39 @@
+{% load character_sheet %}
+{% load rules %}
+
+<div class="card">
+    <div class="card-body">
+        {% if card.name %}
+        <h5 class="card-title">{{card.name | markdown}}</h5>
+        {% endif %}
+
+        {% if card.should_format_as_card %}
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td colspan="2"><span class="card-text"><strong>Incantation:</strong> {{card.incant | markdown}}</span>
+                </tr>
+                <tr>
+                    <td colspan="2"><strong>Call:</strong> {{card.call | markdown}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Target:</strong> {{card.target | markdown}}</td>
+                    <td><strong>Duration:</strong> {{card.duration | markdown}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Delivery:</strong> {{card.delivery | markdown}}</td>
+                    <td><strong>Refresh:</strong> {{card.refresh | markdown}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Accent:</strong> {{card.accent | markdown}}</td>
+                    <td><strong>Effect:</strong> {{card.effect | markdown}}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if card.description %}
+        <p class="card-text">{{card.description | markdown}}</p>
+        {% endif %}
+    </div>
+</div>

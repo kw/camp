@@ -8,7 +8,7 @@ requires:
 description: |
   > _“The Manifold Path is a long and winding road, full of twists and turns, and prone to encouraging conflict around those who walk it. However, for those who are truly faithful, aid will ever be present for those who do not walk alone.”_
 subcard:
-  name: The Other Path [Devotion][Adept]
+  name: The Other Path [Devotion] [Adept]
   incant: “I call my faith, divine and right, I wield and shape creation’s light. I draw my strength from sky and land. Gather now within my hand to walk the road less trodden.”
   call: “Cure [Condition] and Grant Protect vs Packets by [Chosen Accent]”
   target: Two Individuals

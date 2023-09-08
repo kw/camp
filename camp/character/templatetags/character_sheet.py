@@ -12,22 +12,14 @@ from django.utils.safestring import mark_safe
 
 from camp.engine.rules.base_engine import CharacterController
 from camp.engine.rules.base_engine import PropertyController
+from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 
 register = template.Library()
 
 
-class _StripOuterP(md.postprocessors.Postprocessor):
-    def run(self, text) -> str:
-        if text.startswith("<p>"):
-            return text[3:-4]
-        return text
-
-
 class _Extension(md.extensions.Extension):
     def extendMarkdown(self, md):
-        # Register instance of 'mypattern' with a priority of 175
         md.registerExtension(self)
-        md.postprocessors.register(_StripOuterP(md), "stripouterp", 175)
 
 
 _MD = md.Markdown(
@@ -76,6 +68,17 @@ def subcon(
     if not controller:
         raise ValueError("No controller specified and no controller found in context.")
     return controller.controller(expr)
+
+
+@register.simple_tag()
+def name_without_tags(feature: FeatureController, *tags):
+    tag_set = set()
+    for t in tags:
+        if isinstance(t, set):
+            tag_set |= t
+        else:
+            tag_set.add(t)
+    return feature.name_with_tags(exclude_tags=tag_set)
 
 
 _T = TypeVar("_T")

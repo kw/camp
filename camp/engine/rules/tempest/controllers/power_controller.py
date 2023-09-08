@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import Any
 
 from camp.engine.rules.decision import Decision
@@ -60,25 +61,16 @@ class PowerController(feature_controller.FeatureController):
     def formal_name(self) -> str:
         return f"{self.display_name()} [{self.type_name}]"
 
-    @property
-    def feature_list_name(self) -> str:
-        """Used in contexts where the type of the feature can be assumed, such as the main feature type lists on the character display.
-
-        Subclasses may still add more details. For example, in a giant list of spells, it's likely still useful to note the class and tier.
-        """
-        if tier := self.tier_name:
-            if self.parent:
-                return f"{self.display_name()} [{tier} {self.parent.display_name()}]"
-            return f"{self.display_name()} [{tier}]"
-        return super().feature_list_name
+    @cached_property
+    def tags(self) -> set[str]:
+        tags = super().tags
+        if self.tier:
+            return tags | {self.tier_name}
+        return tags
 
     @property
-    def type_name(self) -> str:
-        if tier := self.tier_name:
-            if self.parent:
-                return f"{self.parent.display_name()} {tier} Power"
-            return tier
-        return super().formal_name
+    def category_tags(self) -> set[str]:
+        return super().category_tags | {self.tier_name}
 
     @property
     def tier_name(self) -> str | None:

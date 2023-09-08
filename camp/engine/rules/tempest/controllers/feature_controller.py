@@ -91,17 +91,7 @@ class FeatureController(base_engine.BaseFeatureController):
         This is typically used in places where features of different types and sources might be comingled in the same list,
         such as the list of internal features for a class.
         """
-        return f"{self.display_name()} [{self.type_name}]"
-
-    @cached_property
-    def tag_names(self) -> list[str]:
-        names = []
-        for tag in self.tags:
-            tag_name = self.character.ruleset.tags.get(tag, None)
-            if tag_name:
-                names.append(tag_name)
-        names.sort()
-        return names
+        return f"{self.name_with_tags()} [{self.type_name}]"
 
     @property
     def feature_list_name(self) -> str:
@@ -109,9 +99,7 @@ class FeatureController(base_engine.BaseFeatureController):
 
         Subclasses may still add more details. For example, in a giant list of spells, it's likely still useful to note the class and tier.
         """
-        if self.parent:
-            return f"{super().feature_list_name} [{self.parent.display_name()}]"
-        return f"{super().feature_list_name}"
+        return self.name_with_tags()
 
     @property
     def taken_options(self) -> dict[str, int]:
@@ -144,16 +132,45 @@ class FeatureController(base_engine.BaseFeatureController):
             return "Granted"
         return None
 
-    @property
-    def power_card(self) -> defs.PowerCard | None:
-        return self.definition
+    @cached_property
+    def tags(self) -> set[str]:
+        tags = super().tags
+        if self.feature_type != "subfeature":
+            tags = tags | {self.feature_type}
+        else:
+            tags = tags | {self.type_name}
+        if self.parent:
+            return tags | {self.parent.id}
+        return tags
 
-    @property
+    def name_with_tags(self, exclude_tags: set[str] | None = None) -> str:
+        if tags := self.render_tags(exclude_tags=exclude_tags):
+            return f"{super().feature_list_name} {tags}"
+        else:
+            return super().feature_list_name
+
+    def power_card(self) -> defs.PowerCard | None:
+        return self.definition.model_copy(update={"name": self.feature_list_name})
+
+    def render_tags(self, exclude_tags: set[str] | None = None) -> str:
+        tags = self.tags
+        if exclude_tags:
+            tags = tags - exclude_tags
+        out: list[str] = []
+        for tag in tags:
+            if tag.islower():
+                if name := self.character.tag_name(tag):
+                    out.append(f"[{name}]")
+            else:
+                out.append(f"[{tag}]")
+        out.sort()
+        return " ".join(out)
+
     def sub_cards(self) -> list[defs.PowerCard]:
         if isinstance(self.definition.subcard, list):
             return list(self.definition.subcard)
         elif self.definition.subcard:
-            return self.definition.subcard
+            return [self.definition.subcard]
         return []
 
     @property
@@ -393,6 +410,13 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.model.plot_suppressed:
             return 0
         return self._effective_ranks
+
+    @property
+    def category_tags(self) -> set[str]:
+        tags = super().category_tags | {self.feature_type}
+        if self.parent:
+            tags.add(self.parent.id)
+        return tags
 
     @property
     def max_value(self) -> int:

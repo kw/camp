@@ -5,20 +5,6 @@
 
 {% block content %}
 
-<h2>{{ feature.formal_name }}
-    {% if feature.can_increase and feature.purchase_cost_string %} ({{ feature.purchase_cost_string }}){% endif %}
-    {% if feature.category %}
-    <p class="fw-lighter fs-5">{{ feature.category }}</p>
-    {% endif %}
-    {% if feature.tag_names %}
-    <p class="fw-lighter fs-5">{{ feature.tag_names | join:", " }}</p>
-    {% endif %}
-</h2>
-
-{% if feature.parent %}
-<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
-{% endif %}
-
 {% if issues %}
 <!-- Issues -->
 <ul class="list-group">
@@ -34,6 +20,12 @@
     {% endif %}
     {% endfor %}
 </ul>
+{% endif %}
+
+{% include "character/card_snippet.html" with card=feature.power_card subcards=feature.sub_cards %}
+
+{% if feature.parent %}
+<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
 {% endif %}
 
 {% if purchase_form %}
@@ -62,9 +54,6 @@
 <p>You can not currently purchase this because:</p>
 <p>{{ no_purchase_reason | markdown }}</p>
 {% endif %}
-
-
-{% include "character/card_snippet.html" with card=feature.power_card %}
 
 {% if explain_ranks %}
 <h3>Details</h3>
@@ -140,7 +129,7 @@
     {% for f in subfeatures %}
     <li class="list-group-item">
         <a href="{% url 'character-feature-view' character.id f.full_id %}">
-            {{ f.formal_name }}
+            {% name_without_tags f feature.id %}
             {% for level, badge in f.badges %}
             <span class="badge bg-{{level}}">{{badge}}</span>
             {% endfor %}
@@ -151,7 +140,7 @@
             {% for sf in f.subfeatures %}
             <li>
                 <a href="{% url 'character-feature-view' character.id sf.full_id%}">
-                    {{ sf.formal_name }}
+                    {% name_without_tags sf f.id %}
                     {% for level, badge in sf.badges %}
                     <span class="badge bg-{{level}}">{{badge}}</span>
                     {% endfor %}
@@ -176,7 +165,7 @@
         {% for f in group.available %}
             <li class="list-group-item">
                 <a href="{% url 'character-feature-view' character.id f.full_id%}">
-                    {{ f }}
+                    {% name_without_tags f feature.id group.type %}
                     {% if f.purchase_cost_string %}
                     ({{ f.purchase_cost_string }})
                     {% endif %}
@@ -204,7 +193,7 @@
                     {% for f in available %}
                     <li class="list-group-item">
                         <a href="{% url 'character-feature-view' character.id f.full_id%}">
-                            {{ f.formal_name }}
+                            {% name_without_tags f feature.id group.type %}
                             {% if f.purchase_cost_string %}
                             ({{ f.purchase_cost_string }})
                             {% endif %}

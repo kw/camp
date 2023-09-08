@@ -69,6 +69,9 @@ class CharacterController(ABC):
         """Returns a copy of the current model."""
         return self.model.model_copy(deep=True)
 
+    def tag_name(self, tag: str) -> str | None:
+        return tag.replace("_", " ").title()
+
     def display_name(self, id: str, use_abbrev: bool = False) -> str:
         """Returns the display name of the given property."""
         if use_abbrev and (abbrev := self.ruleset.abbreviated_name(id)):
@@ -622,7 +625,7 @@ class BaseFeatureController(PropertyController):
             return None
         return self.character.feature_controller(self.definition.parent)
 
-    @property
+    @cached_property
     def tags(self) -> set[str]:
         return self.definition.tags
 
@@ -739,6 +742,10 @@ class BaseFeatureController(PropertyController):
     @property
     def category_priority(self) -> float:
         return self.definition.category_priority
+
+    @property
+    def category_tags(self) -> set[str]:
+        return set()
 
     @property
     def is_concrete(self) -> bool:

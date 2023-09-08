@@ -285,12 +285,12 @@ class TempestCharacter(base_engine.CharacterController):
         """The number of spell slots total or at a paritcular tier."""
         slot = int(expr.slot) if (expr and expr.slot is not None) else None
         count = 0
-        for clazz in self.classes:
+        for sphere in ["arcane", "divine"]:
             if slot is not None:
-                count += self.get(f"{clazz.full_id}.spell_slots@{slot}")
+                count += self.get(f"{sphere}.spell_slots@{slot}")
             else:
-                count += self.get(f"{clazz.full_id}.spell_slots")
-        return 0
+                count += self.get(f"{sphere}.spell_slots")
+        return count
 
     @property
     def martial_powers(self) -> list[power_controller.PowerController]:
@@ -426,9 +426,14 @@ class TempestCharacter(base_engine.CharacterController):
             )
         return spheres
 
+    def tag_name(self, tag: str) -> str | None:
+        if tag in self.ruleset.tags:
+            return self.ruleset.tags[tag]
+        if tag.islower():
+            return self.display_name(tag)
+        return tag
+
     def display_name(self, expr: str, use_abbrev: bool = False) -> str:
-        if tag_name := self.ruleset.tags.get(expr):
-            return tag_name
         return super().display_name(expr, use_abbrev)
 
     def _new_controller(self, id: str) -> feature_controller.FeatureController:

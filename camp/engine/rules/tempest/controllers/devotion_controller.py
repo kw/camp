@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import cast
 
 from camp.engine.rules.decision import Decision
@@ -12,17 +13,9 @@ class DevotionController(feature_controller.FeatureController):
     definition: defs.DevotionPower
     currency: str = "cp"
 
-    @property
-    def type_name(self) -> str:
-        return f"{self.level.title()} Religion Power"
-
-    @property
-    def formal_name(self) -> str:
-        return f"{self.display_name()} [{self.type_name}]"
-
-    @property
-    def feature_list_name(self) -> str:
-        return self.formal_name
+    @cached_property
+    def tags(self) -> set[str]:
+        return super().tags | {self.level}
 
     @property
     def level(self) -> str:

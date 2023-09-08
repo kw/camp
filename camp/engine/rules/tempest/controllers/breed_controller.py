@@ -230,11 +230,12 @@ class BreedAdvantageController(feature_controller.FeatureController):
             return "bp-primary"
         return "bp-secondary"
 
-    @property
-    def type_name(self) -> str:
-        if sb := self.subbreed:
-            return f"{sb.display_name()} Advantage"
-        return f"{self.parent.display_name()} Advantage"
+    @cached_property
+    def tags(self) -> set[str]:
+        tags = super().tags
+        if self.subbreed_id:
+            return tags | {self.subbreed_id}
+        return tags
 
     @property
     def subbreed_id(self) -> str | None:
@@ -283,11 +284,12 @@ class BreedChallengeController(feature_controller.FeatureController):
     def subbreed_id(self) -> str | None:
         return self.definition.subbreed
 
-    @property
-    def type_name(self) -> str:
-        if sb := self.subbreed:
-            return f"{sb.display_name()} Challenge"
-        return f"{self.parent.display_name()} Challenge"
+    @cached_property
+    def tags(self) -> set[str]:
+        tags = super().tags
+        if self.subbreed_id:
+            return tags | {self.subbreed_id}
+        return tags
 
     @property
     def subbreed(self) -> feature_controller.FeatureController | None:

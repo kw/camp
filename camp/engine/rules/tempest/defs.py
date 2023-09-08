@@ -331,7 +331,7 @@ class BreedChallenge(BaseFeatureDef):
 
     @classmethod
     def default_name(cls) -> str:
-        return "Breed Challenge"
+        return "Challenge"
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
@@ -356,7 +356,7 @@ class BreedAdvantage(BaseFeatureDef):
 
     @classmethod
     def default_name(cls) -> str:
-        return "Breed Advantage"
+        return "Advantage"
 
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)

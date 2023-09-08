@@ -4,29 +4,30 @@
 <div class="card">
     <div class="card-body">
         {% if card.name %}
-        <h5 class="card-title">{{card.name | markdown}}</h5>
+        <h3 class="card-title">{{card.name | markdown}}</h3>
+
         {% endif %}
 
         {% if card.should_format_as_card %}
-        <table class="table">
+        <table class="table table-striped table-responsive">
             <tbody>
                 <tr>
-                    <td colspan="2"><span class="card-text"><strong>Incantation:</strong> {{card.incant | markdown}}</span>
+                    <td colspan="2"><span class="card-text"><strong>Incantation:</strong> {{card.incant}}</span>
                 </tr>
                 <tr>
-                    <td colspan="2"><strong>Call:</strong> {{card.call | markdown}}</td>
+                    <td colspan="2"><strong>Call:</strong> {{card.call}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Target:</strong> {{card.target | markdown}}</td>
-                    <td><strong>Duration:</strong> {{card.duration | markdown}}</td>
+                    <td><strong>Target:</strong> {{card.target}}</td>
+                    <td><strong>Duration:</strong> {{card.duration}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Delivery:</strong> {{card.delivery | markdown}}</td>
-                    <td><strong>Refresh:</strong> {{card.refresh | markdown}}</td>
+                    <td><strong>Delivery:</strong> {{card.delivery}}</td>
+                    <td><strong>Refresh:</strong> {{card.refresh}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Accent:</strong> {{card.accent | markdown}}</td>
-                    <td><strong>Effect:</strong> {{card.effect | markdown}}</td>
+                    <td><strong>Accent:</strong> {{card.accent}}</td>
+                    <td><strong>Effect:</strong> {{card.effect}}</td>
                 </tr>
             </tbody>
         </table>
@@ -35,5 +36,9 @@
         {% if card.description %}
         <p class="card-text">{{card.description | markdown}}</p>
         {% endif %}
+
+        {% for sc in subcards %}
+        {% include "character/card_snippet.html" with card=sc only %}
+        {% endfor %}
     </div>
 </div>

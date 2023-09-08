@@ -8,7 +8,7 @@ requires:
 description: |
   > _In all places that the fetid things may crawl, from the barren, sifting sands of the ruins of the Bazaar of Khettash, to the frozen lands far, far away, the shepherd’s crook of the Pharaoh is waiting to cull those who would tarnish his ideals. He extends his strength to his most faithful, that they may serve as his flail and crook._
 subcard:
-  name: Pharaoh's Lash [Devotion][Cantrip]
+  name: Pharaoh's Lash [Devotion] [Cantrip]
   incant: “I call my faith, divine and right, I wield and shape the Pharaoh's might.I draw His strength from forgotten sand, it gathers now within my hand. Free this soul from its fleshen cage, consign it now to the Pharaoh's stage.“
   call: “Death to Helpless by Darkness, Shatter to Corpse”
   target: Individual

@@ -245,6 +245,15 @@ tags:
   rising-sun: Rising Sun
   waning-moon: Waning Moon
   beast-shape: Beast Shape
+  # Power/spell tiers
+  basic: Basic
+  novice: Novice
+  advanced: Advanced
+  adept: Adept
+  greater: Greater
+  veteran: Veteran
+  champion: Champion
+  master: Master
   # Special Patron tag that excludes a perk from being taken with Patron.
   no-patron: null
 

@@ -1,0 +1,11 @@
+name: Bowyer
+incant: Focus Quick 100
+call: '“Rebuild: [Projectile Weapon] by Force”'
+target: Projectile Weapon
+delivery: RP
+accent: Force
+duration: Instantaneous
+refresh: Immediate
+effect: 'Rebuild: [Projectile Weapon]'
+description: |
+  The Fighter can spend a Focus Quick 100 Rebuilding a projectile weapon (such as a bow or crossbow) that has been Shattered.

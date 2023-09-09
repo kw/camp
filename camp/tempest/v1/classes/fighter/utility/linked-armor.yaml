@@ -1,0 +1,17 @@
+name: Linked Armor
+requires: light-armor
+grants: medium-armor
+description: |
+  The Fighter gains Medium Armor (4) as a bonus skill, as well as the Links of Steel power below:
+subcard:
+  name: Links of Steel
+  incant: RP
+  call: "Grant 1 Barrier"
+  target: Self
+  delivery: None
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Grant Barrier
+  description: |
+    As long as the character is physically representing and using at least five points of physical armor, the character may Grant 1 Barrier to Self at the end of each Short Rest after roleplaying patching her own armor.

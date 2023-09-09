@@ -1,0 +1,18 @@
+name: Renowned Soldier
+grants:
+  - minor-fame
+  - profession-apprentice
+description: |
+  The Fighter gains Minor Fame (1) and the Apprentice Profession (1) as bonus skills. The character may choose a Profession suitable to describe their particular niche, but should reflect the actualities of being from a military background, examples include: Soldier, Mercenary, Gladiator, and Bounty Hunter. In addition, they gain the Steadfast ability below:
+subcard:
+  name: Steadfast
+  incant: None
+  call: Resist
+  target: Self
+  delivery: None
+  accent: Will
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Resistance
+  description: |
+    Having seen the worst that war has to offer, there’s little that can truly shake your will. The fighter may resist one Effect with the Fear Accent.

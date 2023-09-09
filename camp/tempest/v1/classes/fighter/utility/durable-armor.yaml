@@ -1,0 +1,18 @@
+name: Durable Armor
+tags: [reinforce]
+requires: medium-armor
+grants: heavy-armor
+description: |
+  The Fighter gains Heavy Armor (3) as a bonus skill and the Scales of the Serpent power below:
+subcard:
+  name: Scales of the Serpent [Reinforce]
+  incant: None
+  call: "Resist"
+  target: Self
+  delivery: None
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Resist
+  description: |
+    The flexibility of Heavy armor is often overlooked, but veterans used to wearing these sorts of armor know that each scale is part of a whole, greater than its pieces. As long as the character is physically representing and using at least seven points of physical armor, and has at least one point of armor remaining, they may, once per Short Rest, choose to Resist one Wounding attack.

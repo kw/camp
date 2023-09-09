@@ -1,0 +1,11 @@
+name: Hammer Down
+incant: None
+call: '"Shatter [Item] by Force"'
+target: Individual
+delivery: Melee Weapon
+accent: Force
+duration: Instantaneous
+refresh: Short Rest
+effect: Shatter
+description: |
+  Many fighters find that a good solid shield is the key to a sturdy defense. However, it can become a liability once destroyed, leaving the warrior both unbalanced and scrambling. The Fighter may call “Shatter [Item] by Force” once per Short Rest. If the Fighter is wielding a Great Weapon and no other weapons or shields, they may immediately Refresh this power, once per Short Rest, by expending a Spike.

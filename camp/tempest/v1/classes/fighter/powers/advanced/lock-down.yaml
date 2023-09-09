@@ -1,0 +1,12 @@
+name: Lock Down
+ranks: 2
+incant: None
+call: '“Quick Root”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Quick 100
+refresh: Short Rest
+effect: Root
+description: |
+  The Fighter can make melee attacks that Root those she hits. As long as she keeps her right foot planted, as if rooted, she can swing “Quick Root” at-will.

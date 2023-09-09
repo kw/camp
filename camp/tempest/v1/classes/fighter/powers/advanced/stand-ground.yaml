@@ -1,0 +1,12 @@
+name: Stand Ground
+tags: [reinforce]
+incant: None
+call: Resist
+target: Self
+delivery: None
+accent: Will
+duration: Instantaneous
+refresh: Short Rest
+effect: Resist
+description: |
+  Boots firmly digging into the dirt, the Fighter is adept at staying in the fray and may Resist one Repel, Slow, or Root per Short Rest.

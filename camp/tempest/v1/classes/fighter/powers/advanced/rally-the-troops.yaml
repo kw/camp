@@ -1,0 +1,14 @@
+name: Rally the Troops
+ranks: 2
+incant: About 15 seconds of encouraging RP
+call: '“[Name or Description] Refresh One Spike and Grant 2 Barrier by Will”'
+target: Individual (Not Self)
+delivery: Verbal
+accent: Will
+duration: Instantaneous
+refresh: Short Rest
+effect: Refresh, Grant Barrier
+description: |
+  Shouting a few words of encouragement, tactics, or sometimes even a simple _"look out behind you"_, the Fighter encourages one of their comrades to greatness. The Fighter must provide instruction and encouragement to an ally for a Quick 30 and should then follow it with the call immediately to provide one individual a Refreshed Spike and 2 Barrier by Will. The Fighter may not target themselves with this ability.
+
+  This instruction and encouragement may be tactical in nature, for example: _"Valifar, shift left. Okay, now with me. Good. Now we push around the flank. Nice."_ would be an acceptable type of RP to engage in as long as it is a Quick 30 in duration.

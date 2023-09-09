@@ -1,0 +1,11 @@
+name: Reload
+incant: None
+call: '“Insubstantial to self”, “Dispel Insubstantial to self”'
+target: Self
+delivery: None
+accent: None
+duration: Special
+refresh: Short Rest
+effect: Grant Insubstantial, Cure Insubstantial
+description: |
+  The Fighter can only use this ability after moving off to a location removed from combat. She then goes _insubstantial_ and can return to the battle and collect projectile ammunition or thrown weapons. Once she has collected a maximum of six, she must return to her original location and Cure her insubstantial Condition by calling "Cure Insubstantial". While _insubstantial_ the fighter can do nothing besides collect projectile ammunition or thrown weapons and return.

@@ -1,0 +1,12 @@
+name: Fighting Instructor
+requires: fighter:3
+incant: 'RP: Slow 300 Instruction a character in how to use the weapon.'
+call: "Long Grant [Skill]"
+target: Other Individual
+delivery: Touch
+accent: Will
+duration: Long Rest
+refresh: Long Rest
+effect: Grant Skill
+description: |
+  After spending at least 5 uninterrupted minutes instructing another character in how to fight using specific weapons or styles, the Instructor may grant the target a temporary Skill. Regardless of the Instructor's own skills, they may grant the following Skills to the target until their next Long Rest: Basic Martial Weapons, Short Weapons, Great Weapons, Projectile Weapons, Thrown Weapons, Basic Shields, Advanced Shields, or Two Weapon Style. If the Instructor has proficiency with Long Weapons or Great Shields, they may teach one of those instead. However, any given target can only benefit from this Power once per event.

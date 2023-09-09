@@ -1,0 +1,7 @@
+name: Primary Training
+requires: fighter:2
+grants:
+  - fighter.powers@1:1
+  - fighter.utilities:1
+description: |
+  The Fighter gains an additional Utility Power and Basic Power from the Fighter Class Powers.

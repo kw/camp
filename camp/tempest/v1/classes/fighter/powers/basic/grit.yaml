@@ -1,0 +1,12 @@
+name: Grit
+tags: [reinforce]
+incant: None
+call: '“Counter, Grit”'
+target: One Damaging Packet
+delivery: None
+accent: Will
+duration: Instantaneous, Quick 100
+refresh: Short Rest
+effect: Counter, Drain
+description: |
+  The Fighter, through pure dedication, toughness, or sometimes concentrated hatred, can Counter one damaging Packet. Using this ability will leave the Fighter drained for a Quick 100 as she shakes off the devastating damage, however, the Fighter may also expend a Spike and Sacrifice one Life Point to Counter the Drain Effect if they choose.

@@ -1,0 +1,12 @@
+name: Deadly Remnants
+requires: fighter:2
+incant: None
+call: "Deadly Remnant"
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: Special
+description: |
+  The Fighter can use _shattered_ weapons to block and do 1 point of damage. Using a shattered weapon will never do more than 1 point, regardless of other modifiers and enhancements. When a Shatter is taken to a wielded weapon that the Fighter will continue to use with this Power, they should call “Deadly Remnant,” to convey that the Shatter was taken, and altered. In addition, when picking up a shield from the ground that the character does not know the status of, she can treat the shield as if it had 1 shield-point.

@@ -1,0 +1,18 @@
+name: Death's Right Hand
+grants:
+  - hard-to-kill
+  - carnal-creature
+description: |
+  The Fighter gains Hard to Kill (1) and Carnal Creature (1), as well as the Execute Ability:
+subcard:
+  name: Execute
+  incant: None
+  call: Death to Helpless
+  target: Helpless Individual
+  delivery: Weapon
+  accent: None
+  duration: Instantaneous
+  refresh: Immediate
+  effect: Death
+  description: |
+    Instead of doing a Death Blow, the character can instead use Execute to instantly kill a Helpless creature.

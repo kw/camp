@@ -1,0 +1,11 @@
+name: Shoulder
+incant: None
+call: '"Shatter [Target]" or “Shatter [Target] Final”'
+target: Door, Wall, or other obstacle
+duration: Instantaneous
+delivery: RP
+refresh: Short Rest
+accent: None
+effect: Shatter
+description: |
+  By taking a running start and putting her shoulder into a door, wall, or other immobile object, the Fighter can cause a Shatter Effect against it by force of pure strength. Care should be taken by the player not to damage any actual property. If the Fighter is Strengthened while using this skill, the call becomes “Shatter [Target] Final.”

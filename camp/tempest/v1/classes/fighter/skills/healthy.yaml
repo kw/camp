@@ -1,0 +1,14 @@
+name: Healthy
+cost: 3
+requires: fighter:6
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: Grant Maximum Life Points
+grants: lp:1
+description: |
+  The Fighter’s health is paramount, and there are those who take it as a matter of personal pride. The Fighter’s Maximum Life Points is increased by one. This is a Base change, and does not interact with Stacking rules.

@@ -1,0 +1,13 @@
+name: Patchwork Defense
+tags: [reinforce]
+requires: parry-blow
+incant: None
+call: '“Refresh Parry Blow”'
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Long Rest
+effect: Refresh
+description: |
+  Once per Long Rest, after having their physical armor repaired with a Patch Kit, the Fighter may refresh Parry Blow.

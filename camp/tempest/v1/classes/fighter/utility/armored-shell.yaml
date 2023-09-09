@@ -1,0 +1,12 @@
+name: Armored Shell
+requires: light-armor
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Passive
+refresh: None
+effect: Grant Plus Armor
+description: |
+  Whenever the Fighter is physically representing and using at least 4 Armor Points of physical armor, she is Granted +1 Armor, increasing her Maximum Armor Points.

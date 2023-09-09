@@ -1,0 +1,11 @@
+name: Practiced Strength
+incant: Focus Quick 100
+call: Short Strength by Will to Self
+target: Self
+delivery: None
+accent: Will
+duration: Short Rest
+refresh: Long Rest
+effect: Strength
+description: |
+  By spending a Focus Quick 100 concentrating, the Fighter can boost her strength for a short while, gaining the strengthened Condition.

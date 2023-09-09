@@ -1,0 +1,13 @@
+name: Challenging Shout
+incant: None
+call: '"[Name or Description] Taunt 3 by Will"'
+target: Individual
+delivery: Verbal
+accent: Will
+duration: Short Rest
+refresh: Short Rest
+effect: Taunt
+description: |
+  The Fighter might not always be able to reach ranged combatants with their blades, but their words can sometimes assault a heart even from far away. After being hit by an Attack, Effect, or Damaging Power, anytime before the Fighter’s next short rest, the Fighter can verbally deliver a “Taunt 3 by Will” to the source of that Attack, Effect, or Damaging Power.
+
+  If the fighter expends a Spike this power refreshes immediately.

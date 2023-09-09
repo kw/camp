@@ -1,0 +1,12 @@
+name: Parry Blow
+requires: fighter:2
+incant: None
+call: "Counter, Parry"
+target: One Melee Attack
+delivery: None
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Counter
+description: |
+  While wielding a weapon or shield, a character may use Parry Blow to Counter any weapon delivered attack, by calling “Counter, Parry.”

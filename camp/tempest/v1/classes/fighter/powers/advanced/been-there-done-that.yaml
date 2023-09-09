@@ -1,0 +1,11 @@
+name: Been There, Done That
+incant: None
+call: '“Resist”'
+target: Self
+delivery: None
+accent: Will
+duration: Instantaneous
+refresh: Long Rest
+effect: Resistance
+description: |
+  Once per Long Rest, when hit by the same Effect twice by the same foe that isn’t a basic damage attack, you may call out ”Resist” and act as if you had resistance to that effect once. The Fighter may use this ability even if the first Effect was Prevented, Countered, Resisted, or otherwise altered.

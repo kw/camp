@@ -1,0 +1,11 @@
+name: Skewer
+incant: None
+call: '“Short Disable [Limb]”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Short Rest
+refresh: Short Rest
+effect: Disable
+description: |
+  While wielding a projectile weapon, the fighter may target her opponent’s equipment, forcing them to drop it. The archer may expend a Spike to immediately refresh this power.

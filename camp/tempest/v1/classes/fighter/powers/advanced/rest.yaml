@@ -1,0 +1,11 @@
+name: Rest
+incant: None
+call: '“Grant Resistance to Death and Deathblows to Self by Will”, “Heal 1 to Self by Will”'
+target: Self
+delivery: None
+accent: Will
+duration: Special
+refresh: Long Rest
+effect: Grant, Heal
+description: |
+  Once per Long Rest, the character may choose to activate this power while Dying. When activated, the character, while dying, gains _resistance_ to Death Blows and Death Effects. In addition, after the character has been _dying_ for a Slow Count of 120, she may heal herself for 1 Life Point. The character need not be conscious to use this Power.

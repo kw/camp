@@ -245,7 +245,10 @@ tags:
   rising-sun: Rising Sun
   waning-moon: Waning Moon
   beast-shape: Beast Shape
+  # Fighter tags
+  reinforce: Reinforce
   # Power/spell tiers
+  bonus: Bonus
   basic: Basic
   novice: Novice
   advanced: Advanced

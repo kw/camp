@@ -1,0 +1,11 @@
+name: Throat Shot
+incant: None
+call: '“Short Silence”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Short Rest
+refresh: Short Rest
+effect: Silence
+description: |
+  The fighter strikes the target with skill and precision, disrupting their ability to speak. This Silence lasts until the creature Short Rests. The strike should not actually target the player’s throat.

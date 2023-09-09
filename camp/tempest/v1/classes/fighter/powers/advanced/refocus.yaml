@@ -1,0 +1,11 @@
+name: Refocus
+incant: Focus Quick 100
+call: '“Refresh All Spikes to Self by Will”'
+target: Self
+delivery: None
+accent: Will
+duration: Instantaneous
+refresh: Long Rest
+effect: Refresh
+description: |
+  The Fighter refreshes all of her Spikes to their maximum number.

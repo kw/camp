@@ -1,0 +1,12 @@
+name: Snap Shot
+ranks: 2
+incant: None
+call: '“[Name or Description] Quick Root”'
+target: Individual
+delivery: Verbal
+accent: None
+duration: Quick 100
+refresh: Short Rest
+effect: Root
+description: |
+  While wielding a projectile weapon, the fighter may fire a quick shot to pin a foe to the ground. The attack is so quick that many people don't see them even draw the string. The call for this effect is “[Name or description], Quick Root.”

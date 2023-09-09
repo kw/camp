@@ -1,0 +1,11 @@
+name: Archer's Eye
+incant: None
+call: '“Wounding [X]”'
+target: Individual
+delivery: Weapon
+accent: None
+duration: Special, Short Rest
+refresh: Long Rest
+effect: Wounding
+description: |
+  Once activated, the Fighter can continue to use this power until they take a Short Rest. At will, the Fighter, while using a projectile weapon, may choose to aim for a Quick Count of 30, rather than a Quick count of 10, and add the Wounding Effect to her shot. This effect cannot alter the calls of other Powers. This power ends when the archer takes a Short Rest or the combat ends.

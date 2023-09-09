@@ -1,0 +1,11 @@
+name: Shake it Off I
+incant: 'RP: Loud Bellow or Yell'
+call: '“Reduce”'
+target: Self
+delivery: None
+accent: Will
+duration: Instantaneous
+refresh: Short Rest
+effect: Special
+description: |
+  The Fighter can reduce one Effect with a duration of “Quick 100” or “Short” to a Quick 30. When the duration ends, the character must let out a bellow, yell, or cry before taking any other actions. This can reduce the duration of Effects caused by the Fighter’s own Powers, such as Grit.

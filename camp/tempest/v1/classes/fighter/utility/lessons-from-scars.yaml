@@ -1,0 +1,18 @@
+name: Lessons from Scars
+grants:
+  - lore+Historical
+  - lore+Noble
+description: |
+  When choosing this Power, the Fighter gains the Lore: Historical (2) and Lore: Noble (2) skills. In addition, the Fighter gains the “Size Up” power below.
+subcard:
+  name: Size Up
+  incant: RP
+  call: '“[Name or Description] Subtle Discern: What is your Maximum Life Points?”'
+  target: Individual
+  delivery: Verbal
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Discern
+  description: |
+    Warriors, fighters, gladiators, and many more that live and die by the sword know the opening strikes of any battle take place in the mind. As a veteran of many campaigns, the fighter can gauge a rough level of toughness in those around her by sight. Choose one target that you can see, and look them over, then make the appropriate call to determine the target’s Maximum Life Points.

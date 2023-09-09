@@ -1,0 +1,89 @@
+name: Fighter
+type: class
+category: Basic Class
+starting_features:
+  - basic-martial-weapons
+  - basic-shields
+  - basic-armor
+  - light-armor
+multiclass_features:
+  - basic-martial-weapons
+  - short-weapons
+level_grants:
+  3: fighter-bonus-lp
+  7: fighter-bonus-spike
+choices:
+  the-path-of-combat:
+    starting_class: true
+    name: The Path of Combat
+    matcher:
+      id:
+        - the-path-of-combat-1
+        - the-path-of-combat-2a
+        - the-path-of-combat-2b
+        - the-path-of-combat-3
+description: |
+  There are those that choose the path of battle; some are heroes, others are thugs, but all who choose this path live and die by the sword. The Fighter is one such. She is an expert with weapons and in battle and her skills are specifically tailored to fighting. Of all the paths available to an adventurer, Fighter is the broadest. Whether one is a street-rat who has earned his way by murder and robbery or a valiant warrior serving the causes of justice and light, one can easily fit into the role of the Fighter. For skill in battle and deadly effectiveness, the Fighter is ultimate.
+
+  Throughout history there have been hundreds of thousands of fighters. They are the soldiers that stand on the front lines and in the War Councils of every war since the dawn of humankind. There are no stereotypical fighters. They range from the likes of Rene Descartes, a philosopher/mathematician and soldier of fortune to the legendary Odysseus. There have been great fighter-generals too, like Hannibal of Carthage, Alexander the Great and, from fantasy literature, Conan of Atlantis and Caramon Majere. Many soldiers, historically, were trained with polearms to fight in huge lines at the front of the army. Usually, each village or town had its own special style of polearm; the weapons of a man showed his homeland. The fighter is the Everyman hero.
+
+  Fighters can be found in almost any kind of garb. Most feel most comfortable in armor and with a weapon or three by their side, but some prefer agility and speed to heavy armor and protection. Practical clothing, loose and easy to fight in, is always advisable.
+---
+id: fighter-bonus-lp
+type: subfeature
+parent: fighter
+name: +1 Base Max Life Points
+category: Fighter Class Bonuses
+display_type: Bonus
+grants: lp:1
+---
+id: fighter-bonus-spike
+type: subfeature
+display_type: Bonus
+parent: rogue
+name: +1 Max Spikes
+category: Fighter Class Bonuses
+grants: spikes:1
+---
+id: the-path-of-combat-1
+type: subfeature
+parent: fighter
+name: Archer
+description: "Projectile Weapons (3), Lore: Historical (2)"
+category: Fighter Starting Skills
+display_type: Path
+grants:
+  - projectile-weapons
+  - lore+Historical
+---
+id: the-path-of-combat-2a
+type: subfeature
+parent: fighter
+name: Shield Bearer
+description: "Short Weapons (3), Advanced Shields (2)"
+category: Fighter Starting Skills
+display_type: Path
+grants:
+  - short-weapons
+  - advanced-shields
+---
+id: the-path-of-combat-2b
+type: subfeature
+parent: fighter
+name: Dual Wielder
+description: "Short Weapons (3), Two Weapon Style (2)"
+category: Fighter Starting Skills
+display_type: Path
+grants:
+  - short-weapons
+  - two-weapon-style
+---
+id: the-path-of-combat-3
+type: subfeature
+parent: fighter
+name: Big Hitter
+description: "Great Weapons (5)"
+category: Fighter Starting Skills
+display_type: Path
+grants:
+  - great-weapons

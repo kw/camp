@@ -1,0 +1,17 @@
+name: Warrior Spirit
+requires: fighter:10
+incant: None
+call: Special
+target: Self
+delivery: None
+accent: None
+duration: Long Rest
+refresh: Long Rest
+effect: Special
+description: |
+  At the beginning of an Event, and after finishing a Long Rest, the Fighter may choose one of the following bonuses that last until the next Long Rest:
+
+  * While Wielding a Shield, your shield gains +1 Maximum Shield Points.
+  * While Wielding a Melee Weapon with one hand, once per Short Rest, you may add the Wounding effect to one Spike attack.
+  * While Wielding a Great Weapon and no other weapons or shields, you may Refresh a Spike you expended with the Great Weapon Shield-Breaking ability with a Focus Quick 100 up to three times per Short Rest.
+  * While Wielding a Projectile Weapon, you may add the Wounding Effect to your normal shots that utilize the Aiming mechanic up to three times per Short Rest.

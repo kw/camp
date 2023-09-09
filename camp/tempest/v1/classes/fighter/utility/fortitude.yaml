@@ -1,0 +1,11 @@
+name: Fortitude
+incant: Focus Quick 100
+call: Cure Disable and Disarm by Will
+target: Self
+delivery: None
+accent: Will
+duration: Instantaneous
+refresh: Short Rest
+effect: Cure
+description: |
+  If the character is _disabled_ or _disarmed_, she may Focus Quick 100 to Cure both the _disabled_ and _disarmed_ Conditions on herself.

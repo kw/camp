@@ -1,0 +1,12 @@
+name: Flaming Arrow
+ranks: 2
+incant: None
+call: '“Wounding [X] by Flame”'
+target: Individual
+delivery: Weapon
+accent: Flame
+duration: Instantaneous
+refresh: Short Rest
+effect: Wounding
+description: |
+  While wielding a projectile weapon, the fighter may set their ammunition aflame. For up to three shots with a projectile weapon, the archer may strike a foe and then call “Wounding [X] by Flame,” where [X] is their Spike Damage + 1. These shots need not be consecutive, but they expire when the archer takes a Short Rest.

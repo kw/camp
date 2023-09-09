@@ -1,0 +1,12 @@
+name: Raging Blows
+ranks: 2
+incant: None
+call: '“Shield-Breaking”'
+target: Shield
+delivery: Weapon
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Shield-Breaking
+description: |
+  If wielding a great weapon with two hands and no other weapons or shields, the character can do four consecutive Shield-Breaking attacks without expending a Spike. Remember that Shield-Breaking attacks should only be called if the attack hits a shield, and has no effect on anything but shields.

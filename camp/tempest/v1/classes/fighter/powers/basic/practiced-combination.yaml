@@ -1,0 +1,12 @@
+name: Practiced Combination
+ranks: 2
+incant: None
+call: '"Double 1" or “Double 2”'
+target: Individual
+delivery: Melee Weapon
+accent: None
+duration: Instantaneous
+refresh: Short Rest
+effect: Double
+description: |
+  Some fighters find that it is not the overtly powerful blows, or special maneuvers that brings success, but the faithful repetition of a strike repeated a thousand times until it is bound into the very muscles of the fighter, able to be executed without thought. The Fighter may make a single melee weapon attack and call “Double 1.” If the Fighter is wielding a Great Weapon and no other weapons or shields, and expends a Spike the Call changes to “Double 2.” These calls may not be altered.

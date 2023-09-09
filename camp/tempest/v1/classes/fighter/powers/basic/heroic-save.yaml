@@ -1,0 +1,14 @@
+name: Heroic Save
+ranks: 2
+incant: None
+call: '“Grant Insubstantial to Self”, “Heroic Save”'
+target: Self
+delivery: None
+accent: None
+duration: Description, Slow 60
+refresh: Short Rest
+effect: Strengthen, Insubstantial, Resistance
+description: |
+  Seeing one of their comrades has fallen in battle, the Fighter heroically dashes in to save them, gaining a temporary surge of heroic inspiration allowing them to shrug off blows and deflect attacks.
+
+  The fighter may call "Grant Insubstantial to Self” and walk towards a downed ally. Once at the ally, they must call "Cure Insubstantial to Self", they then gain the _strengthened_ Condition, and _resistance_ to Damage and Effects (the appropriate call is "Resist, Heroic Save") and must pick up the ally. These effects last while carrying the ally, ending when they are dropped, conscious, or dissipate. While carrying the ally, the fighter can't take any other actions but moving to safety and putting the ally down. In no case will any effect from this power persist beyond a Slow 60. Remember that _strengthened_ does not make it any faster to pick up a body, it only allows the two portrayers to move faster once moving.

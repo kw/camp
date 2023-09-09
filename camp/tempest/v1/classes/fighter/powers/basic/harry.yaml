@@ -1,0 +1,12 @@
+name: Harry
+tags: [reinforce]
+incant: None
+call: '"Taunt 3 by Will"'
+target: Individual
+delivery: Melee Weapon
+accent: Will
+duration: Permanent
+refresh: Short Rest
+effect: Taunt
+description: |
+  The Fighter is adept at keeping the attention of their foes, by word, deed, or well placed blow. The Fighter can deliver “Taunt 3 by Will” with a single melee weapon attack. If the Fighter expends a Spike this power refreshes immediately.

@@ -1,0 +1,18 @@
+name: Plate Mail
+tags: [reinforce]
+requires: heavy-armor
+grants: ironclad-armor
+description: |
+  The Fighter gains the Ironclad Armor (2) skill and the Wall of Steel Power below:
+subcard:
+  name: Wall of Steel [Reinforce]
+  incant: None
+  call: "Resist"
+  target: Self
+  delivery: None
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Grant Resistance
+  description: |
+    After years of living in the heaviest of armors, the Fighter has learned to depend on their armor’s durability, especially in the thickest of battles. Whenever the Fighter is physically representing at least 10 Location Points on their chest, once per Short Rest if the Fighter is using Physical Armor and has at least one Armor Point remaining, they may “Resist” one Piercing attack that they receive.

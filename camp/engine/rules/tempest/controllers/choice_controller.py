@@ -285,7 +285,7 @@ class GrantChoice(BaseFeatureChoice):
         for expr in sorted(feats):
             feat = self._feature.character.feature_controller(expr)
             short = feat.short_description
-            descr = getattr(feat, "formal_name", feat.display_name())
+            descr = feat.name_with_tags(exclude_tags={self._feature.id})
             if self.show_description:
                 if not feat.possible_ranks:
                     descr = f"{descr} (Already at Max)"

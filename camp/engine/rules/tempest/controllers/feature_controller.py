@@ -90,7 +90,7 @@ class FeatureController(base_engine.BaseFeatureController):
         This is typically used in places where features of different types and sources might be comingled in the same list,
         such as the list of internal features for a class.
         """
-        return f"{self.name_with_tags()} [{self.type_name}]"
+        return self.name_with_tags()
 
     @property
     def feature_list_name(self) -> str:
@@ -152,12 +152,20 @@ class FeatureController(base_engine.BaseFeatureController):
             name = f"{name} {tags}"
         if not self.is_option_template and self.max_ranks > 1:
             if self.value:
-                name = f"{name} x{self.value}"
+                name = f"{name} {self._ranks_tag}"
             else:
-                name = f"{name} ({self.max_ranks})"
+                name = f"{name} ({self._max_ranks_tag})"
         if include_cost and (cost := self.cost_string(include_grants=False)):
             name = f"{name} {cost}"
         return name
+
+    @property
+    def _ranks_tag(self) -> str:
+        return f"x{self.value}"
+
+    @property
+    def _max_ranks_tag(self) -> str:
+        return f"({self.max_ranks})"
 
     def power_card(self) -> defs.PowerCard | None:
         return self.definition.model_copy(

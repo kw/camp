@@ -1,8 +1,8 @@
 name: Focused Results
 requires:
-  - rogue:6
+  - fighter:6
   - basic-classes<2
 grants:
-  - rogue.powers@1:1
-  - rogue.utilities:1
+  - fighter.powers@1:1
+  - fighter.utilities:1
 description: The Rogue gains an additional Utility Power and Basic Power from the Rogue Class Powers.

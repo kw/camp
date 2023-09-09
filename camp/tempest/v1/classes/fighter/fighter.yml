@@ -40,7 +40,7 @@ grants: lp:1
 id: fighter-bonus-spike
 type: subfeature
 display_type: Bonus
-parent: rogue
+parent: fighter
 name: +1 Max Spikes
 category: Fighter Class Bonuses
 grants: spikes:1

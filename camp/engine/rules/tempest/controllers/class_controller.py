@@ -104,6 +104,14 @@ class ClassController(feature_controller.FeatureController):
     def caster(self) -> bool:
         return self.definition.sphere != "martial"
 
+    @property
+    def _ranks_tag(self) -> str:
+        return f"{self.value}"
+
+    @property
+    def _max_ranks_tag(self) -> str:
+        return f"{self.max_ranks} levels"
+
     def spell_slots(self, expr: PropExpression) -> int:
         if not self.caster:
             return 0

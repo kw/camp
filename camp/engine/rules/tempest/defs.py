@@ -412,6 +412,7 @@ class Ruleset(base_models.BaseRuleset):
         "Utility": "Utilities",
         "Culture": "Culture",  # You only get one, so don't pluralize.
         "Religion": "Religion",  # Also only get one.
+        "Bonus": "Bonuses",
     }
     tags: dict[str, str | None] = Field(default_factory=dict)
 

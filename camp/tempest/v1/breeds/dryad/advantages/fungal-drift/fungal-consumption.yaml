@@ -1,0 +1,16 @@
+name: Fungal Consumption
+cost: 6
+description: |
+  Being a parasitic corpse eater does have its perks, particularly in violent areas, as there’s always a snack just laying around. This Character gains the Fungal Consumption Breed Power Below:
+subcard:
+  name: Fungal Consumption [Breed]
+  incant: Mimicking eating the a dead body for a Focus Quick 100
+  call: “Shatter Corpse, Heal Two to Self”
+  target: Individual
+  delivery: RP
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Shatter, Healing
+  description: |
+    This Breed Power allows the Character to mimic eating a corpse, shattering the corpse and healing two life points. If the Drift has the Torn Soul Flaw, the Drift may instead call “Heal One to Self, Heal One to Self, Heal One to Self”, with no more than two seconds between each heal.

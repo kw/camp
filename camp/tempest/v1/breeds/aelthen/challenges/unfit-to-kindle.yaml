@@ -1,0 +1,6 @@
+name: Unfit to Kindle
+award: 6
+grants: lp:-1
+requires: [-aetori, -bellorae, -shaddari]
+description: |
+  Rarely, some Aelthen are just not fit to enkindle the Aelflame beyond the spark they were granted at birth. This Aelthen cannot choose a Sub-breed in the Aelthen Breed, and has -1 Maximum Life Points.

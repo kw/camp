@@ -1,0 +1,5 @@
+name: Trust in the Divine
+level: basic
+cost: 3
+description: |
+  Whenever this character receives healing from the Will Accent, they may Cure one condition on themselves. The character may “Cure [Condition] to Self” once per Short Rest using this power.

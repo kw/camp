@@ -1,0 +1,23 @@
+name: Divine Construction
+level: advanced
+cost: 3
+requires:
+  any:
+    - power@2
+    - spell@2
+description: |
+  _“Stalwart is The Tower before the crashing waves of chaos and destruction. By force of arms, by force of will, by force of mind, shall the darkness be cast into the void forevermore.”_
+
+  _~Traditional Tower Battle Prayer_
+subcard:
+  name: Divine Construction [Devotion]
+  incant: None
+  call: '“Counter, Divine Construction”'
+  target: Self
+  delivery: Touch
+  accent: Force
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Counter
+  description: |
+    Whenever the adherent of The Tower receives a Shatter effect targeting their armor or their shield, they may Counter the Shatter effect by calling “Counter: Divine Construction” once per Short Rest.

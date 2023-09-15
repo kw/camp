@@ -1,0 +1,5 @@
+name: Clerical Substitution
+cost: 2
+level: basic
+description: |
+  Whenever this character uses a Power with the Radiance Accent they may substitute that Accent for the Mind Accent. This is an at-will ability.

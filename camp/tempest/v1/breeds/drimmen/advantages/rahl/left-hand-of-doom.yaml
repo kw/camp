@@ -1,0 +1,9 @@
+name: Left Hand of Doom
+cost: 9
+requires: arm-of-brogdar
+description: |
+  Legends tell of a cadre of elite Rahl warriors who swept across the land, mercenaries for hire that used only their bodies to defeat their foes. More than once they were met with laughter, only to leave their opponents sprawled in the dirt.
+
+  Rahl with the Arm of Brogdar may use the Arm to defend themselves: as long as the Rahl has nothing in the hand that has **The Arm of Brogdar** disadvantage prosthetic, and no shield attached to that arm, they can Counter any melee damage that hits that lower arm (from the elbow to the tips of the fingers). The Rahl should call “Counter, Doom Hand”.
+
+  In addition, Wounding Effects that strike the same area may be resisted with this power by calling “Resist, Doom Hand.”

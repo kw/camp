@@ -1,0 +1,21 @@
+name: Stalwart Soul
+level: advanced
+cost: 2
+requires:
+  any:
+    - power@2
+    - spell@2
+description: |
+  The Vigilant Kemis is well known for their bravery in the fight with Nastil, and expects nothing less from the anointed wardens. It is a common adage among those chosen, pulled and translated from the ancient texts, that: “...there is a fine line between consideration and hesitation: the former is wisdom, the latter is fear.”
+subcard:
+  name: Stalwart Soul [Devotion]
+  incant: None
+  call: '“Counter: Stalwart Soul”'
+  target: Self
+  delivery: None
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Counter
+  description: |
+    Whenever this character is affected by an Effect with the Fear Accent once per Short Rest.

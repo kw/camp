@@ -854,7 +854,7 @@ class Discount(BaseModel):
         ranks: The number of ranks that this can apply to.
     """
 
-    discount: pydantic.PositiveInt
+    discount: int
     ranks: int | None = None
 
     @classmethod

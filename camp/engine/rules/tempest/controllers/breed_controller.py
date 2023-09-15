@@ -365,17 +365,25 @@ class BreedChallengeController(feature_controller.FeatureController):
     @property
     def _award_value(self) -> int:
         """Amount of BP that would be awarded, assuming this challenge was taken at character creation."""
-        award: int = 0
-        if isinstance(self.definition.award, int):
-            award = self.definition.award
-        else:
-            award = self.award_options.get(self.option, 0)
+        award = self._option_award(self.option)
         # The award value can be modified if other features are present.
         if self.definition.award_mods:
             for flaw, mod in self.definition.award_mods.items():
                 if self.character.get(flaw) > 0:
                     award += mod
         return max(award * self.paid_ranks, 0)
+
+    def _option_award(self, option) -> int:
+        if isinstance(self.definition.award, int):
+            return self.definition.award
+        return self.award_options.get(option, 0)
+
+    def describe_option(self, option: str) -> str:
+        descr = super().describe_option(option)
+        # If this flaw has an award dictionary, add the cost to the description.
+        if isinstance(self.definition.award, dict):
+            descr = f"{descr} ({self._option_award(option)} BP)"
+        return descr
 
     def cost_string(self, **kw) -> str | None:
         if (cost := self.award_bp) or self.paid_ranks:

@@ -648,6 +648,12 @@ class FeatureController(base_engine.BaseFeatureController):
             return self.character.controller(self.id)
         return None
 
+    def describe_option(self, option: str) -> str:
+        if descriptions := self.option_def.descriptions:
+            if descr := descriptions.get(option):
+                return f"{option}: {descr}"
+        return option
+
     def decrease(self, value: int) -> Decision:
         if not (rd := self.can_decrease(value)):
             return rd
@@ -843,7 +849,11 @@ class FeatureController(base_engine.BaseFeatureController):
         for discount in self.discounts:
             discountable_ranks = discount.ranks or effective_ranks
             discount_total += discount.discount * min(paid_ranks, discountable_ranks)
-            rebate_total += discount.discount * min(grants_used, discountable_ranks)
+            # Only apply rebates if they're positive. This accounts for things like Brain Rot
+            # that are represented as a negative discount. In other words, don't charge the
+            # character a CP every time they get a free Lore.
+            if discount.discount > 0:
+                rebate_total += discount.discount * min(grants_used, discountable_ranks)
         applied_discount = min(discount_total, potential_discount)
         applied_rebate = min(rebate_total, potential_rebate)
 

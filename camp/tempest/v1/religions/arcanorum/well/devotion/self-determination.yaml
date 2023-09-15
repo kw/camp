@@ -1,0 +1,23 @@
+name: Self Determination
+level: advanced
+cost: 3
+requires:
+  any:
+    - power@2
+    - spell@2
+description: |
+  _“Self-control is the beginning of understanding that which is outside oneself: Only with the ability to dictate one’s own actions, can one truly understand how the actions one takes impacts the world at large.”_
+
+  _~Teachings of the Violent, passage XIV, 17:19_
+subcard:
+  name: Self Determination [Devotion]
+  incant: None
+  call: Cure [Berserked, Charmed, Slept] by Mind
+  target: Self
+  delivery: None
+  accent: Mind
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Cure [Berserked, Charmed, Slept]
+  description: |
+    While Berserked, Charmed, and/or Slept, the adherent may expend a single Spike to Cure one of those Conditions on themselves. This power refreshes immediately to be used again against each of these Conditions; but may only be Cured of each Condition in this way once per Short Rest. This power may be used while Berserked, Charmed, and Slept, even though normally you would otherwise not be able to.

@@ -1,0 +1,16 @@
+name: Touch of Tranquility
+cost: 6
+description: |
+  The touch of the Bellorae are often cause for even the most anxious to find peace. In some cases this touch is even known to salve wounds instantly closing them.
+subcard:
+  name: Touch of Tranquility [Breed]
+  incant: '"With the power found in you, I seek to calm your soul.”'
+  call: '“Heal 1, Cure Fear, Mind, and Will”'
+  target: Individual
+  delivery: Touch
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Heal, Cure Fear, Mind, and Will
+  description: |
+    The Bellorae expends a Spike while casting this spell, one individual within touch range may Heal 1 and Cure all Conditions caused by the Fear, Mind, or Will Accents.

@@ -1,0 +1,23 @@
+name: Arcane Shield
+level: advanced
+cost: 4
+requires:
+  any:
+    - power@2
+    - spell@2
+description: |
+  As the preeminent deity of wards, guards, and force magic, virtually every serious adherent of The Tower is familiar with the ability to imbue the tools of defense with Thousand-Eye’s careful gaze.
+subcard:
+  name: Arcane Shield [Devotion][Adept]
+  incant: “I call The Tower, divine and right, I wield and shape creation’s light. I draw my strength from sky and land. Gather now within my hand to build a shield of arcane might.”
+  call: “Short Grant Resistance to Shield-Breaking and Resistance to Shatter Shield until Dying or Dead”
+  target: Individual
+  delivery: Touch
+  accent: Force
+  duration: Short Rest
+  refresh: Spell
+  effect: Grant Resistance
+  description: |
+    While out of combat, the caster may lay their hands upon an ally, inscribe a prayer (apply a sigil) to the Ever Watchful upon a shield and make that shield nigh invulnerable to damage. This spell lasts until the target has 0 Life Points, is Dead or takes a Short Rest.
+
+    The first time this spell is cast each long rest it will not consume a spell slot.

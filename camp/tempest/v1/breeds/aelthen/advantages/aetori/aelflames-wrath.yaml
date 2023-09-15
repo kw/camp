@@ -1,0 +1,16 @@
+name: Aelflame's Wrath
+cost: 6
+description: |
+  Among the Ætori, there is a rare and coveted ability to call upon the Aelflame directly, manifesting as a bolt of deadly energy. The character can use the Aelflame’s Wrath Power below:
+subcard:
+  name: Aelflame's Wrath [Breed]
+  incant: "By the power of the Aelfame, I call forth wrath."
+  call: '“1 Flame” or “2 Radiance”'
+  target: Individual
+  delivery: Packet (Spell-Packet)
+  accent: Flame or Radiance
+  duration: Instantaneous
+  refresh: Focus Quick 100
+  effect: Damage
+  description: |
+    This minor spell charges a Spell-Packet of materia with an explosive burst of flaming energy which will do 1 point of damage to those it hits. If the Ætori expends a Spike while casting this spell, it will do “2 Radiance” instead.

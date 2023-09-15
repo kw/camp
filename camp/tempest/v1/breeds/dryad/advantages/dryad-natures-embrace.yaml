@@ -1,0 +1,17 @@
+name: Nature's Embrace
+cost: 5
+requires: guardian-of-nature
+description: |
+  Some Guardians seek out and “re-bond” with the natural world from time to time: the embrace of the sylvan trees, deep in the woods, has a calming effect on the minds that rest there. However, some guardians proclaim the bond goes deeper still. You may only take this advantage if you have the Dryad challenge **Guardian of Nature**.
+subcard:
+  name: Nature's Embrace
+  incant: None
+  call: “Short Grant Insubstantial to Self by Nature”
+  target: Self
+  delivery: None
+  accent: Nature
+  duration: Short
+  refresh: Short Rest
+  effect: Insubstantial
+  description: |
+    You can meld with a tree of significant size to become a spirit and protect you from attacks. Touch a large tree with both hands, use two spikes, and say "Short Grant Insubstantial by Nature to Self" to activate this ability only targeting yourself.  The tree must be, within reason, large enough to fit your body inside. So long as you do not move you gain the Insubstantial Condition. Any attack that is "to Plant" or "to Insubstantial" will affect you and Remove the Insubstantial Condition. Otherwise you will stay Insubstantial until you lose contact with the tree or complete a rest.

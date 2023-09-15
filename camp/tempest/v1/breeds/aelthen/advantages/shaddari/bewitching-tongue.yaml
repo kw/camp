@@ -1,0 +1,16 @@
+name: Bewitching Tongue
+cost: 6
+description: |
+  Among some of the eldest Shaddari, a skill is rumored to exist, allowing speakers of an ancient tongue to cause even the most mentally resilient to fall to their charms.
+subcard:
+  name: Bewitching Tongue [Breed]
+  incant: 'RP: One minute of conversational roleplay'
+  call: “[Name or Description] Short Charm by Will”
+  target: Individual
+  delivery: RP
+  accent: Will
+  duration: Short Rest
+  refresh: Long Rest
+  effect: Charm
+  description: |
+    After talking intimately with a person for at least one minute, the Shaddari can extend her aura to cause the other to see her as a trusted friend. The conversation may have more people but must be intimate, talking about personal matters, trust, right and wrong, etc.

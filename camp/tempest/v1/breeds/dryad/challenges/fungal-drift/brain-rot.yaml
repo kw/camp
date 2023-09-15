@@ -1,0 +1,6 @@
+name: Brain Rot
+award: 1
+discounts:
+  lore: -1  # THIS IS A PENALTY
+description: |
+  Drifts seem just not to have the discipline for scholarly pursuits, either due to lack of willingness to focus, or just a disinterest in the “long term.” Any purchases of the Scholar Skills, from the Skills chapter, cost one more Character Point.

@@ -1,0 +1,21 @@
+name: Natural Affinity
+cost: 4
+choices:
+  sphere:
+    name: Bonus Spell Slot
+    description: Choose a sphere of magic to receive an additional Novice spell slot in.
+    limit: 1
+    controller: sphere-bonus
+    controller_data:
+      bonus: spell_slots@1
+      requires: caster
+description: |
+  Those Aelthen who trace their ancestry back beyond the great planar migration often have natural magic. If they take Roles with spell-casting requirements (or that require spell-casting classes), the Character Point cost for those Roles is 1 lower, to a minimum of 0. In addition, if the character gains Novice spell-slots from any basic classes, the Shaddari gains one bonus Novice spell-slot. The character may only gain one additional slot this way.
+
+  ### CMA Note
+
+  Once you've taken a casting class, come back here and confirm
+  the sphere of your bonus slot.
+
+# TODO(#131): Figure out how to grant a CP discount on any role that
+# requires spellcasting.

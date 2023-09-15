@@ -85,10 +85,7 @@ class FeatureForm(forms.Form):
         if not c.option and (option_def := c.option_def):
             available = c.available_options
             if available:
-                if d := option_def.descriptions:
-                    options = [(a, f"{a}: {d[a]}" if a in d else a) for a in available]
-                else:
-                    options = [(a, a) for a in available]
+                options = [(a, c.describe_option(a)) for a in available]
                 help_text = "Select an option."
                 if option_def.freeform:
                     options.append(("__other__", "Other"))

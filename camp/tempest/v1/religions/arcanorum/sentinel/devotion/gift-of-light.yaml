@@ -1,0 +1,23 @@
+name: Gift of the Light
+level: advanced
+cost: 2
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  Calling upon the grace and righteousness of the Vigilant Kemis, the cleric may shine the light of creation upon his flock, granting them protection from the forces of darkness:
+subcard:
+  name: Gift of the Light [Devotion][Adept]
+  incant: '“I call The Sentinel, divine and right, I wield and shape creation’s light. I draw my strength from hearth and farm. Gather now within my hand to shield my people from harm.”'
+  call: '“By My Voice Grant Barrier 3 to Follower of The Sentinel By Radiance”'
+  target: Follower of the Sentinel
+  delivery: Voice
+  accent: Radiance
+  duration: Short Rest
+  refresh: Spell
+  effect: Grant Barrier, Grant Resistence
+  description: |
+    A powerful pulse of energy comes from the Cleric, washing over all nearby adherents granting each target two points of Barrier. If a Greater spell-slot is used to cast this spell, it will Grant Barrier 4 to Followers of the Sentinel. A Master spell-slot will Grant Barrier 5 (with no qualifier), and the caster gains Short Resistance to Fear.
+
+    The first time this spell is cast each long rest it will not consume a spell slot.

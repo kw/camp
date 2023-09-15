@@ -1,0 +1,5 @@
+name: Clerical Substitution
+level: basic
+cost: 2
+description: |
+  Whenever this character uses a Power with the Radiance Accent they may substitute that Accent for the Will Accent. This is an at-will ability.

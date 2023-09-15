@@ -1,0 +1,23 @@
+name: Pacify
+level: advanced
+cost: 3
+requires:
+  any:
+    - power@2
+    - spell@2
+description: |
+  _Among the more non-violent sects of The Well, clerics have found that their mental prowess can be used to subdue those who have allowed their passions to run away with them. Those that are less concerned about the use of force still manage to find their peers' discoveries useful._
+subcard:
+  name: Pacify [Devotion][Adept]
+  incant: “I call The Well, divine and right, I wield and shape creation’s light. I draw my strength from sky and land. Gather now within my hand to quiet the mind.”
+  call: “Short Sleep By Mind”
+  target: Individual
+  delivery: Packet (Spell-Ball)
+  accent: Mind
+  duration: Short
+  refresh: Spell
+  effect: Sleep
+  description: |
+    When this spell is cast, it will charge a spell-ball with mental power. When struck by this spell, the target is immediately drawn into a peaceful slumber.
+
+    The first time this spell is cast each long rest it will not consume a spell slot.

@@ -1,0 +1,16 @@
+name: Calming Presence
+cost: 3
+description: |
+  The Bellorae Aelflame is known to bestow its peace of mind and tranquility of its great age upon those it has graced. Some Bellorae can extend this to those nearby, though it is often a draining experience. The character can use the Calming Presence Power below:
+subcard:
+  name: Calming Presence [Breed]
+  incant: None, Performance Slow 60
+  call: “By My Voice, Cure Madness by Will”
+  target: Individuals
+  delivery: Voice
+  accent: Will
+  duration: Instant
+  refresh: Event
+  effect: Cure
+  description: |
+    The Bellorae can extend her strength of spirit, by expending all Spikes (minimum one) and use a _“By My Voice, Cure Madness by Will”_, curing affected characters of any Conditions that were applied with the Madness Accent. The spike requirement is waived if the Bellorae accompanies the call with some performance of a calming nature, such as music, a tea ceremony, or similar that takes a timespan minimum of a Slow 60.

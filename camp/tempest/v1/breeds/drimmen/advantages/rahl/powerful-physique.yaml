@@ -1,0 +1,16 @@
+name: Powerful Physique
+cost: 6
+description: |
+  Rahl tend to be born bigger and stronger than other breeds, but this Rahl is exceptional even among their own kind. This character gains the Powerful Physique ability below:
+subcard:
+  name: Powerful Physique
+  incant: Focus Quick 100
+  call: Short Strength to Self
+  target: Self
+  delivery: None
+  accent: None
+  duration: Short Rest
+  refresh: Long Rest
+  effect: Strength
+  description: |
+    By spending a Focus Quick 100 concentrating, the Drimmen can boost their strength for a short while, gaining the strengthened Condition.

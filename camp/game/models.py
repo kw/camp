@@ -3,7 +3,6 @@ from __future__ import annotations
 from functools import cached_property
 from functools import lru_cache
 
-import rules
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -14,167 +13,14 @@ import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 
+from . import rules
+
 User = get_user_model()
 
 
 @lru_cache
 def load_ruleset(path: str) -> camp.engine.rules.base_models.BaseRuleset:
     return camp.engine.loader.load_ruleset(path, with_bad_defs=False)
-
-
-# Authorization rules for game models.
-is_authenticated = rules.is_authenticated
-always_allow = rules.always_allow
-always_deny = rules.always_deny
-
-
-@rules.predicate
-def has_any_role(user: User, obj) -> bool:
-    """Does this user have any role object in the object's chapter or game?
-
-    Note that this doesn't mean any role bits are set, just that the
-    user has a ChapterRole or GameRole, and thus has some sort of
-    displayable title.
-    """
-    return (
-        get_chapter_role(user, obj) is not None or get_game_role(user, obj) is not None
-    )
-
-
-@rules.predicate
-def self(user: User, obj) -> bool:
-    """Matches if the object's user is this user."""
-    if isinstance(obj, User):
-        return user == obj
-    return user == getattr(obj, "user", None)
-
-
-# Game-level predicates
-
-
-@rules.predicate
-def is_game_owner(user: User, obj) -> bool:
-    """Is the user in the game's owner list?"""
-    if user.is_anonymous:
-        return False
-    if game := _get_game(obj):
-        return game.owners.contains(user)
-    return False
-
-
-@rules.predicate
-def is_game_manager(user: User, obj) -> bool:
-    """Does the user have Manager role in this game?"""
-    if role := get_game_role(user, obj):
-        return role.manager
-    return False
-
-
-can_manage_game = is_game_owner | is_game_manager
-
-
-@rules.predicate
-def is_game_auditor(user: User, obj) -> bool:
-    """Does the user have the Auditor role in this game?"""
-    if role := get_game_role(user, obj):
-        return role.auditor
-    return False
-
-
-@rules.predicate
-def is_game_rules_staff(user: User, obj) -> bool:
-    """Does the user have the Rules Staff role in this game?"""
-    if role := get_game_role(user, obj):
-        return role.rules_staff
-    return False
-
-
-# Chapter-level predicates
-
-
-@rules.predicate
-def is_chapter_owner(user: User, obj) -> bool:
-    """Is the user in the chapter's owner list?"""
-    if user.is_anonymous:
-        return False
-    if chapter := _get_chapter(obj):
-        return chapter.owners.contains(user)
-    return False
-
-
-@rules.predicate
-def is_chapter_manager(user: User, obj) -> bool:
-    """Does the user have Manager role in this chapter?"""
-    if role := get_chapter_role(user, obj):
-        return role.manager
-    return False
-
-
-can_manage_chapter = is_chapter_owner | is_chapter_manager
-can_manage_chapter_not_self = is_chapter_owner | (is_chapter_manager & ~self)
-
-
-@rules.predicate
-def is_chapter_plot(user: User, obj) -> bool:
-    """Is this user a member of the chapter's plot staff?"""
-    if role := get_chapter_role(user, obj):
-        return role.plot_staff
-    return False
-
-
-@rules.predicate
-def is_chapter_logistics(user: User, obj):
-    """Is this user a member of the chapter's logistics staff?"""
-    if role := get_chapter_role(user, obj):
-        return role.logistics_staff
-    return False
-
-
-@rules.predicate
-def is_chapter_tavernkeep(user: User, obj):
-    """Is this user a member of the chapter's tavern staff?"""
-    if role := get_chapter_role(user, obj):
-        return role.tavern_staff
-    return False
-
-
-# Generic predicates
-
-
-@rules.predicate
-def is_logistics(user: User, obj):
-    """For an object associated with a game, is this user a logistics staff member in any chapter in that game?"""
-    game = _get_game(obj)
-    if game is None:
-        return False
-    return any(is_chapter_logistics(user, chapter) for chapter in game.chapters.all())
-
-
-@rules.predicate
-def is_plot(user: User, obj):
-    """For an object associated with a game, is this user a plot staff member in any chapter in that game?"""
-    game = _get_game(obj)
-    if game is None:
-        return False
-    return any(is_chapter_plot(user, chapter) for chapter in game.chapters.all())
-
-
-@rules.predicate
-def is_owner(user: User, obj):
-    """Is this user an owner of the object?"""
-    if user.is_anonymous:
-        return False
-    if hasattr(obj, "owner"):
-        if user == obj.owner:
-            return True
-        # Fall through, the object could also have an owners list
-    if hasattr(obj, "owners"):
-        # The owners attribute could be a QuerySet or some other container
-        if isinstance(obj.owners, models.QuerySet):
-            return obj.owners.contains(user)
-        else:
-            return user in obj.owners
-    return False
 
 
 # Actual model definitions.
@@ -219,7 +65,7 @@ class Game(RulesModel):
         If prefix = True, the game name will be prefixed for display in
         scenarios where staff from multiple chapters or games will be displayed.
         """
-        if (role := get_game_role(user, self)) and role.title:
+        if (role := rules.get_game_role(user, self)) and role.title:
             return f"{self} {role.title}" if prefix else role.title
         if self.owners.contains(user):
             return f"{self} Owner" if prefix else "Owner"
@@ -275,8 +121,8 @@ class Game(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": always_allow,
-            "change": can_manage_game,
+            "view": rules.always_allow,
+            "change": rules.can_manage_game,
         }
 
 
@@ -340,9 +186,9 @@ class Ruleset(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "change": can_manage_game | is_game_rules_staff,
-            "view": always_allow,
-            "delete": can_manage_game | is_game_rules_staff,
+            "change": rules.can_manage_game | rules.is_game_rules_staff,
+            "view": rules.always_allow,
+            "delete": rules.can_manage_game | rules.is_game_rules_staff,
         }
 
 
@@ -389,7 +235,7 @@ class Chapter(RulesModel):
         If the user has no chapter role but does have a role in the game,
         their prefixed game role title will be returned instead.
         """
-        if (role := get_chapter_role(user, self)) and role.title:
+        if (role := rules.get_chapter_role(user, self)) and role.title:
             return f"{self} {role.title}" if prefix else role.title
         if self.owners.contains(user):
             return f"{self} Chapter Owner" if prefix else "Chapter Owner"
@@ -450,9 +296,9 @@ class Chapter(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": always_allow,
-            "add": can_manage_chapter | can_manage_game,
-            "change": can_manage_chapter | can_manage_game,
+            "view": rules.always_allow,
+            "add": rules.can_manage_chapter | rules.can_manage_game,
+            "change": rules.can_manage_chapter | rules.can_manage_game,
         }
 
 
@@ -491,10 +337,10 @@ class GameRole(RulesModel):
     class Meta:
         unique_together = [["game", "user"]]
         rules_permissions = {
-            "add": can_manage_game,
-            "change": can_manage_game,
-            "view": can_manage_game,
-            "delete": can_manage_game,
+            "add": rules.can_manage_game,
+            "change": rules.can_manage_game,
+            "view": rules.can_manage_game,
+            "delete": rules.can_manage_game,
         }
 
 
@@ -537,65 +383,8 @@ class ChapterRole(RulesModel):
     class Meta:
         unique_together = [["chapter", "user"]]
         rules_permissions = {
-            "add": can_manage_chapter,
-            "change": can_manage_chapter,
-            "view": can_manage_chapter | can_manage_game,
-            "delete": can_manage_chapter,
+            "add": rules.can_manage_chapter,
+            "change": rules.can_manage_chapter,
+            "view": rules.can_manage_chapter | rules.can_manage_game,
+            "delete": rules.can_manage_chapter,
         }
-
-
-# Utilities
-
-
-def _get_game(obj) -> Game | None:
-    if isinstance(obj, Game):
-        return obj
-    elif hasattr(obj, "game"):
-        return obj.game if isinstance(obj.game, Game) else None
-    elif hasattr(obj, "chapter") and hasattr(obj.chapter, "game"):
-        return obj.chapter.game if isinstance(obj.chapter.game, Game) else None
-
-
-def _get_chapter(obj) -> Chapter | None:
-    if isinstance(obj, Chapter):
-        return obj
-    elif hasattr(obj, "chapter"):
-        return obj.chapter if isinstance(obj.chapter, Chapter) else None
-
-
-def get_game_role(user: User, obj) -> GameRole | None:
-    """Attempts to return a relevant game role for the user.
-
-    Arguments:
-        user: The user whose role should be gotten.
-        obj: An object that is related to a game in an obvious way.
-            Typically, this means the object is:
-            a) A Game.
-            b) A Chapter.
-            c) Related to a game via a "game" attribute.
-            d) Related to a chapter via a "chapter" attribute.
-    """
-    if not user.is_authenticated:
-        return None
-    if game := _get_game(obj):
-        roles = GameRole.objects.filter(game=game, user=user)
-        if roles and (role := roles[0]):
-            return role
-
-
-def get_chapter_role(user: User, obj) -> ChapterRole | None:
-    """Attempts to return a relevant chapter role for the user.
-
-    Arguments:
-        user: The user whose role should be gotten.
-        obj: An object that is related to a chapter in an obvious way.
-            Typically, this means the object is:
-            a) A Chapter.
-            b) Related to a chapter via a "chapter" attribute.
-    """
-    if not user.is_authenticated:
-        return None
-    if chapter := _get_chapter(obj):
-        roles = ChapterRole.objects.filter(chapter=chapter, user=user)
-        if roles and (role := roles[0]):
-            return role

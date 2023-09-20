@@ -28,8 +28,8 @@ class Membership(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": rules.self,
-            "change": rules.self | rules.is_owner | rules.is_logistics,
-            "delete": rules.self | rules.is_owner | rules.is_logistics,
+            "view": rules.is_self,
+            "change": rules.is_self | rules.is_owner | rules.is_logistics,
+            "delete": rules.is_self | rules.is_owner | rules.is_logistics,
             "add": rules.is_authenticated,
         }

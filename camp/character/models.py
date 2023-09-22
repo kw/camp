@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 from typing import cast
 
 from django.conf import settings as _settings
@@ -114,7 +115,7 @@ class Sheet(RulesModel):
             "use in other chapters, test sheets, etc."
         ),
     )
-    data: dict = models.JSONField(
+    data: dict[str, Any] = models.JSONField(
         default=dict,
         help_text="The data for this sheet, in the format expected by the ruleset.",
     )

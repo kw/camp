@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import cached_property
 from functools import lru_cache
+from typing import Any
 
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
@@ -21,9 +22,6 @@ User = get_user_model()
 @lru_cache
 def load_ruleset(path: str) -> camp.engine.rules.base_models.BaseRuleset:
     return camp.engine.loader.load_ruleset(path, with_bad_defs=False)
-
-
-# Actual model definitions.
 
 
 class Game(RulesModel):
@@ -300,6 +298,27 @@ class Chapter(RulesModel):
             "add": rules.can_manage_chapter | rules.can_manage_game,
             "change": rules.can_manage_chapter | rules.can_manage_game,
         }
+
+
+class Campaign(RulesModel):
+    game: Game = models.ForeignKey(
+        Game,
+        on_delete=models.CASCADE,
+        related_name="campaigns",
+    )
+    name: str = models.CharField(blank=False, max_length=100)
+    description: str = models.TextField(blank=True)
+    is_open: bool = models.BooleanField(default=False)
+    ruleset: Ruleset = models.ForeignKey(
+        Ruleset, null=True, on_delete=models.PROTECT, related_name="campaigns"
+    )
+    data: dict[str, Any] = models.JSONField(default=dict)
+
+    rules_permissions = {
+        "add": rules.can_manage_game,
+        "change": rules.can_manage_game,
+        "view": rules.can_manage_game,
+    }
 
 
 class GameRole(RulesModel):

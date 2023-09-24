@@ -47,8 +47,8 @@ class Event(RulesModel):
     event_end_date = models.DateField()
 
     logistics_periods = models.DecimalField(max_digits=4, decimal_places=2)
-    logistics_year = models.IntegerField(null=True, blank=True)
-    logistics_month = models.IntegerField(null=True, blank=True, choices=Month.choices)
+    logistics_year = models.IntegerField(blank=True, default=0)
+    logistics_month = models.IntegerField(blank=True, default=0, choices=Month.choices)
 
     def save(self, *args, **kwargs):
         if not self.logistics_year:
@@ -68,6 +68,13 @@ class Event(RulesModel):
             models.CheckConstraint(
                 name="end_date_gte_start",
                 check=Q(event_end_date__gte=F("event_start_date")),
+            ),
+        ]
+
+        indexes = [
+            models.Index(
+                fields=["campaign", "chapter", "logistics_year", "logistics_month"],
+                name="campaign-year-month-idx",
             ),
         ]
 
@@ -134,6 +141,11 @@ class EventRegistration(RulesModel):
     class Meta:
         unique_together = [
             ["event", "user"],
+        ]
+
+        indexes = [
+            models.Index(fields=["event", "user"], name="event-user-idx"),
+            models.Index(fields=["event", "character"], name="event-character-idx"),
         ]
 
         rules_permissions = {

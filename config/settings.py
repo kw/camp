@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "camp.accounts",
     "camp.game",
     "camp.character",
+    "camp.events",
 ]
 
 MIDDLEWARE = [

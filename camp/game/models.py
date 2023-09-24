@@ -312,7 +312,10 @@ class Campaign(RulesModel):
     ruleset: Ruleset = models.ForeignKey(
         Ruleset, null=True, on_delete=models.PROTECT, related_name="campaigns"
     )
-    data: dict[str, Any] = models.JSONField(default=dict)
+    data: dict[str, Any] = models.JSONField(default=dict, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.game.name}: {self.name}"
 
     rules_permissions = {
         "add": rules.can_manage_game,

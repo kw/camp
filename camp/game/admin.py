@@ -23,3 +23,8 @@ class GameAdmin(admin.ModelAdmin):
 @admin.register(models.Chapter)
 class ChapterAdmin(admin.ModelAdmin):
     inlines = [ChapterRoleInline]
+
+
+@admin.register(models.Campaign)
+class CampaignAdmin(admin.ModelAdmin):
+    pass

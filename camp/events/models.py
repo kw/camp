@@ -11,6 +11,20 @@ from ..game import rules
 User = get_user_model()
 
 
+class Month(models.IntegerChoices):
+    JAN = 1
+    FEB = 2
+    MAR = 3
+    APR = 4
+    MAY = 5
+    JUN = 6
+    JUL = 7
+    AUG = 8
+    OCT = 10
+    NOV = 11
+    DEC = 12
+
+
 class Event(RulesModel):
     name: str = models.CharField(max_length=100, blank=True)
     description: str = models.TextField(blank=True)
@@ -33,6 +47,21 @@ class Event(RulesModel):
     event_end_date = models.DateField()
 
     logistics_periods = models.DecimalField(max_digits=4, decimal_places=2)
+    logistics_year = models.IntegerField(null=True, blank=True)
+    logistics_month = models.IntegerField(null=True, blank=True, choices=Month.choices)
+
+    def save(self, *args, **kwargs):
+        if not self.logistics_year:
+            self.logistics_year = self.event_end_date.year
+        if not self.logistics_month:
+            self.logistics_month = self.event_end_date.month
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return (
+            f"{self.campaign}, {self.chapter}, {self.logistics_year}-{self.logistics_month}"
+            + (f": {self.name}" if self.name else "")
+        )
 
     class Meta:
         constraints = [
@@ -62,7 +91,7 @@ class EventRegistration(RulesModel):
         User, related_name="event_registrations", on_delete=models.CASCADE
     )
     is_npc: bool = models.BooleanField()
-    details: str = models.TextField()
+    details: str = models.TextField(blank=True)
 
     # Maybe we should force NPCs to select a character to receive credit?
     # OR we could just let them select it later.
@@ -70,22 +99,37 @@ class EventRegistration(RulesModel):
         char_models.Character,
         related_name="event_registrations",
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
     )
     # By default we'll take the primary character sheet.
     sheet: char_models.Sheet = models.ForeignKey(
-        char_models.Sheet, null=True, default=None, on_delete=models.SET_NULL
+        char_models.Sheet,
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL,
     )
 
     registered_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     # If the user (or staff) want to cancel a registration, record when it happened.
-    canceled_date = models.DateTimeField(null=True)
+    canceled_date = models.DateTimeField(null=True, blank=True)
 
     # Fields for post-game record keeping.
     attended: bool = models.BooleanField(default=False)
-    attended_periods = models.DecimalField(max_digits=4, decimal_places=2)
+    attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+
+    @property
+    def logistics_window(self) -> tuple[int, int]:
+        return self.event.logistics_year, self.event.logistics_month
+
+    def __str__(self) -> str:
+        name = self.user.first_name or self.user.username
+        if self.is_npc:
+            return f"{self.event} - {name} (NPC)"
+        return f"{self.event} - {name} ({self.character.name})"
 
     class Meta:
         unique_together = [

@@ -1,0 +1,14 @@
+name: Impaling Skewer [Cantrip]
+cost: 0
+requires: None
+incant: '"...to craft an impaling Skewer."
+call: Shield-Breaking by [Eldritch Accent]
+target: Indiviudal
+delivery: Packet (Spell-Packet)
+accent: [Eldritch Accent]
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Immediate
+effect: Shield-Breaking
+description: |
+  When the Sourcerer casts this cantrip and expends a Spike, they create a magical projectile that causes damage to shields with the Call “Shield-Breaking by [Eldritch Accent].”

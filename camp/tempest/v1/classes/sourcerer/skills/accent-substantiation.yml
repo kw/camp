@@ -1,0 +1,17 @@
+name: Accent Substantiation [Class]
+cost: 1
+requires: sourcerer:4
+incant: None
+call: None
+target: Self
+duration: Passive
+delivery: None
+refresh: None
+accent: None
+effect: None
+description: 
+| The Sourcerer can bend the elemental forces of reality itself to mold to their purpose. Many cantrips and spells have optional modes or bonuses that only apply when the accent matches a specific requirement. This skill allows the Sourcerer to gain the benefits of these options with another Accent.
+| 
+| This skill may be purchased multiple times, each time allowing the Sourcerer choose from the substitution list below.
+# Table.  I have no idea how to do a table.
+| **For Example:** Trivian the Sourcerer is wielding his Eldritch Source with the Agony Accent. When casting a Spell that has a special effect that benefits from the Acid Accent (such as Acid Ruinbringer), the Agony Accent counts as the Acid Accent for purposes of that spell. Note that this does not change the Accent of that Spell.

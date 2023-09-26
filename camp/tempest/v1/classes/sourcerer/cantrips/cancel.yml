@@ -1,0 +1,14 @@
+name: Cancel [Cantrip]
+cost: 0
+requires: None
+incant: '"...to retrieve this Eldritch force."
+call: None
+target: Packet (Spell-Ball), Self
+delivery: Touch
+accent: None
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Immediate
+effect: Refresh
+description: |
+  This minor cantrip takes the power out of a spell-ball (or multiple spell-balls) that has already been charged and returns that power to the caster. The spell-ball becomes inert, and the caster refreshes the spell-slot that was used to charge the spell-ball. If the spell charges more than one spell-ball, all the spell-balls must still be charged in order to cancel the spell.

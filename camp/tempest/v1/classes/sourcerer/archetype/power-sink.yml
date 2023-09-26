@@ -1,0 +1,14 @@
+name: Power Sink [Archetype]
+cost: 0
+requires: sourcerer:10
+incant: None
+call: None
+target: Self
+duration: Passive
+delivery: None
+refresh: None
+accent: None
+effect: None
+# Can only be taken if Sourcerer is your archetype class
+description: 
+| When creating an Eldritch Source, the Sourcerer may choose an additional Eldritch Accent on a Source. While wielding the affected Source, the caster may use either Accent when the [Eldritch Accent] is noted. When choosing this Eldritch Accent for a given power, all instances of the [Eldritch Accent] must be the same Accent.

@@ -1,0 +1,16 @@
+name: Melt [Novice]
+cost: 0
+requires: None
+incant: '"... to rain acid down upon you.”
+call: [Name or Description] Shield Breaking by Acid
+target: Self                        
+delivery: None
+accent: None
+duration: Special (Short Rest)
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: None
+description: 
+   'While this spell is active, when the Sourcerer strikes a target with a Spell-Packet from a Cantrip with the Acid Accent, they may immediately call “[Name or Description] Shield-Breaking by Acid” against that same target.'
+   
+   This Spell ends when the caster completes a Short Rest, moves their right foot, becomes unable to use Powers, or is reduced to zero Life Points.

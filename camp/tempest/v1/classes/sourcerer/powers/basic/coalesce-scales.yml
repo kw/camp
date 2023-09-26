@@ -1,0 +1,14 @@
+name: Coalesce Scales [Novice]
+cost: 0
+requires: None
+incant: '"... to shroud myself in the Scales of [Eldritch Accent].”
+call: Grant 4 Barrier by [Eldritch Accent] to Self
+target: Self                        
+delivery: None
+accent: [Eldritch Accent]
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Grant
+description: 
+   This spell grants 4 Barrier by [Eldritch Accent] to the caster. This Spell will grant 6 Barrier if cast with an Adept spell slot, 8 Barrier if cast with a Greater spell slot, and 10 Barrier if cast with a Master spell slot.

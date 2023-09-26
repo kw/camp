@@ -1,0 +1,18 @@
+name: Circle of Four [Cantrip]
+cost: '“1 [Acid/Flame/Ice/Lightning]”
+requires: None
+incant: '...to forge a ring of the four elements.'
+call: None
+target: Individual
+delivery: Packet (Spell-Packet)
+accent: [Acid/Flame/Ice/Lightning] 
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Immediate
+effect: None
+description: 
+ The Sourcerer calls forth a ring of elemental power that wreaths their hand in visible crackling energy. Once cast, the caster chooses from one of the four Accents, however, the newly chosen accent may not be an accent they already have charged.
+ 
+ The caster may have up to four charges of this cantrip charged at any one time. Once charged, the caster need only call the Effect of the cantrip when throwing the spell-packet. If the Sourcerer uses any other Powers, is reduced to zero Life Points, or completes a Rest, these charges are lost.
+ 
+ 'If the Sourcerer expends a Spike when casting this cantrip, the call is changed to “Wounding 2 by [Acid/Flame/Ice/Lightning]” for that charged packet.

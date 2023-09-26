@@ -1,0 +1,14 @@
+name: Eldritch Shield [Cantrip]
+cost: 0
+requires: None
+incant: '"... to shield against the elements.”
+call: Grant Protect vs [Eldritch Accent]
+target: Self                        
+delivery: None
+accent: [Eldritch Accent]
+duration: Until Used
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Focus Quick 100
+effect: Grant Protection
+description: 
+ The Sourcerer throws up a shield of energy to protect themself from the elements. This gives the caster one Protect from the Accent that corresponds to their Eldritch Source. If the Sourcerer has more than one Eldritch Accent, they may have a Protect for each of those Accents.

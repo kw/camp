@@ -1,0 +1,21 @@
+name: Burning Power [Novice]
+cost: 0
+requires: None
+incant: '"... to infuse my spells with flame.”
+call: Short Imbue Incandescent Spire
+target: Self                        
+delivery: None
+accent: None
+duration: Short Rest
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Imbue
+description: 
+   Until the Sorcerer completes a Short Rest, is reduced to zero Life Points, or becomes unable to use Powers, the caster gains the Incandescent Spire power below:
+#   Incandescent Spire [Novice]
+#    Incantation: RP Focus Quick 30, setting a packet of materia aflame
+#   Call: None
+#   Target: Self                                        Duration: Instantaneous
+#  Delivery: None                                        Refresh: Focus Quick 30
+#  Accent: None                                        Effect: Grant
+#  The Sourcerer may roleplay setting their materia alight for a Focus Quick 30  and then add their Spike Damage Bonus to each damaging spell-packet (not spell-ball) with the Flame Accent.

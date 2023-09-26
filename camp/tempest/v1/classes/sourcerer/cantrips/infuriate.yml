@@ -1,0 +1,14 @@
+name: Infuriate [Cantrip]
+cost: 0
+requires: None
+incant: '"...to enrage my foes."
+call: Taunt 1 by [Eldritch Accent]
+target: Indiviudal
+delivery: Packet (Spell-Packet)
+accent: [Eldritch Accent]
+duration: Short Rest
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Focus Quick 100
+effect: Taunt
+description: |
+  A creature struck by this packet suddenly sees the caster as an arch-enemy and hated nemesis

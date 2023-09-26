@@ -1,0 +1,26 @@
+name: Eldritch Source
+cost: 0
+requires: sourcerer:1
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Immediate
+effect: Refresh
+description: |
+  Drawing from power deep within the fabric of the cosmos, the Sourcerer does not rely upon studied knowledge or divine faith to drive the weave of arcane forces at their disposal. Instead, tapping into an Eldritch Source of arcane magic, the Sourcerer simply draws upon the Echoes of Primordials to alter the world around them, and it obeys their command. While the understanding around the Primordials and their Echoes is limited, and hard information scant, the power wielded by the talents of the Sourcerers is unmistakable.
+
+  The Sourcerer’s power is channeled through an object called an Eldritch Source, and it is a crafted, physical object that the character must hold in their hand. An Eldritch Source is created by various crafting skills, and incorporates ever more rare and exotic materials as the Source nears the pinnacle of its power. The Source itself is simply a conduit for the Sourcerer's power, and thus can be anything from a wand, orb, or ritual dagger to the skull of a former lover. Due to the Source’s volatile nature, weapons, shields, or other items required to be held in the hand to activate Powers cannot be used as a Source. The caster may hold no other Wielded items in the same hand as the Source.
+
+  The four most basic accents available to novice Sourcerers are Fire, Ice, Lightning, and Acid and are readily found in most arcane emporiums. Eldritch Sources must be at least 5” in one dimension and 1” in another. In addition, spell preparation is now no longer needed, as the innate spark of the arcane simply forms to their  will. Thus the Sourcerer may cast any of their known spells without forethought, as long as an appropriate spell slot is available.
+
+  After completing a Long Rest, a Sourcerer may designate a new object as their Source. This Source must follow all rules defining an appropriate object. If that object is not an Empowered Source, it has one of the following accents: Acid, Ice, Flame, or Lightning. The Sorcerer may only have one Source at any one time, and this Source will only work for the Sourcerer who designated it.
+
+  The Sorcerer also learns spells in a new way that alters how they fundamentally learn magic. When learning a new spell it does not need to follow the standard rules of recording it in a spell book; instead they learn it directly in their mind. This practice is extremely volatile and will absorb any spells that they have written into spell books from other classes as well. If the Sorcerer has a spell book from another class they forget 4 spells from the spellbook but all other spells are recorded in the Sorcerer’s mind. When completing a Short Rest the Sorcerer may re-prepare any spells that they have known.
+
+  However, with this power comes risk: should the Sorcerer find themself without an Eldritch Source, they will lose all Sourcerer spellcasting ability until the Eldritch Source is back in hand.
+
+  **Note:** The Sourceror’s Eldritch Source takes the place of the Basic Arcane Spell Book, and does not confer the additional four spells known that normally comes with Basic Arcane. In addition, skills and powers that require a spellbook are unavailable to Sourcerors and their advanced classes.

@@ -1,0 +1,14 @@
+name: Char [Novice]
+cost: 0
+requires: None
+incant: '"... to sear those who would oppose me.”
+call: Wounding 3 by Flame
+target: Individual                        
+delivery: Packet (Spell-Ball) 
+accent: Flame
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Wounding
+description: 
+   When this spell is cast, Char charges two spell-balls with Wounding 3 by Flame. If this spell is cast using an Adept spell-slot, three balls are charged.

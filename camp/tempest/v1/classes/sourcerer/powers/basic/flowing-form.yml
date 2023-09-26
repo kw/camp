@@ -1,0 +1,14 @@
+name: Flowing Form [Novice]
+cost: 0
+requires: None
+incant: '"...to escape that which would ensnare me.”
+call: Grant Protection vs Disable [Legs], Root, or Slow
+target: Self                        
+delivery: None
+accent: None
+duration: Until Used
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Grant Protect
+description: 
+   The Sourcerer grants themself the ability to slip bonds, avoid entanglements, and shrug off that which would confine. This gives the caster one Protect versus the following effects: Disable [Legs], Root, or Slow.

@@ -1,0 +1,18 @@
+name: Whispers in the Dark [Cantrip]
+cost: 0
+requires: None
+incant: '"...to observe aetheric flows."
+call: None
+target: Indiviudal
+delivery: Verbal
+accent: None
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Focus Quick 100
+effect: Discern
+description: |
+#Should have bullet points below.
+  This power taps into the innate understanding of the Dark common to Sourcerers.
+  “[Name or Description] Discern: What is one of your Vulnerabilities?
+  “[Name or Description] Discern: What is one of your Resistances?
+  “[Name or Description] Discern: What’s your Spike Damage?

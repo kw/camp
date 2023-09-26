@@ -1,0 +1,14 @@
+name: Encase [Novice]
+cost: 0
+requires: None
+incant: '"... to encase my hands so they may not fail me.”
+call: Grant Protect vs Disarm, Disable [Arms], and Bind
+target: Self                        
+delivery: None
+accent: None
+duration: Until Used
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Grant Protect
+description: 
+   This spell weaves the Sourcerer’s power over them, preventing unwanted loss of held items, such as their Eldritch Source. Upon casting this spell the caster gains a Protect vs Disarm, Disable, and Bind.

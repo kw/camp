@@ -1,0 +1,14 @@
+name: Anchor [Novice]
+cost: 0
+requires: None
+incant: '"... to anchor my foe’s limb.”
+call: Short Disarm [Item] by Force
+target: Individual                        
+delivery: Packet (Spell-Ball) 
+accent: Force
+duration: Short Rest
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Disarm
+description: 
+   A creature stuck by the spell has the named item or item held by the named limb forcibly removed and dropped to the ground

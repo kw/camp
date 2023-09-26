@@ -1,0 +1,14 @@
+name: Iron Maiden [Novice]
+cost: 0
+requires: None
+incant: '"... to bind your arms with eldritch might.”
+call: Quick Disable [Left Arm/Right Arm] by [Eldritch Accent], Quick Disable Both Arms by [Eldritch Accent]
+target: Individual                        
+delivery: Packet (Spell-Ball) 
+accent: [Eldritch Accent]
+duration: Quick 100
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Disable
+description: 
+   When this spell is cast, the Sourcerer wraps shackles of their Source’s power to bind their foe. If the caster expends a Spike during casting, they may target both arms.

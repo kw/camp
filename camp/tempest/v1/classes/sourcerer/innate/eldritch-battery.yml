@@ -1,0 +1,20 @@
+name: Eldritch Battery
+cost: 0
+requires: sourcerer:1
+incant: None
+call: None
+target: Self
+delivery: None
+accent: None
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Immediate
+effect: Refresh
+description: |
+  The Sourcerer can meditate and commune with the Weave to rebuild focus and refresh their spell slots. The Sourcerer can spend a Short Rest reconnecting with the weave of ley-lines that lay just beneath the fabric of reality.
+
+  Between Long Rests, the Sourcerer can refresh a number of Arcane Novice spell-slots equal to two times their total levels in their Arcane-casting Classes. This power may be used to refresh spells from any of this character’s Arcane spellcasting classes, but this power does not stack with similar powers from those classes.
+
+  This can be done in any increment and the Sourcerer can refresh a Arcane Adept spell-slot in the place of two Arcane Novice spell-slots. Greater spell-slots take the place of three Novice spell-slots, and Master spell-slots take the place of four Novice spell-slots.
+  
+  Additional benefits come if this Power is used in an area of concentrated magical power (such as an Arcane Locus), with a personal rite (determined by the Sourcerer). Up to three times per Long Rest, if the Sourcerer uses this Power in that way, they can Refresh a Arcane Novice spell-slot that does not count toward the total Refresh limit between Long Rests. This may occur in addition to Refreshing other spell-slots as normal.

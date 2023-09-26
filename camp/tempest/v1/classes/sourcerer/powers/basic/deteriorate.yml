@@ -1,0 +1,14 @@
+name: Deteriorate [Novice]
+cost: 0
+requires: None
+incant: '"... to erode your armor.”
+call: Shatter Armor by Acid
+target: Individual                        
+delivery: Packet (Spell-Ball) 
+accent: Acid
+duration: Instantaneous
+# Lines that start with a # are comments. If you want to leave me a note
+refresh: Spell
+effect: Shatter
+description: 
+   'When this spell is cast, Deteriorate charges one spell-ball with “Shatter Armor by Acid.”'

@@ -1,0 +1,11 @@
+name: Nephroditus’ Hourglass
+incant: '"... to claim the promised power of tomorrow, today.”, Focus Slow 60'
+call: '“Short Imprison to Self by Time”, “Grant Short Rest”'
+target: Self
+delivery: None
+accent: Time
+duration: Special
+refresh: Long Rest
+effect: Refresh
+description: |
+  When this spell is cast, the Sourcerer places themselves in a protective shell and is forcibly shifted forward in time, completing a Short Rest calling “Short Imprison to Self by Time.” The Sourcerer must then complete a Focus Slow 60 at the end of that focus, they must call “Grant Short Rest.” The Sourcerer may cast this spell once per Long Rest.

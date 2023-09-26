@@ -1,0 +1,11 @@
+name: Nathrigaaz's Contempt
+incant: '"... to reflect harm upon those who dare strike me.”'
+call: '“[Name or Description]: Wounding 3 by [Eldritch Accent]”'
+target: Individual
+delivery: Verbal
+accent: '[Eldritch Accent]'
+duration: Short Rest
+refresh: Spell
+effect: None, only damage
+description: |
+  The caster charges their aura with violent points of concussive force, whenever the Caster is hit by a melee attack that deals damage, they may immediately call [Name or Description] Wounding 3 by [Eldritch Accent] to the person who struck them once per strike, up to 3 times before the spell is expended. If this spell is cast using a Greater spell-slot, six charges are gained. If it is cast with a Master spell-slot, the caster gains charges equal to their Sourcerer level.

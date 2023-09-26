@@ -1,0 +1,13 @@
+name: Devastating Eruption
+incant: '"... to unbind the power of my Eldritch Source.”'
+call: '“By My Voice, 4 by [Eldritch Accent]”'
+target: None
+delivery: None
+accent: '[Eldritch Accent]'
+duration: Instantaneous
+refresh: Spell
+effect: None, only damage
+description: |
+  After finishing the call for this spell, the Sourcerer must hold up their Source with both hands. After a Focus Quick 100 of unraveling the arcane energies stored within it, the Sourcerer may overload the source, destroying it and calling “By My Voice, 4 by [Eldritch Accent].” If this spell is cast using a Greater spell-slot, the Effect is Piercing. In addition, The Sourcerer may expend up to four Spikes while casting this spell, and increase the damage of this spell by one for each. The Sourcerer takes the Effect call,   and as Final. This spell’s effects cannot be altered other than by the above.
+
+  **Note**: The Source is irrevocably destroyed in the process of casting this spell, and should be turned into the Ash Bin as soon as possible. It may not be Rebuilt.

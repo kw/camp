@@ -1,0 +1,11 @@
+name: Wrack
+incant: '"... to wrack my foes with pain.”'
+call: '“Short Drain by [Eldritch Accent]”'
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: '[Eldritch Accent]'
+duration: Short Rest
+refresh: Spell
+effect: Drain
+description: |
+  When this spell is cast, Wrack charges a spell-ball with Short Drain by [Eldritch Accent]. If this spell is cast using a Greater spell-slot, two balls are charged.

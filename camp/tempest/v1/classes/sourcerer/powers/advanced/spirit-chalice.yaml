@@ -1,0 +1,11 @@
+name: Spirit Chalice
+incant: '"... to tap the wellspring of life.”'
+call: '“Death by [Eldritch Accent]”, “Refresh 1 Spike”'
+target: Dying Individual
+delivery: Touch
+accent: '[Eldritch Accent]'
+duration: Short Rest
+refresh: Spell
+effect: Death, Refresh Spike
+description: |
+  Until the end of the Sourcerer’s next Short Rest, they have the ability to use the death of others to power their magic. For the duration, the Sourcerer can touch a creature who is willing or helpless and cause it to die. The call for this death-touch is “Death by [Eldritch Accent].” Doing so successfully (no Counter or call of “No Effect”) allows the Sourcerer to Refresh one Spike. This can be done as often as desired during the duration of the spell.

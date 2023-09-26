@@ -1,0 +1,11 @@
+name: Breach Teleport
+incant: '"... to join near and far, bending space to my will.”'
+call: '“Short Grant Insubstantial to Self”, “Cure Insubstantial to Self”'
+target: Self
+delivery: None
+accent: None
+duration: Short, Special
+refresh: Spell
+effect: Grant Insubstantial, Cure Insubstantial
+description: |
+  This spell must be cast upon a spell-ball that has been marked with a symbol that is special to the caster. The incantation charges the spell-ball which is then thrown. As soon as it comes to rest, the Sourcerer will become insubstantial and must either move as quickly and directly as possible to the spot where the spell-ball came to rest, or end the spell immediately. They may not walk part way and then end the spell. Once the Sourcerer arrives at the appropriate spot, they should call loudly “Cure Insubstantial to Self”. The Sourcerer can do nothing besides move to the spell-ball’s location while Insubstantial. Note that if the spell-ball hits an individual, the caster should inform the struck person that the spell-ball has “No Effect”.

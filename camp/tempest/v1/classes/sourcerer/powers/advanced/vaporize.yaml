@@ -1,0 +1,11 @@
+name: Vaporize
+incant: '"... to cast these items to dust.”'
+call: '“Shatter [Item] by Acid”'
+target: Individual or Object
+delivery: Packet (Spell-Ball)
+accent: Acid
+duration: Instantaneous
+refresh: Spell
+effect: Shatter
+description: |
+  When this spell is cast, Vaporize charges two spell-balls with Shatter [Item] by Acid. If a spell-ball strikes a shield or weapon held by an individual, then that shield or weapon must be targeted. If a spell-ball strikes the individual, the caster can choose from a held item, armor, or some other visible possession. The target may be an unattended physical item. Special items are generally immune and their holder may call out “No Effect” in these cases. If this spell is cast using a Greater spell-slot, three Spell-balls are charged. If it is cast with a Master spell-slot, four Spell-balls are charged. Although multiple spell-balls are charged at once, they must be thrown one at a time.

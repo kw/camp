@@ -1,0 +1,11 @@
+name: Immortal Focus
+incant: '"... to strengthen my power and hone my mind”'
+call: “Long Grant +1 Maximum Spikes”
+target: Self
+delivery: None
+accent: None
+duration: Long Rest
+refresh: Spell
+effect: Grant Maximum Spike
+description: |
+  When this spell is cast, Immortal Focus invigorates the Sourcerer, heightening their potential. For the duration of the spell, the Sourcerer gains +1 Maximum Spikes.

@@ -1,0 +1,13 @@
+name: Enduring Corrosion
+incant: '"... to burn my foes forever."'
+call: '“Wounding 1 by Acid”, “[Name or Description] 1 Acid”'
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Acid
+duration: Short Rest
+refresh: Spell, Focus Quick 30
+effect: Wounding
+description: |
+  The Sourcerer casts an orb of acidic material at a foe, and then feeds the reaction with energy from their source ensuring it will burn away at their enemy forever.
+
+  If the initial call of “Wounding 1 by Acid” isn't Prevented, the Sourcerer may plant their right foot; they may then Focus Quick 30 and call “[Name or Description] 1 Acid” against the target they just hit. They may continue to call these Verbal attacks until the Sourcerer casts another spell, becomes unable to use powers, or moves their right foot. The damage of the Verbal call cannot be altered.

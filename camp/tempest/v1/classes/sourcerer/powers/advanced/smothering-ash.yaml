@@ -1,0 +1,11 @@
+name: Smothering Ash
+incant: '"... to smother voices in ash.”'
+call: '“Wounding 3 Flame”, “[Name or Description] Short Silence”'
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: Flame
+duration: Short Rest
+refresh: Spell
+effect: Wounding, Silence
+description: |
+  The Sourcerer can summon ash into the very lungs of their foes. When this spell is cast, Smothering Ash charges a spell-ball with Wounding 3 Flame. As long as the Packet did not miss, and was not Prevented, the Sourcerer may immediately call “[Name or Description] Short Silence by Flame,” to the Individual struck by this spell.

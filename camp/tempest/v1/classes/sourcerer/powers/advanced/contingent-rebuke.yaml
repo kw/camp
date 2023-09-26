@@ -1,0 +1,11 @@
+name: Contingent Rebuke
+incant: '"... to set in place contingent plans.”'
+call: '"[Name or Description]: 5 [Eldritch Accent]"'
+target: Self
+delivery: Verbal
+accent: '[Eldritch Accent]'
+duration: Short Rest
+refresh: Spell
+effect: Damage
+description: |
+  After casting this spell, each time an enemy successfully targets your Source or causes you to release it via Effect, you may immediately call "[Name or Description], 5 [Eldritch Accent]" to the source of the effect.

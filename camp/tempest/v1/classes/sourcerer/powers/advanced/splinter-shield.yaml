@@ -1,0 +1,11 @@
+name: Splinter Shield
+incant: '"... to rend metal and warp wood.”'
+call: '“Shatter Shield by [Eldritch Accent]”, “[Name or Description]: 4 by [Eldritch Accent]”'
+target: Individual
+delivery: Packet (Spell-Ball), Verbal
+accent: '[Eldritch Accent]'
+duration: Instantaneous
+refresh: Spell
+effect: Shatter, Damage
+description: |
+  When this spell is cast, Splinter Shield charges a spell-ball with “Shatter Shield by [Eldritch Accent]”. As long as the Packet was not Countered (or call of “No Effect”), the Sourcerer may immediately call “[Name or Description] 4 by [Eldritch Accent],” to the Individual struck by this spell.

@@ -1,0 +1,11 @@
+name: Bonesplitter
+incant: '"... to splinter your bones from within.”'
+call: '“Wounding 2 by [Eldritch Accent]”, “[Name or Description] Short Weakness by Agony”'
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: '[Eldritch Accent], Agony'
+duration: Short Rest
+refresh: Spell
+effect: Wounding, Weakness
+description: |
+  When this spell is cast, Bonesplinter charges two spell-balls with Wounding 2 by [Eldritch Accent]. As long as the Packet was not Countered (or call of “No Effect”), the Sourcerer may immediately call “[Name or Description] Short Weakness by Agony,” to the Individual struck by this spell.

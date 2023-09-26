@@ -1,0 +1,31 @@
+name: Fractal Bombardment
+incant: "... to unleash raw power."
+call: “Short Imbue Fractal Bombardment”
+target: Self
+delivery: None
+accent: None
+duration: Short Rest, Special
+refresh: Spell
+effect: Imbue
+description: |
+  The Sourcerer creates a tear in reality through which pure power can flow through at increasing rates.
+
+  While this enhancement lasts, the Sourcer gains the Fractal Spike power below:
+subcard:
+  name: Fractal Spike
+  incant: '“I call forth a fractal spike.”'
+  call: '[X] [Eldritch Accent]'
+  target: Individuals
+  delivery: Packet (Spell-Ball)
+  accent: '[Eldritch Accent]'
+  duration: Special
+  refresh: Immediate
+  effect: None, only damage
+  description: |
+    The Sourcerer may charge a spell-ball with "1 [Eldritch Accent]."
+
+    If the attack does not miss and is not Blocked or Prevented, this power immediately refreshes, and the damage of the call increases by one. (Ex: “2 [Eldritch Accent]” for the second spell ball, “3 [Eldritch Accent]” for the third spell ball, and so on.)
+
+    The Sourcerer may never charge a spell-ball for more than their Maximum Spike Damage. Once they reach this limit the Sourcerer may continue to charge Spell-balls at that value until Fractal Bombardment ends.
+
+    The Sourcerer may repeat this process until the Sourcerer casts another spell, takes a Short Rest, the caster becomes unable to use Powers, a spell-ball misses, or a spell-ball is Prevented, at which time any charged Fractal Spike loses its power, and Fractal Bombardment ends.

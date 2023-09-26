@@ -1,0 +1,11 @@
+name: Mystic Mirror
+incant: '"... to reflect magic used against me.”'
+call: "Short Grant Protect vs Packets"
+target: Self, Individual
+delivery: None, Packet (Spell-Ball)
+accent: '[Eldritch Accent]'
+duration: Short Rest, Instantaneous
+refresh: Spell
+effect: Grant Protection
+description: |
+  This spell grants a Protection vs Packets to the Sourcerer, but must be used on the first packet that strikes the Sourcerer. They may charge a spell-ball with the effect that was Countered by calling “Spell-ball Charged,” although whatever Accent that Power had will be changed to [Eldritch Accent].

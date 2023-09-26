@@ -1,14 +1,11 @@
-name: Seeking Ray [Novice]
-cost: 0
-requires: None
-incant: '"... to eat away at flesh and bone.”
+name: Seeking Ray
+incant: '"... to eat away at flesh and bone.”'
 call: Wounding 3 by [Eldritch Accent]
-target: Individual                        
-delivery: Packet (Spell-Ball) 
-accent: [Eldritch Accent]
+target: Individual
+delivery: Packet (Spell-Ball)
+accent: '[Eldritch Accent]'
 duration: Instantaneous
-# Lines that start with a # are comments. If you want to leave me a note
 refresh: Spell
 effect: Wounding
-description: 
+description: |
    When this spell is cast, Seeking Ray charges a spell-ball with Wounding 3 by [Eldritch Accent]. If this spell is cast with an Adept spell slot, two spell-balls are charged.

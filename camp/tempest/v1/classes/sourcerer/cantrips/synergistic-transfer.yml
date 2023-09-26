@@ -1,14 +1,11 @@
-name: Synergistic Transfer [Cantrip]
-cost: 0
-requires: None
-incant: '"...to twist the aether to my command."
+name: Synergistic Transfer
+incant: '"...to twist the aether to my command."'
 call: None
 target: Self
 delivery: None
 accent: None
 duration: Instantaneous
-# Lines that start with a # are comments. If you want to leave me a note
 refresh: Quick 100
 effect: Special
 description: |
-  'The Sourcerer is able to twist the weave to their needs when pressed. By Sacrificing two Barrier, the Sourcerer is able to activate the optional Powers of their other Cantrips. On their next cantrip cast, the Sourcerer’s cantrip acts as though the caster expended a Spike.
+  The Sourcerer is able to twist the weave to their needs when pressed. By Sacrificing two Barrier, the Sourcerer is able to activate the optional Powers of their other Cantrips. On their next cantrip cast, the Sourcerer’s cantrip acts as though the caster expended a Spike.

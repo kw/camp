@@ -1,4 +1,4 @@
-name: Scales of the Primordial [Class]
+name: Scales of the Primordial
 cost: 3
 requires: sourcerer:6
 incant: None
@@ -9,5 +9,5 @@ delivery: None
 refresh: Short Rest
 accent: None
 effect: Grant Barrier
-description: 
-| The Sourcerer can wave arcane scales into the air to protect them from harm. When taking a Short Rest they may grant themselves 2 Barrier by calling “Grant 2 Barrier to Self.” Gathering the mental fortitude is a rather lengthy process, but none-the-less the result will turn most blades, and can mean the difference between life and death.
+description: |
+  The Sourcerer can wave arcane scales into the air to protect them from harm. When taking a Short Rest they may grant themselves 2 Barrier by calling “Grant 2 Barrier to Self.” Gathering the mental fortitude is a rather lengthy process, but none-the-less the result will turn most blades, and can mean the difference between life and death.

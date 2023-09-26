@@ -1,21 +1,23 @@
-name: Static Shield [Novice]
-cost: 0
-requires: None
-incant: '"... to siphon my foe’s power.”
+name: Static Shield
+incant: '"... to siphon my foe’s power.”'
 call: Short Imbue Static Shield to Self
-target: Self                        
+target: Self
 delivery: None
 accent: None
 duration: Short Rest
-# Lines that start with a # are comments. If you want to leave me a note
 refresh: Spell
 effect: Grant Barrier
-description: 
+description: |
    Until the Sourceror’s next Short Rest, each time the caster lands a Cantrip or Spell with a packet delivery on a conscious foe with the Lightning Accent and the target doesn’t prevent it, the caster gains the Galvanic Shield power below:
-# Galvanic Shield
-#Incantation: “None”
-#Call: “Grant 1 Barrier to Self by Lightning”
-#Target: Self                                        Duration: Instantaneous
-#Delivery: None                                        Refresh: Spell
-#Accent: Lightning                                Effect: Grant Barrier
-#The Character may call “Grant 1 Barrier to Self by Lightning.” The Character may only have three charges of this power at any time.
+subcard:
+   name: Galvanic Shield
+   incant: None
+   call: “Grant 1 Barrier to Self by Lightning”
+   target: Self
+   duration: Instantaneous
+   delivery: None
+   refresh: Spell
+   accent: Lightning
+   effect: Grant Barrier
+   description: |
+      The Character may call “Grant 1 Barrier to Self by Lightning.” The Character may only have three charges of this power at any time.

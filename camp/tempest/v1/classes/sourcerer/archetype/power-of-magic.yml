@@ -1,5 +1,4 @@
-name: Power of Magic [Archetype]
-cost: 0
+name: Power of Magic
 requires: sourcerer:6
 incant: None
 call: None
@@ -9,12 +8,11 @@ delivery: None
 refresh: Long Rest
 accent: None
 effect: Refresh, Grant Plus Spike Damage
-# Can only be taken if Sourcerer is your archetype class
-description: 
-| The Sourcerer’s channeling of magic through the Eldritch Source allows them to make sacrifices other more traditional arcane casters cannot.
-| 
-| During any Long Rest, the Sourcerer may Sacrifice a Cantrip that they know, other than Cancel, losing the ability to cast it, until their next Long Rest. In exchange, the Sourcerer gains +1 Spike Damage, until their next Long Rest.
-| 
-| This Spike Damage Bonus only applies to Spells from the Sourcerer Spell list and cannot be applied to any other usage of Spikes.
-| 
-| In all cases, the normal stacking rules apply to these Spike Damage bonuses.
+description: |
+  The Sourcerer’s channeling of magic through the Eldritch Source allows them to make sacrifices other more traditional arcane casters cannot.
+
+  During any Long Rest, the Sourcerer may Sacrifice a Cantrip that they know, other than Cancel, losing the ability to cast it, until their next Long Rest. In exchange, the Sourcerer gains +1 Spike Damage, until their next Long Rest.
+
+  This Spike Damage Bonus only applies to Spells from the Sourcerer Spell list and cannot be applied to any other usage of Spikes.
+
+  In all cases, the normal stacking rules apply to these Spike Damage bonuses.

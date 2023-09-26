@@ -1,5 +1,4 @@
-name: Enduring Source [Archetype]
-cost: 0
+name: Enduring Source
 requires: sourcerer:4
 incant: 'RP: Focus Quick 100 miming rebuilding the source.'
 call: “Rebuild Source”
@@ -7,8 +6,7 @@ target: Self
 delivery: None
 accent: None
 duration: Instantaneous
-# Can only be taken if Sourcerer is your archetype class
 refresh: Short Rest
 effect: Rebuild
-description: 
-| Once per Short Rest, the Sourcerer may rebuild a broken or shattered Eldritch Source.
+description: |
+  Once per Short Rest, the Sourcerer may rebuild a broken or shattered Eldritch Source.

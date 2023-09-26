@@ -1,21 +1,23 @@
-name: Icy Veins [Novice]
-cost: 0
-requires: None
-incant: '"... to bestow myself with icy blood.”
+name: Icy Veins
+incant: '"... to bestow myself with icy blood.”'
 call: Short Imbue Icy Blood to Self
-target: Self                        
+target: Self
 delivery: None
 accent: Flame
 duration: Short Rest
-# Lines that start with a # are comments. If you want to leave me a note
 refresh: Spell
 effect: Imbue Icy Blood
-description: 
+description:
    Once cast, the Sourcerer gains the Icy Blood ability until their next Short Rest.
-#Icy Blood
-#Incantation: None
-#Call: “[Name or Description] Quick Slow by Ice"
-#Target: Individual                                Duration: Quick 100
-#Delivery: Verbal                                        Refresh: Immediate
-#Accent: Ice                                        Effect: Slow
-#Each time the caster lands a Cantrip or Spell with a packet delivery and the Ice Accent on a conscious foe and the target doesn’t Prevent it, the caster may call “[Name or Description] Quick Slow by Ice" against that same target.
+subcard:
+   name: Icy Blood
+   incant: None
+   call: “[Name or Description] Quick Slow by Ice"
+   target: Individual
+   duration: Quick 100
+   delivery: Verbal
+   refresh: Immediate
+   accent: Ice
+   effect: Slow
+   description: |
+      Each time the caster lands a Cantrip or Spell with a packet delivery and the Ice Accent on a conscious foe and the target doesn’t Prevent it, the caster may call “[Name or Description] Quick Slow by Ice" against that same target.

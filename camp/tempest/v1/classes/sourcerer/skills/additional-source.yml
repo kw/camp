@@ -1,7 +1,7 @@
-name: Additional Source [Class]
+name: Additional Source
 cost: 4
 requires: sourcerer:4
-incant: 'RP Short Rest to Create; Focus Quick 100 while altering your bin'ding to a different Eldritch Source.'
+incant: 'RP Short Rest to Create; Focus Quick 100 while altering your binding to a different Eldritch Source.'
 call: None
 target: Self
 duration: Permanent
@@ -9,9 +9,9 @@ delivery: None
 refresh: 'Short Rest, Immediate'
 accent: None
 effect: None
-description: 
-| The Sourcerer has mastered the arts of Source manipulation such that they may have an additional Eldritch Source bound.
-| 
-| After finishing a Short Rest linked to an object, the Sourcerer may designate a new item to become their Source in addition to their first. If that item is not an Empowered Source, you must choose one of the following Accents: Acid, Lighting, Flame or Ice.
-| 
-| While a character must hold an Eldritch Source in their hand to use its Accent, the character may switch between two different Eldritch Sources that they are bound to by Focusing for a Quick Count of 100.
+description: |
+  The Sourcerer has mastered the arts of Source manipulation such that they may have an additional Eldritch Source bound.
+
+  After finishing a Short Rest linked to an object, the Sourcerer may designate a new item to become their Source in addition to their first. If that item is not an Empowered Source, you must choose one of the following Accents: Acid, Lighting, Flame or Ice.
+
+  While a character must hold an Eldritch Source in their hand to use its Accent, the character may switch between two different Eldritch Sources that they are bound to by Focusing for a Quick Count of 100.

@@ -1,5 +1,4 @@
-name: Dissipate Curse [Archetype]
-cost: 0
+name: Dissipate Curse
 requires: sourcerer:5
 incant: Focus Quick 30
 call: “Cure [Disarm, Disable, Root, Bind]”
@@ -7,8 +6,7 @@ target: Self
 delivery: None
 accent: None
 duration: Instantaneous
-# Can only be taken if Sourcerer is your archetype class
 refresh: Short Rest
 effect: Cure
-description: 
-| Once per Short Rest, the Sourcerer may Cure Condition [Disarm, Disable, Root, Bind] on themselves by Focusing for a Quick 30.
+description: |
+  Once per Short Rest, the Sourcerer may Cure Condition [Disarm, Disable, Root, Bind] on themselves by Focusing for a Quick 30.

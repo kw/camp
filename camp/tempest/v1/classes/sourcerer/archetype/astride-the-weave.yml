@@ -1,5 +1,4 @@
-name: Astride the Weave [Archetype]
-cost: 0
+name: Astride the Weave
 requires: sourcerer:2
 incant: None
 call: None
@@ -7,10 +6,9 @@ target: Self
 delivery: None
 accent: None
 duration: Passive
-# Can only be taken if Sourcerer is your archetype class
 refresh: Immediate
 effect: Special
-description: 
-| 'The Sourcerer’s channeling of magic through the Eldritch Source unbinds them from the traditional need to remain still while gathering power, allowing the arcane theurgist to walk while incanting their Sourcerer Cantrips and Spells.
-| 
-| During the casting of any Sourcerer Cantrip or Spell, the Sourcerer gains the Inherent Slowed condition, but is otherwise free to move. This ability does not override the specific requirements of the spell being cast, thus, if the specific spell itself calls for the caster to remain in place, or pivot on one foot, or any other requirement, the caster must abide by those restrictions.''
+description: |
+  The Sourcerer’s channeling of magic through the Eldritch Source unbinds them from the traditional need to remain still while gathering power, allowing the arcane theurgist to walk while incanting their Sourcerer Cantrips and Spells.
+
+  During the casting of any Sourcerer Cantrip or Spell, the Sourcerer gains the Inherent Slowed condition, but is otherwise free to move. This ability does not override the specific requirements of the spell being cast, thus, if the specific spell itself calls for the caster to remain in place, or pivot on one foot, or any other requirement, the caster must abide by those restrictions.

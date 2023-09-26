@@ -1,0 +1,9 @@
+name: Focused Results
+requires:
+  - sourcerer:6
+  - basic-classes<2
+grants:
+  - sourcerer.cantrips:1
+  - sourcerer.spell_slots@1:1
+description: |
+  The Sourcerer gains an additional Cantrip from the Sourcerer Class list and an additional Novice Spell Slot.

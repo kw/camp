@@ -1,0 +1,23 @@
+name: Destructive Resonance
+incant: '"... to create the perfect resonance.”'
+call: Short Imbue Magnify Resonance to Self
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+refresh: Spell
+effect: Imbue
+description:
+   For the duration of this enchantment, the caster gains the Magnify Resonance power below.
+subcard:
+   name: Magnify Resonance
+   incant: None
+   call: Piercing 1 to Helpless by [Eldritch Accent]
+   target: Individual
+   duration: Instantaneous
+   delivery: Touch
+   refresh: Quick 100
+   accent: '[Eldritch Accent]'
+   effect: Piercing
+   description: |
+      The Sourcerer is able to set up deadly resonances within a helpless or willing target causing the victim to literally shake apart under the ever increasing vibrations. At-will, the caster may call “Piercing 1 to Helpless by [Eldritch Accent].” In addition, they may add the “to Insubstantial” or “to Imprisoned” qualifiers to this power.

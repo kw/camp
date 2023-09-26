@@ -1,0 +1,81 @@
+type: class
+name: Sourcerer
+category: Basic Class
+sphere: arcane
+starting_features:
+  - basic-arcane
+  - warcaster
+multiclass_features:
+  - basic-arcane
+level_grants:
+  2: cancel
+  7: sourc-spikes-bonus
+choices:
+  contract-with-other:
+    starting_class: true
+    name: Contract With the Other
+    matcher:
+      id:
+        - contract-with-other-1
+        - contract-with-other-2
+        - contract-with-other-3
+description: |
+  Drawing their arcane might from a well of power deep within the fabric of reality, Sourcerers bend reality through channeling the power gathered from the Echoes of the Primordials, rather than the intense study of more traditional arcane casters. Many believe that this power comes from ancient entities beyond the spans of time, or is simply innate to the world around us, but few are truly sure. Others suggest that the ability to channel arcane magic through a source is the destiny of all mortals - an ascension whose time has come, and that the few Sourcerers that exist are but the nascent children of a bright, and perhaps magnificent, future.
+
+  Still, Sourcerers adhere to the rules of mortal magic in many ways - through incantation and concentration, the weave of magic flows, sometimes with more subtle distinctions between their learned brethren, and other times in stark contrast. Unhindered by the anchors of the arcane, the Sourcerer strides through the theater of war, bringing down those who would stand before them.
+  The Sourcerer is an Arcane spell-caster. The Sourcerer should choose a special symbol that is their caster-sigil and mark their packets with it. A Sourcerer must also have an Eldritch Source as described below.
+
+  ### The Unbinding
+
+  Due to the nature of the interaction with heavier armor and the Eldritch Source of the Sourcerer’s magics, they are unable to use their Archetype Powers if they are utilizing non-Barrier Armor.
+
+  ### Base Incant
+
+  > “I call upon the Weave Arcane, its boundless power, my domain,
+  > With Echoes bound through wielded Source, I conjure bursts of Arcane force,
+  > By my hand, my will sublime, I cleave the winding streams of Time,
+  > With strength unleashed, unfettered soul, Fate is mine now to control…”
+
+  ### Note on Spellbooks
+
+  Sourcerers do not have spellbooks and, if you already have an arcane spellbook, becoming
+  a sourcerer will cause you to lose it. This will remove the four spells previously gained from
+  Basic Arcane, and will cause you to be ineligible to benefit from skills that interact with your
+  arcane spellbook.
+---
+id: sourc-spikes-bonus
+type: subfeature
+parent: sourcerer
+name: +1 Max Spikes
+display_type: Bonus
+category: Sourcerer Class Bonuses
+grants: spikes:1
+---
+id: contract-with-other-1
+type: subfeature
+display_type: Path
+parent: sourcerer
+name: Power Contract
+category: Sourcerer Starting Skills
+grants: extended-capacity-novice:3
+description: Extended Capacity - Novice x3
+---
+id: contract-with-other-2
+type: subfeature
+display_type: Path
+parent: sourcerer
+name: Skill Contract
+category: Sourcerer Starting Skills
+grants: additional-cantrip
+description: Additional Cantrip (6)
+---
+id: contract-with-other-3
+type: subfeature
+display_type: Path
+parent: sourcerer
+name: Deeper Contract
+category: Sourcerer Starting Skills
+grants:
+  - patron
+  - gift-of-hateful-retribution
+description: Patron [Character’s Choice] (4), Gift of Hateful Retribution I (2)

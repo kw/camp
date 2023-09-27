@@ -18,5 +18,7 @@ choices:
       parent:
         type: class
     controller: sphere-grant
+    choice_requires:
+      arcane: -sourcerer
 description: |
   The character can add two spells from a spell-casting class they have levels in and add them to their spellbook. These spells can be of any tier (although that will not make them castable). If the character does not have a class spell-list, they may pick spells from any class’ spell list.

@@ -201,7 +201,7 @@ class CharacterController(ABC):
 
     def issues(self) -> list[base_models.Issue]:
         issues: list[base_models.Issue] = []
-        for feature in self.features.values():
+        for feature in list(self.features.values()):
             if new_issues := feature.issues():
                 issues.extend(new_issues)
         return issues
@@ -340,7 +340,7 @@ class CharacterController(ABC):
             if isinstance(req, str):
                 # It's unlikely that an unparsed string gets here, but if so,
                 # go ahead and parse it.
-                req = base_models.PropExpression.parse(req)
+                req = base_models.parse_req(req)
             if not (rd := req.evaluate(self)):
                 messages.append(rd.reason)
         if messages:

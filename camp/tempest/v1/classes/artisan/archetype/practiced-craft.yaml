@@ -14,13 +14,11 @@ choices:
         - greater-alchemy
         - greater-enchanting
         - greater-tinkering
-    controller: practiced-craft
-    controller_data:
-      requires: artisan.specialization+crafter:9
-      choice-requires:
-        greater-alchemy: journeyman-alchemy
-        greater-enchanting: journeyman-enchanting
-        greater-tinkering: journeyman-tinkering
+    requires: artisan.specialization+crafter:9
+    choice_requires:
+      greater-alchemy: journeyman-alchemy
+      greater-enchanting: journeyman-enchanting
+      greater-tinkering: journeyman-tinkering
 description: |
   The Artisan gains an additional rank of the Fortunate Finder skill.
 

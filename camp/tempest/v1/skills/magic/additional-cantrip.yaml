@@ -1,7 +1,8 @@
 name: Additional Cantrip
 cost: 6
 requires:
-  any:
+  - level:1
+  - any:
     - basic-arcane
     - basic-faith
 choices:

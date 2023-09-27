@@ -12,6 +12,7 @@ choices:
       parent:
         type: class
     controller: sphere-grant
+    requires: -sourcerer
     controller_data:
       sphere: arcane
 description: |

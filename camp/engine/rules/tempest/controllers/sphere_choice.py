@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from camp.engine.rules.base_models import Discount
+from camp.engine.rules.decision import Decision
 
 from . import choice_controller
 
@@ -16,6 +17,14 @@ class SphereGrantChoice(choice_controller.GrantChoice):
     depends on whether you have Basic Arcane and/or Basic Faith (which you must have
     at least one of to take the skill).
     """
+
+    def _check_req(self, choice: str) -> Decision:
+        if not (rd := super()._check_req(choice)):
+            return rd
+        controller = self._feature.character.feature_controller(choice)
+        if sphere := getattr(controller, "sphere", None):
+            return super()._check_req(sphere)
+        return Decision.OK
 
     def _matches(self, choice: str, already_chosen: bool = False) -> bool:
         """In addition to the normal feature match, does the rest of the filtering described above."""
@@ -100,13 +109,9 @@ class SphereBonusChoice(choice_controller.ChoiceController):
         choices = {}
         if not self.choices_remaining > 0:
             return choices
-        controller_data = self.controller_data
         for sphere in sorted(self._feature.character.available_spheres):
-            if sphere_requires := controller_data.get("sphere_requires", None):
-                requirement = f"{sphere}.{sphere_requires}"
-                if not self._feature.character.meets_requirements(requirement):
-                    continue
-            choices[sphere] = self.describe_choice(sphere)
+            if self._check_req(sphere):
+                choices[sphere] = self.describe_choice(sphere)
         return choices
 
     def update_propagation(
@@ -115,6 +120,8 @@ class SphereBonusChoice(choice_controller.ChoiceController):
         super().update_propagation(grants, discounts)
 
         for choice, ranks in self.choice_ranks().items():
+            if not self._check_req(choice):
+                continue
             bonus = self.definition.controller_data.get("bonus", None)
             if bonus:
                 choice = f"{choice}.{bonus}"

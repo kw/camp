@@ -13,9 +13,11 @@ choices:
     multi: true
     limit_is_per_rank: true
     controller: sphere-bonus
+    choice_requires:
+      arcane: arcane.spell_slots@2
+      divine: divine.spell_slots@2
     controller_data:
       bonus: spell_slots@2
-      sphere_requires: spell_slots@2
 description: |
   The character chooses one Sphere of magic she has an Adept Spell slot
   for and gains one additional Adept spell-slot in that Sphere and can use

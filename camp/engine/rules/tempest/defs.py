@@ -108,6 +108,8 @@ class ChoiceDef(base_models.BaseModel):
         controller_args: If provided, a dictionary of arbitrary data to be used
             by the custom controller.
         multi: Allows a choice to be taken multiple times.
+        requires: A requirement that must be met for the choice to be active.
+        choice_requires: Requirements for each choice that must be met to be available.
     """
 
     name: str | None = None
@@ -119,6 +121,8 @@ class ChoiceDef(base_models.BaseModel):
     controller: str | None = None
     controller_data: dict | None = None
     multi: bool = False
+    requires: base_models.Requirements = None
+    choice_requires: dict[str, base_models.Requirements] | None = None
 
 
 class PowerCard(base_models.BaseModel):

@@ -12,10 +12,12 @@ choices:
     limit: 1
     multi: true
     limit_is_per_rank: true
+    choice_requires:
+      arcane: arcane.spell_slots@3
+      divine: divine.spell_slots@3
     controller: sphere-bonus
     controller_data:
       bonus: spell_slots@3
-      sphere_requires: spell_slots@3
 description: |
   The character chooses one Sphere of magic she has a Greater Spell slot
   for and gains one additional Greater spell-slot in that Sphere and can

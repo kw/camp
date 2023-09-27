@@ -2,7 +2,9 @@ name: Novice Bookcaster
 cost: 1
 requires:
   any:
-    - basic-arcane
+    - all:
+      - basic-arcane
+      - -sourcerer
     - basic-faith
 description: |
   The character can cast Novice level spells directly from her spellbook.

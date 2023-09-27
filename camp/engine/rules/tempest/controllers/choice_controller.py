@@ -43,6 +43,10 @@ class ChoiceController(base_engine.ChoiceController):
 
     @property
     def description(self) -> str:
+        if not (rd := self._meets_req):
+            return (
+                rd.reason or "You do not meet the requirements to receive this benefit."
+            )
         return self.definition.description
 
     @property
@@ -57,25 +61,45 @@ class ChoiceController(base_engine.ChoiceController):
 
     @property
     def choices_remaining(self) -> int:
+        if not self._meets_req:
+            return 0
         if self.limit == "unlimited":
             return 999
         return self.limit - sum(self.choice_ranks().values())
 
     def issues(self) -> list[Issue] | None:
+        issues = super().issues() or []
+        character = self._feature.character
+
         remaining = self.choices_remaining
         if remaining < 0:
-            return [
+            issues.append(
                 Issue(
                     issue_code="choice-over-limit",
                     reason=f"{self._feature.display_name()} - {self.name} has too many choices taken ({-remaining} over)",
                     feature_id=self._feature.full_id,
                     choice=self.id,
                 )
-            ]
-        return None
+            )
+
+        # Individual choices may have requirements. Don't grant their benefits if the requirement
+        # ceases to be met.
+        for choice in self.choice_ranks().keys():
+            if not (rd := self._check_req(choice)):
+                issues.append(
+                    Issue(
+                        issue_code="choice-subrequirement-not-met",
+                        feature_id=self._feature.full_id,
+                        choice=self.id,
+                        reason=f"{self._feature.display_name()} - {self.name} choice requirement for {character.display_name(choice)} not met: {rd.reason}",
+                    )
+                )
+        return issues
 
     def taken_choices(self) -> dict[str, str]:
         taken = {}
+        if not self._meets_req:
+            return taken
         if self._feature.model.choices:
             if choices := self._feature.model.choices.get(self._choice):
                 for choice in choices:
@@ -115,6 +139,18 @@ class ChoiceController(base_engine.ChoiceController):
         self._feature.model.choices[self._choice] = choices
         self._feature.reconcile()
         return Decision(success=True, mutation_applied=True, reason="Choice removed.")
+
+    @property
+    def _meets_req(self) -> Decision:
+        if req := self.definition.requires:
+            return self._feature.character.meets_requirements(req)
+        return Decision.OK
+
+    def _check_req(self, choice: str) -> Decision:
+        if req_dict := self.definition.choice_requires:
+            if req := req_dict.get(choice):
+                return self._feature.character.meets_requirements(req)
+        return Decision.OK
 
     def _record_choice(self, choice: str) -> None:
         choice_ranks = self.choice_ranks()
@@ -195,11 +231,9 @@ class BaseFeatureChoice(ChoiceController):
         return self.definition.name
 
     @property
-    def description(self) -> str:
-        return self.definition.description
-
-    @property
     def limit(self) -> int | Literal["unlimited"]:
+        if not self._meets_req:
+            return 0
         if isinstance(self.definition.limit, int) and self.definition.limit_is_per_rank:
             return self.definition.limit * self._feature.value
         return self.definition.limit
@@ -224,11 +258,18 @@ class BaseFeatureChoice(ChoiceController):
         return choices
 
     def _matching_features(self) -> set[str]:
-        return {
-            choice
-            for choice in self._feature.character.ruleset.features
-            if self._matches(choice)
+        character = self._feature.character
+        if not self._meets_req:
+            return set()
+
+        features = {
+            choice for choice in character.ruleset.features if self._matches(choice)
         }
+        available_feats = set()
+        for feat in features:
+            if self._check_req(feat):
+                available_feats.add(feat)
+        return available_feats
 
     def _matches(self, choice: str, already_chosen: bool = False) -> bool:
         """Test if the feature matches the rules for this choice.
@@ -301,7 +342,15 @@ class GrantChoice(BaseFeatureChoice):
     def update_propagation(
         self, grants: dict[str, int], discounts: dict[str, list[Discount]]
     ) -> None:
+        # If there's a requirement to get the choice, don't grant selections if the
+        # requirement ceases to be met.
+        if not self._meets_req:
+            return
+        # Individual choices may have requirements. Don't grant their benefits if the requirement
+        # ceases to be met.
         for choice, ranks in self.choice_ranks().items():
+            if not self._check_req(choice):
+                continue
             if choice not in grants:
                 grants[choice] = 0
             grants[choice] += ranks
@@ -369,96 +418,6 @@ class SameTagChoice(GrantChoice):
         if tags := self.tags:
             return {feat for feat in features if tags & ruleset.features[feat].tags}
         return features
-
-
-class PracticedCraftChoice(GrantChoice):
-    @property
-    def choices_remaining(self) -> int:
-        if self._meets_req:
-            return super().choices_remaining
-        return 0
-
-    def issues(self) -> list[Issue] | None:
-        issues = super().issues() or []
-        # If there's a requirement to get the choice, don't grant selections if the
-        # requirement ceases to be met. We don't need to report any issue here unless
-        # a choice had previously been made but it's no longer working due to the loss
-        # of requirements.
-        if req := self._req:
-            if self.choice_ranks() and not (rd := self._meets_req):
-                issues.append(
-                    Issue(
-                        issue_code="choice-requirement-not-met",
-                        feature_id=self._feature.full_id,
-                        choice=self.id,
-                        reason=f"{self._feature.display_name()} - {self.name} choice requirement no longer met: {rd.reason}",
-                    )
-                )
-        # Individual choices may have requirements. Don't grant their benefits if the requirement
-        # ceases to be met.
-        choice_reqs = self._choice_reqs
-        for choice in self.choice_ranks().keys():
-            if (req := choice_reqs.get(choice)) and not (
-                rd := self._feature.character.meets_requirements(req)
-            ):
-                issues.append(
-                    Issue(
-                        issue_code="choice-subrequirement-not-met",
-                        feature_id=self._feature.full_id,
-                        choice=self.id,
-                        reason=f"{self._feature.display_name()} - {self.name} choice requirement for {self._character.display_name(choice)} not met: {rd.reason}",
-                    )
-                )
-        return issues
-
-    @property
-    def _req(self):
-        return self.definition.controller_data.get("requires")
-
-    @property
-    def _meets_req(self) -> Decision:
-        if self._req:
-            return self._feature.character.meets_requirements(self._req)
-        return Decision.OK
-
-    @property
-    def _choice_reqs(self) -> dict[str, str]:
-        return self.definition.controller_data.get("choice-requires") or {}
-
-    def _matching_features(self) -> set[str]:
-        character = self._feature.character
-        if not self._meets_req:
-            return set()
-
-        if choice_reqs := self._choice_reqs:
-            features = super()._matching_features()
-            available_feats = set()
-            for feat in features:
-                if (req := choice_reqs.get(feat)) and character.meets_requirements(req):
-                    available_feats.add(feat)
-            return available_feats
-
-        return set()
-
-    def update_propagation(
-        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
-    ) -> None:
-        # If there's a requirement to get the choice, don't grant selections if the
-        # requirement ceases to be met.
-        if req := self._req:
-            if not self._feature.character.meets_requirements(req):
-                return
-        # Individual choices may have requirements. Don't grant their benefits if the requirement
-        # ceases to be met.
-        choice_reqs = self._choice_reqs
-        for choice, ranks in self.choice_ranks().items():
-            if (
-                req := choice_reqs.get(choice)
-            ) and not self._feature.character.meets_requirements(req):
-                continue
-            if choice not in grants:
-                grants[choice] = 0
-            grants[choice] += ranks
 
 
 class AccessibleClassPowerChoice(GrantChoice):
@@ -577,6 +536,12 @@ class OptionBonusRouter(GrantChoice):
         expr = PropExpression.parse(choice)
         return expr.prop == self._feature.id and expr.option
 
+    def _meets_req(self) -> Decision:
+        return Decision.OK
+
+    def _check_req(self, choice: str) -> Decision:
+        return Decision.OK
+
     @property
     def name(self) -> str:
         return f"Bonus {self._feature.display_name()}"
@@ -625,8 +590,6 @@ def make_controller(
             return patron_choice.PatronChoice(feature, choice_id)
         case "same-tag":
             return SameTagChoice(feature, choice_id)
-        case "practiced-craft":
-            return PracticedCraftChoice(feature, choice_id)
         case "accessible-powers":
             return AccessibleClassPowerChoice(feature, choice_id)
         case "agile-learner":

@@ -472,9 +472,9 @@ typing-extensions==4.7.1 ; python_full_version >= "3.11.0" and python_full_versi
 tzdata==2023.3 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" and sys_platform == "win32" \
     --hash=sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a \
     --hash=sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda
-urllib3==2.0.2 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
-    --hash=sha256:61717a1095d7e155cdb737ac7bb2f4324a858a1e2e6466f6d03ff630ca68d3cc \
-    --hash=sha256:d055c2f9d38dc53c808f6fdc8eab7360b6fdbbde02340ed25cfbcd817c62469e
+urllib3==2.0.6 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
+    --hash=sha256:7a7c7003b000adf9e7ca2a377c9688bbc54ed41b985789ed576570342a375cd2 \
+    --hash=sha256:b19e1a85d206b56d7df1d5e683df4a7725252a964e3993648dd0fb5a1c157564
 whitenoise==6.0.0 ; python_full_version >= "3.11.0" and python_full_version < "4.0.0" \
     --hash=sha256:08c42bc535f9777eea1a599289d9433f081921f97887eaf6f559446b2a080374 \
     --hash=sha256:5a4aff543ee860fbe40d743e556adf92ccd41b7df45697cae074afdf657056b9

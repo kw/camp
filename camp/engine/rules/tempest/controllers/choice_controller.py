@@ -27,7 +27,7 @@ class ChoiceController(base_engine.ChoiceController):
 
     @cached_property
     def definition(self) -> defs.ChoiceDef:
-        return self._feature.definition.choices[self._choice]
+        return self._feature.definition.choices.get(self._choice) or defs.ChoiceDef()
 
     @cached_property
     def controller_data(self) -> dict:

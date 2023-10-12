@@ -12,7 +12,7 @@ work to try out the Docker instructions.
 
 ### Requirements
 
-* Python 3.11
+* Python 3.12
 * [Poetry](https://python-poetry.org/docs/#installation) package manager
 * **Mac**
   * X Code, possibly Homebrew

@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% load rules %}
+{% load markdown %}
 {% block head_title %}Home{% endblock %}
 
 {% block content %}
 
-{{ game.description }}
+{% if game.description %}
+{{ game.description | markdown}}
+{% endif %}
 
 {% if user.is_authenticated %}
 <h2>Characters</h2>

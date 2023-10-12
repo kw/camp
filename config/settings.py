@@ -207,4 +207,14 @@ if sentry_dsn := env.str("SENTRY_DSN", default=None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
-    sentry_sdk.init(dsn=sentry_dsn, integrations=[DjangoIntegration()])
+    if traces_sample_rate := env.float("SENTRY_SAMPLE_RATE", default=None):
+        if traces_sample_rate < 0:
+            traces_sample_rate = 0.0
+        if traces_sample_rate > 1:
+            traces_sample_rate = 1.0
+
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=traces_sample_rate,
+    )

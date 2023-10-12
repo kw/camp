@@ -4,35 +4,13 @@ import itertools
 from typing import Type
 from typing import TypeVar
 
-import markdown as md
-import nh3
 from django import template
-from django.template.defaultfilters import stringfilter
-from django.utils.safestring import mark_safe
 
 from camp.engine.rules.base_engine import CharacterController
 from camp.engine.rules.base_engine import PropertyController
 from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 
 register = template.Library()
-
-
-class _Extension(md.extensions.Extension):
-    def extendMarkdown(self, md):
-        md.registerExtension(self)
-
-
-_MD = md.Markdown(
-    output="html",
-    extensions=["tables", "smarty", _Extension()],
-)
-
-
-@register.filter()
-@mark_safe
-@stringfilter
-def markdown(value):
-    return nh3.clean(_MD.convert(value))
 
 
 @register.simple_tag(takes_context=True)

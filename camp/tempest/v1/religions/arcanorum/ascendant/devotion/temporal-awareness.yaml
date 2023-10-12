@@ -5,6 +5,9 @@ requires:
   any:
     - power@1
     - spell@1
+grants:
+  - carnal-creature
+  - hard-to-kill
 description: |
   _“The connection with the Ascendant was mind-altering in a way that Kalin never considered. New options unfolded before her, laid out as pathways stretching out to the horizon. Her own death, once an immutable fact of her existence, was now more of a… guideline, and one that could be avoided.”_
 subcard:

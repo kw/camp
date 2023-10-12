@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load rules %}
+{% load markdown %}
 
 {% block head_title %}{% block body_title %}
 {{chapter}}
@@ -12,7 +13,8 @@
 <p><a href="{% url 'chapter-manage' chapter.slug %}">Manage {{ chapter.name }}</a></p>
 {% endif %}
 
-<p>{{chapter.description}}</p>
-
+{% if chapter.description %}
+{{chapter.description | markdown}}
+{% endif %}
 
 {% endblock content %}

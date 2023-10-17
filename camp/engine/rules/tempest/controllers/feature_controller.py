@@ -373,6 +373,8 @@ class FeatureController(base_engine.BaseFeatureController):
         for data in self._propagation_data.values():
             if data.discount:
                 yield from data.discount
+        if self.option and (parent := self.option_parent):
+            yield from parent.discounts
 
     @property
     def is_starting(self) -> bool:
@@ -628,7 +630,9 @@ class FeatureController(base_engine.BaseFeatureController):
         if available is None:
             return _NO_PURCHASE
         grants = 0 if self.is_option_template else self.bonus
-        currency_delta = self.cost_for(self.paid_ranks + value, grants) - self.cost
+        currency_delta = self.cost_for(self.paid_ranks + value, grants) - max(
+            0, self.cost
+        )
         if available < currency_delta:
             return Decision(
                 success=False,
@@ -825,13 +829,6 @@ class FeatureController(base_engine.BaseFeatureController):
                 if feature_id not in discount_map:
                     discount_map[feature_id] = []
                 discount_map[feature_id].append(value)
-                if feature := self.character.feature_controller(feature_id):
-                    feature: FeatureController
-                    if feature.is_option_template:
-                        for option in feature.option_controllers.values():
-                            if option.full_id not in discount_map:
-                                discount_map[option.full_id] = []
-                            discount_map[option.full_id].append(value)
             return discount_map
         else:
             raise NotImplementedError(f"Unexpected discount value: {discounts}")

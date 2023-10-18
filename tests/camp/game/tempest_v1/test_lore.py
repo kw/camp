@@ -72,8 +72,7 @@ class TestSharpMind:
         can impact the results.
         """
         # Mages get a free Lore skill as a starting skill.
-        # This is handled by the Option Bonus Router system,
-        # which
+        # This is handled by the Option Bonus Router system.
         assert character.apply("mage:2")
         assert character.apply(
             ChoiceMutation(id="lore", choice="__option__", value="lore+Arcane")

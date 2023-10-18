@@ -127,8 +127,18 @@ class CharacterController(ABC):
                     continue
                 fc = self.feature_controller(id)
                 rd = fc.can_increase()
-                if available and not (rd or rd.needs_option):
-                    continue
+                if available:
+                    if not rd and fc.is_option_template:
+                        # Even if the option template isn't available, some options might still be available.
+                        # Consider a character with 1 CP trying to purchase Lore: Noble. Lore costs 2 CP, so it won't
+                        # be displayed. However, the character is an Edosite and has a -1 discount on Lore: Noble, and
+                        # viewing its page directly allows it to be purchased.
+                        for ofc in fc.option_controllers(taken=False).values():
+                            if ofc.can_increase():
+                                yield ofc
+                        continue
+                    elif not (rd or rd.needs_option):
+                        continue
                 yield fc
 
     @abstractmethod
@@ -663,7 +673,7 @@ class BaseFeatureController(PropertyController):
             fc = self.character.feature_controller(expr)
             children.append(fc)
             if fc.is_option_template:
-                children.extend(fc.option_controllers.values())
+                children.extend(fc.option_controllers().values())
 
         children.sort(key=lambda f: f.display_name())
         children.sort(key=lambda f: self.character.display_priority(f.feature_type))
@@ -701,6 +711,8 @@ class BaseFeatureController(PropertyController):
 
     @property
     def description(self) -> str | None:
+        if self.option and (descr := self.option_description(self.option)):
+            return f"""{self.definition.description}\n\n## {self.option}\n\n{descr}"""
         return self.definition.description
 
     @property
@@ -713,6 +725,16 @@ class BaseFeatureController(PropertyController):
                 return descr[:100] + "…"
             return descr
         return None
+
+    def option_description(self, option: str) -> str | None:
+        if descriptions := self.option_def.descriptions:
+            return descriptions.get(option)
+        return None
+
+    def describe_option(self, option: str) -> str:
+        if descr := self.option_description(option):
+            return f"{option}: {descr}"
+        return option
 
     @property
     def unlimited_ranks(self) -> bool:
@@ -749,15 +771,25 @@ class BaseFeatureController(PropertyController):
             return option_def
         return None
 
-    @property
-    def option_controllers(self) -> dict[str, BaseFeatureController]:
+    def option_controllers(
+        self, taken: bool = True
+    ) -> dict[str, BaseFeatureController]:
         if not self.option_def:
             return {}
-        return {
+        controllers = {
             c.option: c
             for c in self.character.features.values()
             if c.id == self.id and c.option and c.value > 0
         }
+        if not taken and (options := self.available_options):
+            for option in options:
+                if option not in controllers:
+                    controllers[option] = self.with_option(option)
+        return controllers
+
+    def with_option(self, option: str) -> BaseFeatureController:
+        option_expr = self.expression.model_copy(update={"option": option})
+        return self.character.feature_controller(option_expr)
 
     @property
     def purchase_cost_string(self) -> str | None:

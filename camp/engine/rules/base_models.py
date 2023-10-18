@@ -23,10 +23,10 @@ from . import base_engine
 from .decision import Decision
 
 _REQ_SYNTAX = re.compile(
-    r"""(?P<prop>[a-zA-Z0-9_-]+)
-    (?:\.(?P<attribute>[a-zA-Z0-9_-]+))?  # Attribute, aka ".utilities"
-    (?:@(?P<slot>-?[a-zA-Z0-9_-]+))?     # Choice, aka "@4"
-    (?:\+(?P<option>[a-zA-Z0-9?_-]+))?   # Skill options, aka "+Undead_Lore"
+    r"""(?P<prop>[^\s.@+:$<]+)
+    (?:\.(?P<attribute>[^\s.@+:$<]+))?  # Attribute, aka ".utilities"
+    (?:@(?P<slot>-?[^\s.@+:$<]+))?     # Choice, aka "@4"
+    (?:\+(?P<option>[^\s.@+:$<]+))?   # Skill options, aka "+Undead_Lore"
     (?::(?P<value>-?\d+))?       # Minimum value, aka ":5"
     (?:\$(?P<single>-?\d+))?       # Minimum value in single thing, aka "$5"
     (?:<(?P<less_than>-?\d+))?     # Less than value, aka "<5"

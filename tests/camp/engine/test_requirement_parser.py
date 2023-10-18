@@ -24,6 +24,7 @@ from camp.engine.rules.base_models import parse_req
         "feature-id@1+My_Option:2$3<4",
         "feature-id.attribute@1+My_Option:2$3<4",
         "feature_id.attribute_id",
+        "accent-substantiation+Agony_➡_Acid",
     ],
 )
 def test_parse_propreq(req):

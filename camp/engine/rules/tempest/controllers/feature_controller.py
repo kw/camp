@@ -117,7 +117,7 @@ class FeatureController(base_engine.BaseFeatureController):
     def taken_options(self) -> dict[str, int]:
         return {
             option: controller.value
-            for option, controller in self.option_controllers.items()
+            for option, controller in self.option_controllers().items()
         }
 
     @property
@@ -184,7 +184,10 @@ class FeatureController(base_engine.BaseFeatureController):
 
     def power_card(self) -> defs.PowerCard | None:
         return self.definition.model_copy(
-            update={"name": self.name_with_tags(include_cost=True)}
+            update={
+                "name": self.name_with_tags(include_cost=True),
+                "description": self.description,
+            },
         )
 
     def render_tags(self, exclude_tags: set[str] | None = None) -> str:
@@ -460,7 +463,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Sum any ranks the character has in instances of it.
             total: int = 0
-            for controller in self.option_controllers.values():
+            for controller in self.option_controllers().values():
                 total += controller.value
             return total
         if self._effective_ranks is None:
@@ -482,7 +485,7 @@ class FeatureController(base_engine.BaseFeatureController):
             # This is an aggregate controller for the feature.
             # Return the value of the highest instance.
             current: int = 0
-            for controller in self.option_controllers.values():
+            for controller in self.option_controllers().values():
                 new_value = controller.value
                 if new_value > current:
                     current = new_value
@@ -680,12 +683,6 @@ class FeatureController(base_engine.BaseFeatureController):
         if self.option_def and self.option:
             return self.character.controller(self.id)
         return None
-
-    def describe_option(self, option: str) -> str:
-        if descriptions := self.option_def.descriptions:
-            if descr := descriptions.get(option):
-                return f"{option}: {descr}"
-        return option
 
     def decrease(self, value: int) -> Decision:
         if not (rd := self.can_decrease(value)):

@@ -534,7 +534,7 @@ class OptionBonusRouter(GrantChoice):
     show_description: bool = False
 
     def _matching_features(self) -> set[str]:
-        return {c.full_id for c in self._feature.option_controllers.values()}
+        return {c.full_id for c in self._feature.option_controllers().values()}
 
     def _matches(self, choice: str, already_chosen: bool = False) -> bool:
         expr = PropExpression.parse(choice)

@@ -38,3 +38,18 @@ def test_serialization_flow(engine: TempestEngine, character: TempestCharacter):
     assert loaded.meets_requirements("inherited-option")
 
     assert data == loaded.dump_dict()
+
+
+def test_attribute_cache_uses_full_id(character: TempestCharacter):
+    """When evaluating attributes, the attribute controller cache saves a separate controller per full_id.
+
+    Once there was a heisenbug that caused the Temporal Awareness power to not show up as available, even though
+    its requirement is just "One Basic power or Novice spell". It would show up properly if you debugged it too hard.
+    This was caused by the attribute controller cache storing the first controller it saw for "spell" and using that
+    for subsequent calls. Due to one of the Advanced Religion powers for Ascendant having the "spell@2" requirement,
+    that controller would be loaded first and, assuming no 2nd-tier spell slots were present, would cause "spell@1" to
+    also return 0.
+    """
+    assert character.apply("cleric:2")
+    assert character.get("spell@2") == 0
+    assert character.get("spell@1") > 0

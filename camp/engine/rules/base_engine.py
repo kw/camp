@@ -273,7 +273,7 @@ class CharacterController(ABC):
         expr = base_models.PropExpression.parse(expr)
         controller: AttributeController | None = None
 
-        if controller := self._attribute_controllers.get(expr.prop):
+        if controller := self._attribute_controllers.get(expr.full_id):
             return controller
 
         attr: base_models.Attribute
@@ -289,7 +289,7 @@ class CharacterController(ABC):
                 else:
                     controller = SimpleAttributeWrapper(expr.full_id, self)
         if controller:
-            self._attribute_controllers[expr.prop] = controller
+            self._attribute_controllers[expr.full_id] = controller
             return controller
         raise ValueError(f"Attribute {expr.full_id} not found.")
 

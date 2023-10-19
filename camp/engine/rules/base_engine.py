@@ -727,7 +727,7 @@ class BaseFeatureController(PropertyController):
         return None
 
     def option_description(self, option: str) -> str | None:
-        if option_def := self.option_def
+        if option_def := self.option_def:
             if descriptions := option_def.descriptions:
                 return descriptions.get(option)
         return None

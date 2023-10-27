@@ -306,7 +306,8 @@ class Campaign(RulesModel):
         on_delete=models.CASCADE,
         related_name="campaigns",
     )
-    name: str = models.CharField(blank=False, max_length=100)
+    slug: str = models.SlugField(unique=True)
+    name: str = models.CharField(blank=True, max_length=100)
     description: str = models.TextField(blank=True)
     is_open: bool = models.BooleanField(default=False)
     ruleset: Ruleset = models.ForeignKey(
@@ -315,7 +316,9 @@ class Campaign(RulesModel):
     data: dict[str, Any] = models.JSONField(default=dict, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.game.name}: {self.name}"
+        if self.name:
+            return self.name
+        return "Untitled Campaign"
 
     rules_permissions = {
         "add": rules.can_manage_game,

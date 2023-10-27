@@ -35,6 +35,25 @@
 {% endif %}
 </ul>
 
+<h1>Campaigns</h1>
+<ul>
+{% for campaign in game.campaigns.all %}
+    {% has_perm 'game.change_campaign' user campaign as can_change_campaign %}
+    <li>
+        <a href="{% url 'campaign-detail' campaign.slug %}">
+            {{campaign}}
+        </a>
+        {% if can_change_campaign %}
+        <a href="{% url 'campaign-update' campaign.slug %}">📝</a>
+        {% endif %}
+    </li>
+{% endfor %}
+{% has_perm 'game.change_game' user game as can_add_campaign %}
+{% if can_add_campaign %}
+<p><a href="{% url 'campaign-add' %}">Add Campaign</a></p>
+{% endif %}
+</ul>
+
 <h1>Roles</h1>
 <ul>
 {% for role in game.roles.all %}
@@ -51,9 +70,9 @@
 {% endfor %}
 {% has_perm 'game.change_game' user game as can_add_role %}
 {% if can_add_role %}
-    <p><a href="{% url 'gamerole-add' %}">Add Role</a></p>
-{% endif %}
+<p><a href="{% url 'gamerole-add' %}">Add Role</a></p>
 </ul>
+{% endif %}
 
 <h1>Owners</h1>
 <ul>

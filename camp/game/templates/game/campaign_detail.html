@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load markdown %}
+{% block head_title %}{{campaign}}{% endblock %}
+
+{% block content %}
+
+{% has_perm 'game.change_campaign' user chapter as can_change_campaign %}
+
+{% if can_change_campaign %}
+<p><a href="{% url 'campaign-update' campaign.slug %}">Manage {{ campaign }}</a></p>
+{% endif %}
+
+{% if campaign.description %}
+{{ campaign.description | markdown}}
+{% endif %}
+
+{% endblock content %}

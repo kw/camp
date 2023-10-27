@@ -12,6 +12,7 @@ from rules.contrib.views import AutoPermissionRequiredMixin
 from camp.character.models import Character
 from camp.engine.rules.base_engine import Engine
 
+from .models import Campaign
 from .models import Chapter
 from .models import ChapterRole
 from .models import Game
@@ -242,3 +243,50 @@ class DeleteGameRoleView(AutoPermissionRequiredMixin, DeleteView):
             return queryset.filter(user__username=username, game=game).get()
         except queryset.model.DoesNotExist:
             raise Http404("No GameRole found matching the query")
+
+
+class CampaignView(AutoPermissionRequiredMixin, DetailView):
+    model = Campaign
+
+
+class CreateCampaignView(AutoPermissionRequiredMixin, CreateView):
+    model = Campaign
+
+    fields = ["slug", "name", "description", "is_open", "ruleset"]
+
+    def get_permission_object(self):
+        return self.request.game
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("campaign-update", args=[self.object.slug])
+        return "/"
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.game = self.request.game
+        self.object.save()
+        return super().form_valid(form)
+
+
+class UpdateCampaignView(AutoPermissionRequiredMixin, UpdateView):
+    model = Campaign
+    fields = ["slug", "name", "description", "is_open", "ruleset"]
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("campaign-update", args=[self.object.slug])
+        return "/"
+
+
+class DeleteCampaignView(AutoPermissionRequiredMixin, DeleteView):
+    model = Campaign
+    fields = ["slug", "name", "description", "is_open", "ruleset"]
+
+    @property
+    def success_url(self):
+        if self.object:
+            return reverse("campaign-update", args=[self.object.slug])
+        return "/"

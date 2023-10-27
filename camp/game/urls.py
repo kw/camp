@@ -53,4 +53,19 @@ urlpatterns = [
         views.DeleteRulesetView.as_view(),
         name="ruleset-delete",
     ),
+    # Campaign management
+    path("campaigns/new/", views.CreateCampaignView.as_view(), name="campaign-add"),
+    path(
+        "campaigns/<slug:slug>/", views.CampaignView.as_view(), name="campaign-detail"
+    ),
+    path(
+        "campaigns/<slug:slug>/update/",
+        views.UpdateCampaignView.as_view(),
+        name="campaign-update",
+    ),
+    path(
+        "campaigns/<slug:slug>/delete/",
+        views.DeleteCampaignView.as_view(),
+        name="campaign-delete",
+    ),
 ]

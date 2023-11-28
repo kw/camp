@@ -17,7 +17,7 @@ force_single_line = true
 [tool.poetry.dependencies]
 python = "^3.12.0"
 crispy-bootstrap5 = "==0.6"
-django = "4.2.3"
+django = "4.2.7"
 django-allauth = "==0.50.0"
 django-crispy-forms = "==1.14.0"
 django-debug-toolbar = "4"

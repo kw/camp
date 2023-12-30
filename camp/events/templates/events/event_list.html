@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load rules %}
+{% block head_title %}{% block body_title %}
+Events
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+{% regroup event_list by chapter as events_by_chapter %}
+
+{% for chapter in events_by_chapter %}
+  <h2>{{chapter.grouper}}</h2>
+  <ul>
+    {% for event in chapter.list %}
+    <li>{{ event.name }} ({{event.event_start_date}} - {{event.event_end_date}})</li>
+    {% endfor %}
+  </ul>
+{% empty %}
+<li>No events to display</li>
+{% endfor %}
+{% endblock content %}

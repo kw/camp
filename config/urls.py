@@ -9,6 +9,7 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("accounts/", include("camp.accounts.urls")),
+    path("events/", include("camp.events.urls")),
     path("pages/", include("django.contrib.flatpages.urls")),
     path("characters/", include("camp.character.urls")),
     path("", include("camp.game.urls")),

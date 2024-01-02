@@ -209,6 +209,9 @@ class Chapter(RulesModel):
     description: str = models.TextField(blank=True)
     is_open: bool = models.BooleanField(default=True)
     owners: set[User] = models.ManyToManyField(_settings.AUTH_USER_MODEL)
+    timezone: str = models.CharField(
+        blank=True, max_length=50, help_text="e.g. 'America/Denver'"
+    )
 
     def __str__(self):
         return self.name

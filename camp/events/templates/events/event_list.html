@@ -12,7 +12,7 @@ Events
   <h2>{{chapter.grouper}}</h2>
   <ul>
     {% for event in chapter.list %}
-    <li>{{ event.name }} ({{event.event_start_date}} - {{event.event_end_date}})</li>
+    <li><a href="{% url 'event-detail' event.pk %}">{{ event.name }} ({{event.event_start_date}} - {{event.event_end_date}})</a></li>
     {% endfor %}
   </ul>
 {% empty %}

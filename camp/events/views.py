@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.db.models.query import QuerySet
+from django.views.generic import DetailView
 from django.views.generic import ListView
 
 from camp.game.models import Chapter
@@ -15,3 +16,10 @@ class EventsList(ListView):
     def get_queryset(self) -> QuerySet[Any]:
         chapters = Chapter.objects.filter(game=self.request.game)
         return super().get_queryset().filter(chapter__in=chapters)
+
+
+class EventDetail(DetailView):
+    model = models.Event
+
+    def get_queryset(self) -> QuerySet[Any]:
+        return super().get_queryset().prefetch_related("campaign", "chapter")

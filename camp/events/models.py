@@ -20,6 +20,7 @@ class Month(models.IntegerChoices):
     JUN = 6
     JUL = 7
     AUG = 8
+    SEPT = 9
     OCT = 10
     NOV = 11
     DEC = 12
@@ -58,10 +59,9 @@ class Event(RulesModel):
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return (
-            f"{self.campaign}, {self.chapter}, {self.logistics_year}-{self.logistics_month}"
-            + (f": {self.name}" if self.name else "")
-        )
+        if self.name:
+            return self.name
+        return f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
 
     class Meta:
         constraints = [

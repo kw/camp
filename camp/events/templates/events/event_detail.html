@@ -7,12 +7,6 @@
 {% endblock %}{% endblock %}
 
 {% block content %}
-{% if event.description %}
-{{ event.description | markdown }}
-{% else %}
-<p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
-{% endif %}
-
 <ul>
   <li><b>Campaign:</b> {{event.campaign}} ({{event.logistics_year}}-{{event.logistics_month}})</li>
   <li><b>Chapter:</b> {{event.chapter}}</li>
@@ -23,5 +17,15 @@
   {% if event.registration_deadline %}
   <li><b>Registration Deadline:</b> {{ event.registration_deadline|chapterzone:event.chapter }}</li>
   {% endif %}
+  {% if event.location %}
+  <li><b>Location:</b> {{ event.location | markdown}}
+  {% endif %}
 </ul>
+
+{% if event.description %}
+{{ event.description | markdown }}
+{% else %}
+<p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
+{% endif %}
+
 {% endblock content %}

@@ -3,9 +3,9 @@
 {% load crispy_forms_tags %}
 {% block head_title %}{% block body_title %}
 {% if object %}
-Update Campaign {{object.name}}
+Update Event
 {% else %}
-Create Campaign
+Create Event
 {% endif %}
 {% endblock %}{% endblock %}
 
@@ -14,11 +14,4 @@ Create Campaign
     {{ form | crispy }}
     <input type="submit" class="btn btn-primary" value="Save">
 </form>
-
-{% if object %}
-    {% has_perm 'game.delete_campaign' user object as can_delete_role %}
-    {% if can_delete_role %}
-    <a href="{% url 'campaign-delete' object.slug %}">Delete Campaign</a>
-    {% endif %}
-{% endif %}
 {% endblock content %}

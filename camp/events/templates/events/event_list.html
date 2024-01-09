@@ -12,10 +12,11 @@ Events
   <h2>{{chapter.grouper}}</h2>
   <ul>
     {% for event in chapter.list %}
-    <li><a href="{% url 'event-detail' event.pk %}">{{ event.name }} ({{event.event_start_date}} - {{event.event_end_date}})</a></li>
+    <li><a href="{% url 'event-detail' event.pk %}">{{ event }} ({{event.event_start_date}} - {{event.event_end_date}})</a></li>
     {% endfor %}
   </ul>
 {% empty %}
 <li>No events to display</li>
 {% endfor %}
+<a href="{% url 'event-create' %}">Create Event</a>
 {% endblock content %}

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import F
 from django.db.models import Q
+from django.urls import reverse
 from rules.contrib.models import RulesModel
 
 from ..character import models as char_models
@@ -30,7 +31,10 @@ class Event(RulesModel):
     name: str = models.CharField(max_length=100, blank=True)
     description: str = models.TextField(blank=True)
     location: str = models.TextField(blank=True)
-    details_template: str = models.TextField(blank=True)
+    details_template: str = models.TextField(
+        blank=True,
+        help_text="This text will be pre-filled into the registration form. A quick way to include questions that are not part of the default form.",
+    )
 
     chapter: game_models.Chapter = models.ForeignKey(
         game_models.Chapter, on_delete=models.PROTECT, related_name="events"
@@ -42,26 +46,65 @@ class Event(RulesModel):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
-    registration_open = models.DateTimeField(null=True, blank=True)
-    registration_deadline = models.DateTimeField(null=True, blank=True)
+    registration_open = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When should the Register button be shown, in the chapter's local timezone?",
+    )
+    registration_deadline = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When should the Register button go away, in the chapter's local timezone?",
+    )
     event_start_date = models.DateField()
     event_end_date = models.DateField()
 
-    logistics_periods = models.DecimalField(max_digits=4, decimal_places=2)
-    logistics_year = models.IntegerField(blank=True, default=0)
-    logistics_month = models.IntegerField(blank=True, default=0, choices=Month.choices)
+    logistics_periods = models.DecimalField(
+        max_digits=4, decimal_places=2, help_text="How many long rests?"
+    )
+    logistics_year = models.IntegerField(
+        blank=True,
+        default=0,
+        help_text="What year of the campaign is this event in? Must match the event start or end date.",
+    )
+    logistics_month = models.IntegerField(
+        blank=True,
+        default=0,
+        choices=Month.choices,
+        help_text=(
+            "What month of the campaign should this be counted as? "
+            "Must match the event start or end date."
+        ),
+    )
 
     def save(self, *args, **kwargs):
+        # The logistics month defaults to the end date of the event.
         if not self.logistics_year:
             self.logistics_year = self.event_end_date.year
         if not self.logistics_month:
             self.logistics_month = self.event_end_date.month
+
+        # If a logistics month is specified that doesn't correspond to either
+        # the start of the event or the end of the event, reset it.
+        valid_logi_periods = {
+            (self.event_start_date.year, self.event_start_date.month),
+            (self.event_end_date.year, self.event_end_date.month),
+        }
+        if (self.logistics_year, self.logistics_month) not in valid_logi_periods:
+            self.logistics_year = self.event_end_date.year
+            self.logistics_month = self.event_end_date.month
+
+        if not self.name:
+            self.name = str(self)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         if self.name:
             return self.name
         return f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
+
+    def get_absolute_url(self):
+        return reverse("event-detail", kwargs={"pk": self.pk})
 
     class Meta:
         constraints = [

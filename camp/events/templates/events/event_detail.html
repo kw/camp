@@ -28,4 +28,6 @@
 <p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
 {% endif %}
 
+<a href="{% url 'event-update' event.pk %}">Edit Event</a>
+
 {% endblock content %}

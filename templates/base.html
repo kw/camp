@@ -40,6 +40,16 @@
             class="nav-link"
             {% endif %}
             href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a
+            {% if request.resolver_match.url_name == 'events-list' %}
+            class="nav-link active"
+            {% else %}
+            class="nav-link"
+            {% endif %}
+            href="{% url 'events-list' %}">Events</a>
+          </li>
           {% if can_change_game %}
           <li class="nav-item">
             <a

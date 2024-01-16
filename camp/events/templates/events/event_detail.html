@@ -7,6 +7,9 @@
 {% endblock %}{% endblock %}
 
 {% block content %}
+{% if event.event_in_progress %}
+<p><i>This event is currently in progress</i></p>
+{% endif %}
 <ul>
   <li><b>Campaign:</b> {{event.campaign}} ({{event.logistics_year}}-{{event.logistics_month}})</li>
   <li><b>Chapter:</b> {{event.chapter}}</li>
@@ -28,6 +31,21 @@
 <p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
 {% endif %}
 
-<a href="{% url 'event-update' event.pk %}">Edit Event</a>
+{% if event.registration_window_open %}
+  <p>
+  {% if not event.canceled_date %}
+    <i>Event Registration Window Open! (Coming Soon™️)</i>
+  {% else %}
+    <i>Event has been canceled, registration not available.</i>
+  {% endif %}
+  </p>
+{% endif %}
+
+
+{% has_perm 'events.change_event' user event as can_change_event %}
+
+{% if can_change_event %}
+<p><a href="{% url 'event-update' event.pk %}">Edit Event</a></p>
+{% endif %}
 
 {% endblock content %}

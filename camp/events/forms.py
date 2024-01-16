@@ -14,7 +14,6 @@ class EventCreateForm(forms.ModelForm):
             "description",
             "location",
             "details_template",
-            "chapter",
             "campaign",
             "event_start_date",
             "event_end_date",

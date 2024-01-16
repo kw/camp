@@ -6,17 +6,18 @@ Events
 
 {% block content %}
 
-{% regroup event_list by chapter as events_by_chapter %}
-
-{% for chapter in events_by_chapter %}
-  <h2>{{chapter.grouper}}</h2>
+{% for chapter, events in chapter_events %}
+  <h2>{{chapter}}</h2>
   <ul>
-    {% for event in chapter.list %}
+    {% for event in events %}
     <li><a href="{% url 'event-detail' event.pk %}">{{ event }} ({{event.event_start_date}} - {{event.event_end_date}})</a></li>
+    {% empty %}
+    <li>No events scheduled.</li>
     {% endfor %}
   </ul>
-{% empty %}
-<li>No events to display</li>
+  {% has_perm 'events.add_event' user chapter as can_create_event %}
+  {% if can_create_event %}
+  <p><a href="{% url 'event-create' chapter.slug %}">Create Event in {{chapter.name}}...</a></p>
+  {% endif %}
 {% endfor %}
-<a href="{% url 'event-create' %}">Create Event</a>
 {% endblock content %}

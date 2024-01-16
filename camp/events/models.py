@@ -1,8 +1,11 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import F
 from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from rules.contrib.models import RulesModel
 
 from ..character import models as char_models
@@ -45,16 +48,17 @@ class Event(RulesModel):
     creator: User = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    canceled_date = models.DateTimeField(blank=True, null=True)
 
     registration_open = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="When should the Register button be shown, in the chapter's local timezone?",
+        help_text="When should the Register button be shown, in the chapter's local timezone? Leave blank to open immediately.",
     )
     registration_deadline = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="When should the Register button go away, in the chapter's local timezone?",
+        help_text="When should the Register button go away, in the chapter's local timezone? Leave blank to open until end-of-event.",
     )
     event_start_date = models.DateField()
     event_end_date = models.DateField()
@@ -100,16 +104,45 @@ class Event(RulesModel):
 
     def __str__(self) -> str:
         if self.name:
-            return self.name
-        return f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
+            effective_name = self.name
+        else:
+            effective_name = (
+                f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
+            )
+        if self.is_canceled:
+            effective_name = f"{effective_name} [CANCELED]"
+        return effective_name
 
     def get_absolute_url(self):
         return reverse("event-detail", kwargs={"pk": self.pk})
+
+    def registration_window_open(self):
+        now = timezone.now()
+        if self.registration_open and now < self.registration_open:
+            return False
+        if self.registration_deadline and now > self.registration_deadline:
+            return False
+        # If no registration deadline was specified, we don't allow registration
+        # past the end of the event.
+        if (
+            not self.registration_deadline
+            and datetime.date.today() > self.event_end_date
+        ):
+            return False
+        return True
+
+    def event_in_progress(self):
+        return self.event_start_date <= datetime.date.today() <= self.event_end_date
+
+    @property
+    def is_canceled(self):
+        return bool(self.canceled_date)
 
     class Meta:
         constraints = [
             models.CheckConstraint(
                 name="end_date_gte_start",
+                violation_error_message="End date must not be before start date.",
                 check=Q(event_end_date__gte=F("event_start_date")),
             ),
         ]
@@ -123,9 +156,9 @@ class Event(RulesModel):
 
         rules_permissions = {
             "view": rules.always_allow,
-            "add": rules.is_chapter_logistics,
-            "change": rules.is_chapter_logistics,
-            "delete": rules.is_chapter_logistics,
+            "add": rules.can_manage_events,
+            "change": rules.can_manage_events,
+            "delete": rules.can_manage_events,
         }
 
 

@@ -1,8 +1,10 @@
-from django.views.generic import CreateView
-from django.views.generic import DetailView
-from django.views.generic import ListView
-from django.views.generic import UpdateView
-from django.views.generic.edit import FormMixin
+from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.utils import timezone
+from rules.contrib.views import objectgetter
+from rules.contrib.views import permission_required
 
 from camp.game.models import Chapter
 
@@ -10,41 +12,96 @@ from . import forms
 from . import models
 
 
-class EventsList(ListView):
-    model = models.Event
-    ordering = ["chapter", "event_start_date"]
-
-    def get_queryset(self):
-        chapters = Chapter.objects.filter(game=self.request.game)
-        return super().get_queryset().filter(chapter__in=chapters)
+def event_list(request):
+    chapters = request.game.chapters.order_by("name")
+    chapter_events = [(c, c.events.order_by("event_start_date")) for c in chapters]
+    return render(request, "events/event_list.html", {"chapter_events": chapter_events})
 
 
-class EventDetail(DetailView):
-    model = models.Event
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related("campaign", "chapter")
-
-
-class EventCreate(CreateView):
-    model = models.Event
-    form_class = forms.EventCreateForm
-
-    def form_valid(self, form):
-        # We want to capture the user performing the create.
-        # To do this, we need to skip the superclass (ModelFormMixin)
-        # method entirely, since it also populates self.object from
-        # the form and saves it.
-        self.object = form.save(commit=False)
-        self.object.creator = self.request.user
-        self.object.save()
-        form.save_m2m()
-        return FormMixin.form_valid(self, form)
+@permission_required(
+    "events.view_event", fn=objectgetter(models.Event), raise_exception=True
+)
+def event_detail(request, pk):
+    event = _get_event(pk)
+    return render(request, "events/event_detail.html", {"event": event})
 
 
-class EventUpdate(UpdateView):
-    model = models.Event
-    form_class = forms.EventUpdateForm
+@permission_required(
+    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+def event_edit(request, pk):
+    event = _get_event(pk)
+    chapter = event.chapter
+    _ = event.campaign
+    timezone.activate(chapter.timezone)
+    if request.method == "POST":
+        form = forms.EventUpdateForm(request.POST, instance=event)
+        if form.is_valid():
+            event = form.save()
+            return redirect(event)
+    else:
+        form = forms.EventUpdateForm(instance=event)
+    return render(request, "events/event_form.html", {"form": form, "event": event})
 
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related("campaign", "chapter")
+
+@permission_required(
+    "events.add_event",
+    fn=objectgetter(Chapter, attr_name="slug", field_name="slug"),
+    raise_exception=True,
+)
+def event_create(request, slug):
+    chapter = get_object_or_404(Chapter, slug=slug)
+    timezone.activate(chapter.timezone)
+    event = models.Event(chapter=chapter)
+    if request.method == "POST":
+        form = forms.EventCreateForm(request.POST, instance=event)
+        if form.is_valid():
+            event = form.save()
+            return redirect(event)
+    else:
+        form = forms.EventCreateForm(instance=event)
+    return render(request, "events/event_form.html", {"form": form})
+
+
+@permission_required(
+    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+def event_cancel(request, pk):
+    if request.method == "GET":
+        # Don't allow an event to be canceled via GET
+        return redirect("event-update", pk=pk)
+
+    event = _get_event(pk)
+
+    if not event.canceled_date:
+        event.canceled_date = timezone.now()
+        event.save()
+        messages.warning(request, "Event canceled.")
+    else:
+        messages.error("Event was already canceled.")
+    return redirect("events-list")
+
+
+@permission_required(
+    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+def event_uncancel(request, pk):
+    if request.method == "GET":
+        # Don't allow an event to be uncanceled via GET
+        return redirect("event-update", pk=pk)
+
+    event = _get_event(pk)
+
+    if event.canceled_date:
+        event.canceled_date = None
+        event.save()
+        messages.success(request, "Event re-opened.")
+    else:
+        messages.warning(request, "Event had not been canceled, so good?")
+    return redirect(event)
+
+
+def _get_event(pk):
+    return get_object_or_404(
+        models.Event.objects.prefetch_related("campaign", "chapter"), pk=pk
+    )

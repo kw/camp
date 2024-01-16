@@ -2,7 +2,7 @@
 {% load rules %}
 {% load crispy_forms_tags %}
 {% block head_title %}{% block body_title %}
-{% if object %}
+{% if event %}
 Update Event
 {% else %}
 Create Event
@@ -10,7 +10,25 @@ Create Event
 {% endblock %}{% endblock %}
 
 {% block content %}
-<form method="post">{% csrf_token %}
+{# Prior to the actual form, add a form button that will cancel (or re-open) the event. #}
+{% if event %}
+    {% if event.canceled_date %}
+    <form method="post" action="{% url 'event-uncancel' event.pk %}"
+        onSubmit="return confirm('Really re-open this event?');">
+        {%csrf_token%}
+        <input type="submit" class="btn btn-success" value="Reopen Canceled Event">
+    </form>
+    {% else %}
+    <form method="post" action="{% url 'event-cancel' event.pk %}"
+        onSubmit="return confirm('Really cancel this event?');">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Cancel Event">
+    </form>
+    {% endif %}
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
     {{ form | crispy }}
     <input type="submit" class="btn btn-primary" value="Save">
 </form>

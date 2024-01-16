@@ -118,6 +118,9 @@ def is_chapter_logistics(user: User, obj):
     return False
 
 
+can_manage_events = can_manage_chapter | is_chapter_logistics
+
+
 @rules.predicate
 def is_chapter_tavernkeep(user: User, obj):
     """Is this user a member of the chapter's tavern staff?"""

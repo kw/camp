@@ -42,7 +42,7 @@
 {% endif %}
 
 
-{% has_perm 'events.change_event' user event as can_change_event %}
+{% has_perm 'game.change_event' user event as can_change_event %}
 
 {% if can_change_event %}
 <p><a href="{% url 'event-update' event.pk %}">Edit Event</a></p>

@@ -12,12 +12,12 @@ from rules.contrib.views import AutoPermissionRequiredMixin
 from camp.character.models import Character
 from camp.engine.rules.base_engine import Engine
 
-from .models import Campaign
-from .models import Chapter
-from .models import ChapterRole
-from .models import Game
-from .models import GameRole
-from .models import Ruleset
+from ..models import Campaign
+from ..models import Chapter
+from ..models import ChapterRole
+from ..models import Game
+from ..models import GameRole
+from ..models import Ruleset
 
 
 class HomePageView(DetailView):

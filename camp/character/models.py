@@ -17,7 +17,7 @@ import camp.game.models
 from camp.engine.rules.base_engine import Engine
 from camp.engine.rules.base_models import Mutation
 from camp.engine.rules.base_models import load_mutation
-from camp.game import rules
+from camp.game.models import game
 
 User = get_user_model()
 
@@ -81,10 +81,10 @@ class Character(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": rules.is_owner | rules.is_logistics | rules.is_plot,
-            "change": rules.is_owner | rules.is_logistics | rules.is_plot,
-            "delete": rules.is_owner | rules.is_logistics,
-            "add": rules.is_authenticated,
+            "view": game.is_owner | game.is_logistics | game.is_plot,
+            "change": game.is_owner | game.is_logistics | game.is_plot,
+            "delete": game.is_owner | game.is_logistics,
+            "add": game.is_authenticated,
         }
 
 
@@ -95,8 +95,8 @@ class Sheet(RulesModel):
         related_name="sheets",
         help_text="The character this sheet is for.",
     )
-    ruleset: camp.game.models.Ruleset = models.ForeignKey(
-        camp.game.models.Ruleset,
+    ruleset = models.ForeignKey(
+        "game.Ruleset",
         on_delete=models.PROTECT,
         related_name="sheets",
         help_text="The ruleset this sheet is intended to use.",
@@ -183,10 +183,10 @@ class Sheet(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": rules.is_owner | rules.is_logistics | rules.is_plot,
-            "change": rules.is_owner | rules.is_logistics | rules.is_plot,
-            "delete": rules.is_owner | rules.is_logistics,
-            "add": rules.is_owner | rules.is_logistics,
+            "view": game.is_owner | game.is_logistics | game.is_plot,
+            "change": game.is_owner | game.is_logistics | game.is_plot,
+            "delete": game.is_owner | game.is_logistics,
+            "add": game.is_owner | game.is_logistics,
         }
 
 

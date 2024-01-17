@@ -1,71 +1,77 @@
 from django.urls import path
 
-from . import views
+from .views import events
+from .views import game
 
 urlpatterns = [
     # Home / Game Views
-    path("", views.HomePageView.as_view(), name="home"),
-    path("manage/", views.ManageGameView.as_view(), name="game-manage"),
+    path("", game.HomePageView.as_view(), name="home"),
+    path("manage/", game.ManageGameView.as_view(), name="game-manage"),
     # Game Roles
-    path("manage/roles/new/", views.CreateGameRoleView.as_view(), name="gamerole-add"),
+    path("manage/roles/new/", game.CreateGameRoleView.as_view(), name="gamerole-add"),
     path(
         "manage/roles/<str:username>",
-        views.UpdateGameRoleView.as_view(),
+        game.UpdateGameRoleView.as_view(),
         name="gamerole-update",
     ),
     path(
         "manage/roles/<str:username>/delete/",
-        views.DeleteGameRoleView.as_view(),
+        game.DeleteGameRoleView.as_view(),
         name="gamerole-delete",
     ),
     # Chapter
-    path("chapters/<slug:slug>/", views.ChapterView.as_view(), name="chapter-detail"),
+    path("chapters/<slug:slug>/", game.ChapterView.as_view(), name="chapter-detail"),
     path(
         "chapters/<slug:slug>/manage/",
-        views.ChapterManageView.as_view(),
+        game.ChapterManageView.as_view(),
         name="chapter-manage",
     ),
     # Chapter Roles
     path(
         "chapters/<slug:slug>/roles/new",
-        views.CreateChapterRoleView.as_view(),
+        game.CreateChapterRoleView.as_view(),
         name="chapterrole-add",
     ),
     path(
         "chapters/<slug:slug>/roles/<str:username>/",
-        views.UpdateChapterRoleView.as_view(),
+        game.UpdateChapterRoleView.as_view(),
         name="chapterrole-update",
     ),
     path(
         "chapters/<slug:slug>/roles/<str:username>/delete/",
-        views.DeleteChapterRoleView.as_view(),
+        game.DeleteChapterRoleView.as_view(),
         name="chapterrole-delete",
     ),
     # Ruleset management
-    path("manage/rulesets/new/", views.CreateRulesetView.as_view(), name="ruleset-add"),
+    path("manage/rulesets/new/", game.CreateRulesetView.as_view(), name="ruleset-add"),
     path(
         "manage/rulesets/<int:pk>/edit/",
-        views.UpdateRulesetView.as_view(),
+        game.UpdateRulesetView.as_view(),
         name="ruleset-update",
     ),
     path(
         "manage/rulesets/<int:pk>/delete/",
-        views.DeleteRulesetView.as_view(),
+        game.DeleteRulesetView.as_view(),
         name="ruleset-delete",
     ),
     # Campaign management
-    path("campaigns/new/", views.CreateCampaignView.as_view(), name="campaign-add"),
-    path(
-        "campaigns/<slug:slug>/", views.CampaignView.as_view(), name="campaign-detail"
-    ),
+    path("campaigns/new/", game.CreateCampaignView.as_view(), name="campaign-add"),
+    path("campaigns/<slug:slug>/", game.CampaignView.as_view(), name="campaign-detail"),
     path(
         "campaigns/<slug:slug>/update/",
-        views.UpdateCampaignView.as_view(),
+        game.UpdateCampaignView.as_view(),
         name="campaign-update",
     ),
     path(
         "campaigns/<slug:slug>/delete/",
-        views.DeleteCampaignView.as_view(),
+        game.DeleteCampaignView.as_view(),
         name="campaign-delete",
     ),
+    # Events
+    path("events/", events.event_list, name="events-list"),
+    path("events/<int:pk>/", events.event_detail, name="event-detail"),
+    path("events/<int:pk>/edit/", events.event_edit, name="event-update"),
+    path("events/<int:pk>/cancel/", events.event_cancel, name="event-cancel"),
+    path("events/<int:pk>/uncancel/", events.event_uncancel, name="event-uncancel"),
+    path("events/new/<slug:slug>/", events.event_create, name="event-create"),
 ]

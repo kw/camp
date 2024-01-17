@@ -6,10 +6,8 @@ from django.utils import timezone
 from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
 
-from camp.game.models import Chapter
-
-from . import forms
-from . import models
+from .. import forms
+from .. import models
 
 
 def event_list(request):
@@ -19,7 +17,7 @@ def event_list(request):
 
 
 @permission_required(
-    "events.view_event", fn=objectgetter(models.Event), raise_exception=True
+    "game.view_event", fn=objectgetter(models.Event), raise_exception=True
 )
 def event_detail(request, pk):
     event = _get_event(pk)
@@ -27,7 +25,7 @@ def event_detail(request, pk):
 
 
 @permission_required(
-    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 def event_edit(request, pk):
     event = _get_event(pk)
@@ -45,12 +43,12 @@ def event_edit(request, pk):
 
 
 @permission_required(
-    "events.add_event",
-    fn=objectgetter(Chapter, attr_name="slug", field_name="slug"),
+    "game.add_event",
+    fn=objectgetter(models.Chapter, attr_name="slug", field_name="slug"),
     raise_exception=True,
 )
 def event_create(request, slug):
-    chapter = get_object_or_404(Chapter, slug=slug)
+    chapter = get_object_or_404(models.Chapter, slug=slug)
     timezone.activate(chapter.timezone)
     event = models.Event(chapter=chapter)
     if request.method == "POST":
@@ -64,7 +62,7 @@ def event_create(request, slug):
 
 
 @permission_required(
-    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 def event_cancel(request, pk):
     if request.method == "GET":
@@ -83,7 +81,7 @@ def event_cancel(request, pk):
 
 
 @permission_required(
-    "events.change_event", fn=objectgetter(models.Event), raise_exception=True
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 def event_uncancel(request, pk):
     if request.method == "GET":

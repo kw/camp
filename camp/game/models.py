@@ -7,6 +7,7 @@ from typing import Any
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
 
@@ -294,6 +295,9 @@ class Chapter(RulesModel):
         role.tavern_staff = tavern_staff
         role.save()
         return role
+
+    def get_absolute_url(self):
+        return reverse("chapter-detail", kwargs={"slug": self.slug})
 
     class Meta:
         rules_permissions = {

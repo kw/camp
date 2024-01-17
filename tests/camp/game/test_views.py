@@ -58,3 +58,10 @@ class HomePageTests(TestCase):
         # Only open chapters are listed.
         # self.assertNotContains(response, "Denver")
         # self.assertContains(response, "Hawaii")
+
+    def test_get_chapter(self):
+        with override_settings(GAME_ID=self.game1.id):
+            response = self.client.get(self.chapter1.get_absolute_url())
+        self.assertTemplateUsed(response, "game/chapter_detail.html")
+        self.assertContains(response, self.chapter1.name)
+        self.assertContains(response, self.chapter1.description)

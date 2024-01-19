@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 
 from django.contrib.auth import get_user_model
@@ -139,6 +141,18 @@ class Event(RulesModel):
     def is_canceled(self):
         return bool(self.canceled_date)
 
+    def get_registration(self, user: User) -> EventRegistration | None:
+        """Returns the event registration corresponding to this user, if it exists.
+
+        If the user has not registered for this event, returns None.
+        """
+        if user.is_anonymous:
+            return None
+        try:
+            return EventRegistration.objects.get(event=self, user=user)
+        except EventRegistration.DoesNotExist:
+            return None
+
     class Meta:
         constraints = [
             models.CheckConstraint(
@@ -168,7 +182,9 @@ class EventRegistration(RulesModel):
     # You can still cancel the event, but the registrations persist in case
     # there is payment or other information attached.
     event: Event = models.ForeignKey(
-        Event, related_name="event_registrations", on_delete=models.PROTECT
+        Event,
+        related_name="registrations",
+        on_delete=models.PROTECT,
     )
     # But if a user is deleted, clear them out.
     user: User = models.ForeignKey(
@@ -210,10 +226,13 @@ class EventRegistration(RulesModel):
         return self.event.logistics_year, self.event.logistics_month
 
     def __str__(self) -> str:
+        # TODO: Use nickname?
         name = self.user.first_name or self.user.username
         if self.is_npc:
             return f"{self.event} - {name} (NPC)"
-        return f"{self.event} - {name} ({self.character.name})"
+        if self.character:
+            return f"{self.event} - {name} ({self.character.name})"
+        return f"{self.event} - {name} (Unfinished)"
 
     class Meta:
         unique_together = [

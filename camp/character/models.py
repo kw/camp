@@ -8,6 +8,7 @@ from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db import transaction
+from django.urls import reverse
 from rules.contrib.models import RulesModel
 
 import camp.engine.loader
@@ -29,6 +30,14 @@ class Character(RulesModel):
         on_delete=models.CASCADE,
         related_name="characters",
         help_text="The game this character belongs to.",
+    )
+    campaign: camp.game.models.Campaign = models.ForeignKey(
+        camp.game.models.Campaign,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="characters",
+        help_text="The campaign this character belongs to.",
     )
     player_name: str = models.CharField(
         max_length=255,
@@ -74,10 +83,13 @@ class Character(RulesModel):
         return self.sheets.filter(primary=False)
 
     def __str__(self) -> str:
-        return self.name
+        return self.name or "[Unnamed Character]"
 
     def __repr__(self) -> str:
         return f"<Character {self.id} {self.name}>"
+
+    def get_absolute_url(self):
+        return reverse("character-detail", kwargs={"pk": self.pk})
 
     class Meta:
         rules_permissions = {

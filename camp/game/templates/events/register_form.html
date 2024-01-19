@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% block head_title %}{% block body_title %}
+{% if registration %}
+Update Registration
+{% else %}
+Register for Event
+{% endif %}
+{% endblock %}{% endblock %}
+
+{% block content %}
+{# TODO: Withdraw Registration button #}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" class="btn btn-primary" value="Save">
+</form>
+{% endblock content %}

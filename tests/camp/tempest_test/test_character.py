@@ -1,4 +1,5 @@
 """Basic tests for the character controller."""
+
 from __future__ import annotations
 
 from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter

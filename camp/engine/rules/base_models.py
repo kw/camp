@@ -63,8 +63,7 @@ class Attribute(BaseModel):
 
 class BoolExpr(BaseModel, ABC):
     @abstractmethod
-    def evaluate(self, char: base_engine.CharacterController) -> Decision:
-        ...
+    def evaluate(self, char: base_engine.CharacterController) -> Decision: ...
 
     def identifiers(self) -> set[str]:
         return set()
@@ -579,8 +578,7 @@ class BaseRuleset(BaseModel, ABC):
         return engine_class(self)
 
     @abstractmethod
-    def feature_model_types(self) -> ModelDefinition:
-        ...
+    def feature_model_types(self) -> ModelDefinition: ...
 
     def identifier_defined(self, identifier: str) -> bool:
         """Check if the identifier is meaningful in the ruleset.

@@ -34,8 +34,7 @@ class CharacterController(ABC):
         return self.engine.ruleset
 
     @abstractproperty
-    def features(self) -> dict[str, BaseFeatureController]:
-        ...
+    def features(self) -> dict[str, BaseFeatureController]: ...
 
     def __init__(self, engine: Engine, model: base_models.CharacterModel):
         self.model = model
@@ -331,16 +330,13 @@ class CharacterController(ABC):
         return {}
 
     @abstractmethod
-    def can_purchase(self, entry: base_models.RankMutation) -> Decision:
-        ...
+    def can_purchase(self, entry: base_models.RankMutation) -> Decision: ...
 
     @abstractmethod
-    def purchase(self, entry: base_models.RankMutation) -> Decision:
-        ...
+    def purchase(self, entry: base_models.RankMutation) -> Decision: ...
 
     @abstractmethod
-    def choose(self, entry: base_models.ChoiceMutation) -> Decision:
-        ...
+    def choose(self, entry: base_models.ChoiceMutation) -> Decision: ...
 
     def meets_requirements(
         self, requirements: base_models.Requirements, prop_id: str | None = None
@@ -984,8 +980,7 @@ class BaseFeatureController(PropertyController):
         return None
 
     @abstractproperty
-    def feature_list_name(self) -> str:
-        ...
+    def feature_list_name(self) -> str: ...
 
     def validate(self) -> Decision:
         """Check that the feature is valid.
@@ -1055,12 +1050,10 @@ class AttributeController(PropertyController):
 
 class ChoiceController(ABC):
     @abstractproperty
-    def id(self) -> str:
-        ...
+    def id(self) -> str: ...
 
     @abstractproperty
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
     @property
     def description(self) -> str | None:
@@ -1165,8 +1158,7 @@ class Engine(ABC):
         return self.ruleset.features
 
     @abstractproperty
-    def sheet_type(self) -> Type[base_models.CharacterModel]:
-        ...
+    def sheet_type(self) -> Type[base_models.CharacterModel]: ...
 
     @abstractproperty
     def character_controller(self) -> Type[CharacterController]:

@@ -1,4 +1,5 @@
 """Creates a default Game object linked to the default Site."""
+
 from django.apps import apps as global_apps
 from django.db import DEFAULT_DB_ALIAS
 from django.db import router

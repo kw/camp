@@ -11,9 +11,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY must be specified in production environments.
 SECRET_KEY = env.str(
     "SECRET_KEY",
-    default="django-insecure 43)%4yx)aa@a=+_c(fn&kf3g29xax+=+a&key9i=!98zyim=8j"
-    if DEBUG
-    else None,
+    default=(
+        "django-insecure 43)%4yx)aa@a=+_c(fn&kf3g29xax+=+a&key9i=!98zyim=8j"
+        if DEBUG
+        else None
+    ),
 )
 HOST_PORT = env.str("HOST_PORT", default="")
 ALLOWED_HOSTS = []

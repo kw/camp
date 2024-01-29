@@ -261,9 +261,9 @@ def feature_view(request, pk, feature_id):
         "subfeatures": subfeatures,
         "subfeatures_available": subfeatures_available,
         "explain_ranks": feature_controller.explain,
-        "choices": {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
-        if choices
-        else {},
+        "choices": (
+            {k: forms.ChoiceForm(c) for (k, c) in choices.items()} if choices else {}
+        ),
         "purchase_form": pf,
         "issues": issues,
     }

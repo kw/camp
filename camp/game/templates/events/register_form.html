@@ -2,19 +2,29 @@
 {% load rules %}
 {% load crispy_forms_tags %}
 {% block head_title %}{% block body_title %}
-{% if registration %}
-Update Registration
+{% if registration.pk is not None %}
+Update Registration for {{registration.event}}
 {% else %}
-Register for Event
+Register for {{registration.event}}
 {% endif %}
 {% endblock %}{% endblock %}
 
 {% block content %}
 {# TODO: Withdraw Registration button #}
 
+{% if not registration.event.registration_window_open %}
+<div class="alert alert-warning" role="alert">
+  Registration is closed for this event.
+</div>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     {{ form | crispy }}
+    {% if registration.event.registration_window_open %}
     <input type="submit" class="btn btn-primary" value="Save">
+    {% endif %}
 </form>
+
+<a href="{{ registration.event.get_absolute_url }}">Return to {{registration.event}}</a>
 {% endblock content %}

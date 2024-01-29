@@ -44,7 +44,7 @@
   <p>
   {% if not event.canceled_date %}
     <a class="btn btn-primary" role="button" href="{% url 'register-form' event.pk %}">
-      {% if registration %}
+      {% if registration.pk %}
       Edit Registration
       {% else %}
       Register Now!
@@ -54,6 +54,8 @@
     <i>Event has been canceled, registration not available.</i>
   {% endif %}
   </p>
+{% elif registration.pk %}
+<p><a href="{% url 'register-form' event.pk %}">View Registration</a></p>
 {% endif %}
 
 

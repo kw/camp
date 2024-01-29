@@ -139,40 +139,49 @@ def register_form_view(request, pk):
             details=event.details_template,
         )
 
+    form = forms.RegisterForm(instance=registration)
+
     if request.method == "POST":
-        form = forms.RegisterForm(request.POST, instance=registration)
-        if form.is_valid():
-            registration: models.EventRegistration = form.save(commit=False)
-            is_initial_registration = registration.pk is None
-            character = registration.character
-            character_created = False
+        if not event.registration_window_open():
+            messages.error(request, "Registration window is closed, sorry.")
+        else:
+            form = forms.RegisterForm(request.POST, instance=registration)
+            if form.is_valid():
+                registration: models.EventRegistration = form.save(commit=False)
+                is_initial_registration = registration.pk is None
+                character = registration.character
+                character_created = False
 
-            # If no character was selected, pick or create one.
-            if character is None:
-                character = form.fields["character"].queryset.first()
-                if not character:
-                    character_created = True
-                    character = Character.objects.create(
-                        owner=registration.user,
-                        campaign=event.campaign,
-                        game=event.campaign.game,
-                    )
-                registration.character = character
+                # If no character was selected, pick or create one.
+                if character is None:
+                    character = form.fields["character"].queryset.first()
+                    if not character:
+                        character_created = True
+                        character = Character.objects.create(
+                            owner=registration.user,
+                            campaign=event.campaign,
+                            game=event.campaign.game,
+                        )
+                    registration.character = character
 
-            registration.sheet = registration.character.primary_sheet
-            registration.save()
-            form = forms.RegisterForm(instance=registration)
+                registration.sheet = registration.character.primary_sheet
+                registration.save()
+                form = forms.RegisterForm(instance=registration)
 
-            if is_initial_registration:
-                messages.success(request, f"Registered for {event}!")
-                if character_created and not registration.is_npc:
-                    # They should probably make their character...
-                    messages.info(request, "Created a blank character sheet.")
-                    return redirect(character)
-            else:
-                messages.success(request, "Registration updated.")
-    else:
-        form = forms.RegisterForm(instance=registration)
+                if is_initial_registration:
+                    messages.success(request, f"Registered for {event}!")
+                    if character_created and not registration.is_npc:
+                        # They should probably make their character...
+                        messages.info(request, "Created a blank character sheet.")
+                        return redirect(character)
+                else:
+                    messages.success(request, "Registration updated.")
+                return redirect(event)
+
+    # Disable the form elements if registration is closed.
+    if not event.registration_window_open():
+        for field in form.fields.values():
+            field.disabled = True
 
     return render(
         request,

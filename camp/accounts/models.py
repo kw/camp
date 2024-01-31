@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from rules.contrib.models import RulesModel
 
-import camp.game.models.game as game
+from camp.game.models import game_models
 
 User = get_user_model()
 
@@ -20,7 +20,7 @@ class Membership(RulesModel):
     joined: int = models.TimeField(auto_now_add=True)
     nickname: str = models.CharField(blank=True, max_length=50, default="nickname")
     game: int = models.ForeignKey(
-        game.Game, on_delete=models.CASCADE, related_name="game"
+        game_models.Game, on_delete=models.CASCADE, related_name="game"
     )
     user: str = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
 
@@ -29,8 +29,12 @@ class Membership(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game.is_self,
-            "change": game.is_self | game.is_owner | game.is_logistics,
-            "delete": game.is_self | game.is_owner | game.is_logistics,
-            "add": game.is_authenticated,
+            "view": game_models.is_self,
+            "change": game_models.is_self
+            | game_models.is_owner
+            | game_models.is_logistics,
+            "delete": game_models.is_self
+            | game_models.is_owner
+            | game_models.is_logistics,
+            "add": game_models.is_authenticated,
         }

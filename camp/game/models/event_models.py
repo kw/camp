@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rules.contrib.models import RulesModel
 
-from . import game
+from . import game_models
 
 User = get_user_model()
 
@@ -42,11 +42,11 @@ class Event(RulesModel):
         help_text="This text will be pre-filled into the registration form. A quick way to include questions that are not part of the default form.",
     )
 
-    chapter: game.Chapter = models.ForeignKey(
-        game.Chapter, on_delete=models.PROTECT, related_name="events"
+    chapter: game_models.Chapter = models.ForeignKey(
+        game_models.Chapter, on_delete=models.PROTECT, related_name="events"
     )
-    campaign: game.Campaign = models.ForeignKey(
-        game.Campaign, on_delete=models.PROTECT, related_name="events"
+    campaign: game_models.Campaign = models.ForeignKey(
+        game_models.Campaign, on_delete=models.PROTECT, related_name="events"
     )
     creator: User = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -67,7 +67,12 @@ class Event(RulesModel):
     event_end_date = models.DateField()
 
     logistics_periods = models.DecimalField(
-        max_digits=4, decimal_places=2, help_text="How many long rests?"
+        # TODO: Instead of a global static default, make this a campaign setting,
+        # or make the campaign engine guess based on the selected date range.
+        max_digits=4,
+        decimal_places=2,
+        help_text="How many long rests?",
+        default=4,
     )
     logistics_year = models.IntegerField(
         blank=True,
@@ -170,10 +175,10 @@ class Event(RulesModel):
         ]
 
         rules_permissions = {
-            "view": game.always_allow,
-            "add": game.can_manage_events,
-            "change": game.can_manage_events,
-            "delete": game.can_manage_events,
+            "view": game_models.always_allow,
+            "add": game_models.can_manage_events,
+            "change": game_models.can_manage_events,
+            "delete": game_models.can_manage_events,
         }
 
 
@@ -247,8 +252,8 @@ class EventRegistration(RulesModel):
         ]
 
         rules_permissions = {
-            "view": game.is_self | game.is_chapter_logistics,
-            "add": game.is_self | game.is_chapter_logistics,
-            "change": game.is_self | game.is_chapter_logistics,
-            "delete": game.is_self | game.is_chapter_logistics,
+            "view": game_models.is_self | game_models.is_chapter_logistics,
+            "add": game_models.is_self | game_models.is_chapter_logistics,
+            "change": game_models.is_self | game_models.is_chapter_logistics,
+            "delete": game_models.is_self | game_models.is_chapter_logistics,
         }

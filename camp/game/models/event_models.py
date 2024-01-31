@@ -56,7 +56,7 @@ class Event(RulesModel):
     registration_open = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="When should the Register button be shown, in the chapter's local timezone? Leave blank to open immediately.",
+        help_text="When should the Register button be shown, in the chapter's local timezone? Leave blank to never open (until you set it).",
     )
     registration_deadline = models.DateTimeField(
         null=True,
@@ -125,8 +125,12 @@ class Event(RulesModel):
         return reverse("event-detail", kwargs={"pk": self.pk})
 
     def registration_window_open(self):
+        if not self.registration_open:
+            # A game with no registration open date may be historical or far enough in the future
+            # that the logi doesn't want to set it yet. Always false.
+            return False
         now = timezone.now()
-        if self.registration_open and now < self.registration_open:
+        if now < self.registration_open:
             return False
         if self.registration_deadline and now > self.registration_deadline:
             return False

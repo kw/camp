@@ -36,8 +36,16 @@ class Attendance(models.IntegerChoices):
     # TODO: More granularity
 
 
+class EventType(models.IntegerChoices):
+    EVENT = 0, "Standard"
+    MOD = 1, "Module"
+    TAVERN = 2, "Tavern"
+    MEET = 3, "Meetup"
+
+
 class Event(RulesModel):
     name: str = models.CharField(max_length=100, blank=True)
+    type: int = models.IntegerField(default=EventType.EVENT, choices=EventType.choices)
     description: str = models.TextField(blank=True)
     location: str = models.TextField(
         blank=True,
@@ -224,7 +232,7 @@ class EventRegistration(RulesModel):
         User, related_name="event_registrations", on_delete=models.CASCADE
     )
     is_npc: bool = models.BooleanField(default=False)
-    attendance: str = models.IntegerField(
+    attendance: int = models.IntegerField(
         default=Attendance.FULL, choices=Attendance.choices
     )
     details: str = models.TextField(blank=True)

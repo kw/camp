@@ -10,6 +10,7 @@ class EventCreateForm(forms.ModelForm):
         model = models.Event
         fields = [
             "name",
+            "type",
             "description",
             "location",
             "details_template",
@@ -36,6 +37,7 @@ class EventUpdateForm(forms.ModelForm):
         model = models.Event
         fields = [
             "name",
+            "type",
             "description",
             "location",
             "details_template",

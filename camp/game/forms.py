@@ -1,7 +1,6 @@
 from django import forms
 
 from . import models
-from .fields import DateField
 from .fields import DateTimeField
 from .fields import DefaultModelChoiceField
 
@@ -25,8 +24,8 @@ class EventCreateForm(forms.ModelForm):
         field_classes = {
             "chapter": DefaultModelChoiceField,
             "campaign": DefaultModelChoiceField,
-            "event_start_date": DateField,
-            "event_end_date": DateField,
+            "event_start_date": DateTimeField,
+            "event_end_date": DateTimeField,
             "registration_open": DateTimeField,
             "registration_deadline": DateTimeField,
         }
@@ -50,8 +49,8 @@ class EventUpdateForm(forms.ModelForm):
             "logistics_month",
         ]
         field_classes = {
-            "event_start_date": DateField,
-            "event_end_date": DateField,
+            "event_start_date": DateTimeField,
+            "event_end_date": DateTimeField,
             "registration_open": DateTimeField,
             "registration_deadline": DateTimeField,
         }
@@ -67,11 +66,6 @@ class RegisterForm(forms.ModelForm):
                 (True, "Register as a Volunteer (NPC)"),
             ]
         ),
-    )
-    is_daygaming = forms.BooleanField(
-        label="Attendance",
-        required=False,
-        help_text="How much of the game do you intend to attend?",
     )
 
     character = DefaultModelChoiceField(
@@ -106,15 +100,8 @@ class RegisterForm(forms.ModelForm):
             char_field.disabled = True
             char_field.empty_label = "[No Characters]"
         if event.daygame_logistics_periods <= 0:
-            del self.fields["is_daygaming"]
-        else:
-            self.fields["is_daygaming"].widget = forms.RadioSelect(
-                choices=[
-                    (False, f"Full Game ({event.logistics_periods} Long Rests)"),
-                    (True, f"Day Game ({event.daygame_logistics_periods} Long Rests)"),
-                ]
-            )
+            del self.fields["attendance"]
 
     class Meta:
         model = models.EventRegistration
-        fields = ["is_npc", "is_daygaming", "character", "details"]
+        fields = ["is_npc", "attendance", "character", "details"]

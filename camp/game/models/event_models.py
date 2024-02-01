@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -17,18 +16,24 @@ User = get_user_model()
 
 
 class Month(models.IntegerChoices):
-    JAN = 1
-    FEB = 2
-    MAR = 3
-    APR = 4
-    MAY = 5
-    JUN = 6
-    JUL = 7
-    AUG = 8
-    SEPT = 9
-    OCT = 10
-    NOV = 11
-    DEC = 12
+    JAN = 1, "Jan"
+    FEB = 2, "Feb"
+    MAR = 3, "Mar"
+    APR = 4, "Apr"
+    MAY = 5, "May"
+    JUN = 6, "Jun"
+    JUL = 7, "Jul"
+    AUG = 8, "Aug"
+    SEPT = 9, "Sept"
+    OCT = 10, "Oct"
+    NOV = 11, "Nov"
+    DEC = 12, "Dec"
+
+
+class Attendance(models.IntegerChoices):
+    FULL = 0, "Full Game"
+    DAY = 1, "Day Game"
+    # TODO: More granularity
 
 
 class Event(RulesModel):
@@ -64,8 +69,8 @@ class Event(RulesModel):
         blank=True,
         help_text="When should the Register button go away, in the chapter's local timezone? Leave blank to open until end-of-event.",
     )
-    event_start_date = models.DateField()
-    event_end_date = models.DateField()
+    event_start_date = models.DateTimeField()
+    event_end_date = models.DateTimeField()
 
     logistics_periods = models.DecimalField(
         # TODO: Instead of a global static default, make this a campaign setting,
@@ -143,15 +148,12 @@ class Event(RulesModel):
             return False
         # If no registration deadline was specified, we don't allow registration
         # past the end of the event.
-        if (
-            not self.registration_deadline
-            and datetime.date.today() > self.event_end_date
-        ):
+        if not self.registration_deadline and now > self.event_end_date:
             return False
         return True
 
     def event_in_progress(self):
-        return self.event_start_date <= datetime.date.today() <= self.event_end_date
+        return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
     def is_canceled(self):
@@ -222,7 +224,9 @@ class EventRegistration(RulesModel):
         User, related_name="event_registrations", on_delete=models.CASCADE
     )
     is_npc: bool = models.BooleanField(default=False)
-    is_daygaming: bool = models.BooleanField(default=False)
+    attendance: str = models.IntegerField(
+        default=Attendance.FULL, choices=Attendance.choices
+    )
     details: str = models.TextField(blank=True)
 
     # Maybe we should force NPCs to select a character to receive credit?

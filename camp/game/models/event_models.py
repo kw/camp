@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -71,8 +72,14 @@ class Event(RulesModel):
         # or make the campaign engine guess based on the selected date range.
         max_digits=4,
         decimal_places=2,
+        default=Decimal(4),
         help_text="How many long rests?",
-        default=4,
+    )
+    daygame_logistics_periods = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=Decimal(2),
+        help_text="How many long rests for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
     )
     logistics_year = models.IntegerField(
         blank=True,
@@ -169,6 +176,21 @@ class Event(RulesModel):
                 violation_error_message="End date must not be before start date.",
                 check=Q(event_end_date__gte=F("event_start_date")),
             ),
+            models.CheckConstraint(
+                name="logistics_periods_nonneg",
+                violation_error_message="Number of logistics periods must be non-negative.",
+                check=Q(logistics_periods__gte=Decimal(0)),
+            ),
+            models.CheckConstraint(
+                name="daygame_reward",
+                violation_error_message="Daygame logistics reward must not be greater than the normal one.",
+                check=Q(daygame_logistics_periods__lte=F("logistics_periods")),
+            ),
+            models.CheckConstraint(
+                name="daygame_periods_nonneg",
+                violation_error_message="Number of daygame logistics periods must be non-negative.",
+                check=Q(daygame_logistics_periods__gte=Decimal(0)),
+            ),
         ]
 
         indexes = [
@@ -199,7 +221,8 @@ class EventRegistration(RulesModel):
     user: User = models.ForeignKey(
         User, related_name="event_registrations", on_delete=models.CASCADE
     )
-    is_npc: bool = models.BooleanField()
+    is_npc: bool = models.BooleanField(default=False)
+    is_daygaming: bool = models.BooleanField(default=False)
     details: str = models.TextField(blank=True)
 
     # Maybe we should force NPCs to select a character to receive credit?

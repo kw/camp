@@ -20,6 +20,7 @@ class EventCreateForm(forms.ModelForm):
             "registration_open",
             "registration_deadline",
             "logistics_periods",
+            "daygame_logistics_periods",
         ]
         field_classes = {
             "chapter": DefaultModelChoiceField,
@@ -44,6 +45,7 @@ class EventUpdateForm(forms.ModelForm):
             "registration_open",
             "registration_deadline",
             "logistics_periods",
+            "daygame_logistics_periods",
             "logistics_year",
             "logistics_month",
         ]
@@ -57,10 +59,21 @@ class EventUpdateForm(forms.ModelForm):
 
 class RegisterForm(forms.ModelForm):
     is_npc = forms.BooleanField(
-        label="Register as an NPC",
+        label="Registration Type",
         required=False,
-        help_text="Volunteer for this event instead of registering as a player?",
+        widget=forms.RadioSelect(
+            choices=[
+                (False, "Register as a Player (PC)"),
+                (True, "Register as a Volunteer (NPC)"),
+            ]
+        ),
     )
+    is_daygaming = forms.BooleanField(
+        label="Attendance",
+        required=False,
+        help_text="How much of the game do you intend to attend?",
+    )
+
     character = DefaultModelChoiceField(
         help_text=(
             "Select a character to play. "
@@ -82,8 +95,9 @@ class RegisterForm(forms.ModelForm):
         char_query = self.instance.user.characters
         # If this is not a freeplay event, only allow characters from
         # the event's campaign.
-        if self.instance.event.campaign:
-            char_query = char_query.filter(campaign=self.instance.event.campaign)
+        event: models.Event = self.instance.event
+        if event.campaign:
+            char_query = char_query.filter(campaign=event.campaign)
         char_field: DefaultModelChoiceField = self.fields["character"]
         char_field.queryset = char_query
         if char_query.count() == 0:
@@ -91,7 +105,16 @@ class RegisterForm(forms.ModelForm):
             char_field.required = False
             char_field.disabled = True
             char_field.empty_label = "[No Characters]"
+        if event.daygame_logistics_periods <= 0:
+            del self.fields["is_daygaming"]
+        else:
+            self.fields["is_daygaming"].widget = forms.RadioSelect(
+                choices=[
+                    (False, f"Full Game ({event.logistics_periods} Long Rests)"),
+                    (True, f"Day Game ({event.daygame_logistics_periods} Long Rests)"),
+                ]
+            )
 
     class Meta:
         model = models.EventRegistration
-        fields = ["is_npc", "character", "details"]
+        fields = ["is_npc", "is_daygaming", "character", "details"]

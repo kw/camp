@@ -35,7 +35,9 @@
 {% endif %}
 
 {% if registration %}
-  {% if registration.is_npc %}
+  {% if registration.is_canceled %}
+  <p>You have withdrawn your registration for this event.</p>
+  {% elif registration.is_npc %}
   <p>You have registered as an NPC for this event.</p>
   {% else %}
   <p>You have registered to play this event as
@@ -46,9 +48,13 @@
 {% if event.registration_window_open %}
   <p>
   {% if not event.canceled_date %}
-    <a class="btn btn-primary" role="button" href="{% url 'register-form' event.pk %}">
+    <a class="btn btn-primary" role="button" href="{% url 'event-register' event.pk %}">
       {% if registration.pk %}
-      Edit Registration
+        {% if registration.is_canceled %}
+        Resubmit Registration
+        {% else %}
+        Edit Registration
+        {% endif %}
       {% else %}
       Register Now!
       {% endif %}
@@ -58,7 +64,7 @@
   {% endif %}
   </p>
 {% elif registration.pk %}
-<p><a href="{% url 'register-form' event.pk %}">View Registration</a></p>
+<p><a href="{% url 'event-register' event.pk %}">View Registration</a></p>
 {% endif %}
 
 

@@ -40,7 +40,6 @@ class EventType(models.IntegerChoices):
     EVENT = 0, "Standard"
     MOD = 1, "Module"
     TAVERN = 2, "Tavern"
-    MEET = 3, "Meetup"
 
 
 class Event(RulesModel):
@@ -264,6 +263,10 @@ class EventRegistration(RulesModel):
     # Fields for post-game record keeping.
     attended: bool = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+
+    @property
+    def is_canceled(self):
+        return bool(self.canceled_date)
 
     @property
     def logistics_window(self) -> tuple[int, int]:

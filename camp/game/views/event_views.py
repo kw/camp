@@ -108,7 +108,7 @@ def event_uncancel(request, pk):
 
 
 @login_required
-def register_form_view(request, pk):
+def register_view(request, pk):
     """Event Registration Form.
 
     There are several use cases around event registration:
@@ -128,6 +128,8 @@ def register_form_view(request, pk):
         a. Has the registration period closed?
         b. (later) Has a payment already been made?
     4. Maybe we should send an email?
+    5. Might want to support some types of non-game events ("meetups") that don't involve
+       things like characters, PC/NPC distinctions, lodging, etc.
     """
     event = _get_event(pk)
 
@@ -149,8 +151,13 @@ def register_form_view(request, pk):
             if form.is_valid():
                 registration: models.EventRegistration = form.save(commit=False)
                 is_initial_registration = registration.pk is None
+
                 character = registration.character
                 character_created = False
+
+                # If the registration had previously been withdrawn, clear that.
+                is_resubmit = registration.is_canceled
+                registration.canceled_date = None
 
                 # If no character was selected, pick or create one.
                 if character is None:
@@ -165,6 +172,7 @@ def register_form_view(request, pk):
                     registration.character = character
 
                 registration.sheet = registration.character.primary_sheet
+
                 registration.save()
                 form = forms.RegisterForm(instance=registration)
 
@@ -174,6 +182,8 @@ def register_form_view(request, pk):
                         # They should probably make their character...
                         messages.info(request, "Created a blank character sheet.")
                         return redirect(character)
+                elif is_resubmit:
+                    messages.success(request, "Registration resubmitted.")
                 else:
                     messages.success(request, "Registration updated.")
                 return redirect(event)
@@ -188,6 +198,34 @@ def register_form_view(request, pk):
         "events/register_form.html",
         {"form": form, "registration": registration},
     )
+
+
+@login_required
+def unregister_view(request, pk):
+    if request.method == "GET":
+        # Don't allow a registration to be unregistered via GET
+        return redirect("event-register", pk=pk)
+
+    event = _get_event(pk)
+    if not event.registration_window_open():
+        # You can't cancel registration outside of the window.
+        messages.warning(
+            request, "Registration period is not open, registration is locked."
+        )
+        return redirect(event)
+
+    if not (registration := event.get_registration(request.user)):
+        messages.info(request, "You weren't registered for that event to begin with.")
+        return redirect(event)
+
+    if registration.canceled_date is None:
+        registration.canceled_date = timezone.now()
+        registration.save()
+        messages.success(request, "Successfully unregistered.")
+    else:
+        messages.info(request, "You had already unregistered.")
+
+    return redirect(event)
 
 
 def view_registration(request, pk, user_id):

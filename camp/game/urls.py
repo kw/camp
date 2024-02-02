@@ -91,10 +91,15 @@ urlpatterns = [
     path(
         "events/<int:pk>/uncancel/", event_views.event_uncancel, name="event-uncancel"
     ),
+    path("events/new/<slug:slug>/", event_views.event_create, name="event-create"),
     path(
         "events/<int:pk>/register/",
-        event_views.register_form_view,
-        name="register-form",
+        event_views.register_view,
+        name="event-register",
     ),
-    path("events/new/<slug:slug>/", event_views.event_create, name="event-create"),
+    path(
+        "events/<int:pk>/unregister/",
+        event_views.unregister_view,
+        name="event-unregister",
+    ),
 ]

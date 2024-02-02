@@ -10,7 +10,6 @@ Register for {{registration.event}}
 {% endblock %}{% endblock %}
 
 {% block content %}
-{# TODO: Withdraw Registration button #}
 
 {% if not registration.event.registration_window_open %}
 <div class="alert alert-warning" role="alert">
@@ -18,11 +17,28 @@ Register for {{registration.event}}
 </div>
 {% endif %}
 
+{% if registration.is_canceled %}
+<div class="alert alert-warning" role="alert">
+  Your registration for this event has been withdrawn.
+  {% if registration.event.registration_window_open %}
+  You may still resubmit your registration.
+  {% endif %}
+</div>
+{% endif %}
+
+{% if registration.pk is not None and not registration.is_canceled %}
+<form method="post" action="{% url 'event-unregister' registration.event.pk %}"
+  onSubmit="return confirm('Really withdraw your registration from this event?');">
+  {% csrf_token %}
+  <input type="submit" class="btn btn-danger my-2" value="Withdraw Registration" />
+</form>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     {{ form | crispy }}
     {% if registration.event.registration_window_open %}
-    <input type="submit" class="btn btn-primary" value="Save">
+    <input type="submit" class="btn btn-primary" value="{% if registration.is_canceled %}Resubmit{% else %}Submit{% endif %}">
     {% endif %}
 </form>
 

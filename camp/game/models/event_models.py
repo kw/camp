@@ -42,6 +42,12 @@ class EventType(models.IntegerChoices):
     TAVERN = 2, "Tavern"
 
 
+class Lodging(models.IntegerChoices):
+    NONE = 0, "No Lodging"
+    TENT = 1, "Tent Camping"
+    CABIN = 2, "Cabin"
+
+
 class Event(RulesModel):
     name: str = models.CharField(max_length=100, blank=True)
     type: int = models.IntegerField(default=EventType.EVENT, choices=EventType.choices)
@@ -78,6 +84,13 @@ class Event(RulesModel):
     )
     event_start_date = models.DateTimeField()
     event_end_date = models.DateTimeField()
+
+    tenting_allowed = models.BooleanField(
+        default=True, help_text="Allow players to register for tent-based lodging."
+    )
+    cabin_allowed = models.BooleanField(
+        default=True, help_text="Allow players to register for cabin lodging."
+    )
 
     logistics_periods = models.DecimalField(
         # TODO: Instead of a global static default, make this a campaign setting,
@@ -166,6 +179,15 @@ class Event(RulesModel):
     def is_canceled(self):
         return bool(self.canceled_date)
 
+    @property
+    def lodging_choices(self):
+        choices = [(Lodging.NONE.value, Lodging.NONE.label)]
+        if self.tenting_allowed:
+            choices.append((Lodging.TENT.value, Lodging.TENT.label))
+        if self.cabin_allowed:
+            choices.append((Lodging.CABIN.value, Lodging.CABIN.label))
+        return choices
+
     def get_registration(self, user: User) -> EventRegistration | None:
         """Returns the event registration corresponding to this user, if it exists.
 
@@ -232,12 +254,20 @@ class EventRegistration(RulesModel):
     )
     is_npc: bool = models.BooleanField(default=False)
     attendance: int = models.IntegerField(
-        default=Attendance.FULL, choices=Attendance.choices
+        default=Attendance.FULL,
+        choices=Attendance.choices,
+        help_text="How much of the event are you registering for?",
+    )
+    lodging: int = models.IntegerField(
+        choices=Lodging.choices,
+        help_text="What lodgings do you need? Daygamers, pick No Lodging. NPCs typically get a cabin.",
+    )
+    lodging_group: str = models.TextField(
+        blank=True,
+        help_text="If you wish to stay with a group or individual, indicate that here. For any other lodging concerns, use the Details field.",
     )
     details: str = models.TextField(blank=True)
 
-    # Maybe we should force NPCs to select a character to receive credit?
-    # OR we could just let them select it later.
     character = models.ForeignKey(
         "character.Character",
         related_name="event_registrations",

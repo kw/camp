@@ -1,8 +1,8 @@
 from django import forms
 
-from . import models
 from .fields import DateTimeField
 from .fields import DefaultModelChoiceField
+from .models import event_models as models
 
 
 class EventCreateForm(forms.ModelForm):
@@ -21,6 +21,8 @@ class EventCreateForm(forms.ModelForm):
             "registration_deadline",
             "logistics_periods",
             "daygame_logistics_periods",
+            "tenting_allowed",
+            "cabin_allowed",
         ]
         field_classes = {
             "chapter": DefaultModelChoiceField,
@@ -49,6 +51,8 @@ class EventUpdateForm(forms.ModelForm):
             "daygame_logistics_periods",
             "logistics_year",
             "logistics_month",
+            "tenting_allowed",
+            "cabin_allowed",
         ]
         field_classes = {
             "event_start_date": DateTimeField,
@@ -77,8 +81,21 @@ class RegisterForm(forms.ModelForm):
         ),
         queryset=None,
     )
+
+    lodging = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        help_text=models.EventRegistration.lodging.field.help_text,
+    )
+    lodging_group = forms.CharField(
+        widget=forms.TextInput,
+        help_text=models.EventRegistration.lodging_group.field.help_text,
+        required=False,
+    )
+
     details = forms.CharField(
-        widget=forms.Textarea, help_text="Enter any other details required."
+        widget=forms.Textarea,
+        help_text="Enter any other details required.",
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -104,6 +121,17 @@ class RegisterForm(forms.ModelForm):
         if event.daygame_logistics_periods <= 0:
             del self.fields["attendance"]
 
+        # Lodging form data. Default lodging is whatever is "best" (Cabin if allowed, else tenting if allowed, else none)
+        self.fields["lodging"].choices = lodging_choices = event.lodging_choices
+        self.initial["lodging"] = lodging_choices[-1][0]
+
     class Meta:
         model = models.EventRegistration
-        fields = ["is_npc", "attendance", "character", "details"]
+        fields = [
+            "is_npc",
+            "attendance",
+            "lodging",
+            "lodging_group",
+            "character",
+            "details",
+        ]

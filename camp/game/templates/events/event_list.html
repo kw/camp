@@ -10,7 +10,7 @@ Events
   <h2>{{chapter}}</h2>
   <ul>
     {% for event in events %}
-    <li><a href="{% url 'event-detail' event.pk %}">{{ event }} ({{event.event_start_date}} - {{event.event_end_date}})</a></li>
+    <li><a href="{{ event.get_absolute_url }}">{{ event }} ({{event.event_start_date|date:"N j"}} - {{event.event_end_date|date:"N j"}})</a></li>
     {% empty %}
     <li>No events scheduled.</li>
     {% endfor %}

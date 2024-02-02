@@ -54,7 +54,13 @@ class Event(RulesModel):
     description: str = models.TextField(blank=True)
     location: str = models.TextField(
         blank=True,
+        default="",
         help_text="Physical address, maybe with a map link. Markdown enabled.",
+    )
+    payment_details: str = models.TextField(
+        blank=True,
+        default="",
+        help_text="Payment information. Markdown enabled. Recommend linking to payment pages.",
     )
     details_template: str = models.TextField(
         blank=True,
@@ -293,6 +299,11 @@ class EventRegistration(RulesModel):
     # Fields for post-game record keeping.
     attended: bool = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+
+    # Fields for logi to fill in regarding payment.
+    # Later, a payment system might handle this.
+    payment_complete: bool = models.BooleanField(default=False)
+    payment_note: str = models.TextField(blank=True, default="")
 
     @property
     def is_canceled(self):

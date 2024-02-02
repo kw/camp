@@ -24,7 +24,10 @@
   <li><b>Registration Deadline:</b> {{ event.registration_deadline|chapterzone:event.chapter }}</li>
   {% endif %}
   {% if event.location %}
-  <li><b>Location:</b> {{ event.location | markdown}}
+  <li><b>Location:</b> {{ event.location | markdown}}</li>
+  {% endif %}
+  {% if event.payment_details %}
+  <li><b>Payments:</b> {{event.payment_details | markdown}}</li>
   {% endif %}
 </ul>
 

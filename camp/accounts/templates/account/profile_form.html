@@ -1,0 +1,17 @@
+{% extends "account/base.html" %}
+{% load account %}
+{% load crispy_forms_tags %}
+
+{% if user %}
+{% block head_title %}{% block body_title %}
+Edit Profile for {% user_display user %}
+{% endblock %}{% endblock %}
+{% endif %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form | crispy }}
+  <input type="submit" class="btn btn-primary" value="Submit">
+</form>
+{% endblock content %}

@@ -13,7 +13,10 @@
 <ul>
   <li><b>Campaign:</b> {{event.campaign}} ({{event.logistics_year}}-{{event.logistics_month}})</li>
   <li><b>Chapter:</b> {{event.chapter}}</li>
-  <li><b>Event Dates:</b> {{event.event_start_date}}-{{event.event_end_date}} ({{event.logistics_periods}} Long Rests)</li>
+  <li><b>Event Type:</b> {{event.get_type_display}}</li>
+  <li><b>Event Start:</b> {{event.event_start_date|chapterzone:event.chapter }}</li>
+  <li><b>Event End:</b> {{event.event_end_date|chapterzone:event.chapter }}</li>
+  <li><b>Long Rests:</b> {{event.logistics_periods}}</li>
   {% if event.registration_open %}
   <li><b>Registration Open:</b> {{ event.registration_open|chapterzone:event.chapter }}</li>
   {% endif %}
@@ -21,7 +24,10 @@
   <li><b>Registration Deadline:</b> {{ event.registration_deadline|chapterzone:event.chapter }}</li>
   {% endif %}
   {% if event.location %}
-  <li><b>Location:</b> {{ event.location | markdown}}
+  <li><b>Location:</b> {{ event.location | markdown}}</li>
+  {% endif %}
+  {% if event.payment_details %}
+  <li><b>Payments:</b> {{event.payment_details | markdown}}</li>
   {% endif %}
 </ul>
 
@@ -31,14 +37,37 @@
 <p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
 {% endif %}
 
+{% if registration %}
+  {% if registration.is_canceled %}
+  <p>You have withdrawn your registration for this event.</p>
+  {% elif registration.is_npc %}
+  <p>You have registered as an NPC for this event.</p>
+  {% else %}
+  <p>You have registered to play this event as
+    <a href="{{ registration.character.get_absolute_url }}">{{registration.character}}</a></p>
+  {% endif %}
+{% endif %}
+
 {% if event.registration_window_open %}
   <p>
   {% if not event.canceled_date %}
-    <i>Event Registration Window Open! (Coming Soon™️)</i>
+    <a class="btn btn-primary" role="button" href="{% url 'event-register' event.pk %}">
+      {% if registration.pk %}
+        {% if registration.is_canceled %}
+        Resubmit Registration
+        {% else %}
+        Edit Registration
+        {% endif %}
+      {% else %}
+      Register Now!
+      {% endif %}
+    </a>
   {% else %}
     <i>Event has been canceled, registration not available.</i>
   {% endif %}
   </p>
+{% elif registration.pk %}
+<p><a href="{% url 'event-register' event.pk %}">View Registration</a></p>
 {% endif %}
 
 

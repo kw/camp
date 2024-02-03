@@ -1,14 +1,27 @@
 {% extends "account/base.html" %}
 {% load account %}
 
-{% if object %}
+{% if user %}
 {% block head_title %}{% block body_title %}
-{% user_display object %}
+{% if membership %}
+{{membership}}
+{% else %}
+{{user.get_full_name}}
+{% endif %}
+({% user_display user %})
 {% endblock %}{% endblock %}
 {% endif %}
 
 {% block content %}
 <ul>
+
+<li><a href="{% url 'profile-edit' %}">
+  {% if membership %}
+  Edit Profile
+  {% else %}
+  Create Profile
+  {% endif %}
+</a></li>
 <li><a href="{% url 'account_email' %}">Change E-mail</a></li>
 {% if user.password %}
 <li><a href="{% url 'account_change_password' %}">Change Password</a></li>

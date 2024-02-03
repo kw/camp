@@ -1,4 +1,6 @@
-import datetime
+from __future__ import annotations
+
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -8,43 +10,68 @@ from django.urls import reverse
 from django.utils import timezone
 from rules.contrib.models import RulesModel
 
-from . import game
+from . import game_models
 
 User = get_user_model()
 
 
 class Month(models.IntegerChoices):
-    JAN = 1
-    FEB = 2
-    MAR = 3
-    APR = 4
-    MAY = 5
-    JUN = 6
-    JUL = 7
-    AUG = 8
-    SEPT = 9
-    OCT = 10
-    NOV = 11
-    DEC = 12
+    JAN = 1, "Jan"
+    FEB = 2, "Feb"
+    MAR = 3, "Mar"
+    APR = 4, "Apr"
+    MAY = 5, "May"
+    JUN = 6, "Jun"
+    JUL = 7, "Jul"
+    AUG = 8, "Aug"
+    SEPT = 9, "Sept"
+    OCT = 10, "Oct"
+    NOV = 11, "Nov"
+    DEC = 12, "Dec"
+
+
+class Attendance(models.IntegerChoices):
+    FULL = 0, "Full Game"
+    DAY = 1, "Day Game"
+    # TODO: More granularity
+
+
+class EventType(models.IntegerChoices):
+    EVENT = 0, "Standard"
+    MOD = 1, "Module"
+    TAVERN = 2, "Tavern"
+
+
+class Lodging(models.IntegerChoices):
+    NONE = 0, "No Lodging"
+    TENT = 1, "Tent Camping"
+    CABIN = 2, "Cabin"
 
 
 class Event(RulesModel):
     name: str = models.CharField(max_length=100, blank=True)
+    type: int = models.IntegerField(default=EventType.EVENT, choices=EventType.choices)
     description: str = models.TextField(blank=True)
     location: str = models.TextField(
         blank=True,
+        default="",
         help_text="Physical address, maybe with a map link. Markdown enabled.",
+    )
+    payment_details: str = models.TextField(
+        blank=True,
+        default="",
+        help_text="Payment information. Markdown enabled. Recommend linking to payment pages.",
     )
     details_template: str = models.TextField(
         blank=True,
         help_text="This text will be pre-filled into the registration form. A quick way to include questions that are not part of the default form.",
     )
 
-    chapter: game.Chapter = models.ForeignKey(
-        game.Chapter, on_delete=models.PROTECT, related_name="events"
+    chapter: game_models.Chapter = models.ForeignKey(
+        game_models.Chapter, on_delete=models.PROTECT, related_name="events"
     )
-    campaign: game.Campaign = models.ForeignKey(
-        game.Campaign, on_delete=models.PROTECT, related_name="events"
+    campaign: game_models.Campaign = models.ForeignKey(
+        game_models.Campaign, on_delete=models.PROTECT, related_name="events"
     )
     creator: User = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -54,18 +81,36 @@ class Event(RulesModel):
     registration_open = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="When should the Register button be shown, in the chapter's local timezone? Leave blank to open immediately.",
+        help_text="When should the Register button be shown, in the chapter's local timezone? Leave blank to never open (until you set it).",
     )
     registration_deadline = models.DateTimeField(
         null=True,
         blank=True,
         help_text="When should the Register button go away, in the chapter's local timezone? Leave blank to open until end-of-event.",
     )
-    event_start_date = models.DateField()
-    event_end_date = models.DateField()
+    event_start_date = models.DateTimeField()
+    event_end_date = models.DateTimeField()
+
+    tenting_allowed = models.BooleanField(
+        default=True, help_text="Allow players to register for tent-based lodging."
+    )
+    cabin_allowed = models.BooleanField(
+        default=True, help_text="Allow players to register for cabin lodging."
+    )
 
     logistics_periods = models.DecimalField(
-        max_digits=4, decimal_places=2, help_text="How many long rests?"
+        # TODO: Instead of a global static default, make this a campaign setting,
+        # or make the campaign engine guess based on the selected date range.
+        max_digits=4,
+        decimal_places=2,
+        default=Decimal(4),
+        help_text="How many long rests?",
+    )
+    daygame_logistics_periods = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=Decimal(2),
+        help_text="How many long rests for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
     )
     logistics_year = models.IntegerField(
         blank=True,
@@ -118,26 +163,48 @@ class Event(RulesModel):
         return reverse("event-detail", kwargs={"pk": self.pk})
 
     def registration_window_open(self):
+        if not self.registration_open:
+            # A game with no registration open date may be historical or far enough in the future
+            # that the logi doesn't want to set it yet. Always false.
+            return False
         now = timezone.now()
-        if self.registration_open and now < self.registration_open:
+        if now < self.registration_open:
             return False
         if self.registration_deadline and now > self.registration_deadline:
             return False
         # If no registration deadline was specified, we don't allow registration
         # past the end of the event.
-        if (
-            not self.registration_deadline
-            and datetime.date.today() > self.event_end_date
-        ):
+        if not self.registration_deadline and now > self.event_end_date:
             return False
         return True
 
     def event_in_progress(self):
-        return self.event_start_date <= datetime.date.today() <= self.event_end_date
+        return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
     def is_canceled(self):
         return bool(self.canceled_date)
+
+    @property
+    def lodging_choices(self):
+        choices = [(Lodging.NONE.value, Lodging.NONE.label)]
+        if self.tenting_allowed:
+            choices.append((Lodging.TENT.value, Lodging.TENT.label))
+        if self.cabin_allowed:
+            choices.append((Lodging.CABIN.value, Lodging.CABIN.label))
+        return choices
+
+    def get_registration(self, user: User) -> EventRegistration | None:
+        """Returns the event registration corresponding to this user, if it exists.
+
+        If the user has not registered for this event, returns None.
+        """
+        if user.is_anonymous:
+            return None
+        try:
+            return EventRegistration.objects.get(event=self, user=user)
+        except EventRegistration.DoesNotExist:
+            return None
 
     class Meta:
         constraints = [
@@ -145,6 +212,21 @@ class Event(RulesModel):
                 name="end_date_gte_start",
                 violation_error_message="End date must not be before start date.",
                 check=Q(event_end_date__gte=F("event_start_date")),
+            ),
+            models.CheckConstraint(
+                name="logistics_periods_nonneg",
+                violation_error_message="Number of logistics periods must be non-negative.",
+                check=Q(logistics_periods__gte=Decimal(0)),
+            ),
+            models.CheckConstraint(
+                name="daygame_reward",
+                violation_error_message="Daygame logistics reward must not be greater than the normal one.",
+                check=Q(daygame_logistics_periods__lte=F("logistics_periods")),
+            ),
+            models.CheckConstraint(
+                name="daygame_periods_nonneg",
+                violation_error_message="Number of daygame logistics periods must be non-negative.",
+                check=Q(daygame_logistics_periods__gte=Decimal(0)),
             ),
         ]
 
@@ -156,10 +238,10 @@ class Event(RulesModel):
         ]
 
         rules_permissions = {
-            "view": game.always_allow,
-            "add": game.can_manage_events,
-            "change": game.can_manage_events,
-            "delete": game.can_manage_events,
+            "view": game_models.always_allow,
+            "add": game_models.can_manage_events,
+            "change": game_models.can_manage_events,
+            "delete": game_models.can_manage_events,
         }
 
 
@@ -168,17 +250,30 @@ class EventRegistration(RulesModel):
     # You can still cancel the event, but the registrations persist in case
     # there is payment or other information attached.
     event: Event = models.ForeignKey(
-        Event, related_name="event_registrations", on_delete=models.PROTECT
+        Event,
+        related_name="registrations",
+        on_delete=models.PROTECT,
     )
     # But if a user is deleted, clear them out.
     user: User = models.ForeignKey(
         User, related_name="event_registrations", on_delete=models.CASCADE
     )
-    is_npc: bool = models.BooleanField()
+    is_npc: bool = models.BooleanField(default=False)
+    attendance: int = models.IntegerField(
+        default=Attendance.FULL,
+        choices=Attendance.choices,
+        help_text="How much of the event are you registering for?",
+    )
+    lodging: int = models.IntegerField(
+        choices=Lodging.choices,
+        help_text="What lodgings do you need? Daygamers, pick No Lodging. NPCs typically get a cabin.",
+    )
+    lodging_group: str = models.TextField(
+        blank=True,
+        help_text="If you wish to stay with a group or individual, indicate that here. For any other lodging concerns, use the Details field.",
+    )
     details: str = models.TextField(blank=True)
 
-    # Maybe we should force NPCs to select a character to receive credit?
-    # OR we could just let them select it later.
     character = models.ForeignKey(
         "character.Character",
         related_name="event_registrations",
@@ -205,15 +300,27 @@ class EventRegistration(RulesModel):
     attended: bool = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
 
+    # Fields for logi to fill in regarding payment.
+    # Later, a payment system might handle this.
+    payment_complete: bool = models.BooleanField(default=False)
+    payment_note: str = models.TextField(blank=True, default="")
+
+    @property
+    def is_canceled(self):
+        return bool(self.canceled_date)
+
     @property
     def logistics_window(self) -> tuple[int, int]:
         return self.event.logistics_year, self.event.logistics_month
 
     def __str__(self) -> str:
+        # TODO: Use nickname?
         name = self.user.first_name or self.user.username
         if self.is_npc:
             return f"{self.event} - {name} (NPC)"
-        return f"{self.event} - {name} ({self.character.name})"
+        if self.character:
+            return f"{self.event} - {name} ({self.character.name})"
+        return f"{self.event} - {name} (Unfinished)"
 
     class Meta:
         unique_together = [
@@ -228,8 +335,8 @@ class EventRegistration(RulesModel):
         ]
 
         rules_permissions = {
-            "view": game.is_self | game.is_chapter_logistics,
-            "add": game.is_self | game.is_chapter_logistics,
-            "change": game.is_self | game.is_chapter_logistics,
-            "delete": game.is_self | game.is_chapter_logistics,
+            "view": game_models.is_self | game_models.is_chapter_logistics,
+            "add": game_models.is_self | game_models.is_chapter_logistics,
+            "change": game_models.is_self | game_models.is_chapter_logistics,
+            "delete": game_models.is_self | game_models.is_chapter_logistics,
         }

@@ -328,6 +328,10 @@ class EventRegistration(RulesModel):
             user=self.user,
         ).first()
 
+    @property
+    def pc_npc(self) -> str:
+        return "NPC" if self.is_npc else "PC"
+
     def __str__(self) -> str:
         # TODO: Use nickname?
         name = self.user.first_name or self.user.username

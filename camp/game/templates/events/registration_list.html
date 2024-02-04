@@ -4,33 +4,96 @@
 Registrations for {{event}}
 {% endblock %}{% endblock %}
 
+{# TODO: Fancy sorting controls. #}
 {% block content %}
+<h2>PC Registrations ({{pc_registrations|length}})</h2>
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Username</th>
       <th>Name</th>
-      <th>PC/NPC</th>
+      <th>Minor?</th>
       <th>Attendance</th>
       <th>Lodging</th>
       <th>Character</th>
+      <th>New PC?</th>
+      <th>New Character?</th>
       <th>Registered</th>
+      <th>Updated</th>
     </tr>
   <tbody>
-  {% for registration in registrations %}
+  {% for registration in pc_registrations %}
     <tr>
       <td>{{registration.user.username}}</td>
       <td>{{registration.profile}}</td>
-      <td>{% if registration.is_npc %}NPC{% else %}PC{% endif %}</td>
+      <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
       <td>{{registration.get_attendance_display}}</td>
       <td>{{registration.get_lodging_display}}</td>
-      <td>{{registration.character}}</td>
+      <td><a href="{{registration.character.get_absolute_url}}">{{registration.character}}</a></td>
+      <td>{# PLACEHOLDER #}🆕</td>
+      <td>{# PLACEHOLDER #}🆕</td>
       <td>{{registration.registered_date}}</td>
-      <td>
+      <td>{{registration.updated_date}}</td>
     </tr>
   {% empty %}
-  <tr><td colspan="10">No registrations yet.</td></tr>
+  <tr><td colspan="10">No PC registrations yet.</td></tr>
   {% endfor %}
   </tbody>
 </table>
+
+<h2>NPC Registrations ({{npc_registrations|length}})</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Minor?</th>
+      <th>Attendance</th>
+      <th>Lodging</th>
+      <th>New NPC?</th>
+      <th>Registered</th>
+      <th>Updated</th>
+    </tr>
+  <tbody>
+  {% for registration in npc_registrations %}
+    <tr>
+      <td>{{registration.user.username}}</td>
+      <td>{{registration.profile}}</td>
+      <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
+      <td>{{registration.get_attendance_display}}</td>
+      <td>{{registration.get_lodging_display}}</td>
+      <td>{# PLACEHOLDER #}🆕</td>
+      <td>{{registration.registered_date}}</td>
+      <td>{{registration.updated_date}}</td>
+    </tr>
+  {% empty %}
+  <tr><td colspan="10">No NPC registrations yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if withdrawn_registrations %}
+<h2>Withdrawn Registrations ({{withdrawn_registrations|length}})</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Registered</th>
+      <th>Withdrew</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for registration in withdrawn_registrations %}
+    <tr>
+      <td>{{registration.user.username}}</td>
+      <td>{{registration.profile}}</td>
+      <td>{{registration.pc_npc}}</td>
+      <td>{{registration.registered_date}}</td>
+      <td>{{registration.canceled_date}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
 {% endblock content %}

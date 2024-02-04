@@ -278,10 +278,21 @@ def list_registrations(request, pk):
         "user", "character"
     )
 
+    withdrawn_registrations = [r for r in registrations if r.is_canceled]
+    registrations = [r for r in registrations if not r.is_canceled]
+
+    pc_registrations = [r for r in registrations if not r.is_npc]
+    npc_registrations = [r for r in registrations if r.is_npc]
+
     return render(
         request,
         "events/registration_list.html",
-        context={"event": event, "registrations": registrations},
+        context={
+            "event": event,
+            "pc_registrations": pc_registrations,
+            "npc_registrations": npc_registrations,
+            "withdrawn_registrations": withdrawn_registrations,
+        },
     )
 
 

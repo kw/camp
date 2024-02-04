@@ -67,6 +67,10 @@ class Membership(RulesModel):
         help_text="If you are a guardian for a minor you are responsible for at game, identify them here.",
     )
 
+    @property
+    def age(self) -> int:
+        return (datetime.date.today() - self.birthdate).days // 365
+
     @classmethod
     def find(cls, request) -> Membership | None:
         return cls.objects.filter(

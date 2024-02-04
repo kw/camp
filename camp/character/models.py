@@ -83,7 +83,7 @@ class Character(RulesModel):
         return self.sheets.filter(primary=False)
 
     def __str__(self) -> str:
-        return self.name or "[Unnamed Character]"
+        return self.name or "[Unnamed]"
 
     def __repr__(self) -> str:
         return f"<Character {self.id} {self.name}>"

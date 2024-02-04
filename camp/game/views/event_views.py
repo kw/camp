@@ -272,7 +272,17 @@ def list_registrations(request, pk):
     2. Report generators (income, skills, new characters, and so on).
     3. (After event): Attendance recording.
     """
-    return redirect("events-list")
+    event = _get_event(pk)
+
+    registrations = event.registrations.order_by("registered_date").prefetch_related(
+        "user", "character"
+    )
+
+    return render(
+        request,
+        "events/registration_list.html",
+        context={"event": event, "registrations": registrations},
+    )
 
 
 def _get_event(pk):

@@ -74,7 +74,11 @@
 {% has_perm 'game.change_event' user event as can_change_event %}
 
 {% if can_change_event %}
-<p><a href="{% url 'event-update' event.pk %}">Edit Event</a></p>
+<h2>Logistics Tools</h2>
+<ul>
+  <li><a href="{% url 'event-update' event.pk %}">Edit Event</a></li>
+  <li><a href="{% url 'registration-list' event.pk %}">View Registrations</a></li>
+</ul>
 {% endif %}
 
 {% endblock content %}

@@ -6,9 +6,12 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import F
 from django.db.models import Q
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from rules.contrib.models import RulesModel
+
+import camp.accounts.models as account_models
 
 from . import game_models
 
@@ -126,6 +129,8 @@ class Event(RulesModel):
             "Must match the event start or end date."
         ),
     )
+
+    registrations: QuerySet[EventRegistration]
 
     def save(self, *args, **kwargs):
         # The logistics month defaults to the end date of the event.
@@ -270,9 +275,12 @@ class EventRegistration(RulesModel):
     )
     lodging_group: str = models.TextField(
         blank=True,
-        help_text="If you wish to stay with a group or individual, indicate that here. For any other lodging concerns, use the Details field.",
+        help_text=(
+            "If you wish to stay with a group or individual, indicate that here. "
+            "For any other lodging concerns, use the Other Details field."
+        ),
     )
-    details: str = models.TextField(blank=True)
+    details: str = models.TextField(blank=True, verbose_name="Other Details")
 
     character = models.ForeignKey(
         "character.Character",
@@ -312,6 +320,13 @@ class EventRegistration(RulesModel):
     @property
     def logistics_window(self) -> tuple[int, int]:
         return self.event.logistics_year, self.event.logistics_month
+
+    @property
+    def profile(self) -> account_models.Membership | None:
+        return account_models.Membership.objects.filter(
+            game=self.event.campaign.game,
+            user=self.user,
+        ).first()
 
     def __str__(self) -> str:
         # TODO: Use nickname?

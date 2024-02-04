@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load rules %}
+{% block head_title %}{% block body_title %}
+Registrations for {{event}}
+{% endblock %}{% endblock %}
+
+{% block content %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>PC/NPC</th>
+      <th>Attendance</th>
+      <th>Lodging</th>
+      <th>Character</th>
+      <th>Registered</th>
+    </tr>
+  <tbody>
+  {% for registration in registrations %}
+    <tr>
+      <td>{{registration.user.username}}</td>
+      <td>{{registration.profile}}</td>
+      <td>{% if registration.is_npc %}NPC{% else %}PC{% endif %}</td>
+      <td>{{registration.get_attendance_display}}</td>
+      <td>{{registration.get_lodging_display}}</td>
+      <td>{{registration.character}}</td>
+      <td>{{registration.registered_date}}</td>
+      <td>
+    </tr>
+  {% empty %}
+  <tr><td colspan="10">No registrations yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

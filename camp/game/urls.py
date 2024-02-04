@@ -102,4 +102,9 @@ urlpatterns = [
         event_views.unregister_view,
         name="event-unregister",
     ),
+    path(
+        "events/<int:pk>/registrations/",
+        event_views.list_registrations,
+        name="registration-list",
+    ),
 ]

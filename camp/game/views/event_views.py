@@ -263,6 +263,9 @@ def view_registration(request, pk, user_id):
     return redirect("events-list")
 
 
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
 def list_registrations(request, pk):
     """View registrations for an event.
 

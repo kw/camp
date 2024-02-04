@@ -21,7 +21,6 @@ class Membership(RulesModel):
     memberships or otherwise keep them in sync.
     """
 
-    joined: int = models.TimeField(auto_now_add=True)
     game: int = models.ForeignKey(
         game_models.Game, on_delete=models.CASCADE, related_name="game"
     )
@@ -72,10 +71,10 @@ class Membership(RulesModel):
         return (datetime.date.today() - self.birthdate).days // 365
 
     @classmethod
-    def find(cls, request) -> Membership | None:
+    def find(cls, request, user=None) -> Membership | None:
         return cls.objects.filter(
             game=request.game,
-            user=request.user,
+            user=user or request.user,
         ).first()
 
     def __str__(self):
@@ -83,14 +82,7 @@ class Membership(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_self
-            | game_models.is_owner
-            | game_models.is_logistics,
-            "change": game_models.is_self
-            | game_models.is_owner
-            | game_models.is_logistics,
-            "delete": game_models.is_self
-            | game_models.is_owner
-            | game_models.is_logistics,
-            "add": game_models.is_authenticated,
+            "view": game_models.is_owner | game_models.is_logistics,
+            "change": game_models.is_owner | game_models.is_logistics,
+            "delete": game_models.is_owner | game_models.is_logistics,
         }

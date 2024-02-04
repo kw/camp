@@ -8,7 +8,6 @@ import rules
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
@@ -178,7 +177,7 @@ def is_owner(user: User, obj):
         # Fall through, the object could also have an owners list
     if hasattr(obj, "owners"):
         # The owners attribute could be a QuerySet or some other container
-        if isinstance(obj.owners, QuerySet):
+        if hasattr(obj.owners, "contains"):
             return obj.owners.contains(user)
         else:
             return user in obj.owners

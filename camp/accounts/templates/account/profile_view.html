@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block head_title %}{% block body_title %}
+{% if profile %}
+{{profile}} ({{player.username}})
+{% else %}
+{{player.username}} (No Profile)
+{% endif %}
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+  {% comment %}
+   TODO: Profile view only works for staff right now, but if we
+    ever decide to allow other users to see each other's profiles,
+    we need to block off legal name and other things for non-staff.
+  {% endcomment %}
+
+<ul>
+  <li><b>Account Created</b>: {{player.date_joined}}</li>
+  <li><b>Last Login</b>: {{player.last_login}}</li>
+  <li><b>Account Active</b>: {{player.is_active}}</li>
+  <li><b>Email</b>:
+    <ul>
+      {% if player.email %}
+      <li><a href="mailto:{{player.email}}">{{player.email}}</a> (legacy data)<li>
+      {% endif %}
+    {% for e in emails %}
+      <li><a href="mailto:{{e.email}}">{{e.email}}</a>
+      {% if not e.verified %}(Unverified) {% endif %}
+      {% if e.primary %}(Primary) {% endif %}
+      </li>
+    {% empty %}
+    None on file
+    {% endfor %}
+    </ul>
+  </li>
+  <li><b>Game Roles</b>:
+    {% for role in player.game_roles.all %}
+    {{role}}
+    {% empty %}
+    None
+    {% endfor %}
+  </li>
+  <li><b>Chapter Roles</b>:
+    {% for role in player.chapter_roles.all %}
+    {{role}}
+    {% empty %}
+    None
+    {% endfor %}
+  </li>
+{% if not profile %}
+  <li>User {{player.username}} has not supplied a profile yet.</li>
+{% else %}
+
+
+  <li><b>Legal Name</b>: {{profile.legal_name}}</li>
+  <li><b>Preferred Name</b>: {{profile.preferred_name}}</li>
+  <li><b>Pronouns</b>: {{profile.pronouns|default:"None"}}</li>
+  {% if profile.age < 18 %}
+  <li><b>Age:</b> {{profile.age}} (age is only shown for minors)</li>
+  {% endif %}
+  <li><b>Medical/Allergy Info</b>: {{profile.medical|default:"None"|linebreaks}}</li>
+  <li><b>Emergency Contact</b>: {{profile.emergency_contacts|default:"None"|linebreaks}}</li>
+  <li><b>My Guardian</b>: {{profile.my_guardian|default:"None"|linebreaks}}</li>
+  <li><b>My Minors</b>: {{profile.my_minors|default:"None"|linebreaks}}</li>
+
+</ul>
+{% endif %}
+
+{% endblock content %}

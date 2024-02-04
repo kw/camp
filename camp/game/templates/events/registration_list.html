@@ -25,7 +25,9 @@ Registrations for {{event}}
   <tbody>
   {% for registration in pc_registrations %}
     <tr>
-      <td>{{registration.user.username}}</td>
+      <td><a href="{% url 'profile-view' registration.user.username %}">
+        {{registration.user.username}}
+      </a></td>
       <td>{{registration.profile}}</td>
       <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
       <td>{{registration.get_attendance_display}}</td>
@@ -60,7 +62,9 @@ Registrations for {{event}}
   <tbody>
   {% for registration in npc_registrations %}
     <tr>
-      <td>{{registration.user.username}}</td>
+      <td><a href="{% url 'profile-view' registration.user.username %}">
+        {{registration.user.username}}
+      </a></td>
       <td>{{registration.profile}}</td>
       <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
       <td>{{registration.get_attendance_display}}</td>
@@ -92,7 +96,9 @@ Registrations for {{event}}
   <tbody>
     {% for registration in withdrawn_registrations %}
     <tr>
-      <td>{{registration.user.username}}</td>
+      <td><a href="{% url 'profile-view' registration.user.username %}">
+          {{registration.user.username}}
+      </a></td>
       <td>{{registration.profile}}</td>
       <td>{{registration.pc_npc}}</td>
       <td>{{registration.registered_date}}</td>

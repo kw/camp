@@ -17,21 +17,26 @@
   {% endcomment %}
 
 <ul>
+  {% if player.is_staff %}
+  <li><b>{{player.username}} is server staff</b></li>
+  {% endif %}
   <li><b>Account Created</b>: {{player.date_joined}}</li>
   <li><b>Last Login</b>: {{player.last_login}}</li>
   <li><b>Account Active</b>: {{player.is_active}}</li>
   <li><b>Email</b>:
     <ul>
-      {% if player.email %}
-      <li><a href="mailto:{{player.email}}">{{player.email}}</a> (legacy data)<li>
-      {% endif %}
     {% for e in emails %}
       <li><a href="mailto:{{e.email}}">{{e.email}}</a>
       {% if not e.verified %}(Unverified) {% endif %}
       {% if e.primary %}(Primary) {% endif %}
       </li>
     {% empty %}
-    None on file
+    {% if player.email %}
+      <li><a href="mailto:{{player.email}}">{{player.email}}</a></li>
+    {% else %}
+      <li>None on file</li>
+    {% endif %}
+
     {% endfor %}
     </ul>
   </li>

@@ -1,5 +1,6 @@
 {% load static %}
 {% load rules %}
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -19,7 +20,8 @@
   {% endblock css %}
 </head>
 
-<body>
+<body hx-boost="{{hxboost}}"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   {% block body %}
   {% has_perm 'game.change_game' user game as can_change_game %}
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -109,6 +111,8 @@
   </div>
   {% endif %}
 
+  <div id="htmx-alert" hidden class="alert alert-warning sticky-top"></div>
+
   <main class="container">
     <h1>{% block body_title %}{% endblock %}</h1>
     <div class="container">
@@ -130,11 +134,52 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
   <script>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    htmx.onLoad(function installTooltips() {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+
+    document.body.addEventListener('htmx:afterRequest', function (evt) {
+      // Adapted from https://xvello.net/blog/htmx-error-handling/
+      const errorTarget = document.getElementById("htmx-alert")
+      if (evt.detail.successful) {
+          // Successful request, clear out alert
+          errorTarget.setAttribute("hidden", "true")
+          errorTarget.innerText = "";
+      } else if (evt.detail.failed && evt.detail.xhr) {
+          // Server error with response contents, equivalent to htmx:responseError
+          console.warn("Server error", evt.detail)
+          const xhr = evt.detail.xhr;
+          errorTarget.innerText = `Unexpected server error: ${xhr.status} - ${xhr.statusText}`;
+          errorTarget.removeAttribute("hidden");
+      } else {
+          // Unspecified failure, usually caused by network error
+          console.error("Unexpected htmx error", evt.detail)
+          errorTarget.innerText = "Unexpected error, check your connection and try to refresh the page.";
+          errorTarget.removeAttribute("hidden");
+      }
+  });
+
+  {% if debug %}
+    if (typeof window.htmx !== "undefined") {
+        htmx.on("htmx:afterSettle", function(detail) {
+            if (
+                typeof window.djdt !== "undefined"
+                && detail.target instanceof HTMLBodyElement
+            ) {
+                djdt.show_toolbar();
+                // I prefer this closed by default...
+                djdt.hide_toolbar();
+            }
+        });
+    }
+  {% endif %}
+
   </script>
+  {% django_htmx_script %}
   {% block javascript %}
   {% endblock javascript %}
 </body>

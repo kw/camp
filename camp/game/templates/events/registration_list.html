@@ -16,7 +16,7 @@ Registrations for {{event}}
       <th>Attendance</th>
       <th>Lodging</th>
       <th>Character</th>
-      <th>New PC?</th>
+      <th>New Player?</th>
       <th>New Character?</th>
       <th>Registered</th>
       <th>Updated</th>
@@ -32,12 +32,15 @@ Registrations for {{event}}
       <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
       <td>{{registration.get_attendance_display}}</td>
       <td>{{registration.get_lodging_display}}</td>
-      <td><a href="{{registration.character.get_absolute_url}}">{{registration.character}}</a></td>
+      <td><a href="{{registration.character.get_absolute_url}}" hx-boosted="false">{{registration.character}}</a></td>
       <td>{# PLACEHOLDER #}🆕</td>
       <td>{# PLACEHOLDER #}🆕</td>
       <td>{{registration.registered_date}}</td>
       <td>{{registration.updated_date}}</td>
-      <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a></li></td>
+      <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a>
+
+
+      </li></td>
     </tr>
   {% empty %}
   <tr><td colspan="10">No PC registrations yet.</td></tr>
@@ -54,7 +57,7 @@ Registrations for {{event}}
       <th>Minor?</th>
       <th>Attendance</th>
       <th>Lodging</th>
-      <th>New NPC?</th>
+      <th>New Player?</th>
       <th>Registered</th>
       <th>Updated</th>
       <th>Actions</th>

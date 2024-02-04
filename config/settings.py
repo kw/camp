@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "debug_toolbar",
     "rules.apps.AutodiscoverRulesConfig",
+    "django_htmx",
     # Social auth providers. See here for the full available list:
     # https://django-allauth.readthedocs.io/en/latest/installation.html
     "allauth.socialaccount.providers.discord",
@@ -81,6 +82,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -204,6 +206,11 @@ MESSAGE_TAGS = {
 }
 
 UNDO_STACK_SIZE = env.int("UNDO_STACK_SIZE", default=10)
+
+# Should we include hx-boost="true"? Debugging may be easier with it off.
+ENABLE_HXBOOST = env.bool("ENABLE_HXBOOST", default=True)
+
+DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
 
 if sentry_dsn := env.str("SENTRY_DSN", default=None):
     import sentry_sdk

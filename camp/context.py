@@ -6,6 +6,7 @@ from django.http import HttpRequest
 def settings(request):
     return {
         "site_title": _settings.SITE_TITLE,
+        "hxboost": "true" if _settings.ENABLE_HXBOOST else "false",
     }
 
 

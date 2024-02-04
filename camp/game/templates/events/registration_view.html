@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load rules %}
+{% load crispy_forms_tags %}
+{% load markdown %}
+{% load game %}
+{% block head_title %}{% block body_title %}
+Registration: {{ event }} / {{ profile }}
+({% if registration.is_canceled %}Withdrawn{% else %}{{ registration.pc_npc}}{% endif %})
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'registration-list' event.pk %}">Back to list</a>
+
+<h2>Registration Data</h2>
+<ul>
+  <li><b>Registered</b>: {{registration.registered_date}}</li>
+  <li><b>Updated</b>: {{registration.updated_date}}</li>
+  {% if registration.is_canceled %}
+  <li><b>Withdrawn</b>: {{registration.canceled_date}}</li>
+  {% endif %}
+</ul>
+
+<form method="post">
+  {{ reg_form | crispy }}
+  {% csrf_token %}
+  <input type="submit" class="btn btn-danger" value="Edit {{profile}}'s Registration"/>
+</form>
+
+{% endblock content %}

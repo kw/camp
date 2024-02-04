@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -9,6 +11,7 @@ from rules.contrib.views import permission_required
 
 from camp.accounts.forms import MembershipForm
 from camp.accounts.models import Membership
+from camp.accounts.models import User
 from camp.character.models import Character
 
 from .. import forms
@@ -250,7 +253,10 @@ def unregister_view(request, pk):
     return redirect(event)
 
 
-def view_registration(request, pk, user_id):
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+def view_registration(request, pk, username):
     """View a user's registration.
 
     This view is for logistics, and should have a few functions:
@@ -260,7 +266,44 @@ def view_registration(request, pk, user_id):
     3. Make notes, mark as paid, etc.
     4. Print character sheet.
     """
-    return redirect("events-list")
+    event = _get_event(pk)
+    player = get_object_or_404(User, username=username)
+    registration = event.get_registration(player)
+    membership = Membership.objects.filter(game=request.game, user=player).first()
+    if registration is None:
+        # TODO: Consider allowing logistics to register on behalf of a user who hasn't
+        # registered yet, including potentially creating their character/profile/account.
+        raise Http404
+
+    if request.method == "GET":
+        reg_form = forms.RegisterForm(instance=registration)
+    elif request.method == "POST":
+        reg_form = forms.RegisterForm(request.POST, instance=registration)
+        if reg_form.is_valid():
+            registration = reg_form.save(commit=False)
+            if registration.character is None:
+                registration.character = Character.objects.create(
+                    owner=registration.user,
+                    campaign=event.campaign,
+                    game=event.campaign.game,
+                )
+            registration.save()
+            return redirect("registration-list", pk=event.pk)
+    else:
+        return HttpResponseNotAllowed(("GET", "POST"))
+
+    return render(
+        request,
+        "events/registration_view.html",
+        context={
+            "event": event,
+            "player": player,
+            "profile": membership,
+            "registration": registration,
+            "reg_form": reg_form,
+            "character": registration.character,
+        },
+    )
 
 
 @permission_required(

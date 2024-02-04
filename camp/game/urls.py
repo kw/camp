@@ -107,4 +107,9 @@ urlpatterns = [
         event_views.list_registrations,
         name="registration-list",
     ),
+    path(
+        "events/<int:pk>/registrations/<str:username>/",
+        event_views.view_registration,
+        name="registration-view",
+    ),
 ]

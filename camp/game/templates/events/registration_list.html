@@ -20,6 +20,7 @@ Registrations for {{event}}
       <th>New Character?</th>
       <th>Registered</th>
       <th>Updated</th>
+      <th>Actions</th>
     </tr>
   <tbody>
   {% for registration in pc_registrations %}
@@ -34,6 +35,7 @@ Registrations for {{event}}
       <td>{# PLACEHOLDER #}🆕</td>
       <td>{{registration.registered_date}}</td>
       <td>{{registration.updated_date}}</td>
+      <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a></li></td>
     </tr>
   {% empty %}
   <tr><td colspan="10">No PC registrations yet.</td></tr>
@@ -53,6 +55,7 @@ Registrations for {{event}}
       <th>New NPC?</th>
       <th>Registered</th>
       <th>Updated</th>
+      <th>Actions</th>
     </tr>
   <tbody>
   {% for registration in npc_registrations %}
@@ -65,6 +68,7 @@ Registrations for {{event}}
       <td>{# PLACEHOLDER #}🆕</td>
       <td>{{registration.registered_date}}</td>
       <td>{{registration.updated_date}}</td>
+      <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a></li></td>
     </tr>
   {% empty %}
   <tr><td colspan="10">No NPC registrations yet.</td></tr>
@@ -82,6 +86,7 @@ Registrations for {{event}}
       <th>Type</th>
       <th>Registered</th>
       <th>Withdrew</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -92,6 +97,7 @@ Registrations for {{event}}
       <td>{{registration.pc_npc}}</td>
       <td>{{registration.registered_date}}</td>
       <td>{{registration.canceled_date}}</td>
+      <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a></li></td>
     </tr>
     {% endfor %}
   </tbody>

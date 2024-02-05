@@ -208,7 +208,7 @@ MESSAGE_TAGS = {
 UNDO_STACK_SIZE = env.int("UNDO_STACK_SIZE", default=10)
 
 # Should we include hx-boost="true"? Debugging may be easier with it off.
-ENABLE_HXBOOST = env.bool("ENABLE_HXBOOST", default=True)
+ENABLE_HXBOOST = env.bool("ENABLE_HXBOOST", default=False)
 
 DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
 

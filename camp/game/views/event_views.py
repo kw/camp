@@ -1,5 +1,8 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import Http404
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
@@ -276,9 +279,11 @@ def view_registration(request, pk, username):
         raise Http404
 
     if request.method == "GET":
-        reg_form = forms.RegisterForm(instance=registration)
+        reg_form = forms.RegisterForm(instance=registration, allow_payment=True)
     elif request.method == "POST":
-        reg_form = forms.RegisterForm(request.POST, instance=registration)
+        reg_form = forms.RegisterForm(
+            request.POST, instance=registration, allow_payment=True
+        )
         if reg_form.is_valid():
             registration = reg_form.save(commit=False)
             if registration.character is None:
@@ -320,6 +325,17 @@ def list_registrations(request, pk):
     """
     event = _get_event(pk)
 
+    if request.method == "POST":
+        # Handle bulk actions
+        match apply := request.POST.get("apply", "none"):
+            case "mark_paid":
+                _mark_paid(request, event)
+            case "mark_unpaid":
+                _mark_unpaid(request, event)
+            case _:
+                messages.warning(request, f"Unregistered action '{apply}'")
+        return redirect("registration-list", pk=event.pk)
+
     registrations = event.registrations.order_by("registered_date").prefetch_related(
         "user", "character"
     )
@@ -339,6 +355,46 @@ def list_registrations(request, pk):
             "npc_registrations": npc_registrations,
             "withdrawn_registrations": withdrawn_registrations,
         },
+    )
+
+
+@transaction.atomic
+def _mark_paid(request, event):
+    usernames = request.POST.getlist("selected", [])
+    users = User.objects.filter(username__in=usernames)
+    reg: models.EventRegistration
+    today = datetime.date.today()
+    count = 0
+    for reg in event.registrations.filter(payment_complete=False, user__in=users):
+        count += 1
+        reg.payment_complete = True
+        if prev_note := reg.payment_note:
+            reg.payment_note = f"Marked paid by {request.user.username} on {today}\nPrevious note:\n{prev_note}"
+        else:
+            reg.payment_note = f"Marked paid by {request.user.username} on {today}"
+        reg.save()
+    transaction.on_commit(
+        lambda: messages.success(request, f"Marked {count} users paid.")
+    )
+
+
+@transaction.atomic
+def _mark_unpaid(request, event):
+    usernames = request.POST.getlist("selected", [])
+    users = User.objects.filter(username__in=usernames)
+    reg: models.EventRegistration
+    today = datetime.date.today()
+    count = 0
+    for reg in event.registrations.filter(payment_complete=True, user__in=users):
+        count += 1
+        reg.payment_complete = False
+        if prev_note := reg.payment_note:
+            reg.payment_note = f"Marked unpaid by {request.user.username} on {today}\nPrevious note:\n{prev_note}"
+        else:
+            reg.payment_note = f"Marked paid by {request.user.username} on {today}"
+        reg.save()
+    transaction.on_commit(
+        lambda: messages.success(request, f"Marked {count} users unpaid.")
     )
 
 

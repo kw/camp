@@ -100,7 +100,7 @@ class RegisterForm(forms.ModelForm):
         required=False,
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, allow_payment=False, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Set up the character field. It should only show characters belonging
@@ -127,6 +127,11 @@ class RegisterForm(forms.ModelForm):
         self.fields["lodging"].choices = lodging_choices = event.lodging_choices
         self.initial["lodging"] = lodging_choices[-1][0]
 
+        # Payment fields are only available to logistics.
+        if not allow_payment:
+            del self.fields["payment_complete"]
+            del self.fields["payment_note"]
+
     class Meta:
         model = models.EventRegistration
         fields = [
@@ -136,4 +141,6 @@ class RegisterForm(forms.ModelForm):
             "lodging_group",
             "character",
             "details",
+            "payment_complete",
+            "payment_note",
         ]

@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "rules.apps.AutodiscoverRulesConfig",
     "django_htmx",
+    "django_celery_results",
     # Social auth providers. See here for the full available list:
     # https://django-allauth.readthedocs.io/en/latest/installation.html
     "allauth.socialaccount.providers.discord",
@@ -212,6 +213,16 @@ ENABLE_HXBOOST = env.bool("ENABLE_HXBOOST", default=False)
 
 DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
 
+
+# Celery task queue
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
+CELERY_TASK_SERIALIZER = "json"
+
+# Sentry error reporting
 if sentry_dsn := env.str("SENTRY_DSN", default=None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration

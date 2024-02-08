@@ -112,4 +112,15 @@ urlpatterns = [
         event_views.view_registration,
         name="registration-view",
     ),
+    # Event reports
+    path(
+        "events/<int:pk>/reports/",
+        event_views.trigger_event_report,
+        name="trigger-event-report",
+    ),
+    path(
+        "events/<int:pk>/reports/<str:task_id>/",
+        event_views.download_event_report,
+        name="download-event-report",
+    ),
 ]

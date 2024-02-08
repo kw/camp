@@ -221,6 +221,7 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"
 CELERY_TASK_SERIALIZER = "json"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # Sentry error reporting
 if sentry_dsn := env.str("SENTRY_DSN", default=None):

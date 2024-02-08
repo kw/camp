@@ -1,14 +1,21 @@
 import datetime
+import io
+import logging
 
+from celery.result import AsyncResult
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.http import FileResponse
 from django.http import Http404
+from django.http import HttpResponseBadRequest
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_POST
 from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
 
@@ -19,6 +26,9 @@ from camp.character.models import Character
 
 from .. import forms
 from .. import models
+from .. import tasks
+
+_XLSLX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def event_list(request):
@@ -355,6 +365,44 @@ def list_registrations(request, pk):
             "npc_registrations": npc_registrations,
             "withdrawn_registrations": withdrawn_registrations,
         },
+    )
+
+
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+@require_POST
+def trigger_event_report(request, pk):
+    event = _get_event(pk)
+    match report_id := request.POST.get("report", None):
+        case "registration_list":
+            result = tasks.export_registrations.delay(
+                event_pk=pk,
+                requestor=request.user.username,
+                base_url=request.get_host(),
+            )
+            return render(
+                request,
+                "events/event_report_progress.html",
+                {"task_id": result.id, "event": event},
+            )
+        case _:
+            logging.warn("Bad report type: %s", report_id)
+            return HttpResponseBadRequest(f"Unknown report ID {report_id}")
+
+
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+@require_GET
+def download_event_report(request, pk, task_id):
+    # TODO: Use a model, not a bare result
+    result = AsyncResult(task_id)
+    data = result.get()
+    stream = io.BytesIO(data)
+    stream.seek(0)
+    return FileResponse(
+        stream, as_attachment=True, filename="report.xlsx", content_type=_XLSLX_MIMETYPE
     )
 
 

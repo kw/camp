@@ -1724,7 +1724,18 @@ files = [
 [package.extras]
 brotli = ["Brotli"]
 
+[[package]]
+name = "xlsxwriter"
+version = "3.1.9"
+description = "A Python module for creating Excel XLSX files."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "XlsxWriter-3.1.9-py3-none-any.whl", hash = "sha256:b61c1a0c786f82644936c0936ec96ee96cd3afb9440094232f7faef9b38689f0"},
+    {file = "XlsxWriter-3.1.9.tar.gz", hash = "sha256:de810bf328c6a4550f4ffd6b0b34972aeb7ffcf40f3d285a0413734f9b63a929"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12.0"
-content-hash = "10a28dda4a7bdfb7f06297104d4a4f7ca8071f206763d6f6eda6cc9192a38b55"
+content-hash = "ba97edb01728a31fa71c82cc2da2cc4030afe3dee026ce3675cf0c8eed2d2916"

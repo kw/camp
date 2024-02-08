@@ -9,6 +9,7 @@ Registrations for {{event}}
 
 <h2>PC Registrations ({{pc_registrations|length}})</h2>
 <form method="post" x-data="{paid: [], unpaid: []}">
+  {% csrf_token %}
   <table class="table table-striped">
     <thead>
       <tr>

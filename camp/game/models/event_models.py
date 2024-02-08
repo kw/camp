@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -322,15 +323,29 @@ class EventRegistration(RulesModel):
         return self.event.logistics_year, self.event.logistics_month
 
     @property
-    def profile(self) -> account_models.Membership | None:
-        return account_models.Membership.objects.filter(
+    def profile(self) -> account_models.Membership:
+        profile = account_models.Membership.objects.filter(
             game=self.event.campaign.game,
             user=self.user,
         ).first()
+        if profile is not None:
+            return profile
+        # If a user somehow registers without a profile, return one anyway.
+        return account_models.Membership(
+            game=self.event.campaign.game,
+            user=self.user,
+            birthdate=datetime.date.today(),
+        )
 
     @property
     def pc_npc(self) -> str:
         return "NPC" if self.is_npc else "PC"
+
+    def get_absolute_url(self):
+        return reverse(
+            "registration-view",
+            kwargs={"pk": self.event.pk, "username": self.user.username},
+        )
 
     def __str__(self) -> str:
         # TODO: Use nickname?

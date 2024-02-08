@@ -78,7 +78,12 @@ class Membership(RulesModel):
         ).first()
 
     def __str__(self):
-        return self.preferred_name or self.legal_name or self.user.get_full_name()
+        return (
+            self.preferred_name
+            or self.legal_name
+            or self.user.get_full_name()
+            or self.user.username
+        )
 
     class Meta:
         rules_permissions = {

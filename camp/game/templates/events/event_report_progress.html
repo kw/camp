@@ -1,17 +1,42 @@
 <div>
   {% if report.download_ready %}
-  <a role="button" class="btn btn-success"
-    href="{% url 'download-event-report' report.event_id report.id %}">Download Report</a>
+  <a class="btn btn-success" role="button"
+    href="{% url 'download-event-report' report.event_id 'registration_list' %}"
+    download="{{report.filename}}">
+    <i class="bi bi-file-earmark-excel"></i> Download Report
+  </a>
+  <button class="btn btn-warning" role="button"
+    hx-post="{% url 'trigger-event-report' report.event_id 'registration_list' %}"
+    hx-target="closest div"
+    >
+    <i class="bi bi-arrow-repeat"></i> Regenerate
+  </button>
   {% elif report.result.failed %}
-  <a role="button" class="btn btn-danger" disabled>Report Failed</a>
-  {% else %}
-  <a role="button" class="btn btn-secondary" disabled
-    hx-get="{% url 'poll-event-report' report.event_id report.pk %}"
-    hx-trigger="load delay:3s"
+  <button class="btn btn-danger" disabled>
+    <i class="bi bi-x-square"></i> Report Failed
+  </button>
+  <button class="btn btn-warning"
+    hx-post="{% url 'trigger-event-report' report.event_id 'registration_list' %}"
+    hx-target="closest div"
+    >
+    <i class="bi bi-arrow-repeat"></i> Retry
+  </button>
+  {% elif report %}
+  <button class="btn btn-secondary" disabled
+    hx-get="{% url 'poll-event-report' report.event_id 'registration_list' %}"
+    hx-trigger="load delay:2s"
     hx-target="closest div"
   >
     <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
     <span role="status">Generating...</span>
-  </a>
+  </button>
+  {% else %}
+  <button
+    class="btn btn-primary"
+    hx-post="{% url 'trigger-event-report' event.pk 'registration_list' %}"
+    hx-target="closest div"
+    >
+    <i class="bi bi-file-earmark-excel"></i> Generate Report
+  </button>
   {% endif %}
 </div>

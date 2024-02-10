@@ -114,17 +114,17 @@ urlpatterns = [
     ),
     # Event reports
     path(
-        "events/<int:pk>/reports/",
+        "events/<int:pk>/reports/<str:report_type>/",
         event_views.trigger_event_report,
         name="trigger-event-report",
     ),
     path(
-        "events/<int:pk>/reports/<int:report_id>/poll/",
+        "events/<int:pk>/reports/<str:report_type>/poll/",
         event_views.poll_event_report,
         name="poll-event-report",
     ),
     path(
-        "events/<int:pk>/reports/<int:report_id>/download/",
+        "events/<int:pk>/reports/<str:report_type>/download/",
         event_views.download_event_report,
         name="download-event-report",
     ),

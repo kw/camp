@@ -78,7 +78,9 @@ def event_create(request, slug):
     if request.method == "POST":
         form = forms.EventCreateForm(request.POST, instance=event)
         if form.is_valid():
-            event = form.save()
+            event: models.Event = form.save(commit=False)
+            event.creator = request.user
+            event.save()
             return redirect(event)
     else:
         form = forms.EventCreateForm(instance=event)
@@ -354,33 +356,7 @@ def list_registrations(request, pk):
     pc_registrations = [r for r in registrations if not r.is_npc]
     npc_registrations = [r for r in registrations if r.is_npc]
 
-    # Check for existing reports (and clean old ones if needed)
-    reports = (
-        models.EventReport.objects.filter(
-            event_id=event.id,
-        )
-        .defer("blob")
-        .order_by("-started")
-        .all()
-    )
-    # TODO: If we have multiple report types, show the latest of each.
-    if reports:
-        report = reports[0]
-        for old_report in reports[1:]:
-            logging.info(
-                "Cleaning up old report: %s from %s", old_report.pk, old_report.started
-            )
-            old_report.result.forget()
-            old_report.delete()
-        if report.result.failed():
-            logging.info(
-                "Cleaning up failed report: %s from %s", report.pk, report.started
-            )
-            report.result.forget()
-            report.delete()
-            report = None
-    else:
-        report = None
+    report = _fetch_report(pk, "registration_list")
 
     return render(
         request,
@@ -399,8 +375,12 @@ def list_registrations(request, pk):
     "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 @require_POST
-def trigger_event_report(request, pk):
-    report_type = request.POST.get("report")
+def trigger_event_report(request, pk, report_type):
+    if existing_report := _fetch_report(pk, report_type):
+        if result := existing_report.result:
+            result.revoke()
+            result.forget()
+            existing_report.delete()
 
     try:
         report, result = tasks.generate_report(
@@ -427,8 +407,8 @@ def trigger_event_report(request, pk):
     "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 @require_GET
-def poll_event_report(request, pk, report_id):
-    report = get_object_or_404(models.EventReport, event_id=pk, pk=report_id)
+def poll_event_report(request, pk, report_type):
+    report = _fetch_report(pk, report_type)
     return render(request, "events/event_report_progress.html", {"report": report})
 
 
@@ -436,18 +416,47 @@ def poll_event_report(request, pk, report_id):
     "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 @require_GET
-def download_event_report(request, pk, report_id):
-    report = (
-        models.EventReport.objects.filter(event_id=pk, pk=report_id)
-        .defer("blob")
-        .first()
-    )
+def download_event_report(request, pk, report_type):
+    report = _fetch_report(pk, report_type)
     if report and report.download_ready:
         if report.task_id:
             result = AsyncResult(report.task_id)
             result.forget()
         return _report_download_response(report)
     return Http404
+
+
+def _fetch_report(event_id, report_type) -> models.EventReport | None:
+    # Check for existing reports (and clean old ones if needed)
+    reports = (
+        models.EventReport.objects.filter(
+            event_id=event_id,
+            report_type=report_type,
+        )
+        .defer("blob")
+        .order_by("-started")
+        .all()
+    )
+    # TODO: If we have multiple report types, show the latest of each.
+    if reports:
+        report = reports[0]
+        for old_report in reports[1:]:
+            logging.info(
+                "Cleaning up old report: %s from %s", old_report.pk, old_report.started
+            )
+            old_report.result.revoke()
+            old_report.result.forget()
+            old_report.delete()
+        if report.result.failed():
+            logging.info(
+                "Cleaning up failed report: %s from %s", report.pk, report.started
+            )
+            report.result.forget()
+            report.delete()
+            report = None
+    else:
+        report = None
+    return report
 
 
 def _report_download_response(report: models.EventReport) -> FileResponse:

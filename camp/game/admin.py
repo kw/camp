@@ -34,12 +34,21 @@ class RegistrationInline(admin.TabularInline):
     model = models.EventRegistration
 
 
+class ReportInline(admin.TabularInline):
+    model = models.EventReport
+
+
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):
     date_hierarchy = "created_date"
-    inlines = [RegistrationInline]
+    inlines = [ReportInline, RegistrationInline]
 
 
 @admin.register(models.EventRegistration)
 class EventRegistrationAdmin(admin.ModelAdmin):
     date_hierarchy = "registered_date"
+
+
+@admin.register(models.EventReport)
+class EventReportAdmin(admin.ModelAdmin):
+    pass

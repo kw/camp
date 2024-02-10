@@ -432,3 +432,6 @@ class EventReport(RulesModel):
         if not self.task_id:
             return None
         return AsyncResult(self.task_id)
+
+    def __str__(self):
+        return f"{self.event} {self.report_type}"

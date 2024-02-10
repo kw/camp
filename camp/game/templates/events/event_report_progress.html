@@ -1,4 +1,17 @@
-{# TODO: htmx progress polling #}
 <div>
-  <a href="{% url 'download-event-report' event.pk task_id %}">Download</a>
+  {% if report.download_ready %}
+  <a role="button" class="btn btn-success"
+    href="{% url 'download-event-report' report.event_id report.id %}">Download Report</a>
+  {% elif report.result.failed %}
+  <a role="button" class="btn btn-danger" disabled>Report Failed</a>
+  {% else %}
+  <a role="button" class="btn btn-secondary" disabled
+    hx-get="{% url 'poll-event-report' report.event_id report.pk %}"
+    hx-trigger="load delay:3s"
+    hx-target="closest div"
+  >
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    <span role="status">Generating...</span>
+  </a>
+  {% endif %}
 </div>

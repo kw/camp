@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import datetime
+import uuid
 from decimal import Decimal
 
+from celery.result import AsyncResult
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import F
@@ -348,8 +350,7 @@ class EventRegistration(RulesModel):
         )
 
     def __str__(self) -> str:
-        # TODO: Use nickname?
-        name = self.user.first_name or self.user.username
+        name = self.user.username
         if self.is_npc:
             return f"{self.event} - {name} (NPC)"
         if self.character:
@@ -369,8 +370,65 @@ class EventRegistration(RulesModel):
         ]
 
         rules_permissions = {
-            "view": game_models.is_self | game_models.is_chapter_logistics,
-            "add": game_models.is_self | game_models.is_chapter_logistics,
-            "change": game_models.is_self | game_models.is_chapter_logistics,
-            "delete": game_models.is_self | game_models.is_chapter_logistics,
+            "view": game_models.is_self | game_models.can_manage_events,
+            "add": game_models.is_self | game_models.can_manage_events,
+            "change": game_models.is_self | game_models.can_manage_events,
+            "delete": game_models.is_self | game_models.can_manage_events,
         }
+
+
+def _task_uuid():
+    return uuid.uuid4().hex
+
+
+class EventReport(RulesModel):
+    event: Event = models.ForeignKey(
+        Event, related_name="reports", on_delete=models.CASCADE
+    )
+    started = models.DateTimeField(auto_now_add=True)
+    requestor: User = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="event_reports",
+        help_text="The user who triggered the report.",
+    )
+    report_type: str = models.CharField(
+        max_length=50,
+        help_text="Report type identifier, as used by the trigger-event-report view.",
+    )
+    task_id: str = models.CharField(
+        default=_task_uuid,
+        max_length=100,
+        help_text="Task ID used by the underlying task queue system.",
+    )
+    content_type: str = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        default=None,
+        help_text="MIME type of the output, to report to the browser.",
+    )
+    filename: str = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default=None,
+        help_text="Filename to report to the browser. This is NOT a file on the webserver filesystem.",
+    )
+    blob: str = models.BinaryField(
+        null=True,
+        default=None,
+        help_text="Report file content, once the task is complete.",
+    )
+    download_ready: bool = models.BooleanField(
+        default=False,
+        help_text="Marked True by the task once the report download is ready.",
+    )
+
+    @property
+    def result(self) -> AsyncResult | None:
+        if not self.task_id:
+            return None
+        return AsyncResult(self.task_id)

@@ -147,13 +147,18 @@ Registrations for {{event}}
   </tbody>
 {% endif %}
 
-<div id="download_report">
+{% if report %}
+{% include 'events/event_report_progress.html' %}
+{% else %}
+<div>
   <button
+    class="btn btn-primary"
     hx-post="{% url 'trigger-event-report' event.pk %}"
-    hx-target="#download_report"
+    hx-target="closest div"
     hx-vals='{"report": "registration_list"}'
     >
     Generate Registration Report
   </button>
 </div>
+{% endif %}
 {% endblock content %}

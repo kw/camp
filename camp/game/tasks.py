@@ -3,8 +3,12 @@ import io
 from typing import Iterable
 from urllib.parse import urljoin
 
+import celery
 from celery import shared_task
+from celery.result import AsyncResult
 from xlsxwriter import Workbook
+
+from camp.accounts.models import User
 
 from . import models
 
@@ -14,23 +18,55 @@ _WORKBOOK_OPTIONS = {
     "default_date_format": "dd mmm yyyy",
 }
 
+_XLSLX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
-@shared_task
-def export_registrations(
-    event_pk: int, requestor: str, base_url: str = "", filename: str | None = None
-):
-    event = models.Event.objects.get(pk=event_pk)
+_FILENAME_TABLE = str.maketrans(
+    {
+        "/": "⁄",
+        "\\": "⁄",
+        "<": "❮",
+        ">": "❯",
+        "{": "❴",
+        "}": "❵",
+        ":": "ː",
+        "|": "❘",
+        "?": "❓",
+        "*": "✳",
+    }
+)
+
+
+def generate_report(
+    report_type, event_id, requestor, **kwargs
+) -> tuple[models.EventReport, AsyncResult]:
+    task: celery.Task
+    match report_type:
+        case "registration_list":
+            task = _export_registrations
+        case _:
+            raise KeyError(f"Unknown report type {report_type}")
+    user = User.objects.filter(username=requestor).first()
+    report = models.EventReport.objects.create(
+        event_id=event_id, requestor=user, report_type=report_type
+    )
+    kwargs["report_id"] = report.id
+    result = task.apply_async(kwargs=kwargs, task_id=report.task_id)
+    return report, result
+
+
+@shared_task(bind=True)
+def _export_registrations(self: celery.Task, report_id: int, base_url: str = "") -> int:
+    report = models.EventReport.objects.get(pk=report_id)
+    event = report.event
     all_regs = list(event.registrations.filter(canceled_date__isnull=True).all())
-    if filename is None:
-        io_or_filename = io.BytesIO()
-    else:
-        io_or_filename = filename
-    with Workbook(io_or_filename, _WORKBOOK_OPTIONS) as wb:
+    stream = io.BytesIO()
+    user = report.requestor
+    with Workbook(stream, _WORKBOOK_OPTIONS) as wb:
         wb.set_properties(
             {
                 "title": f"Registrations for {event}",
                 "author": __name__,
-                "manager": requestor,
+                "manager": user.username if user else "(unknown)",
                 "created": datetime.date.today(),
             }
         )
@@ -39,8 +75,12 @@ def export_registrations(
             wb, header_format, base_url, (r for r in all_regs if not r.is_npc)
         )
         _write_npc_regs(wb, header_format, base_url, (r for r in all_regs if r.is_npc))
-    if filename is None:
-        return io_or_filename.getvalue()
+    report.blob = stream.getvalue()
+    report.content_type = _XLSLX_MIMETYPE
+    report.filename = _filenameize(f"{event} Registrations.xlsx")
+    report.download_ready = True
+    report.save()
+    return report.pk
 
 
 def _write_pc_regs(
@@ -148,3 +188,7 @@ def _write_npc_regs(
             string=f"Registration for {profile}",
         )
     sheet.autofit()
+
+
+def _filenameize(string: str) -> str:
+    return string.translate(_FILENAME_TABLE)

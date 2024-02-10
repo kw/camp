@@ -28,8 +28,6 @@ from .. import forms
 from .. import models
 from .. import tasks
 
-_XLSLX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
 
 def event_list(request):
     chapters = request.game.chapters.order_by("name")
@@ -356,6 +354,34 @@ def list_registrations(request, pk):
     pc_registrations = [r for r in registrations if not r.is_npc]
     npc_registrations = [r for r in registrations if r.is_npc]
 
+    # Check for existing reports (and clean old ones if needed)
+    reports = (
+        models.EventReport.objects.filter(
+            event_id=event.id,
+        )
+        .defer("blob")
+        .order_by("-started")
+        .all()
+    )
+    # TODO: If we have multiple report types, show the latest of each.
+    if reports:
+        report = reports[0]
+        for old_report in reports[1:]:
+            logging.info(
+                "Cleaning up old report: %s from %s", old_report.pk, old_report.started
+            )
+            old_report.result.forget()
+            old_report.delete()
+        if report.result.failed():
+            logging.info(
+                "Cleaning up failed report: %s from %s", report.pk, report.started
+            )
+            report.result.forget()
+            report.delete()
+            report = None
+    else:
+        report = None
+
     return render(
         request,
         "events/registration_list.html",
@@ -364,6 +390,7 @@ def list_registrations(request, pk):
             "pc_registrations": pc_registrations,
             "npc_registrations": npc_registrations,
             "withdrawn_registrations": withdrawn_registrations,
+            "report": report,
         },
     )
 
@@ -373,36 +400,64 @@ def list_registrations(request, pk):
 )
 @require_POST
 def trigger_event_report(request, pk):
-    event = _get_event(pk)
-    match report_id := request.POST.get("report", None):
-        case "registration_list":
-            result = tasks.export_registrations.delay(
-                event_pk=pk,
-                requestor=request.user.username,
-                base_url=request.get_host(),
-            )
-            return render(
-                request,
-                "events/event_report_progress.html",
-                {"task_id": result.id, "event": event},
-            )
-        case _:
-            logging.warn("Bad report type: %s", report_id)
-            return HttpResponseBadRequest(f"Unknown report ID {report_id}")
+    report_type = request.POST.get("report")
+
+    try:
+        report, result = tasks.generate_report(
+            report_type=report_type,
+            event_id=pk,
+            requestor=request.user.username,
+            base_url=request.get_host(),
+        )
+    except KeyError:
+        return HttpResponseBadRequest(f"Unknown report type {report_type}")
+
+    # Check if we should skip polling and go for the download immediately
+    if result.ready:
+        report.refresh_from_db(fields=["download_ready"])
+
+    return render(
+        request,
+        "events/event_report_progress.html",
+        {"report": report},
+    )
 
 
 @permission_required(
     "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
 @require_GET
-def download_event_report(request, pk, task_id):
-    # TODO: Use a model, not a bare result
-    result = AsyncResult(task_id)
-    data = result.get()
-    stream = io.BytesIO(data)
+def poll_event_report(request, pk, report_id):
+    report = get_object_or_404(models.EventReport, event_id=pk, pk=report_id)
+    return render(request, "events/event_report_progress.html", {"report": report})
+
+
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+@require_GET
+def download_event_report(request, pk, report_id):
+    report = (
+        models.EventReport.objects.filter(event_id=pk, pk=report_id)
+        .defer("blob")
+        .first()
+    )
+    if report and report.download_ready:
+        if report.task_id:
+            result = AsyncResult(report.task_id)
+            result.forget()
+        return _report_download_response(report)
+    return Http404
+
+
+def _report_download_response(report: models.EventReport) -> FileResponse:
+    stream = io.BytesIO(report.blob)
     stream.seek(0)
     return FileResponse(
-        stream, as_attachment=True, filename="report.xlsx", content_type=_XLSLX_MIMETYPE
+        stream,
+        as_attachment=True,
+        content_type=report.content_type,
+        filename=report.filename,
     )
 
 

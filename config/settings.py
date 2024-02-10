@@ -116,6 +116,11 @@ DATABASES = {
     )
 }
 
+REDIS_URL = env.str(
+    "REDIS_URL" if DEBUG else "REDIS_TLS_URL", default="redis://localhost:6379/0"
+)
+
+
 AUTHENTICATION_BACKENDS = (
     "rules.permissions.ObjectPermissionBackend",
     "django.contrib.auth.backends.ModelBackend",
@@ -216,7 +221,7 @@ DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
 
 # Celery task queue
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_BROKER_URL = REDIS_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "django-cache"

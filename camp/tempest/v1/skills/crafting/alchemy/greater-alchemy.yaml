@@ -1,6 +1,6 @@
 name: Greater Alchemy
 cost: 5
-supercedes: journeyman-alchemy
+supersedes: journeyman-alchemy
 requires:
   - journeyman-alchemy
   - level:10

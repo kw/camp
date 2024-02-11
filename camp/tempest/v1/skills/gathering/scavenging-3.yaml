@@ -1,6 +1,6 @@
 name: Scavenging III
 cost: 3
-supercedes: scavenging-2
+supersedes: scavenging-2
 requires:
   - scavenging-2
   - any:

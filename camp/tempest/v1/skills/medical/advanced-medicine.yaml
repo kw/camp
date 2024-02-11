@@ -1,6 +1,6 @@
 name: Advanced Medicine
 cost: 4
-supercedes: basic-medicine
+supersedes: basic-medicine
 requires: basic-medicine
 description: |
   The character has a number of techniques at their disposal to help those around them. The character can perform any of the following actions by spending a Slow 60 out of combat tending to another (these cannot be performed on the character themself). These can be done as part of a Short Rest.

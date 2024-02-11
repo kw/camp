@@ -1,6 +1,6 @@
 name: Scavenging II
 cost: 3
-supercedes: scavenging-1
+supersedes: scavenging-1
 requires: scavenging-1
 description: |
   The NPC will turn over more valuable types of tokens than Scavenging I if a proper skinning knife is used.  Additionally, the time it takes to Scavenge them is reduced to a Quick 50 plus the time it takes you to receive the token from the portrayer. Yields from the Scavenging decks will also be improved.

@@ -1,6 +1,6 @@
 name: Journeyman Enchanting
 cost: 4
-supercedes: apprentice-enchanting
+supersedes: apprentice-enchanting
 requires:
   - apprentice-enchanting
   - level:4

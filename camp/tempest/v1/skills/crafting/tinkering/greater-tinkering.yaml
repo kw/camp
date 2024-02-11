@@ -1,6 +1,6 @@
 name: Greater Tinkering
 cost: 5
-supercedes: journeyman-tinkering
+supersedes: journeyman-tinkering
 requires:
   - journeyman-tinkering
   - level:10

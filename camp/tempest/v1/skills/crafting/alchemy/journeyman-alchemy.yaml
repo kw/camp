@@ -1,6 +1,6 @@
 name: Journeyman Alchemy
 cost: 4
-supercedes: apprentice-alchemy
+supersedes: apprentice-alchemy
 requires:
   - apprentice-alchemy
   - level:4

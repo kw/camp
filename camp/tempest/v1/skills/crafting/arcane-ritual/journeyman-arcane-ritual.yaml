@@ -1,6 +1,6 @@
 name: Journeyman Arcane Ritual Magic
 cost: 4
-supercedes: apprentice-arcane-ritual
+supersedes: apprentice-arcane-ritual
 requires:
   - apprentice-arcane-ritual
   - level:4

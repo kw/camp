@@ -1,6 +1,6 @@
 name: Light Armor
 cost: 3
-supercedes: basic-armor
+supersedes: basic-armor
 requires: basic-armor
 description: |
   The character can benefit from up to four Armor Points of repped armor. Their total armor can still be altered by character Skills and Powers, which may increase their armor above this repped armor maximum.

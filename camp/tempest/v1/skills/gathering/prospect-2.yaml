@@ -1,6 +1,6 @@
 name: Prospect II
 cost: 3
-supercedes: prospect-1
+supersedes: prospect-1
 requires: prospect-1
 description: |
   Higher ranks of prospecting are more likely to yield Rare Minerals.

@@ -1,6 +1,6 @@
 name: Adept Bookcaster
 cost: 2
-supercedes: novice-bookcaster
+supersedes: novice-bookcaster
 requires:
   - novice-bookcaster
   - any:

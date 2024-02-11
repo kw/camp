@@ -1,6 +1,6 @@
 name: Greater Bookcaster
 cost: 3
-supercedes: adept-bookcaster
+supersedes: adept-bookcaster
 requires:
   - adept-bookcaster
   - any:

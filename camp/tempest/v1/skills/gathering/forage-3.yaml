@@ -1,6 +1,6 @@
 name: Forage III
 cost: 3
-supercedes: forage-2
+supersedes: forage-2
 requires:
   - forage-2
   - any:

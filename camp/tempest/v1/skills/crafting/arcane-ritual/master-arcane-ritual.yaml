@@ -1,6 +1,6 @@
 name: Master Arcane Ritual Magic
 cost: 6
-supercedes: greater-arcane-ritual
+supersedes: greater-arcane-ritual
 requires:
   - greater-arcane-ritual
   - level:16

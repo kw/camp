@@ -30,14 +30,14 @@
     <p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
     {% endif %}
 
-    {% if feature.supercedes %}
-    <p>Supercedes <a href="{% url 'character-feature-view' character.id feature.supercedes.id %}">
-        {{ feature.supercedes.display_name}}</a></p>
+    {% if feature.supersedes %}
+    <p>Supersedes <a href="{% url 'character-feature-view' character.id feature.supersedes.id %}">
+        {{ feature.supersedes.display_name}}</a></p>
     {% endif %}
 
-    {% if feature.is_superceded %}
-    <p>Superceded by <a href="{% url 'character-feature-view' character.id feature.superceded_by.id %}">
-        {{ feature.superceded_by.display_name }}</a></p>
+    {% if feature.is_superseded %}
+    <p>Superseded by <a href="{% url 'character-feature-view' character.id feature.superseded_by.id %}">
+        {{ feature.superseded_by.display_name }}</a></p>
     {% endif %}
 
     {% if purchase_form %}

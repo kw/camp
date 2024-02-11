@@ -1,6 +1,6 @@
 name: Prospect III
 cost: 3
-supercedes: prospect-2
+supersedes: prospect-2
 requires:
   - prospect-2
   - any:

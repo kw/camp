@@ -1,6 +1,6 @@
 name: Draconic Heritage V
 cost: 6
-supercedes: draconic-heritage-4
+supersedes: draconic-heritage-4
 requires:
   - level:20
   - draconic-heritage-4

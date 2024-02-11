@@ -115,7 +115,7 @@ class CharacterController(ABC):
                     continue
                 if available and not fc.can_increase():
                     continue
-                if fc.is_superceded and not fc.has_available_choices:
+                if fc.is_superseded and not fc.has_available_choices:
                     continue
                 if fc.should_show_in_list or not filter_subfeatures:
                     yield fc
@@ -647,21 +647,21 @@ class BaseFeatureController(PropertyController):
         return parent
 
     @property
-    def supercedes(self) -> BaseFeatureController | None:
-        if self.definition.supercedes is None:
+    def supersedes(self) -> BaseFeatureController | None:
+        if self.definition.supersedes is None:
             return None
-        return self.character.feature_controller(self.definition.supercedes)
+        return self.character.feature_controller(self.definition.supersedes)
 
     @property
-    def superceded_by(self) -> BaseFeatureController | None:
-        if self.definition.superceded_by is None:
+    def superseded_by(self) -> BaseFeatureController | None:
+        if self.definition.superseded_by is None:
             return None
-        return self.character.feature_controller(self.definition.superceded_by)
+        return self.character.feature_controller(self.definition.superseded_by)
 
     @property
-    def is_superceded(self) -> bool:
-        if superceded_by := self.superceded_by:
-            return superceded_by.value > 0
+    def is_superseded(self) -> bool:
+        if superseded_by := self.superseded_by:
+            return superseded_by.value > 0
         return False
 
     @cached_property

@@ -115,7 +115,7 @@ class CharacterController(ABC):
                     continue
                 if available and not fc.can_increase():
                     continue
-                if fc.is_superceded:
+                if fc.is_superceded and not fc.has_available_choices:
                     continue
                 if fc.should_show_in_list or not filter_subfeatures:
                     yield fc
@@ -702,6 +702,12 @@ class BaseFeatureController(PropertyController):
     @property
     def meets_requirements(self) -> Decision:
         return self.character.meets_requirements(self.definition.requires, self.full_id)
+
+    @abstractproperty
+    def has_available_choices(self) -> bool: ...
+
+    @abstractproperty
+    def choices(self) -> dict[str, ChoiceController] | None: ...
 
     @property
     def next_value(self) -> int | None:

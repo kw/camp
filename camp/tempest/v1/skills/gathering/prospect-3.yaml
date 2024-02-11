@@ -1,9 +1,10 @@
 name: Prospect III
 cost: 3
+supercedes: prospect-2
 requires:
   - prospect-2
   - any:
-    - level:10
-    - good-timing
+      - level:10
+      - good-timing
 description: |
   Higher ranks of prospecting are more likely to yield Rare Minerals. Additionally, Mithril Ore will only be obtainable by characters with Rank 3 Prospecting.

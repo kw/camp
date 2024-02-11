@@ -408,12 +408,15 @@ class BaseFeatureDef(BaseModel):
         option_def: If a feature has "options", the definition should be provided here. See OptionDef
             for more details, but tl;dr this allows a single definition that can have multiple independent
             purchases, such as a "Lore" skill that can be purchased as "Lore [Undead]" or "Lore [Arcane]".
+        supercedes: Suppresses the given feature from display on the main character sheet if this feature
+            has ranks. For example, if you don't want to show Forage I if you've got Forage II.
     """
 
     id: str
     name: str
     type: str
     parent: str | None = None
+    supercedes: str | None = None
     category: str | None = None
     category_priority: float = 100.0
     requires: Requirements = None
@@ -429,6 +432,7 @@ class BaseFeatureDef(BaseModel):
     _child_ids: set[str] = pydantic.PrivateAttr(default_factory=set)
     _uncles: set[str] = pydantic.PrivateAttr(default_factory=set)
     _parent_def: BaseFeatureDef | None = pydantic.PrivateAttr(default=None)
+    _superceded_by: str | None = pydantic.PrivateAttr(default=None)
 
     @classmethod
     def default_name(cls) -> str:
@@ -466,6 +470,10 @@ class BaseFeatureDef(BaseModel):
     def uncle_ids(self) -> set[str]:
         return self._uncles
 
+    @property
+    def superceded_by(self) -> str | None:
+        return self._superceded_by
+
     def post_validate(self, ruleset: BaseRuleset) -> None:
         self.requires = parse_req(self.requires)
         if self.requires:
@@ -475,6 +483,10 @@ class BaseFeatureDef(BaseModel):
             parent = ruleset.features[self.parent]
             parent._child_ids.add(self.id)
             self._parent_def = parent
+        if self.supercedes:
+            ruleset.validate_identifiers([self.supercedes])
+            previous = ruleset.features[self.supercedes]
+            previous._superceded_by = self.id
         if self.inherit_children:
             ruleset.validate_identifiers(self.inherit_children)
             for uncle in self.inherit_children:

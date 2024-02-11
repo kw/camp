@@ -1,5 +1,6 @@
 name: Draconic Heritage IV
 cost: 5
+supercedes: draconic-heritage-3
 requires:
   - level:15
   - draconic-heritage-3

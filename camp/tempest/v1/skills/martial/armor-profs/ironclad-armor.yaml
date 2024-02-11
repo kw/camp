@@ -1,5 +1,6 @@
 name: Ironclad Armor
 cost: 2
+supercedes: heavy-armor
 requires: heavy-armor
 description: |
   The character can benefit from up to eleven Armor Points of repped armor. Their total armor can still be altered by character Skills and Powers, which may increase their armor above this repped armor maximum.

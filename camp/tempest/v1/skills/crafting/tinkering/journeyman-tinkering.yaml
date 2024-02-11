@@ -1,5 +1,6 @@
 name: Journeyman Tinkering
 cost: 4
+supercedes: apprentice-tinkering
 requires:
   - apprentice-tinkering
   - level:4

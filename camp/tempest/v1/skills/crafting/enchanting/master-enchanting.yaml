@@ -1,5 +1,6 @@
 name: Master Enchanting
 cost: 6
+supercedes: greater-enchanting
 requires:
   - greater-enchanting
   - level:16

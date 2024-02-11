@@ -25,191 +25,211 @@
 
 {% include "character/card_snippet.html" with card=feature.power_card subcards=feature.sub_cards %}
 
-{% if feature.parent %}
-<p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
-{% endif %}
+<div class="container">
+    {% if feature.parent %}
+    <p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
+    {% endif %}
 
-{% if purchase_form %}
-{% if feature.unused_bonus > 0 %}
-<p>You have {{ feature.unused_bonus }} unused bonus rank(s). Your next purchase is free.</p>
-{% endif %}
+    {% if feature.supercedes %}
+    <p>Supercedes <a href="{% url 'character-feature-view' character.id feature.supercedes.id %}">
+        {{ feature.supercedes.display_name}}</a></p>
+    {% endif %}
 
-<form method="post" id="purchaseForm">
-    {% csrf_token %}
-        {{ purchase_form | crispy }}
-        {% if purchase_form.show_remove_button %}
-        <button type="submit" id="removeButton"
-                name="remove" value="1"
-                class="btn btn-danger">
-            Remove
-        </button>
-        {% else %}
-        <button type="submit" id="purchaseButton" name="purchase"
-                class="btn btn-{{purchase_form.button_level}}">
-            {{purchase_form.button_label}}
-        </button>
-        {% endif %}
+    {% if feature.is_superceded %}
+    <p>Superceded by <a href="{% url 'character-feature-view' character.id feature.superceded_by.id %}">
+        {{ feature.superceded_by.display_name }}</a></p>
+    {% endif %}
+
+    {% if purchase_form %}
+    {% if feature.unused_bonus > 0 %}
+    <p>You have {{ feature.unused_bonus }} unused bonus rank(s). Your next purchase is free.</p>
+    {% endif %}
+
+    <div class="d-print-none">
+    <form method="post" id="purchaseForm">
+        {% csrf_token %}
+            {{ purchase_form | crispy }}
+            {% if purchase_form.show_remove_button %}
+            <button type="submit" id="removeButton"
+                    name="remove" value="1"
+                    class="btn btn-danger">
+                Remove
+            </button>
+            {% else %}
+            <button type="submit" id="purchaseButton" name="purchase"
+                    class="btn btn-{{purchase_form.button_level}}">
+                {{purchase_form.button_label}}
+            </button>
+            {% endif %}
+        </div>
+    </form>
+    {% elif no_purchase_reason %}
+    <p>You can not currently purchase this because:</p>
+    <p>{{ no_purchase_reason | markdown }}</p>
+    {% endif %}
     </div>
-</form>
-{% elif no_purchase_reason %}
-<p>You can not currently purchase this because:</p>
-<p>{{ no_purchase_reason | markdown }}</p>
-{% endif %}
 
-{% if explain_ranks %}
-<h3>Details</h3>
-{% for explanation in explain_ranks %}
-<p>{{ explanation | markdown }}</p>
-{% endfor %}
-{% endif %}
-
-{% if feature.granted_features %}
-<h3>Granted Features</h3>
-<ul>
-{% for subfeat in feature.granted_features %}
-<li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}">{% name_without_tags subfeat feature.id %}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if feature.discounted_features %}
-<h3>Discounted Features</h3>
-<ul>
-{% for subfeat, amount in feature.discounted_features %}
-<li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}">{{ subfeat.display_name }}: {{amount}}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if choices %}
-<a name="choices"></a>
-{% for key, choice in choices.items %}
-    {% if choice.controller.limit > 1 %}
-    <h3>{{ choice.controller.name }} ({{choice.controller.choices_remaining}}/{{choice.controller.limit}})</h3>
-    {% else %}
-    <h3>{{ choice.controller.name }}</h3>
-    {% endif %}
-    {% if choice.controller.description %}
-    <p>{{ choice.controller.description | markdown }}</p>
-    {% endif %}
-    {% if choice.taken %}
-    <h4>Selected Choices</h4>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="unchoose" value="1">
-        <input type="hidden" name="choice" value="{{choice.id}}">
-        <ul>
-            {% for f, name in choice.taken.items %}
-            <li><a href="{% url 'character-feature-view' character.id f %}">{{ name }}</a>
-                {% if f in choice.removable %}
-                    <button type="submit" class="btn btn-danger btn-sm" name="selection" value="{{f}}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
-                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
-                    </svg>
-                </button>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-    </form>
-    {% endif %}
-    {% if choice.available %}
-    <form method="post">
-        {% csrf_token %}
-        {{ choice | crispy }}
-        <button type="submit" name="choice" value="{{choice.id}}" class="btn btn-primary">Choose this option</button>
-    </form>
-    {% endif %}
-{% endfor %}
-{% endif %}
-
-{% if subfeatures %}
-<h3>Purchased Features</h3>
-<ul class="list-group">
-    {% for f in subfeatures %}
-    <li class="list-group-item">
-        <a href="{% url 'character-feature-view' character.id f.full_id %}">
-            {% name_without_tags f feature.id %}
-            {% for level, badge in f.badges %}
-            <span class="badge bg-{{level}}">{{badge}}</span>
-            {% endfor %}
-        </a>
-        {# Yeah I guess subfeatures could have subfeatures... #}
-        {% if f.subfeatures %}
-        <ul>
-            {% for sf in f.subfeatures %}
-            <li>
-                <a href="{% url 'character-feature-view' character.id sf.full_id%}">
-                    {% name_without_tags sf f.id %}
-                    {% for level, badge in sf.badges %}
-                    <span class="badge bg-{{level}}">{{badge}}</span>
-                    {% endfor %}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </li>
+    {% if explain_ranks %}
+    <div class="d-print-none">
+    <h3>Details</h3>
+    {% for explanation in explain_ranks %}
+    <p>{{ explanation | markdown }}</p>
     {% endfor %}
-</ul>
-{% endif %}
-
-{% for group in subfeatures_available %}
-{% if group.has_available %}
-    <h3>{{group.name}}</h3>
-    {% if group.explain %}
-    <p>{{ group.explain }}</p>
+    </div>
     {% endif %}
-    {% if group.available %}
-    <ul class="list-group list-group-flush">
-        {% for f in group.available %}
-            <li class="list-group-item">
-                <a href="{% url 'character-feature-view' character.id f.full_id%}">
-                    {% name_without_tags f feature.id group.type %}
-                    {% if f.purchase_cost_string %}
-                    ({{ f.purchase_cost_string }})
+
+    {% if feature.granted_features %}
+    <div class="d-print-none">
+    <h3>Granted Features</h3>
+    <ul>
+    {% for subfeat in feature.granted_features %}
+    <li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}">{% name_without_tags subfeat feature.id %}</a></li>
+    {% endfor %}
+    </ul>
+    </div>
+    {% endif %}
+
+    {% if feature.discounted_features %}
+    <div class="d-print-none">
+    <h3>Discounted Features</h3>
+    <ul>
+    {% for subfeat, amount in feature.discounted_features %}
+    <li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}">{{ subfeat.display_name }}: {{amount}}</a></li>
+    {% endfor %}
+    </ul>
+    </div>
+    {% endif %}
+
+    {% if choices %}
+    <a name="choices"></a>
+    {% for key, choice in choices.items %}
+        {% if choice.controller.limit > 1 %}
+        <h3>{{ choice.controller.name }} ({{choice.controller.choices_remaining}}/{{choice.controller.limit}})</h3>
+        {% else %}
+        <h3>{{ choice.controller.name }}</h3>
+        {% endif %}
+        {% if choice.controller.description %}
+        <p>{{ choice.controller.description | markdown }}</p>
+        {% endif %}
+        {% if choice.taken %}
+        <h4 class="d-print-none">Selected Choices</h4>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="unchoose" value="1">
+            <input type="hidden" name="choice" value="{{choice.id}}">
+            <ul>
+                {% for f, name in choice.taken.items %}
+                <li><a href="{% url 'character-feature-view' character.id f %}">{{ name }}</a>
+                    {% if f in choice.removable %}
+                        <button type="submit" class="btn btn-danger btn-sm d-print-none" name="selection" value="{{f}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                        </svg>
+                    </button>
                     {% endif %}
-                </a>
-            </li>
+                </li>
+                {% endfor %}
+            </ul>
+        </form>
+        {% endif %}
+        {% if choice.available %}
+        <form method="post" class="d-print-none">
+            {% csrf_token %}
+            {{ choice | crispy }}
+            <button type="submit" name="choice" value="{{choice.id}}" class="btn btn-primary">Choose this option</button>
+        </form>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    {% if subfeatures %}
+    <h3>Purchased Features</h3>
+    <ul class="list-group">
+        {% for f in subfeatures %}
+        <li class="list-group-item">
+            <a href="{% url 'character-feature-view' character.id f.full_id %}">
+                {% name_without_tags f feature.id %}
+                {% for level, badge in f.badges %}
+                <span class="badge bg-{{level}}">{{badge}}</span>
+                {% endfor %}
+            </a>
+            {# Yeah I guess subfeatures could have subfeatures... #}
+            {% if f.subfeatures %}
+            <ul>
+                {% for sf in f.subfeatures %}
+                <li>
+                    <a href="{% url 'character-feature-view' character.id sf.full_id%}">
+                        {% name_without_tags sf f.id %}
+                        {% for level, badge in sf.badges %}
+                        <span class="badge bg-{{level}}">{{badge}}</span>
+                        {% endfor %}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
         {% endfor %}
     </ul>
     {% endif %}
-    <div class="accordion" id="availableAccordian-{{group.type}}">
-    {% for category, available in group.available_categories.items %}
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{group.type}}-{{category|slugify}}" aria-expanded="{{ forloop.first }}" aria-controls="collapse-{{category|slugify}}">
-                {{category}}
-                </button>
-            </h2>
-            <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#availableAccordian-{{group.type}}">
-                <div class="accordion-body">
-                    <ul class="list-group list-group-flush">
-                    {% if available.0.explain_category_group %}
-                    <li class="list-group-item">
-                        {{ available.0.explain_category_group }}
-                    </li>
-                    {% endif %}
-                    {% for f in available %}
-                    <li class="list-group-item">
-                        <a href="{% url 'character-feature-view' character.id f.full_id%}">
-                            {% name_without_tags f feature.id group.type %}
-                            {% if f.purchase_cost_string %}
-                            ({{ f.purchase_cost_string }})
-                            {% endif %}
-                        </a>
-                    </li>
-                    {% endfor %}
-                    </ul>
+
+    {% for group in subfeatures_available %}
+    {% if group.has_available %}
+        <h3>{{group.name}}</h3>
+        {% if group.explain %}
+        <p>{{ group.explain }}</p>
+        {% endif %}
+        {% if group.available %}
+        <ul class="list-group list-group-flush">
+            {% for f in group.available %}
+                <li class="list-group-item">
+                    <a href="{% url 'character-feature-view' character.id f.full_id%}">
+                        {% name_without_tags f feature.id group.type %}
+                        {% if f.purchase_cost_string %}
+                        ({{ f.purchase_cost_string }})
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="accordion" id="availableAccordian-{{group.type}}">
+        {% for category, available in group.available_categories.items %}
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{group.type}}-{{category|slugify}}" aria-expanded="{{ forloop.first }}" aria-controls="collapse-{{category|slugify}}">
+                    {{category}}
+                    </button>
+                </h2>
+                <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#availableAccordian-{{group.type}}">
+                    <div class="accordion-body">
+                        <ul class="list-group list-group-flush">
+                        {% if available.0.explain_category_group %}
+                        <li class="list-group-item">
+                            {{ available.0.explain_category_group }}
+                        </li>
+                        {% endif %}
+                        {% for f in available %}
+                        <li class="list-group-item">
+                            <a href="{% url 'character-feature-view' character.id f.full_id%}">
+                                {% name_without_tags f feature.id group.type %}
+                                {% if f.purchase_cost_string %}
+                                ({{ f.purchase_cost_string }})
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
+        {% endif %}
     {% endfor %}
-    {% endif %}
-{% endfor %}
 
-<a role="button" class="btn btn-secondary" href="{% url 'character-detail' character.id %}">Back to {{character}}</a>
+    <a role="button" class="btn btn-secondary d-print-none" href="{% url 'character-detail' character.id %}">Back to {{character}}</a>
+</div>
 
 {% endblock %}
 

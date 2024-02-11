@@ -1,5 +1,6 @@
 name: Master Divine Ritual Magic
 cost: 6
+supercedes: greater-divine-ritual
 requires:
   - greater-divine-ritual
   - level:16

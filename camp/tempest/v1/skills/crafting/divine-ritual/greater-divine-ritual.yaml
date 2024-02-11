@@ -1,5 +1,6 @@
 name: Greater Divine Ritual Magic
 cost: 5
+supercedes: journeyman-divine-ritual
 requires:
   - journeyman-divine-ritual
   - level:10

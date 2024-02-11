@@ -7,11 +7,14 @@
 {% endblock %}
 
 {% block body_title %}
+<div {% if request.resolver_match.url_name != 'character-detail' %}class="d-print-none"{% endif %}>
 <a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover" href="{% url 'character-detail' character.id %}">{{ character }}</a>
+<div>
 {% endblock %}
 
 {% block precontent %}
 
+<div {% if request.resolver_match.url_name != 'character-detail' %}class="d-print-none"{% endif %}>
 <h4>{% if character.campaign %}
     Campaign: {{character.campaign}}
     {% else %}
@@ -47,6 +50,10 @@
     <li class="list-group-item"><span class="align-middle">LP: {% get 'lp' %}</span></li>
     <li class="list-group-item"><span class="align-middle">Spikes: {% get 'spikes' %}</span></li>
     {% block extra_header_bar %}{% endblock %}
+    <li class="list-group-item d-print-none"><span class="align-middle">
+        <a role="button" class="link-light link-underline-opacity-0" href="#" onclick="print()">
+            <i class="bi bi-printer"></i></a></span>
+    </li>
 </ul>
 {% if controller.sphere_data %}
 {# TODO: Make this look better. #}
@@ -57,6 +64,7 @@
     </li>
     {% endfor %}
 </ul>
+</div>
 
 {% endif %}
 

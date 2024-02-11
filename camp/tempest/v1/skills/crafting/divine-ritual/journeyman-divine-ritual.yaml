@@ -1,5 +1,6 @@
 name: Journeyman Divine Ritual Magic
 cost: 4
+supercedes: apprentice-divine-ritual
 requires:
   - apprentice-divine-ritual
   - level:4

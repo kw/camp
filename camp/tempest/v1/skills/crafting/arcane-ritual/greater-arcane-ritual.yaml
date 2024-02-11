@@ -1,5 +1,6 @@
 name: Greater Arcane Ritual Magic
 cost: 5
+supercedes: journeyman-arcane-ritual
 requires:
   - journeyman-arcane-ritual
   - level:10

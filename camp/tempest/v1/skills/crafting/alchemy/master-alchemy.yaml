@@ -1,5 +1,6 @@
 name: Master Alchemy
 cost: 6
+supercedes: greater-alchemy
 requires:
   - greater-alchemy
   - level:16

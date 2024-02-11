@@ -1,5 +1,6 @@
 name: Great Shields
 cost: 2
+supercedes: advanced-shields
 requires: advanced-shields
 description: |
   The character has proficiency with Great shields (125” perimeter max).

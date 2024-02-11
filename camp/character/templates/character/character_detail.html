@@ -4,7 +4,7 @@
 {% load markdown %}
 
 {% block extra_header_bar %}
-    <li class="list-group-item">
+    <li class="list-group-item d-print-none">
         <div class="dropdown">
             <a href="#" class="link-body-emphasis" data-bs-toggle="dropdown" aria-expanded="false">
                 Manage
@@ -72,55 +72,53 @@
 {% endif %}
 
 <!-- Existing Feature Cards -->
-<div class="row">
+<div class="row row-cols-auto">
 {% for group in feature_groups %}
-    <div class="card col-12">
+    <div class="card col avoidbreak {% if not group.taken %}d-print-none{% endif %}">
         <div class="card-body">
-        <h2 class="card-title">
-            {{ group.name }}
-        </h2>
-        <ul class="list-group">
-            {% if group.explain_list %}
-            <li class="list-group-item">
-                <ul>
-                {% for text in group.explain_list %}
-                    <li>{{ text }}</li>
-                {% endfor %}
-                </ul>
-            </li>
-            {% endif %}
-            {% for f in group.taken %}
-                <li class="list-group-item">
-                    <a href="{% url 'character-feature-view' character.id f.full_id %}">
-                        {% name_without_tags f group.type %}
-                        {% for level, badge in f.badges %}
-                        <span class="badge bg-{{level}}">{{badge}}</span>
-                        {% endfor %}
-                    </a>
-                    {% if f.subfeatures %}
-                    <ul>
-                        {% for sf in f.subfeatures %}
-                        <li>
-                            <a href="{% url 'character-feature-view' character.id sf.full_id%}">
-                                {% name_without_tags sf f.id %}
-                                {% for level, badge in sf.badges %}
-                                <span class="badge bg-{{level}}">{{badge}}</span>
-                                {% endfor %}
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </li>
-            {% endfor %}
-            {% if group.has_available %}
-            <li class="list-group-item">
-                <a class="link-success" href="#" role="button" data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type|slugify}}" aria-expanded="false" aria-controls="newFeatureModal_{{group.type|slugify}}">
-                    Add {{ group.name }}
+            <h2 class="card-title">
+                {{ group.name }}
+                {% if group.has_available %}
+                <a class="icon-link icon-link-hover link-success d-print-none" href="#" role="button"
+                    data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type|slugify}}"
+                    aria-expanded="false" aria-controls="newFeatureModal_{{group.type|slugify}}">
+                    <i class="bi bi-plus-circle"></i>
                 </a>
-            </li>
-            {% endif %}
+                {% endif %}
+            </h2>
+            {% if group.explain_list %}
+            <ul class="d-print-none list-group">
+            {% for text in group.explain_list %}
+                <li class="list-group-item">{{ text }}</li>
+            {% endfor %}
             </ul>
+            {% endif %}
+            <div class="row row-cols-auto">
+                {% for f in group.taken %}
+                    <div class="col card">
+                        <a href="{% url 'character-feature-view' character.id f.full_id %}">
+                            {% name_without_tags f group.type %}
+                            {% for level, badge in f.badges %}
+                            <span class="badge bg-{{level}} d-print-none">{{badge}}</span>
+                            {% endfor %}
+                        </a>
+                        {% if f.subfeatures %}
+                        <ul>
+                            {% for sf in f.subfeatures %}
+                            <li>
+                                <a href="{% url 'character-feature-view' character.id sf.full_id%}">
+                                    {% name_without_tags sf f.id %}
+                                    {% for level, badge in sf.badges %}
+                                    <span class="badge bg-{{level}} d-print-none">{{badge}}</span>
+                                    {% endfor %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endfor %}

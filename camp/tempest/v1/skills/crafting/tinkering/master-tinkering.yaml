@@ -1,5 +1,6 @@
 name: Master Tinkering
 cost: 6
+supercedes: greater-tinkering
 requires:
   - greater-tinkering
   - level:16

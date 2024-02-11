@@ -1,5 +1,6 @@
 name: Greater Enchanting
 cost: 5
+supercedes: journeyman-enchanting
 requires:
   - journeyman-enchanting
   - level:10

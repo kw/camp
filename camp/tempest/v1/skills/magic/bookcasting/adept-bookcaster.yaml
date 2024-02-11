@@ -1,9 +1,10 @@
 name: Adept Bookcaster
 cost: 2
+supercedes: novice-bookcaster
 requires:
   - novice-bookcaster
   - any:
-    - arcane.spell_slots@2
-    - divine.spell_slots@2
+      - arcane.spell_slots@2
+      - divine.spell_slots@2
 description: |
   The character can cast Adept level spells directly from their spellbook. Although the spell will still exhaust an Adept Spell-Slot, it need not be Prepared (although it must be a spell the caster could Prepare). To bookcast a spell, the character must be out of combat, then they must either read the full incant five times from their spell-book, or must study their spellbook for a full minute before reading the incantation directly from the book. All other requirements and components will remain the same.

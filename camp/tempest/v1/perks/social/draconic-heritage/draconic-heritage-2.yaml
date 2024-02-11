@@ -1,5 +1,6 @@
 name: Draconic Heritage II
 cost: 3
+supercedes: draconic-heritage-1
 requires:
   - level:5
   - draconic-heritage-1

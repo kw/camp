@@ -1,54 +1,120 @@
+"""Campaign models.
+
+These models calculate specific campaign-wide values based on event history.
+Specifically, the cadence of game events controls the rate at which the
+Campaign Max XP, CP, and Bonus CP levels rise over the course of the campaign.
+
+For more details, see:
+https://docs.google.com/document/d/1qva8lxQqHIJZ-vl4OWU7cu_9i2uaUc_1AGjQPgHGzNA/edit
+"""
+
 from __future__ import annotations
 
+import bisect
 import datetime
-from decimal import Decimal
+from collections import defaultdict
+from typing import Callable
 
 from pydantic import Field
-from pydantic import model_validator
+from pydantic import NonNegativeInt
+from pydantic import ValidationInfo
+from pydantic import computed_field
+from pydantic import field_validator
 
 from ..base_models import BaseModel
 
+# Used for sorting/searching through events and value entries
+DATE_KEY: Callable[[Event | CampaignValues], datetime.date] = lambda e: e.date
 
-class Event(BaseModel):
+
+class Event(BaseModel, frozen=True):
+    """Representation of game event.
+
+    The representation is pared down to only what is necessary in this module.
+    Full representation of an event is typically kept elsewhere.
+
+    Attributes:
+        chapter: A key identifying a chapter. If for some reason a chapter wants
+            to change whatever value they're using for their key, that should work
+            fine as long as it remains consistent within a month.
+        date: The date the event ends and its impact on the campaign becomes effective.
+        xp_value: The XP awarded by this event. Normally equal to 2 times the number of half-days,
+            or 8 for a typical weekend event.
+        cp_value: The CP awarded by this event. Normally equal to 1 as long as any XP was awarded.
+    """
+
     chapter: str
-    start_date: datetime.date
-    end_date: datetime.date
-    logi_periods: Decimal = Decimal(-1)
-
-    @model_validator(mode="after")
-    def validate(self):
-        if self.end_date < self.start_date:
-            raise ValueError(f"Event {self} has invalid start and end dates")
-
-        duration = self.end_date - self.start_date
-        if duration.days > 7:
-            raise ValueError(f"Event {self} has unlikely duration ({duration} days)")
-
-        if self.logi_periods < 0:
-            self.logi_periods = max(
-                Decimal((self.end_date - self.start_date).days * 2), Decimal(0.5)
-            )
+    date: datetime.date
+    xp_value: NonNegativeInt = 8  # Most events are 8 XP.
+    cp_value: NonNegativeInt = 1
 
 
-class CampaignValues(BaseModel):
-    effective_date: datetime.date
-    max_xp: int = 0
-    max_cp: int = 0
-    max_bonus_cp: int = 3
+class CampaignValues(BaseModel, frozen=True):
+    """Campaign-wide progression tracking values.
+
+    These values change over the course of a campaign. A table stored in
+    the Campaign object tracks their change over time.
+
+    Attributes:
+        date: The date when these values are effective.
+        max_xp: The maximum XP a player could have at this point in time,
+            including XP from the event ending this date.
+        max_cp: The maximum Event CP a character could have at this point in time,
+            including CP from the event ending this date.
+        max_bonus_cp: The maximum Bonus CP a character could have at this point in time.
+            Determined solely by the season of the event (what year it happened).
+    """
+
+    date: datetime.date
+    max_xp: int
+    max_cp: int
+    max_bonus_cp: int
+
+    @property
+    def floor_xp(self) -> int:
+        """The minimum amount of XP a player can have at this time."""
+        return self.max_xp // 2
+
+    @property
+    def floor_cp(self) -> int:
+        """The minimum amount of Event CP a character can have at this time."""
+        return self.max_cp // 2
 
 
-class Campaign(BaseModel):
+class Campaign(BaseModel, frozen=True):
+    """Represents the campaign as a whole over time.
+
+    Attributes:
+        name: The name of the campaign, mainly so that test campaign data is
+            identified as such if seen in logs.
+        value_table: List of CampaignValues
+        recent_events: List of events that took place in the most recent game month.
+            Due to the way that monthly XP/CP caps are computed, we need to keep all
+            events from a particular month on hand to properly integrate new events
+            for that month.
+    """
+
     name: str
-
-    historical_events: list[Event] = Field(default_factory=list)
+    start_year: int
+    bonus_cp_per_season: int = 3
     value_table: list[CampaignValues] = Field(default_factory=list)
+    recent_events: list[Event] = Field(default_factory=list)
+
+    @computed_field
+    def start_values(self) -> CampaignValues:
+        return CampaignValues(
+            date=datetime.date(self.start_year, 1, 1),
+            max_xp=0,
+            max_cp=0,
+            max_bonus_cp=3,
+        )
 
     @property
     def latest_values(self) -> CampaignValues:
         """The latest effective value set for this campaign, according to its event history."""
         if self.value_table:
             return self.value_table[-1]
-        return CampaignValues(effective_date=datetime.date(1, 1, 1))
+        return self.start_values
 
     @property
     def max_xp(self) -> int:
@@ -78,16 +144,109 @@ class Campaign(BaseModel):
         """
         return self.latest_values.max_bonus_cp
 
-    def add_events(self, new_events: list[Event]) -> None:
-        """Integrates events into the event history, recalculating the value table if needed."""
-        # TODO: Make this better/faster
-        self.historical_events = sorted(
-            self.historical_events + new_events, key=lambda e: e.end_date
-        )
-        # TODO: Make this actually do something
-        self.value_table = []
+    def add_events(self, new_events: list[Event]) -> Campaign:
+        """Integrates events into the value table."""
+        if not new_events:
+            return self
 
-    def get_historical_values(self, effective_date) -> CampaignValues:
+        new_events.sort(key=DATE_KEY)
+
+        if self.recent_events:
+            # If the new events include events from the most recent month on record,
+            # we'll need the previous events from that month to properly compute the future.
+            last_old_date = self.recent_events[-1].date
+            first_new_date = new_events[0].date
+            if (last_old_date.year, last_old_date.month) == (
+                first_new_date.year,
+                first_new_date.month,
+            ):
+                # The logistics month continues.
+                new_events = self.recent_events + new_events
+            # Otherwise we're past that month and can disregard it.
+
+        value_table = self.value_table.copy()
+
+        # 1. Group all events by logistics month
+        months: dict[tuple[int, int], list[Event]] = defaultdict(list)
+        for event in new_events:
+            events = months[event.date.year, event.date.month]
+            events.append(event)
+
+        month_keys = sorted(months.keys())
+        last_values = self.get_historical_values(
+            new_events[0].date - datetime.timedelta(days=1)
+        )
+
+        # 2. For each logistics month, in ascending order:
+        for logi_month in month_keys:
+            # a. Sort events within the month by end date, ascending
+            events = months[logi_month]
+            events.sort(key=DATE_KEY)
+
+            # b. Start a tracker for Max XP/CP for each chapter for the month,
+            #    initializing each to the last month’s ending values (or 0 if this is the first month).
+            start_max_xp = last_values.max_xp
+            start_max_cp = last_values.max_cp
+            max_xp: dict[str, int] = defaultdict(lambda: start_max_xp)
+            max_cp: dict[str, int] = defaultdict(lambda: start_max_cp)
+
+            # c. For each event:
+            for event in events:
+                # i. Add the event’s XP and CP values to its chapter’s tracker.
+                chapter = event.chapter
+
+                max_xp[chapter] += event.xp_value
+                max_cp[chapter] += event.cp_value
+
+                # ii. If either of the new values are now the highest out of all chapters,
+                #     write a new table entry (dated at the event’s end date) that contains
+                #     the new max values across each chapter’s tracker.
+                new_max_xp = max(max_xp.values())
+                new_max_cp = max(max_cp.values())
+
+                if new_max_xp > last_values.max_xp or new_max_cp > last_values.max_cp:
+                    season = event.date.year - self.start_year + 1
+                    last_values = CampaignValues(
+                        date=event.date,
+                        max_xp=new_max_xp,
+                        max_cp=new_max_cp,
+                        max_bonus_cp=season * self.bonus_cp_per_season,
+                    )
+                    # Skip any values we've already covered, and, crucially,
+                    # ignore anything that would change historical records.
+                    if not value_table or value_table[-1].date < last_values.date:
+                        value_table.append(last_values)
+
+        # Update the recent event tracker, if appropriate. We'll need these if a new
+        # event is added to this month later.
+        recent_events = recent_events = months[month_keys[-1]]
+        if self.recent_events:
+            # If the new recent events aren't actually recent, use the old recent events.
+            # (That is, if only old events were added, skip)
+            if recent_events[-1].date < self.recent_events[-1].date:
+                recent_events = self.recent_events.copy()
+
+        return self.model_copy(
+            update={
+                "value_table": value_table,
+                "recent_events": recent_events,
+            }
+        )
+
+    def get_historical_values(self, effective_date: datetime.date) -> CampaignValues:
         """Determine the campaign values on a particular date in the past."""
-        # TODO: Make this actually do something.
-        return self.latest_values
+        i = bisect.bisect_right(self.value_table, effective_date, key=DATE_KEY)
+        if i:
+            return self.value_table[i - 1]
+        return self.start_values
+
+    @field_validator("value_table")
+    @classmethod
+    def validate_entries_sorted(cls, v: list[Event], info: ValidationInfo) -> str:
+        """Enforce that the value table must be sorted by date, otherwise we can't search it."""
+        if not v:
+            return v
+        for i in range(1, len(v)):
+            if v[i - 1].date > v[i].date:
+                raise ValueError("Entries must be sorted by date")
+        return v

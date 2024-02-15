@@ -4,6 +4,11 @@ These models calculate specific campaign-wide values based on event history.
 Specifically, the cadence of game events controls the rate at which the
 Campaign Max XP, CP, and Bonus CP levels rise over the course of the campaign.
 
+Note that these models largely only contain enough data to perform calculations with.
+The web app's models in camp.game.models will contain the "real" campaign/event info,
+and will be responsible for creating, populating, persisting, and regenerating these
+lower-level models as necessary.
+
 For more details, see:
 https://docs.google.com/document/d/1qva8lxQqHIJZ-vl4OWU7cu_9i2uaUc_1AGjQPgHGzNA/edit
 """
@@ -99,6 +104,7 @@ class Campaign(BaseModel, frozen=True):
     bonus_cp_per_season: int = 3
     value_table: list[CampaignValues] = Field(default_factory=list)
     recent_events: list[Event] = Field(default_factory=list)
+    last_event_date: datetime.date = datetime.date(1, 1, 1)
 
     @computed_field
     def start_values(self) -> CampaignValues:
@@ -149,6 +155,8 @@ class Campaign(BaseModel, frozen=True):
         if not new_events:
             return self
 
+        last_event_date = self.last_event_date
+
         new_events.sort(key=DATE_KEY)
 
         if self.recent_events:
@@ -192,6 +200,9 @@ class Campaign(BaseModel, frozen=True):
 
             # c. For each event:
             for event in events:
+                if event.date > last_event_date:
+                    last_event_date = event.date
+
                 # i. Add the event’s XP and CP values to its chapter’s tracker.
                 chapter = event.chapter
 
@@ -230,6 +241,7 @@ class Campaign(BaseModel, frozen=True):
             update={
                 "value_table": value_table,
                 "recent_events": recent_events,
+                "last_event_date": last_event_date,
             }
         )
 

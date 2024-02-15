@@ -81,6 +81,10 @@ def test_get_historical_values_in_past(campaign: Campaign):
     assert values.date == date(2023, 1, 1)
 
 
+def test_last_event_date(campaign: Campaign):
+    assert campaign.last_event_date == date(2024, 4, 25)
+
+
 def test_value_table(campaign: Campaign):
     """Assert the entire contents of the value table."""
     assert len(campaign.value_table) == 11
@@ -173,6 +177,7 @@ def test_incremental_updates(campaign: Campaign):
     events = sorted(EVENT_HISTORY, key=DATE_KEY)
     for event in events:
         inc_campaign = inc_campaign.add_events([event])
+        assert inc_campaign.last_event_date == event.date
     assert inc_campaign == campaign
 
 

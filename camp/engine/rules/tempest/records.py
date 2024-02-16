@@ -22,6 +22,7 @@ from pydantic import Field
 from ..base_models import BaseModel
 from ..base_models import CharacterMetadata
 from .campaign import Campaign
+from .campaign import CampaignValues
 
 
 class AwardRecord(BaseModel, frozen=True):
@@ -118,9 +119,111 @@ class PlayerRecord(BaseModel, frozen=True):
 
         These records may change even in the absence of new awards when the Campaign XP/CP Floors move.
         """
-        # TODO: Implement it.
-        return self
+        # 1. Order all awards by date.
+        if new_awards is None:
+            new_awards = []
+        else:
+            new_awards = sorted(new_awards, key=lambda a: a.date)
+            if self.awards and self.awards[-1].date > new_awards[0].date:
+                # The new awards aren't strictly after the old ones.
+                # TODO: Implement recalculation.
+                raise NotImplementedError
+
+        # 2. Retrieve the Campaign Max Table (Done!)
+        #    (But also get some other bits we need)
+
+        xp = self.xp
+        event_cp = {id: c.event_cp for id, c in self.characters.items()}
+        bonus_cp = {id: c.bonus_cp for id, c in self.characters.items()}
+        char_awards = {id: c.awards.copy() for id, c in self.characters.items()}
+
+        # 3. At each point in the player’s event history:
+        for award in new_awards:
+            # If the award is for a particular character, stash it for record keeping purposes.
+            if award.character:
+                ca = char_awards.setdefault(award.character, [])
+                ca.append(award)
+
+            # a. Look up the Campaign Max values at this point in time, as well as the one just before that.
+            current = campaign.get_historical_values(award.date)
+            prev = campaign.get_historical_values(
+                award.date - datetime.timedelta(days=1)
+            )
+            # b. If the player is below the previous XP floor, set them to the previous XP floor.
+            # c. If any of the player’s characters in this campaign are below the previous CP floor, set them to the previous CP floor.
+            xp = _constrain(prev, xp, event_cp, bonus_cp)
+
+            # d. If the award includes XP, award the stated amount if they are at the previous cap,
+            #    else award double the stated value.
+            if award.event_xp > 0:
+                if xp < prev.max_xp:
+                    xp = min(xp + 2 * award.event_xp, current.max_xp)
+                else:
+                    xp = min(xp + award.event_xp, current.max_xp)
+
+                # e. If the award includes XP, award 1 Event CP to the character associated with the
+                # event (either the character played, or the one awarded to, if this was an NPC shift).
+                # If this would put the character over Max Event CP, instead add it to Bonus CP. If
+                # this would put the character over Max Bonus CP, too bad, discard it.
+                if award.character is not None:
+                    # The character record might not exist; use a default floor CP as the base if so.
+                    current_cp = event_cp.get(award.character, prev.floor_cp)
+                    current_bonus_cp = bonus_cp.get(award.character, 0)
+                    if current_cp < current.max_cp:
+                        event_cp[award.character] = current_cp + 1
+                    elif current_bonus_cp < current.max_bonus_cp:
+                        bonus_cp[award.character] = current_bonus_cp + 1
+
+            # f. If the award includes Bonus CP, add it to the Bonus CP if it is not over cap.
+            if award.bonus_cp and award.character is not None:
+                current_bonus_cp = bonus_cp.get(award.character, 0)
+                if current_bonus_cp < current.max_bonus_cp:
+                    bonus_cp[award.character] = current_bonus_cp + 1
+
+            # g. If the award is something else (Backstory CP, role/AC/Lost Art access),
+            # flag that in their character metadata.
+            # TODO: Do thing
+
+        # 4. Whether or not any events occurred, perform floor/max checks.
+        xp = _constrain(campaign, xp, event_cp, bonus_cp)
+
+        new_characters = {
+            id: c.model_copy(
+                update={
+                    "event_cp": event_cp[id],
+                    "bonus_cp": bonus_cp[id],
+                    "awards": char_awards[id],
+                }
+            )
+            for id, c in self.characters.items()
+        }
+
+        return self.model_copy(
+            update={
+                "xp": xp,
+                "characters": new_characters,
+                "last_campaign_date": campaign.last_event_date,
+                "awards": self.awards + new_awards,
+            }
+        )
 
     def metadata_for(self, character_id: int | str) -> CharacterMetadata:
         """Produce character metadata for the indicated character."""
         raise NotImplementedError
+
+
+def _constrain(
+    values: Campaign | CampaignValues,
+    xp: int,
+    event_cp: dict[int | str, int],
+    bonus_cp: dict[int | str, int],
+) -> int:
+    """Constrains the given values based on the given campaign values.
+
+    Returns: The adjusted (if necessary) player XP. The CP dictionaries are mutated.
+    """
+    xp = min(max(xp, values.floor_xp), values.max_xp)
+    for id in event_cp:
+        event_cp[id] = min(max(event_cp[id], values.floor_cp), values.max_cp)
+        bonus_cp[id] = min(bonus_cp[id], values.max_bonus_cp)
+    return xp

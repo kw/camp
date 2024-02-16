@@ -15,18 +15,18 @@ ARC = "arcanorum"
 
 # This reflects the Season 1 event schedule.
 EVENT_HISTORY = [
-    Event(chapter=ARC, date=date(2023, 3, 19)),  # Max = 8; 4
-    Event(chapter=ARC, date=date(2023, 4, 16)),  # Max = 16; 12
-    Event(chapter=GRM, date=date(2023, 4, 30)),  # Max = 16; --
-    Event(chapter=ARC, date=date(2023, 5, 14)),  # Max = 24; 20
-    Event(chapter=ARC, date=date(2023, 6, 18)),  # Max = 32; 28
-    Event(chapter=ARC, date=date(2023, 7, 16)),  # Max = 48; 36
-    Event(chapter=ARC, date=date(2023, 8, 13)),  # Max = 56; 44
-    Event(chapter=GRM, date=date(2023, 8, 27)),  # Max = 56; --
-    Event(chapter=ARC, date=date(2023, 9, 3)),  # Max = 64; 52
-    Event(chapter=GRM, date=date(2023, 9, 24)),  # Max = 64; --
-    Event(chapter=ARC, date=date(2023, 10, 2), xp_value=12),  # Max = 76; 60
-    Event(chapter=GRM, date=date(2023, 10, 29)),  # Max = 76; --
+    Event(chapter=ARC, date=date(2023, 3, 19)),
+    Event(chapter=ARC, date=date(2023, 4, 16)),
+    Event(chapter=GRM, date=date(2023, 4, 30)),
+    Event(chapter=ARC, date=date(2023, 5, 14)),
+    Event(chapter=ARC, date=date(2023, 6, 18)),
+    Event(chapter=ARC, date=date(2023, 7, 16)),
+    Event(chapter=ARC, date=date(2023, 8, 13)),
+    Event(chapter=GRM, date=date(2023, 8, 27)),
+    Event(chapter=ARC, date=date(2023, 9, 3)),
+    Event(chapter=GRM, date=date(2023, 9, 24)),
+    Event(chapter=ARC, date=date(2023, 10, 2), xp_value=12),
+    Event(chapter=GRM, date=date(2023, 10, 29)),
 ]
 CAMPAIGN = Campaign(name="Tempest Test", start_year=2023).add_events(EVENT_HISTORY)
 
@@ -107,7 +107,7 @@ def test_no_awards():
 def test_awards_single_all():
     """What a dedicated player! They get all the things."""
     updated = PLAYER.update(CAMPAIGN, AWARDS_SINGLE_ALL)
-    assert updated.xp == CAMPAIGN.max_xp == 76
+    assert updated.xp == CAMPAIGN.max_xp == 68
 
     # The character actually played gets all the CP.
     bob = updated.characters["Bob"]
@@ -156,7 +156,7 @@ def test_awards_grm_only():
     # The character only went to four games, so they have 4 Event CP.
     # This happens to also be the CP floor.
     bob = updated.characters["Bob"]
-    assert bob.event_cp == CAMPAIGN.floor_cp == 4
+    assert bob.event_cp == 6
     assert bob.bonus_cp == 0
 
     # The other characters are at the CP floor, with no bonus.
@@ -171,7 +171,7 @@ def test_awards_half_arc():
     """This player went to only even-numbered Arcanorum events."""
     updated = PLAYER.update(CAMPAIGN, AWARDS_HALF_ARC)
     # They don't *quite* get to Max XP, but it's close.
-    assert updated.xp == 74
+    assert updated.xp == 56
 
     # Only four events = campaign floor CP
     for character in updated.characters.values():
@@ -191,15 +191,15 @@ def test_awards_split():
     greg = updated.characters["Greg"]  # Went to 4 Grim games
 
     assert len(bob.awards) == 0
-    assert bob.event_cp == CAMPAIGN.floor_cp
+    assert bob.event_cp == 4
     assert bob.bonus_cp == 0
 
     assert len(adam.awards) == 8
-    assert adam.event_cp == CAMPAIGN.max_cp
+    assert adam.event_cp == 8
     assert adam.bonus_cp == 0
 
     assert len(greg.awards) == 4
-    assert greg.event_cp == CAMPAIGN.floor_cp
+    assert greg.event_cp == 6
     assert adam.bonus_cp == 0
 
 

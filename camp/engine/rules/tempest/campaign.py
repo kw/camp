@@ -150,6 +150,16 @@ class Campaign(BaseModel, frozen=True):
         """
         return self.latest_values.max_bonus_cp
 
+    @property
+    def floor_xp(self) -> int:
+        """The minimum amount of XP a player can have at this time."""
+        return self.max_xp // 2
+
+    @property
+    def floor_cp(self) -> int:
+        """The minimum amount of Event CP a character can have at this time."""
+        return self.max_cp // 2
+
     def add_events(self, new_events: list[Event]) -> Campaign:
         """Integrates events into the value table."""
         if not new_events:

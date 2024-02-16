@@ -170,11 +170,9 @@ def test_awards_split():
     adam = updated.characters["Adam"]  # Went to 8 Arc games
     greg = updated.characters["Greg"]  # Went to 4 Grim games
 
-    assert len(adam.awards) == 8
     assert adam.event_cp == 8
     assert adam.bonus_cp == 0
 
-    assert len(greg.awards) == 4
     assert greg.event_cp == 6
     assert adam.bonus_cp == 0
 

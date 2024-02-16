@@ -18,6 +18,9 @@ from __future__ import annotations
 import datetime
 
 from pydantic import Field
+from pydantic import ValidationInfo
+from pydantic import field_validator
+from pydantic import model_validator
 
 from ..base_models import BaseModel
 from ..base_models import CharacterMetadata
@@ -96,11 +99,12 @@ class CharacterRecord(BaseModel, frozen=True):
 
     Attributes:
       id: The character ID, or some debugging value if unknown.
-
+      event_cp: Amount of Event CP earned by this character (or received as floor CP)
+      bonus_cp: Amount of Bonus CP assigned to this character.
+      backstory_approved: Flags that this character should receive +2 CP due to an approved backstory.
     """
 
     id: int | str | None = None
-    awards: list[AwardRecord] = Field(default_factory=list)
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool = False
@@ -124,7 +128,7 @@ class PlayerRecord(BaseModel, frozen=True):
         the time this player record was last updated.
     """
 
-    user: str | None = None
+    user: int | str | None = None
     xp: int = 0
     awards: list[AwardRecord] = Field(default_factory=list)
     characters: dict[str | int, CharacterRecord] = Field(default_factory=dict)
@@ -136,9 +140,6 @@ class PlayerRecord(BaseModel, frozen=True):
         """Process new awards and any campaign-level changes to update player/character records.
 
         These records may change even in the absence of new awards when the Campaign XP/CP Floors move.
-
-        See https://docs.google.com/document/d/1qva8lxQqHIJZ-vl4OWU7cu_9i2uaUc_1AGjQPgHGzNA/edit?usp=sharing
-        for discusion of the algorithm.
         """
         player = self
         # 1. Order all awards by date.
@@ -165,16 +166,10 @@ class PlayerRecord(BaseModel, frozen=True):
         xp = player.xp
         event_cp = {id: c.event_cp for id, c in player.characters.items()}
         bonus_cp = {id: c.bonus_cp for id, c in player.characters.items()}
-        char_awards = {id: c.awards.copy() for id, c in player.characters.items()}
         backstory = {id: c.backstory_approved for id, c in player.characters.items()}
 
         # 3. At each point in the player’s event history:
         for award in new_awards:
-            # If the award is for a particular character, stash it for record keeping purposes.
-            if award.character:
-                ca = char_awards.setdefault(award.character, [])
-                ca.append(award)
-
             # a. Look up the Campaign Max values at this point in time, as well as the one just before that.
             current = campaign.get_historical_values(award.date)
             prev = campaign.get_historical_values(
@@ -225,13 +220,10 @@ class PlayerRecord(BaseModel, frozen=True):
 
         # Build updated character records.
         new_characters = {}
-        all_character_ids = (
-            event_cp.keys() | bonus_cp.keys() | char_awards.keys() | backstory.keys()
-        )
+        all_character_ids = event_cp.keys() | bonus_cp.keys() | backstory.keys()
         for id in all_character_ids:
             new_cp = event_cp.get(id, campaign.floor_cp)
             new_bonus_cp = bonus_cp.get(id, 0)
-            new_char_awards = char_awards.get(id, [])
             new_backstory = backstory.get(id, False)
 
             # If the character record already existed, updated. Otherwise, make it fresh.
@@ -240,14 +232,12 @@ class PlayerRecord(BaseModel, frozen=True):
                     update={
                         "event_cp": new_cp,
                         "bonus_cp": new_bonus_cp,
-                        "awards": new_char_awards,
                         "backstory_approved": new_backstory,
                     }
                 )
             else:
                 char = CharacterRecord(
                     id=id,
-                    awards=new_char_awards,
                     event_cp=new_cp,
                     bonus_cp=new_bonus_cp,
                     backstory_approved=new_backstory,
@@ -266,6 +256,36 @@ class PlayerRecord(BaseModel, frozen=True):
     def metadata_for(self, character_id: int | str) -> CharacterMetadata:
         """Produce character metadata for the indicated character."""
         raise NotImplementedError
+
+    @field_validator("awards")
+    @classmethod
+    def validate_entries_sorted(cls, v: list[AwardRecord], info: ValidationInfo) -> str:
+        """Enforce that the award list must be sorted by date, otherwise we can't search it."""
+        if not v:
+            return v
+        for i in range(1, len(v)):
+            if v[i - 1].date > v[i].date:
+                raise ValueError("Entries must be sorted by date")
+        return v
+
+    @model_validator(mode="after")
+    def validate_last_event_date(self):
+        """Enforce that the recorded last event date is populated if any awards are recorded."""
+        if self.awards and self.last_campaign_date is None:
+            raise ValueError(
+                "last_campaign_date must be populated if awards have been integrated."
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_character_records(self):
+        """A character record exists for every character mentioned in an award."""
+        for a in self.awards or []:
+            if a.character is not None and a.character not in self.characters:
+                raise ValueError(
+                    f"Character record for {a.character} not properly initialized."
+                )
+        return self
 
 
 def _constrain(

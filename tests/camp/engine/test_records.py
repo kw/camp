@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+import random
 from datetime import date
+
+import pytest
 
 from camp.engine.rules.tempest.campaign import Campaign
 from camp.engine.rules.tempest.campaign import Event
 from camp.engine.rules.tempest.records import AwardRecord
-from camp.engine.rules.tempest.records import CharacterRecord
 from camp.engine.rules.tempest.records import PlayerRecord
 
 GRM = "grimoire"
 ARC = "arcanorum"
+
 
 # This reflects the Season 1 event schedule.
 EVENT_HISTORY = [
@@ -85,11 +88,6 @@ AWARDS_DAYGAMER = [
 
 PLAYER = PlayerRecord(
     user="Test Player",
-    characters={
-        "Bob": CharacterRecord(id="Bob"),
-        "Adam": CharacterRecord(id="Adam"),
-        "Greg": CharacterRecord(id="Greg"),
-    },
 )
 
 
@@ -98,10 +96,8 @@ def test_no_awards():
     updated = PLAYER.update(CAMPAIGN)
     assert updated.xp == CAMPAIGN.floor_xp
 
-    for character in updated.characters.values():
-        # All characters are at the CP floor, with no bonus.
-        assert character.event_cp == CAMPAIGN.floor_cp
-        assert character.bonus_cp == 0
+    # No character records present.
+    assert len(updated.characters) == 0
 
 
 def test_awards_single_all():
@@ -117,12 +113,8 @@ def test_awards_single_all():
     # should have saturated their Bonus CP allowance.
     assert bob.bonus_cp == CAMPAIGN.max_bonus_cp
 
-    # The other characters are at the CP floor, with no bonus.
-    for other in updated.characters.values():
-        if other is bob:
-            continue
-        assert other.event_cp == CAMPAIGN.floor_cp
-        assert other.bonus_cp == 0
+    # No other character records present.
+    assert len(updated.characters) == 1
 
 
 def test_awards_arc_only():
@@ -138,12 +130,8 @@ def test_awards_arc_only():
     # should have zero Bonus CP.
     assert bob.bonus_cp == 0
 
-    # The other characters are at the CP floor, with no bonus.
-    for other in updated.characters.values():
-        if other is bob:
-            continue
-        assert other.event_cp == CAMPAIGN.floor_cp
-        assert other.bonus_cp == 0
+    # No other character records present.
+    assert len(updated.characters) == 1
 
 
 def test_awards_grm_only():
@@ -159,12 +147,8 @@ def test_awards_grm_only():
     assert bob.event_cp == 6
     assert bob.bonus_cp == 0
 
-    # The other characters are at the CP floor, with no bonus.
-    for other in updated.characters.values():
-        if other is bob:
-            continue
-        assert other.event_cp == CAMPAIGN.floor_cp
-        assert other.bonus_cp == 0
+    # No other character records present.
+    assert len(updated.characters) == 1
 
 
 def test_awards_half_arc():
@@ -173,11 +157,8 @@ def test_awards_half_arc():
     # They don't *quite* get to Max XP, but it's close.
     assert updated.xp == 56
 
-    # Only four events = campaign floor CP
-    for character in updated.characters.values():
-        # All characters are at the CP floor, with no bonus.
-        assert character.event_cp == CAMPAIGN.floor_cp
-        assert character.bonus_cp == 0
+    # No other character records present.
+    assert len(updated.characters) == 1
 
 
 def test_awards_split():
@@ -186,13 +167,8 @@ def test_awards_split():
     # All games attended = Max XP
     assert updated.xp == CAMPAIGN.max_xp
 
-    bob = updated.characters["Bob"]  # Went to no games
     adam = updated.characters["Adam"]  # Went to 8 Arc games
     greg = updated.characters["Greg"]  # Went to 4 Grim games
-
-    assert len(bob.awards) == 0
-    assert bob.event_cp == 4
-    assert bob.bonus_cp == 0
 
     assert len(adam.awards) == 8
     assert adam.event_cp == 8
@@ -201,6 +177,9 @@ def test_awards_split():
     assert len(greg.awards) == 4
     assert greg.event_cp == 6
     assert adam.bonus_cp == 0
+
+    # No other character records present.
+    assert len(updated.characters) == 2
 
 
 def test_awards_daygamer():
@@ -215,9 +194,119 @@ def test_awards_daygamer():
     assert bob.event_cp == CAMPAIGN.max_cp
     assert bob.bonus_cp == 0  # But not Bonus CP.
 
-    # Of course, other characters are on the floor
-    for other in updated.characters.values():
-        if other is bob:
-            continue
-        assert other.event_cp == CAMPAIGN.floor_cp
-        assert other.bonus_cp == 0
+    # No other character records present.
+    assert len(updated.characters) == 1
+
+
+def test_incremental_updates_all_events():
+    """Play out a season incrementally."""
+    campaign = Campaign(name="Tempest Test", start_year=2023)
+    awards = []
+    player = PLAYER
+    for event in EVENT_HISTORY:
+        new_award = AwardRecord(
+            date=event.date,
+            origin=event.chapter,
+            character="Bob",
+            event_xp=event.xp_value,
+            event_cp=event.cp_value,
+        )
+        awards.append(new_award)
+        campaign = campaign.add_events([event])
+        player = player.update(campaign, [new_award])
+
+    all_at_once_player = PLAYER.update(campaign, awards)
+
+    assert player.xp == campaign.max_xp == 68
+    assert player.characters["Bob"].event_cp == 8
+    assert player.characters["Bob"].bonus_cp == 3
+
+    assert campaign == CAMPAIGN
+    assert player == all_at_once_player
+
+
+def test_incremental_updates_daygaming():
+    """Play out a season incrementally, but only daygame Arcanorum."""
+    campaign = Campaign(name="Tempest Test", start_year=2023)
+    awards = []
+    player = PLAYER
+    for event in EVENT_HISTORY:
+        campaign = campaign.add_events([event])
+        if event.chapter == ARC:
+            new_award = AwardRecord(
+                date=event.date,
+                origin=event.chapter,
+                character="Bob",
+                event_xp=4,
+                event_cp=event.cp_value,
+            )
+            awards.append(new_award)
+            player = player.update(campaign, [new_award])
+        else:
+            player = player.update(campaign)
+
+    all_at_once_player = PLAYER.update(campaign, awards)
+
+    assert campaign == CAMPAIGN
+    assert player == all_at_once_player
+
+
+@pytest.mark.parametrize(
+    "name,awards",
+    [
+        ("single_all", AWARDS_SINGLE_ALL),
+        ("daygamer", AWARDS_DAYGAMER),
+        ("half_arc", AWARDS_HALF_ARC),
+        ("only_arc", AWARDS_ONLY_ARC),
+        ("only_grm", AWARDS_ONLY_GRM),
+        ("split_char", AWARDS_SPLIT_CHARACTER),
+    ],
+)
+def test_incremental_shuffled_awards(name, awards):
+    """What if we incrementally process awards, but they're out of order?
+
+    This test shuffles the award order and feeds those incrementally to the
+    updater, then verifies the result is the same as just feeding them all at once.
+
+    The shuffling is deterministic for each sub-test. All the different award scenarios are tested.
+    """
+    awards = awards.copy()
+    random.seed(0)
+    random.shuffle(awards)
+    player = PLAYER
+    for award in awards:
+        player = player.update(CAMPAIGN, [award])
+
+    all_at_once_player = PLAYER.update(CAMPAIGN, awards)
+
+    assert player == all_at_once_player
+
+
+def test_backstory_approval():
+    """We can set or unset a backstory flag."""
+
+    approved_player = PLAYER.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2023, 3, 3),
+                character="Fred",
+                backstory_approved=True,
+            )
+        ],
+    )
+
+    assert approved_player.characters["Fred"].backstory_approved
+
+    revoked_player = approved_player.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2023, 3, 4),
+                character="Fred",
+                backstory_approved=False,
+            )
+        ],
+    )
+
+    assert not revoked_player.characters["Fred"].backstory_approved

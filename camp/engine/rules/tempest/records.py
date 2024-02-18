@@ -17,18 +17,18 @@ from __future__ import annotations
 
 import datetime
 
+from pydantic import BaseModel
 from pydantic import Field
 from pydantic import ValidationInfo
 from pydantic import field_validator
 from pydantic import model_validator
 
-from ..base_models import BaseModel
 from ..base_models import CharacterMetadata
 from .campaign import Campaign
 from .campaign import CampaignValues
 
 
-class AwardRecord(BaseModel, frozen=True):
+class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     """Represents awards, normally from events.
 
     Additionally, bonus CP, purchased SP, and role/class flags can be set here.
@@ -64,8 +64,8 @@ class AwardRecord(BaseModel, frozen=True):
     bonus_cp: int = 0
     backstory_approved: bool | None = None
     # TODO: Handle the rest of this stuff later
-    player_flags: dict[str, int | str | list[int | str]] | None = None
-    character_flags: dict[str, int | str | list[int | str]] | None = None
+    player_flags: dict[str, int | str | list[int | str] | None] | None = None
+    character_flags: dict[str, int | str | list[int | str] | None] | None = None
     character_grants: list[str] | None = None
 
     @property
@@ -86,7 +86,7 @@ class AwardRecord(BaseModel, frozen=True):
         return False
 
 
-class CharacterRecord(BaseModel, frozen=True):
+class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
     """Represents a character record.
 
     Due to the existence of pre-CMA records, a character record may not initially
@@ -108,9 +108,10 @@ class CharacterRecord(BaseModel, frozen=True):
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool = False
+    flags: dict[str, int | str | list[int | str]] = Field(default_factory=dict)
 
 
-class PlayerRecord(BaseModel, frozen=True):
+class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
     """Represents player event and award attendance.
 
     Due to the existence of a pre-CMA records, a player record may not initially
@@ -133,6 +134,7 @@ class PlayerRecord(BaseModel, frozen=True):
     awards: list[AwardRecord] = Field(default_factory=list)
     characters: dict[str | int, CharacterRecord] = Field(default_factory=dict)
     last_campaign_date: datetime.date | None = None
+    flags: dict[str, int | str | list[int | str]] = Field(default_factory=dict)
 
     def update(
         self, campaign: Campaign, new_awards: list[AwardRecord] | None = None
@@ -164,9 +166,11 @@ class PlayerRecord(BaseModel, frozen=True):
         #    (But also get some other bits we need)
 
         xp = player.xp
+        player_flags = player.flags.copy()
         event_cp = {id: c.event_cp for id, c in player.characters.items()}
         bonus_cp = {id: c.bonus_cp for id, c in player.characters.items()}
         backstory = {id: c.backstory_approved for id, c in player.characters.items()}
+        character_flags = {id: c.flags.copy() for id, c in player.characters.items()}
 
         # 3. At each point in the player’s event history:
         for award in new_awards:
@@ -186,6 +190,17 @@ class PlayerRecord(BaseModel, frozen=True):
                     xp = min(xp + 2 * award.event_xp, current.max_xp)
                 else:
                     xp = min(xp + award.event_xp, current.max_xp)
+
+            # Track player flags. Flag operations always clobber the previous value,
+            # there is no concept of flags combining. Setting a flag to None deletes it.
+            if award.player_flags:
+                for flag, value in award.player_flags.items():
+                    if value is None and flag in player_flags:
+                        del player_flags[flag]
+                    elif value is None:
+                        pass  # Flag isn't present, ignore attempt to delete it.
+                    else:
+                        player_flags[flag] = value
 
             if award.character is not None:
                 # e. If the award includes XP, award 1 Event CP to the character associated with the
@@ -211,6 +226,19 @@ class PlayerRecord(BaseModel, frozen=True):
                 if award.backstory_approved is not None:
                     backstory[award.character] = award.backstory_approved
 
+                # Track character flags. These work just like player flags, but for a character.
+                # When character metadata is evaluated, a flag on a character overrides that same
+                # flag on the player as a whole.
+                if award.character_flags:
+                    for flag, value in award.character_flags.items():
+                        char_flags = character_flags.setdefault(award.character, {})
+                        if value is None and flag in char_flags:
+                            del char_flags[flag]
+                        elif value is None:
+                            pass  # Flag isn't present, ignore attempt to delete it.
+                        else:
+                            char_flags[flag] = value
+
             # g. If the award is something else (Backstory CP, role/AC/Lost Art access),
             # flag that in their character metadata.
             # TODO: Do thing
@@ -220,11 +248,17 @@ class PlayerRecord(BaseModel, frozen=True):
 
         # Build updated character records.
         new_characters = {}
-        all_character_ids = event_cp.keys() | bonus_cp.keys() | backstory.keys()
+        all_character_ids = (
+            event_cp.keys()
+            | bonus_cp.keys()
+            | backstory.keys()
+            | character_flags.keys()
+        )
         for id in all_character_ids:
             new_cp = event_cp.get(id, campaign.floor_cp)
             new_bonus_cp = bonus_cp.get(id, 0)
             new_backstory = backstory.get(id, False)
+            flags = character_flags.get(id, {})
 
             # If the character record already existed, updated. Otherwise, make it fresh.
             if id in player.characters:
@@ -233,6 +267,7 @@ class PlayerRecord(BaseModel, frozen=True):
                         "event_cp": new_cp,
                         "bonus_cp": new_bonus_cp,
                         "backstory_approved": new_backstory,
+                        "flags": flags,
                     }
                 )
             else:
@@ -241,6 +276,7 @@ class PlayerRecord(BaseModel, frozen=True):
                     event_cp=new_cp,
                     bonus_cp=new_bonus_cp,
                     backstory_approved=new_backstory,
+                    flags=flags,
                 )
             new_characters[id] = char
 
@@ -250,6 +286,7 @@ class PlayerRecord(BaseModel, frozen=True):
                 "characters": new_characters,
                 "last_campaign_date": campaign.last_event_date,
                 "awards": player.awards + new_awards,
+                "flags": player_flags,
             }
         )
 
@@ -259,7 +296,9 @@ class PlayerRecord(BaseModel, frozen=True):
 
     @field_validator("awards")
     @classmethod
-    def validate_entries_sorted(cls, v: list[AwardRecord], info: ValidationInfo) -> str:
+    def validate_entries_sorted(
+        cls, v: list[AwardRecord], info: ValidationInfo
+    ) -> list[AwardRecord]:
         """Enforce that the award list must be sorted by date, otherwise we can't search it."""
         if not v:
             return v

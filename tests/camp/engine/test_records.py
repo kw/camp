@@ -308,3 +308,89 @@ def test_backstory_approval():
     )
 
     assert not revoked_player.characters["Fred"].backstory_approved
+
+
+def test_player_flags():
+    # Initially setting player flags works.
+    player = PLAYER.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 1),
+                player_flags={
+                    "FOO": "bar",
+                    "BAZ": 42,
+                    "things": ["stuff", 3, "10"],
+                },
+            )
+        ],
+    )
+
+    assert player.flags == {
+        "FOO": "bar",
+        "BAZ": 42,
+        "things": ["stuff", 3, "10"],
+    }
+
+    # Updating and deleting flags works.
+    player = player.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 2),
+                player_flags={
+                    "FOO": None,
+                    "BAZ": "forty two",
+                },
+            )
+        ],
+    )
+
+    assert player.flags == {
+        "BAZ": "forty two",
+        "things": ["stuff", 3, "10"],
+    }
+
+
+def test_character_flags():
+    # Initially setting player flags works.
+    player = PLAYER.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 1),
+                character="Eve",
+                character_flags={
+                    "FOO": "bar",
+                    "BAZ": 42,
+                    "things": ["stuff", 3, "10"],
+                },
+            )
+        ],
+    )
+
+    assert player.characters["Eve"].flags == {
+        "FOO": "bar",
+        "BAZ": 42,
+        "things": ["stuff", 3, "10"],
+    }
+
+    # Updating and deleting flags works.
+    player = player.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 2),
+                character="Eve",
+                character_flags={
+                    "FOO": None,
+                    "BAZ": "forty two",
+                },
+            )
+        ],
+    )
+
+    assert player.characters["Eve"].flags == {
+        "BAZ": "forty two",
+        "things": ["stuff", 3, "10"],
+    }

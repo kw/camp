@@ -20,19 +20,17 @@ import datetime
 from collections import defaultdict
 from typing import Callable
 
+from pydantic import BaseModel
 from pydantic import Field
 from pydantic import NonNegativeInt
 from pydantic import ValidationInfo
-from pydantic import computed_field
 from pydantic import field_validator
-
-from ..base_models import BaseModel
 
 # Used for sorting/searching through events and value entries
 DATE_KEY: Callable[[Event | CampaignValues], datetime.date] = lambda e: e.date
 
 
-class Event(BaseModel, frozen=True):
+class Event(BaseModel, frozen=True, extra="forbid"):
     """Representation of game event.
 
     The representation is pared down to only what is necessary in this module.
@@ -54,7 +52,7 @@ class Event(BaseModel, frozen=True):
     cp_value: NonNegativeInt = 1
 
 
-class CampaignValues(BaseModel, frozen=True):
+class CampaignValues(BaseModel, frozen=True, extra="forbid"):
     """Campaign-wide progression tracking values.
 
     These values change over the course of a campaign. A table stored in
@@ -86,7 +84,7 @@ class CampaignValues(BaseModel, frozen=True):
         return self.max_cp // 2
 
 
-class Campaign(BaseModel, frozen=True):
+class Campaign(BaseModel, frozen=True, extra="forbid"):
     """Represents the campaign as a whole over time.
 
     Attributes:
@@ -106,7 +104,7 @@ class Campaign(BaseModel, frozen=True):
     recent_events: list[Event] = Field(default_factory=list)
     last_event_date: datetime.date = datetime.date(1, 1, 1)
 
-    @computed_field
+    @property
     def start_values(self) -> CampaignValues:
         return CampaignValues(
             date=datetime.date(self.start_year, 1, 1),
@@ -264,7 +262,9 @@ class Campaign(BaseModel, frozen=True):
 
     @field_validator("value_table")
     @classmethod
-    def validate_entries_sorted(cls, v: list[Event], info: ValidationInfo) -> str:
+    def validate_entries_sorted(
+        cls, v: list[Event], info: ValidationInfo
+    ) -> list[Event]:
         """Enforce that the value table must be sorted by date, otherwise we can't search it."""
         if not v:
             return v

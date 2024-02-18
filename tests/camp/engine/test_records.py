@@ -311,6 +311,11 @@ def test_backstory_approval():
 
 
 def test_player_flags():
+    """Player flags work a bit like environment variables.
+
+    Setting them to anything replaces the previous value.
+    Setting the flag to None clears it.
+    """
     # Initially setting player flags works.
     player = PLAYER.update(
         CAMPAIGN,
@@ -353,7 +358,12 @@ def test_player_flags():
 
 
 def test_character_flags():
-    # Initially setting player flags works.
+    """Character flags work a bit like environment variables.
+
+    Setting them to anything replaces the previous value.
+    Setting the flag to None clears it.
+    """
+    # Initially setting character flags works.
     player = PLAYER.update(
         CAMPAIGN,
         [
@@ -394,3 +404,57 @@ def test_character_flags():
         "BAZ": "forty two",
         "things": ["stuff", 3, "10"],
     }
+
+
+def test_character_grants():
+    """All grants awarded to a character are recorded."""
+    player = PLAYER.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 1),
+                character="Eve",
+                character_grants=["divine_favor:3", "spoons"],
+            )
+        ],
+    )
+
+    assert player.characters["Eve"].grants == ["divine_favor:3", "spoons"]
+
+    player = player.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2024, 1, 2),
+                character="Eve",
+                character_grants=["fighter:1", "lore#Soup"],
+            )
+        ],
+    )
+
+    assert player.characters["Eve"].grants == [
+        "divine_favor:3",
+        "spoons",
+        "fighter:1",
+        "lore#Soup",
+    ]
+
+    # Due to strict date handling, if an award is added in the past, the list will be in date order.
+    player = player.update(
+        CAMPAIGN,
+        [
+            AwardRecord(
+                date=date(2023, 12, 25),
+                character="Eve",
+                character_grants=["patron"],
+            )
+        ],
+    )
+
+    assert player.characters["Eve"].grants == [
+        "patron",
+        "divine_favor:3",
+        "spoons",
+        "fighter:1",
+        "lore#Soup",
+    ]

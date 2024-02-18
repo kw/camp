@@ -109,6 +109,7 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
     bonus_cp: int = 0
     backstory_approved: bool = False
     flags: dict[str, int | str | list[int | str]] = Field(default_factory=dict)
+    grants: list[str] = Field(default_factory=list)
 
 
 class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
@@ -171,6 +172,7 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
         bonus_cp = {id: c.bonus_cp for id, c in player.characters.items()}
         backstory = {id: c.backstory_approved for id, c in player.characters.items()}
         character_flags = {id: c.flags.copy() for id, c in player.characters.items()}
+        character_grants = {id: c.grants.copy() for id, c in player.characters.items()}
 
         # 3. At each point in the player’s event history:
         for award in new_awards:
@@ -239,9 +241,12 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                         else:
                             char_flags[flag] = value
 
-            # g. If the award is something else (Backstory CP, role/AC/Lost Art access),
-            # flag that in their character metadata.
-            # TODO: Do thing
+                # Track character grants. The full list of grants is maintained, even if some grants
+                # could otherwise be combined. Some day, we might want to collate these based on
+                # the available feature definitions.
+                if award.character_grants:
+                    grants = character_grants.setdefault(award.character, [])
+                    grants.extend(award.character_grants)
 
         # 4. Whether or not any events occurred, perform floor/max checks.
         xp = _constrain(campaign, xp, event_cp, bonus_cp)
@@ -253,12 +258,14 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
             | bonus_cp.keys()
             | backstory.keys()
             | character_flags.keys()
+            | character_grants.keys()
         )
         for id in all_character_ids:
             new_cp = event_cp.get(id, campaign.floor_cp)
             new_bonus_cp = bonus_cp.get(id, 0)
             new_backstory = backstory.get(id, False)
             flags = character_flags.get(id, {})
+            grants = character_grants.get(id, [])
 
             # If the character record already existed, updated. Otherwise, make it fresh.
             if id in player.characters:
@@ -268,6 +275,7 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                         "bonus_cp": new_bonus_cp,
                         "backstory_approved": new_backstory,
                         "flags": flags,
+                        "grants": grants,
                     }
                 )
             else:
@@ -277,6 +285,7 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                     bonus_cp=new_bonus_cp,
                     backstory_approved=new_backstory,
                     flags=flags,
+                    grants=grants,
                 )
             new_characters[id] = char
 

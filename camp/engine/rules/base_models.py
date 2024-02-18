@@ -7,6 +7,7 @@ import typing
 from abc import ABC
 from abc import abstractmethod
 from functools import cached_property
+from typing import Annotated
 from typing import Any
 from typing import ClassVar
 from typing import Iterable
@@ -18,7 +19,6 @@ import pydantic
 
 from .. import utils
 from ..utils import make_uuid
-from ..utils import maybe_iter
 from . import base_engine
 from .decision import Decision
 
@@ -74,12 +74,20 @@ ModelDefinition: TypeAlias = Type[BaseModel] | types.UnionType
 Identifiers: TypeAlias = str | set[str] | list[str] | Iterable[str] | None
 
 
+class Always(BoolExpr):
+    def evaluate(self, char: base_engine.CharacterController) -> Decision:
+        return Decision.OK
+
+
+ALWAYS = Always()
+
+
 class AnyOf(BoolExpr):
-    any: Requirements
+    any: list[BoolExpr]
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
         messages: list[str] = []
-        for expr in maybe_iter(self.any):
+        for expr in self.any:
             if isinstance(expr, str):
                 raise TypeError(f"Expression '{expr}' expected to be parsed by now.")
             if rd := expr.evaluate(char):
@@ -89,7 +97,7 @@ class AnyOf(BoolExpr):
 
     def identifiers(self) -> set[str]:
         ids = set()
-        for op in maybe_iter(self.any):
+        for op in self.any:
             if isinstance(op, str):
                 ids.add(op)
             else:
@@ -98,10 +106,10 @@ class AnyOf(BoolExpr):
 
 
 class AllOf(BoolExpr):
-    all: Requirements
+    all: list[BoolExpr]
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
-        for expr in maybe_iter(self.all):
+        for expr in self.all:
             if isinstance(expr, str):
                 raise TypeError(f"Expression '{expr}' expected to be parsed by now.")
             if not (rd := expr.evaluate(char)):
@@ -110,7 +118,7 @@ class AllOf(BoolExpr):
 
     def identifiers(self) -> set[str]:
         ids = set()
-        for op in maybe_iter(self.all):
+        for op in self.all:
             if isinstance(op, str):
                 ids.add(op)
             else:
@@ -119,10 +127,10 @@ class AllOf(BoolExpr):
 
 
 class NoneOf(BoolExpr):
-    none: Requirements
+    none: list[BoolExpr]
 
     def evaluate(self, char: base_engine.CharacterController) -> Decision:
-        for expr in maybe_iter(self.none):
+        for expr in self.none:
             if isinstance(expr, str):
                 raise TypeError(f"Expression '{expr}' expected to be parsed by now.")
             if expr.evaluate(char):
@@ -131,7 +139,7 @@ class NoneOf(BoolExpr):
 
     def identifiers(self) -> set[str]:
         ids: set[str] = set()
-        for op in maybe_iter(self.none):
+        for op in self.none:
             if isinstance(op, str):
                 ids.add(op)
             else:
@@ -251,7 +259,7 @@ class PropExpression(BoolExpr):
                 value=value,
                 single=single,
                 less_than=less_than,
-                prefixes=prefixes,
+                prefixes=tuple(prefixes),
             )
         raise ValueError(f"Requirement parse failure for {req}")
 
@@ -264,7 +272,7 @@ class PropExpression(BoolExpr):
         value: int = 1,
         single: int | None = None,
         less_than: int | None = None,
-        prefixes: list[str] = None,
+        prefixes: Iterable[str] | None = None,
     ):
         req = prop or "unknown"
         if prefixes:
@@ -293,11 +301,26 @@ class PropExpression(BoolExpr):
         )
 
 
-# The requirements language involves a lot of recursive definitions,
-# so define it here. Pydantic models using forward references need
-# to be poked to know the reference is ready, so update them as well.
-Requirement: TypeAlias = AnyOf | AllOf | NoneOf | PropExpression | str
-Requirements: TypeAlias = list[Requirement] | Requirement | None
+def parse_req(req: Any) -> Requirement:
+    match req:
+        case [*requirements]:
+            return AllOf(all=[parse_req(r) for r in requirements])
+        case {"all": [*requirements]}:
+            return AllOf(all=[parse_req(r) for r in requirements])
+        case {"any": [*requirements]}:
+            return AnyOf(any=[parse_req(r) for r in requirements])
+        case {"none": [*requirements]}:
+            return NoneOf(none=[parse_req(r) for r in requirements])
+        case str():
+            if req.startswith("-"):
+                return NoneOf(none=[PropExpression.parse(req[1:])])
+            return PropExpression.parse(req)
+        case None | {}:
+            return ALWAYS
+    raise ValueError(f"Requirement parse failure for {req}")
+
+
+Requirement = Annotated[BoolExpr, pydantic.BeforeValidator(parse_req)]
 AnyOf.model_rebuild()
 AllOf.model_rebuild()
 NoneOf.model_rebuild()
@@ -312,9 +335,6 @@ class Table(ABC):
     @abstractmethod
     def bounds(self) -> tuple[int, int]:
         """Returns the boundaries of the table."""
-
-    def table(self, first: int = None, last: int = None) -> Iterable[int]:
-        return {i: self.evaluate(i) for i in range(first, last + 1)}
 
     def reverse_lookup(self, value: int) -> int:
         """Return the key that best matches the given value.
@@ -371,7 +391,7 @@ class OptionDef(BaseModel):
 
     freeform: bool = False
     values: set[str] | None = None
-    requires: dict[str, Requirements] | None = None
+    requires: dict[str, Requirement] | None = None
     inherit: str | None = None
     multiple: bool | pydantic.PositiveInt = True
     descriptions: dict[str, str] | None = None
@@ -419,8 +439,8 @@ class BaseFeatureDef(BaseModel):
     supersedes: str | None = None
     category: str | None = None
     category_priority: float = 100.0
-    requires: Requirements = None
-    soft_requires: Requirements = None
+    requires: Requirement = ALWAYS
+    soft_requires: Requirement = ALWAYS
     def_path: str | None = None
     tags: set[str] = pydantic.Field(default_factory=set)
     description: str | None = None
@@ -443,7 +463,9 @@ class BaseFeatureDef(BaseModel):
 
     @classmethod
     def type_key(cls) -> str:
-        return cls.model_fields["type"].annotation.__args__[0]
+        if a := cls.model_fields["type"].annotation:
+            return a.__args__[0]
+        return "None"
 
     @property
     def has_ranks(self) -> bool:
@@ -475,7 +497,6 @@ class BaseFeatureDef(BaseModel):
         return self._superseded_by
 
     def post_validate(self, ruleset: BaseRuleset) -> None:
-        self.requires = parse_req(self.requires)
         if self.requires:
             ruleset.validate_identifiers(list(self.requires.identifiers()))
         if self.parent:
@@ -617,8 +638,7 @@ class BaseRuleset(BaseModel, ABC):
         # of requirements or grants. For example, "craftsman#Artist",
         # "alchemy:3", "!magic-insensitive"
         for req in id_list:
-            if not (parsed_req := parse_req(req)):
-                continue
+            parsed_req = parse_req(req)
             for id in parsed_req.identifiers():
                 if not self.identifier_defined(id):
                     raise ValueError(
@@ -842,7 +862,7 @@ class RankMutation(BaseModel):
         return PropExpression(prop=self.id, option=self.option, value=self.ranks)
 
     @classmethod
-    def parse(self, expr: str) -> RankMutation:
+    def parse(cls, expr: str) -> RankMutation:
         prop = PropExpression.parse(expr)
         return RankMutation(
             id=prop.prop,
@@ -897,10 +917,12 @@ class Discount(BaseModel):
 
 
 Mutation = RankMutation | ChoiceMutation | NoteMutation | PlotMutation
+MutationAdapter = pydantic.TypeAdapter(Mutation)
 
 
 def load_mutation(data: dict) -> Mutation:
-    return pydantic.parse_obj_as(Mutation, data)
+    return MutationAdapter.validate_python(data)
+    # return pydantic.parse_obj_as(Mutation, data)
 
 
 def dump_mutation(mutation: Mutation) -> dict:
@@ -912,25 +934,6 @@ def full_id(id: str, option: str | None) -> str:
         return f"{id}+{option.replace(' ', '_')}"
     else:
         return id
-
-
-def parse_req(req: Requirements) -> BoolExpr | None:
-    if not req:
-        return None
-    if isinstance(req, list):
-        return AllOf(all=[parse_req(r) for r in req])
-    if isinstance(req, AllOf):
-        return AllOf(all=[parse_req(r) for r in maybe_iter(req.all)])
-    if isinstance(req, AnyOf):
-        return AnyOf(any=[parse_req(r) for r in maybe_iter(req.any)])
-    if isinstance(req, NoneOf):
-        return NoneOf(none=[parse_req(r) for r in maybe_iter(req.none)])
-    if isinstance(req, str):
-        if req.startswith("-"):
-            return NoneOf(none=[PropExpression.parse(req[1:])])
-        else:
-            return PropExpression.parse(req)
-    raise ValueError(f"Requirement parse failure for {req}")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -968,7 +971,7 @@ class Issue:
     @cached_property
     def expr(self) -> PropExpression:
         """Parsed feature ID expression."""
-        return PropExpression.parse(self.feature_id)
+        return PropExpression.parse(self.feature_id or "unknown")
 
     @property
     def qualified_issue_code(self) -> str:

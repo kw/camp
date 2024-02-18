@@ -121,8 +121,8 @@ class ChoiceDef(base_models.BaseModel):
     controller: str | None = None
     controller_data: dict | None = None
     multi: bool = False
-    requires: base_models.Requirements = None
-    choice_requires: dict[str, base_models.Requirements] | None = None
+    requires: base_models.Requirement = base_models.ALWAYS
+    choice_requires: dict[str, base_models.Requirement] | None = None
 
 
 class PowerCard(base_models.BaseModel):
@@ -138,7 +138,7 @@ class PowerCard(base_models.BaseModel):
     description: str | None = None
 
     def should_format_as_card(self) -> bool:
-        return (
+        return bool(
             self.incant
             or self.call
             or self.accent
@@ -158,7 +158,7 @@ class ChildPurchaseDef(base_models.BaseModel):
 class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     cost: CostDef = None
     grants: Grantable | None = None
-    grant_if: dict[str, base_models.Requirements] | None = None
+    grant_if: dict[str, base_models.Requirement] | None = None
     rank_grants: dict[int, Grantable] | None = Field(default=None, alias="level_grants")
     discounts: Discounts | None = None
     choices: dict[str, ChoiceDef] | None = None
@@ -174,9 +174,7 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
             for grant, req in self.grant_if.items():
                 # Normalize the requirements. This mirrors BaseFeatureDef.post_validate's
                 # handling of the `requirements` field.
-                if req := base_models.parse_req(req):
-                    ruleset.validate_identifiers(list(req.identifiers()))
-                    self.grant_if[grant] = req
+                ruleset.validate_identifiers(list(req.identifiers()))
         if self.rank_grants:
             grantables = list(self.rank_grants.values())
             ruleset.validate_identifiers(_grantable_identifiers(grantables))
@@ -186,7 +184,7 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
             for choice_def in self.choices.values():
                 if choice_def.matcher and choice_def.matcher.id:
                     ruleset.validate_identifiers(choice_def.matcher.id)
-        if self.tags:
+        if self.tags and isinstance(ruleset, Ruleset):
             # Verify that all tags are declared in the ruleset.
             for tag in self.tags:
                 if tag not in ruleset.tags:

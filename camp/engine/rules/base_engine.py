@@ -243,11 +243,12 @@ class CharacterController(ABC):
         if prefix:
             # Follow the prefix path to the appropriate controller.
             controller = self.controller(prefix)
-            while prefix:
+            while prefix and controller:
                 prefix, expr = expr.pop()
                 if prefix:
                     controller = controller.subcontroller(prefix)
-            return controller.subcontroller(expr.full_id)
+            if controller:
+                return controller.subcontroller(expr.full_id)
 
         if expr.prop in self.ruleset.features:
             # Feature controllers are retrieved by prop and option. Do not
@@ -277,18 +278,19 @@ class CharacterController(ABC):
         if controller := self._attribute_controllers.get(expr.full_id):
             return controller
 
-        attr: base_models.Attribute
-        if attr := self.engine.attribute_map.get(expr.prop):
+        attr = self.engine.attribute_map.get(expr.prop)
+        if attr is not None:
             # There are a few different ways an attribute might be stored or computed.
             if attr.scoped:
                 # Scoped attributes are never stored on the character controller.
                 pass
-            elif (attr_value := getattr(self, attr.property_id, None)) is not None:
-                attr_value: PropertyController | Callable | int
-                if isinstance(attr_value, PropertyController):
-                    controller = attr_value
-                else:
-                    controller = SimpleAttributeWrapper(expr.full_id, self)
+            else:
+                attr_value = getattr(self, attr.property_id, None)
+                if attr_value is not None:
+                    if isinstance(attr_value, AttributeController):
+                        controller = attr_value
+                    else:
+                        controller = SimpleAttributeWrapper(expr.full_id, self)
         if controller:
             self._attribute_controllers[expr.full_id] = controller
             return controller
@@ -341,16 +343,15 @@ class CharacterController(ABC):
     def choose(self, entry: base_models.ChoiceMutation) -> Decision: ...
 
     def meets_requirements(
-        self, requirements: base_models.Requirements, prop_id: str | None = None
+        self, requirement: base_models.Requirement | str, prop_id: str | None = None
     ) -> Decision:
         messages: list[str] = []
-        for req in maybe_iter(requirements):
-            if isinstance(req, str):
-                # It's unlikely that an unparsed string gets here, but if so,
-                # go ahead and parse it.
-                req = base_models.parse_req(req)
-            if not (rd := req.evaluate(self)):
-                messages.append(rd.reason)
+        if isinstance(requirement, str):
+            # It's unlikely that an unparsed string gets here, but if so,
+            # go ahead and parse it.
+            requirement = base_models.parse_req(requirement)
+        if not (rd := requirement.evaluate(self)):
+            messages.append(rd.reason)
         if messages:
             if prop_id:
                 header = (
@@ -360,7 +361,8 @@ class CharacterController(ABC):
                 header = "Not all requirements are met."
             messages = [header] + messages
         return Decision(
-            success=not (messages), reason="\n".join(messages) if messages else None
+            success=not (messages),
+            reason="\n".join(messages) if messages else "Unknown",
         )
 
     def options_values_for_feature(
@@ -375,6 +377,8 @@ class CharacterController(ABC):
         """
         feature_def = self.engine.feature_defs[feature_id]
         option_def = feature_def.option
+        if option_def is None:
+            return set()
         if not (option_def.values or option_def.inherit):
             return set()
         options_excluded: set[str] = set()
@@ -405,7 +409,7 @@ class CharacterController(ABC):
                     if not req.evaluate(self):
                         legal_values.remove(option)
         else:
-            legal_values = set(option_def.values)
+            legal_values = set(option_def.values) if option_def.values else set()
             for option in legal_values.copy():
                 if option.startswith("$"):
                     legal_values.remove(option)
@@ -450,13 +454,9 @@ class CharacterController(ABC):
     ) -> bool:
         feature_def = self.engine.feature_defs[feature_id]
         option_def = feature_def.option
-        if not option_def and not option_value:
-            # No option needed, no option provided. Good.
-            return True
-        if not option_def and option_value:
-            # There's no option definition, if an option was provided
-            # then it's wrong.
-            return False
+        if option_def is None:
+            # None option_def is only compatible with empty option value.
+            return not option_value
         if option_def.freeform:
             # The values are just suggestions. We may want to
             # filter for profanity or something, but otherwise
@@ -484,6 +484,8 @@ class CharacterController(ABC):
                     return f"Remove {name}"
             case base_models.ChoiceMutation():
                 feature = self.feature_controller(mutation.id)
+                if feature.choices is None:
+                    return "Choice selection on feature with no choices."
                 choice = feature.choices.get(mutation.choice)
                 choice_name = getattr(choice, "name", mutation.choice.title())
                 selection = self.display_name(mutation.value)
@@ -543,7 +545,7 @@ class PropertyController(ABC):
         expr = base_models.PropExpression.parse(expr)
         prefix, expr = expr.pop()
         controller = self
-        while prefix:
+        while prefix and controller:
             controller = controller.subcontroller(prefix)
             prefix, expr = expr.pop()
 
@@ -551,6 +553,8 @@ class PropertyController(ABC):
             if expr.single is not None:
                 return self.max_value
             return self.value
+        if controller is None:
+            return 0
         return controller.get(expr)
 
     def reconcile(self) -> None:
@@ -591,12 +595,14 @@ class PropertyController(ABC):
             if (attr_value := getattr(self, attr.property_id, None)) is not None:
                 # If the attribute is stored on this controller, we can just return it.
                 # If it's a 'simple' attribute (it just returns an integer)
-                attr_value: PropertyController | int
                 if isinstance(attr_value, PropertyController):
                     controller = attr_value
                 else:
-                    controller = SimpleAttributeWrapper(expr, self.character, self)
-        self._subcontrollers[expr.full_id] = controller
+                    controller = SimpleAttributeWrapper(
+                        expr.full_id, self.character, self
+                    )
+        if controller is not None:
+            self._subcontrollers[expr.full_id] = controller
         return controller
 
     def __eq__(self, other: Any) -> bool:
@@ -768,7 +774,7 @@ class BaseFeatureController(PropertyController):
         if self.unlimited_ranks:
             # Arbitrarily chosen large int.
             return 101
-        return self.definition.ranks
+        return self.definition.ranks  # type: ignore
 
     @property
     def type_name(self) -> str:
@@ -833,8 +839,9 @@ class BaseFeatureController(PropertyController):
     @property
     def is_concrete(self) -> bool:
         return (
-            (self.option_def and self.option) or not self.option_def
-        ) and self.value > 0
+            bool((self.option_def and self.option) or not self.option_def)
+            and self.value > 0
+        )
 
     @property
     def is_taken(self) -> bool:
@@ -862,7 +869,7 @@ class BaseFeatureController(PropertyController):
         to provide a property for other features to use as a prerequisite.
         (e.g. "Requires three ranks of Lore").
         """
-        return self.option_def and not self.option
+        return bool(self.option_def and not self.option)
 
     @property
     def can_take_new_option(self) -> bool:
@@ -939,6 +946,11 @@ class BaseFeatureController(PropertyController):
     @abstractproperty
     def purchased_ranks(self) -> int:
         """How many ranks the player has intentionally purchased, whether or not they're used."""
+        return 0
+
+    @property
+    def unused_bonus(self) -> int:
+        return 0
 
     @property
     def paid_ranks(self) -> int:
@@ -1048,7 +1060,7 @@ class BaseFeatureController(PropertyController):
 
         Plot/logistics might also be able to waive a particular issue if it suits their needs.
         """
-        issues: list[base_models.Issues] = []
+        issues: list[base_models.Issue] = []
         if self.value > 0:
             if sr := self.definition.soft_requires:
                 if not (rd := self.character.meets_requirements(sr)):

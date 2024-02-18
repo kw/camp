@@ -52,26 +52,26 @@ def test_parse_propreq_values():
 def test_parse_req():
     req = [
         "feature-id+Text",
-        AllOf(
-            all=[
+        {
+            "all": [
                 "one",
                 "two",
                 "-three",
-            ]
-        ),
-        AnyOf(
-            any=[
+            ],
+        },
+        {
+            "any": [
                 "four:4",
                 "five$5",
-                AllOf(all=["six@6"]),
+                {"all": ["six@6"]},
             ]
-        ),
-        NoneOf(
-            none=[
+        },
+        {
+            "none": [
                 "seven+?",
                 "eight<8",
             ]
-        ),
+        },
     ]
     parsed = parse_req(req)
     assert parsed == AllOf(

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import datetime
 from functools import cached_property
 from functools import lru_cache
 from typing import Any
+from typing import TypeAlias
 
 import rules
 from django.conf import settings as _settings
@@ -15,8 +17,14 @@ from rules.contrib.models import RulesModel
 import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
+from camp.engine.rules.tempest import campaign
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
+
+
+def _this_year():
+    return datetime.date.today().year
+
 
 # Authorization rules for game models.
 is_authenticated = rules.is_authenticated
@@ -255,8 +263,8 @@ class Game(RulesModel):
     """
 
     name: str = models.CharField(blank=False, max_length=100, default="Game")
-    description: str = models.TextField(blank=True)
-    home_footer: str = models.TextField(blank=True)
+    description: str = models.TextField(blank=True, default="")
+    home_footer: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=False)
     # If a user is set as a game owner, they are always considered to have
     # role admin privileges, even if the corresponding roles are
@@ -429,7 +437,7 @@ class Chapter(RulesModel):
     )
     slug: str = models.SlugField(unique=True)
     name: str = models.CharField(max_length=50)
-    description: str = models.TextField(blank=True)
+    description: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=True)
     owners: set[User] = models.ManyToManyField(_settings.AUTH_USER_MODEL)
     timezone: str = models.CharField(max_length=50, help_text="e.g. 'America/Denver'")
@@ -534,13 +542,32 @@ class Campaign(RulesModel):
         related_name="campaigns",
     )
     slug: str = models.SlugField(unique=True)
-    name: str = models.CharField(blank=True, max_length=100)
-    description: str = models.TextField(blank=True)
+    name: str = models.CharField(blank=True, max_length=100, default="Campaign")
+    start_year = models.IntegerField(default=_this_year)
+    description: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=False)
     ruleset: Ruleset = models.ForeignKey(
         Ruleset, null=True, on_delete=models.PROTECT, related_name="campaigns"
     )
-    data: dict[str, Any] = models.JSONField(default=dict, blank=True)
+    engine_data: dict[str, Any] = models.JSONField(null=True, blank=True, default=None)
+
+    @property
+    def engine_model(self) -> campaign.Campaign:
+        if self.engine_data:
+            model = campaign.CampaignAdapter.validate_python(self.engine_data)
+            if model.name != self.name or model.start_year != self.start_year:
+                model = model.model_copy(
+                    update={"name": self.name, "start_year": self.start_year},
+                )
+            return model
+        return campaign.Campaign(
+            name=self.name,
+            start_year=self.start_year,
+        )
+
+    @engine_model.setter
+    def engine_model(self, model: campaign.Campaign):
+        self.engine_data = model.model_dump(mode="json")
 
     def __str__(self) -> str:
         if self.name:

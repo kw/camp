@@ -23,6 +23,7 @@ from typing import Callable
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import NonNegativeInt
+from pydantic import TypeAdapter
 from pydantic import ValidationInfo
 from pydantic import field_validator
 
@@ -272,3 +273,6 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
             if v[i - 1].date > v[i].date:
                 raise ValueError("Entries must be sorted by date")
         return v
+
+
+CampaignAdapter = TypeAdapter(Campaign)

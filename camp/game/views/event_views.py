@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
+from django_htmx.http import HttpResponseClientRefresh
 from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
 
@@ -123,6 +124,16 @@ def event_uncancel(request, pk):
     else:
         messages.warning(request, "Event had not been canceled, so good?")
     return redirect(event)
+
+
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+@require_POST
+def mark_event_complete(request, pk):
+    event = get_object_or_404(models.Event, pk=pk)
+    event.mark_complete()
+    return HttpResponseClientRefresh()
 
 
 @login_required

@@ -51,8 +51,6 @@ class EventUpdateForm(forms.ModelForm):
             "registration_deadline",
             "logistics_periods",
             "daygame_logistics_periods",
-            "logistics_year",
-            "logistics_month",
             "tenting_allowed",
             "cabin_allowed",
         ]

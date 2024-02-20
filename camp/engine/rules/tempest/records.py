@@ -24,6 +24,7 @@ from pydantic import field_validator
 from pydantic import model_validator
 
 from ..base_models import CharacterMetadata
+from ..base_models import FlagValues
 from .campaign import Campaign
 from .campaign import CampaignValues
 
@@ -64,8 +65,8 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     bonus_cp: int = 0
     backstory_approved: bool | None = None
     # TODO: Handle the rest of this stuff later
-    player_flags: dict[str, int | str | list[int | str] | None] | None = None
-    character_flags: dict[str, int | str | list[int | str] | None] | None = None
+    player_flags: dict[str, FlagValues | None] | None = None
+    character_flags: dict[str, FlagValues | None] | None = None
     character_grants: list[str] | None = None
 
     @property
@@ -108,7 +109,7 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool = False
-    flags: dict[str, int | str | list[int | str]] = Field(default_factory=dict)
+    flags: dict[str, FlagValues] = Field(default_factory=dict)
     grants: list[str] = Field(default_factory=list)
 
 
@@ -135,7 +136,7 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
     awards: list[AwardRecord] = Field(default_factory=list)
     characters: dict[str | int, CharacterRecord] = Field(default_factory=dict)
     last_campaign_date: datetime.date | None = None
-    flags: dict[str, int | str | list[int | str]] = Field(default_factory=dict)
+    flags: dict[str, FlagValues] = Field(default_factory=dict)
 
     def update(
         self, campaign: Campaign, new_awards: list[AwardRecord] | None = None
@@ -301,7 +302,19 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
 
     def metadata_for(self, character_id: int | str) -> CharacterMetadata:
         """Produce character metadata for the indicated character."""
-        raise NotImplementedError
+        awards = {"xp": self.xp, "cp": 0}
+        flags = self.flags.copy()
+        if char := self.characters.get(character_id):
+            awards["cp"] += char.event_cp + char.bonus_cp
+            if char.backstory_approved:
+                awards["cp"] += 2
+            flags.update(char.flags)
+        return CharacterMetadata(
+            id=character_id,
+            player_id=self.user,
+            awards=awards,
+            flags=flags,
+        )
 
     @field_validator("awards")
     @classmethod

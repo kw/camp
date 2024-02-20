@@ -3,10 +3,12 @@ from __future__ import annotations
 import datetime
 import uuid
 from decimal import Decimal
+from typing import TypeAlias
 
 from celery.result import AsyncResult
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from django.db.models import F
 from django.db.models import Q
 from django.db.models import QuerySet
@@ -15,10 +17,15 @@ from django.utils import timezone
 from rules.contrib.models import RulesModel
 
 import camp.accounts.models as account_models
+from camp.engine.rules.tempest import campaign
 
 from . import game_models
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
+
+
+# TODO: Make this a campaign setting
+_XP_PER_HALFDAY = 2
 
 
 class Month(models.IntegerChoices):
@@ -110,48 +117,19 @@ class Event(RulesModel):
         max_digits=4,
         decimal_places=2,
         default=Decimal(4),
-        help_text="How many long rests?",
+        help_text="How many half days?",
     )
     daygame_logistics_periods = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         default=Decimal(2),
-        help_text="How many long rests for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
+        help_text="How many half-days for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
     )
-    logistics_year = models.IntegerField(
-        blank=True,
-        default=0,
-        help_text="What year of the campaign is this event in? Must match the event start or end date.",
-    )
-    logistics_month = models.IntegerField(
-        blank=True,
-        default=0,
-        choices=Month.choices,
-        help_text=(
-            "What month of the campaign should this be counted as? "
-            "Must match the event start or end date."
-        ),
-    )
+    completed = models.BooleanField(default=False)
 
     registrations: QuerySet[EventRegistration]
 
     def save(self, *args, **kwargs):
-        # The logistics month defaults to the end date of the event.
-        if not self.logistics_year:
-            self.logistics_year = self.event_end_date.year
-        if not self.logistics_month:
-            self.logistics_month = self.event_end_date.month
-
-        # If a logistics month is specified that doesn't correspond to either
-        # the start of the event or the end of the event, reset it.
-        valid_logi_periods = {
-            (self.event_start_date.year, self.event_start_date.month),
-            (self.event_end_date.year, self.event_end_date.month),
-        }
-        if (self.logistics_year, self.logistics_month) not in valid_logi_periods:
-            self.logistics_year = self.event_end_date.year
-            self.logistics_month = self.event_end_date.month
-
         if not self.name:
             self.name = str(self)
         super().save(*args, **kwargs)
@@ -190,6 +168,15 @@ class Event(RulesModel):
         return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
+    def engine_model(self) -> campaign.Event:
+        return campaign.Event(
+            chapter=self.chapter.slug,
+            date=self.event_end_date.date(),
+            xp_value=int(self.logistics_periods * _XP_PER_HALFDAY),
+            cp_value=1 if self.logistics_periods else 0,
+        )
+
+    @property
     def is_canceled(self):
         return bool(self.canceled_date)
 
@@ -201,6 +188,52 @@ class Event(RulesModel):
         if self.cabin_allowed:
             choices.append((Lodging.CABIN.value, Lodging.CABIN.label))
         return choices
+
+    def can_complete(self) -> tuple[bool, str]:
+        """Determine if the event can currently be marked 'complete'.
+
+        Returns: (completable: bool, reason: str)
+        completable: If true, it's safe to perform the completion task.
+        reason: Otherwise, the reason for the failure is given here.
+        """
+        if self.completed:
+            return False, "Already marked complete."
+
+        # Depending on the logistics team, someone might want to mark attendance during the game,
+        # possibly even as soon as during checkin. But, under no circumstances should a game be
+        # marked complete before it has even started.
+        if self.event_start_date > timezone.now():
+            return False, "Event hasn't even started yet."
+
+        if self.is_canceled:
+            return False, "A canceled event can't be marked complete."
+
+        return True, "Event can be completed."
+
+    @transaction.atomic
+    def mark_complete(self):
+        """Updates the campaign's progress, then marks the event as complete.
+
+        This is an atomic operation. The model will be saved with complete=True
+        if this succeeds, which will have occurred unless an exception is raised.
+        """
+        can, reason = self.can_complete()
+        if not can:
+            raise ValueError(reason)
+
+        campaign = self.campaign
+        campaign_model = campaign.engine_model
+        event_model = self.engine_model
+        previous_date = campaign_model.last_event_date
+        if previous_date > event_model.date:
+            raise ValueError(
+                "Event could not be integrated into the campaign model. "
+                f"It occurred prior to the last event ({previous_date})."
+            )
+        campaign.engine_model = campaign_model.add_events([event_model])
+        self.completed = True
+        campaign.save()
+        self.save()
 
     def get_registration(self, user: User) -> EventRegistration | None:
         """Returns the event registration corresponding to this user, if it exists.
@@ -240,8 +273,8 @@ class Event(RulesModel):
 
         indexes = [
             models.Index(
-                fields=["campaign", "chapter", "logistics_year", "logistics_month"],
-                name="game-campaign-year-month-idx",
+                fields=["campaign", "chapter"],
+                name="game-campaign-idx",
             ),
         ]
 

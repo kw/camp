@@ -168,7 +168,7 @@ class Event(RulesModel):
         return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
-    def engine_model(self) -> campaign.Event:
+    def record(self) -> campaign.Event:
         return campaign.Event(
             chapter=self.chapter.slug,
             date=self.event_end_date.date(),
@@ -208,6 +208,13 @@ class Event(RulesModel):
         if self.is_canceled:
             return False, "A canceled event can't be marked complete."
 
+        previous_date = self.campaign.record.last_event_date
+        if previous_date > self.record.date:
+            return False, (
+                "Event could not be integrated into the campaign model. "
+                f"It occurred prior to the last event ({previous_date})."
+            )
+
         return True, "Event can be completed."
 
     @transaction.atomic
@@ -222,15 +229,15 @@ class Event(RulesModel):
             raise ValueError(reason)
 
         campaign = self.campaign
-        campaign_model = campaign.engine_model
-        event_model = self.engine_model
+        campaign_model = campaign.record
+        event_model = self.record
         previous_date = campaign_model.last_event_date
         if previous_date > event_model.date:
             raise ValueError(
                 "Event could not be integrated into the campaign model. "
                 f"It occurred prior to the last event ({previous_date})."
             )
-        campaign.engine_model = campaign_model.add_events([event_model])
+        campaign.record = campaign_model.add_events([event_model])
         self.completed = True
         campaign.save()
         self.save()

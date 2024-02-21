@@ -552,7 +552,7 @@ class Campaign(RulesModel):
     engine_data: dict[str, Any] = models.JSONField(null=True, blank=True, default=None)
 
     @property
-    def engine_model(self) -> campaign.Campaign:
+    def record(self) -> campaign.Campaign:
         if self.engine_data:
             model = campaign.CampaignAdapter.validate_python(self.engine_data)
             if model.name != self.name or model.start_year != self.start_year:
@@ -565,8 +565,8 @@ class Campaign(RulesModel):
             start_year=self.start_year,
         )
 
-    @engine_model.setter
-    def engine_model(self, model: campaign.Campaign):
+    @record.setter
+    def record(self, model: campaign.Campaign):
         self.engine_data = model.model_dump(mode="json")
 
     def __str__(self) -> str:

@@ -11,7 +11,7 @@
 <p><i>This event is currently in progress</i></p>
 {% endif %}
 <ul>
-  <li><b>Campaign:</b> {{event.campaign}} ({{event.logistics_year}}-{{event.logistics_month}})</li>
+  <li><b>Campaign:</b> {{event.campaign}}</li>
   <li><b>Chapter:</b> {{event.chapter}}</li>
   <li><b>Event Type:</b> {{event.get_type_display}}</li>
   <li><b>Event Start:</b> {{event.event_start_date|chapterzone:event.chapter }}</li>
@@ -34,7 +34,7 @@
 {% if event.description %}
 {{ event.description | markdown }}
 {% else %}
-<p>{{event.campaign}} {{event.chapter}} event for {{event.logistics_year}}-{{event.logistics_month}}.</p>
+<p>{{event.campaign}} {{event.chapter}} event for {{event.event_end_date.logistics_month_label}}.</p>
 {% endif %}
 
 {% if registration %}
@@ -74,11 +74,10 @@
 {% has_perm 'game.change_event' user event as can_change_event %}
 
 {% if can_change_event %}
-<h2>Logistics Tools</h2>
-<ul>
-  <li><a href="{% url 'event-update' event.pk %}">Edit Event</a></li>
-  <li><a href="{% url 'registration-list' event.pk %}">View Registrations</a></li>
-</ul>
+{% if not event.completed %}
+<a role="button" class="btn btn-secondary" href="{% url 'event-update' event.pk %}">Edit Event</a>
+{% endif %}
+<a role="button" class="btn btn-secondary" href="{% url 'registration-list' event.pk %}">Logistics View</a>
 {% endif %}
 
 {% endblock content %}

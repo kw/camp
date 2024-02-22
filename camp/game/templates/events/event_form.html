@@ -12,7 +12,10 @@ Create Event
 {% block content %}
 {# Prior to the actual form, add a form button that will cancel (or re-open) the event. #}
 {% if event %}
-    {% if event.canceled_date %}
+    {% if event.completed %}
+    <h3>Event Complete!</h3>
+    <p>Ask an admin if changes need to be made to past events.</p>
+    {% elif event.canceled_date %}
     <form method="post" action="{% url 'event-uncancel' event.pk %}"
         onSubmit="return confirm('Really re-open this event?');">
         {%csrf_token%}

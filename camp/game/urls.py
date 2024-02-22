@@ -112,6 +112,11 @@ urlpatterns = [
         event_views.view_registration,
         name="registration-view",
     ),
+    path(
+        "events/<int:pk>/complete/",
+        event_views.mark_event_complete,
+        name="event-complete",
+    ),
     # Event reports
     path(
         "events/<int:pk>/reports/<str:report_type>/",

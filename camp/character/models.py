@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TypeAlias
 from typing import cast
 
 from django.conf import settings as _settings
@@ -20,18 +20,18 @@ from camp.engine.rules.base_models import Mutation
 from camp.engine.rules.base_models import load_mutation
 from camp.game.models import game_models
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
 
 
 class Character(RulesModel):
-    name: str = models.CharField(max_length=255, help_text="Name of the character.")
-    game: camp.game.models.Game = models.ForeignKey(
+    name = models.CharField(max_length=255, help_text="Name of the character.")
+    game = models.ForeignKey(
         camp.game.models.Game,
         on_delete=models.CASCADE,
         related_name="characters",
         help_text="The game this character belongs to.",
     )
-    campaign: camp.game.models.Campaign = models.ForeignKey(
+    campaign = models.ForeignKey(
         camp.game.models.Campaign,
         blank=True,
         null=True,
@@ -39,13 +39,13 @@ class Character(RulesModel):
         related_name="characters",
         help_text="The campaign this character belongs to.",
     )
-    player_name: str = models.CharField(
+    player_name = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         help_text="Name of the player, if different from the owner. Typically used when managing characters for family members.",
     )
-    owner: User = models.ForeignKey(
+    owner = models.ForeignKey(
         _settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="characters",
@@ -105,7 +105,7 @@ class Character(RulesModel):
 
 
 class Sheet(RulesModel):
-    character: Character = models.ForeignKey(
+    character = models.ForeignKey(
         Character,
         on_delete=models.CASCADE,
         related_name="sheets",
@@ -121,7 +121,7 @@ class Sheet(RulesModel):
         default=False,
         help_text="Whether this sheet is the primary sheet for the character.",
     )
-    label: str = models.CharField(
+    label = models.CharField(
         max_length=255,
         blank=True,
         null=True,
@@ -131,7 +131,7 @@ class Sheet(RulesModel):
             "use in other chapters, test sheets, etc."
         ),
     )
-    data: dict[str, Any] = models.JSONField(
+    data = models.JSONField(
         default=dict,
         help_text="The data for this sheet, in the format expected by the ruleset.",
     )

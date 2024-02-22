@@ -138,9 +138,7 @@ class Event(RulesModel):
         if self.name:
             effective_name = self.name
         else:
-            effective_name = (
-                f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
-            )
+            effective_name = f"{self.chapter} {self.logistics_month_label}"
         if self.is_canceled:
             effective_name = f"{effective_name} [CANCELED]"
         return effective_name
@@ -168,6 +166,10 @@ class Event(RulesModel):
         return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
+    def logistics_month_label(self) -> str:
+        return self.event_end_date.strftime("%b %Y")
+
+    @property
     def record(self) -> campaign.Event:
         return campaign.Event(
             chapter=self.chapter.slug,
@@ -179,6 +181,13 @@ class Event(RulesModel):
     @property
     def is_canceled(self):
         return bool(self.canceled_date)
+
+    @property
+    def is_old(self):
+        """An event is _old_ if it is both complete/canceled and in the past."""
+        return self.event_end_date < timezone.now() and (
+            self.completed or self.is_canceled
+        )
 
     @property
     def lodging_choices(self):
@@ -359,10 +368,6 @@ class EventRegistration(RulesModel):
     @property
     def is_canceled(self):
         return bool(self.canceled_date)
-
-    @property
-    def logistics_window(self) -> tuple[int, int]:
-        return self.event.logistics_year, self.event.logistics_month
 
     @property
     def profile(self) -> account_models.Membership:

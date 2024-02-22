@@ -106,6 +106,10 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
     last_event_date: datetime.date = datetime.date(1, 1, 1)
 
     @property
+    def season(self) -> int:
+        return self.last_event_date.year - self.start_year + 1
+
+    @property
     def start_values(self) -> CampaignValues:
         return CampaignValues(
             date=datetime.date(self.start_year, 1, 1),

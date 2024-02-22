@@ -1,4 +1,4 @@
-<div>
+<div class="btn-group" role="group">
   {% if report.download_ready %}
   <a class="btn btn-success" role="button"
     href="{% url 'download-event-report' report.event_id 'registration_list' %}"
@@ -9,7 +9,7 @@
     hx-post="{% url 'trigger-event-report' report.event_id 'registration_list' %}"
     hx-target="closest div"
     >
-    <i class="bi bi-arrow-repeat"></i> Regenerate
+    <i class="bi bi-arrow-repeat"></i>
   </button>
   {% elif report.result.failed %}
   <button class="btn btn-danger" disabled>

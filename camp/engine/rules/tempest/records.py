@@ -16,6 +16,7 @@ https://docs.google.com/document/d/1qva8lxQqHIJZ-vl4OWU7cu_9i2uaUc_1AGjQPgHGzNA/
 from __future__ import annotations
 
 import datetime
+from enum import Enum
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -29,6 +30,17 @@ from .campaign import Campaign
 from .campaign import CampaignValues
 
 
+class AwardCategory(str, Enum):
+    UNKNOWN = "unknown"  # Not specified.
+    EVENT = "event"  # This is normal event credit.
+    NPC_SHIFT = "npc-shift"  # Awards for NPC shifts, on top of normal event awards.
+    DONATION = "donation"  # Awards related to fundraisers, prop donation, etc.
+    STAFF_ROLE = "staff-role"  # Awards related to beng a member of staff.
+    POINT_PURCHASE = (
+        "point-purchase"  # Awards purchased using Service Points or equivalent.
+    )
+
+
 class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     """Represents awards, normally from events.
 
@@ -37,7 +49,16 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     Attributes:
       date: The date this award is associated with. Not necessarily the date someone
         literally pushed a button to award it.
-      origin: Descriptive debugging text noting where/who the award came from.
+      source_id: An identifier indicating an object in an external data model associated
+        with this award. The specific type of source may depend on the category (below).
+        This may be used in cases where, for example, the award for a specific event needs
+        to be revised, which first requires removing the previous award data.
+      category: The type of inciting incident associated with this award. For example, the standard
+        XP/CP awards for an event (whether you PC or NPC it) have the EVENT category, with
+        the event's ID as the source_id. If you also took an NPC Shift and received some reward
+        because of it, that would have the NPC_SHIFT category, and the source_id would also be
+        the same event.
+      description: Descriptive text noting where/who the award came from for display purposes.
       character: If the award relates to a character, an identifier should appear here.
       event_xp: The amount of an event's XP award to assign. The player may gain more or less
         or none of this XP than this due to being ahead of or behind the Campaign Max XP at
@@ -58,13 +79,14 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     """
 
     date: datetime.date
-    origin: str | None = None
+    source_id: int | str | None = None
+    category: AwardCategory = AwardCategory.UNKNOWN
+    description: str | None = None
     character: int | str | None = None
     event_xp: int = 0
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool | None = None
-    # TODO: Handle the rest of this stuff later
     player_flags: dict[str, FlagValues | None] | None = None
     character_flags: dict[str, FlagValues | None] | None = None
     character_grants: list[str] | None = None
@@ -103,6 +125,11 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
       event_cp: Amount of Event CP earned by this character (or received as floor CP)
       bonus_cp: Amount of Bonus CP assigned to this character.
       backstory_approved: Flags that this character should receive +2 CP due to an approved backstory.
+      flags: Dictionary of flag values awarded to this character in particular. These may override player-level flags.
+        Examples include advanced class unlock flags, role flags, etc.
+      grants: A list of straight-up bonus grants in the same format used by the character sheet engine.
+        For example, to grant a character 3 bonus life points from a deal with The Dark, enter "lp:3".
+        While it's technically possible to grant bonus CP this way, don't. That's what bonus_cp is for.
     """
 
     id: int | str | None = None
@@ -129,6 +156,9 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
       characters: The set of all character records associated with this player.
       last_campaign_date: The date of the most recent campaign event at
         the time this player record was last updated.
+      flags: Dictionary of flag values assigned to this player. This will be
+        propagated to all of the player's characters, which may be appropriate
+        for a GoFundMe custom role, culture, or religion unlock or similar.
     """
 
     user: int | str | None = None

@@ -38,7 +38,7 @@ AWARDS_SINGLE_ALL = [
     AwardRecord(
         character="Bob",
         date=event.date,
-        origin=event.chapter,
+        description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
     )
@@ -50,7 +50,7 @@ AWARDS_ONLY_ARC = [
     AwardRecord(
         character="Bob",
         date=event.date,
-        origin=event.chapter,
+        description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
     )
@@ -63,7 +63,7 @@ AWARDS_ONLY_GRM = [
     AwardRecord(
         character="Bob",
         date=event.date,
-        origin=event.chapter,
+        description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
     )
@@ -76,7 +76,9 @@ AWARDS_HALF_ARC = [award for (i, award) in enumerate(AWARDS_ONLY_ARC) if i % 2 =
 
 # Award schedule where the player went to all events, but played a different character in each chapter.
 AWARDS_SPLIT_CHARACTER = [
-    award.model_copy(update={"character": "Adam" if award.origin == ARC else "Greg"})
+    award.model_copy(
+        update={"character": "Adam" if award.description == ARC else "Greg"}
+    )
     for award in AWARDS_SINGLE_ALL
 ]
 
@@ -204,7 +206,7 @@ def test_incremental_updates_all_events():
     for event in EVENT_HISTORY:
         new_award = AwardRecord(
             date=event.date,
-            origin=event.chapter,
+            description=event.chapter,
             character="Bob",
             event_xp=event.xp_value,
             event_cp=event.cp_value,
@@ -233,7 +235,7 @@ def test_incremental_updates_daygaming():
         if event.chapter == ARC:
             new_award = AwardRecord(
                 date=event.date,
-                origin=event.chapter,
+                description=event.chapter,
                 character="Bob",
                 event_xp=4,
                 event_cp=event.cp_value,

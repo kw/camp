@@ -18,6 +18,8 @@ from rules.contrib.models import RulesModel
 
 import camp.accounts.models as account_models
 from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import AwardCategory
+from camp.engine.rules.tempest.records import AwardRecord
 
 from . import game_models
 
@@ -357,13 +359,36 @@ class EventRegistration(RulesModel):
     canceled_date = models.DateTimeField(null=True, blank=True)
 
     # Fields for post-game record keeping.
-    attended: bool = models.BooleanField(default=False)
+    attended = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+    award_applied = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Timestamp when this award was applied to the character record, if it was applied.",
+    )
 
     # Fields for logi to fill in regarding payment.
     # Later, a payment system might handle this.
     payment_complete: bool = models.BooleanField(default=False)
     payment_note: str = models.TextField(blank=True, default="")
+
+    def award_record(self) -> AwardRecord:
+        event = self.event
+        match self.attendance:
+            case Attendance.FULL:
+                xp = _XP_PER_HALFDAY * event.logistics_periods
+            case Attendance.DAY:
+                xp = _XP_PER_HALFDAY * 2
+
+        return AwardRecord(
+            date=event.event_end_date.date(),
+            source_id=event.pk,
+            category=AwardCategory.EVENT,
+            description=f"{self.pc_npc} Event Credit for {event}",
+            event_xp=int(xp),
+            event_cp=1 if xp > 0 else 0,
+        )
 
     @property
     def is_canceled(self):

@@ -20,13 +20,14 @@ from enum import Enum
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import TypeAdapter
 from pydantic import ValidationInfo
 from pydantic import field_validator
 from pydantic import model_validator
 
 from ..base_models import CharacterMetadata
 from ..base_models import FlagValues
-from .campaign import Campaign
+from .campaign import CampaignRecord
 from .campaign import CampaignValues
 
 
@@ -82,7 +83,7 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     source_id: int | str | None = None
     category: AwardCategory = AwardCategory.UNKNOWN
     description: str | None = None
-    character: int | str | None = None
+    character: int | None = None
     event_xp: int = 0
     event_cp: int = 0
     bonus_cp: int = 0
@@ -132,7 +133,7 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
         While it's technically possible to grant bonus CP this way, don't. That's what bonus_cp is for.
     """
 
-    id: int | str | None = None
+    id: int | None = None
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool = False
@@ -161,15 +162,15 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
         for a GoFundMe custom role, culture, or religion unlock or similar.
     """
 
-    user: int | str | None = None
+    user: int | None = None
     xp: int = 0
     awards: list[AwardRecord] = Field(default_factory=list)
-    characters: dict[str | int, CharacterRecord] = Field(default_factory=dict)
+    characters: dict[int, CharacterRecord] = Field(default_factory=dict)
     last_campaign_date: datetime.date | None = None
     flags: dict[str, FlagValues] = Field(default_factory=dict)
 
     def update(
-        self, campaign: Campaign, new_awards: list[AwardRecord] | None = None
+        self, campaign: CampaignRecord, new_awards: list[AwardRecord] | None = None
     ) -> PlayerRecord:
         """Process new awards and any campaign-level changes to update player/character records.
 
@@ -380,10 +381,10 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
 
 
 def _constrain(
-    values: Campaign | CampaignValues,
+    values: CampaignRecord | CampaignValues,
     xp: int,
-    event_cp: dict[int | str, int],
-    bonus_cp: dict[int | str, int],
+    event_cp: dict[int, int],
+    bonus_cp: dict[int, int],
 ) -> int:
     """Constrains the given values based on the given campaign values.
 
@@ -394,3 +395,6 @@ def _constrain(
         event_cp[id] = min(max(event_cp.get(id, 0), values.floor_cp), values.max_cp)
         bonus_cp[id] = min(bonus_cp.get(id, 0), values.max_bonus_cp)
     return xp
+
+
+PlayerRecordAdapter = TypeAdapter(PlayerRecord)

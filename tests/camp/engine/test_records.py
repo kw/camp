@@ -7,8 +7,8 @@ from datetime import date
 
 import pytest
 
-from camp.engine.rules.tempest.campaign import Campaign
-from camp.engine.rules.tempest.campaign import Event
+from camp.engine.rules.tempest.campaign import CampaignRecord
+from camp.engine.rules.tempest.campaign import EventRecord
 from camp.engine.rules.tempest.records import AwardRecord
 from camp.engine.rules.tempest.records import PlayerRecord
 
@@ -18,25 +18,27 @@ ARC = "arcanorum"
 
 # This reflects the Season 1 event schedule.
 EVENT_HISTORY = [
-    Event(chapter=ARC, date=date(2023, 3, 19)),
-    Event(chapter=ARC, date=date(2023, 4, 16)),
-    Event(chapter=GRM, date=date(2023, 4, 30)),
-    Event(chapter=ARC, date=date(2023, 5, 14)),
-    Event(chapter=ARC, date=date(2023, 6, 18)),
-    Event(chapter=ARC, date=date(2023, 7, 16)),
-    Event(chapter=ARC, date=date(2023, 8, 13)),
-    Event(chapter=GRM, date=date(2023, 8, 27)),
-    Event(chapter=ARC, date=date(2023, 9, 3)),
-    Event(chapter=GRM, date=date(2023, 9, 24)),
-    Event(chapter=ARC, date=date(2023, 10, 2), xp_value=12),
-    Event(chapter=GRM, date=date(2023, 10, 29)),
+    EventRecord(chapter=ARC, date=date(2023, 3, 19)),
+    EventRecord(chapter=ARC, date=date(2023, 4, 16)),
+    EventRecord(chapter=GRM, date=date(2023, 4, 30)),
+    EventRecord(chapter=ARC, date=date(2023, 5, 14)),
+    EventRecord(chapter=ARC, date=date(2023, 6, 18)),
+    EventRecord(chapter=ARC, date=date(2023, 7, 16)),
+    EventRecord(chapter=ARC, date=date(2023, 8, 13)),
+    EventRecord(chapter=GRM, date=date(2023, 8, 27)),
+    EventRecord(chapter=ARC, date=date(2023, 9, 3)),
+    EventRecord(chapter=GRM, date=date(2023, 9, 24)),
+    EventRecord(chapter=ARC, date=date(2023, 10, 2), xp_value=12),
+    EventRecord(chapter=GRM, date=date(2023, 10, 29)),
 ]
-CAMPAIGN = Campaign(name="Tempest Test", start_year=2023).add_events(EVENT_HISTORY)
+CAMPAIGN = CampaignRecord(name="Tempest Test", start_year=2023).add_events(
+    EVENT_HISTORY
+)
 
 # An award schedule where a single character goes to all events
 AWARDS_SINGLE_ALL = [
     AwardRecord(
-        character="Bob",
+        character=0,
         date=event.date,
         description=event.chapter,
         event_xp=event.xp_value,
@@ -48,7 +50,7 @@ AWARDS_SINGLE_ALL = [
 # Award schedule where the player went to all Arcanorum events with one character.
 AWARDS_ONLY_ARC = [
     AwardRecord(
-        character="Bob",
+        character=0,
         date=event.date,
         description=event.chapter,
         event_xp=event.xp_value,
@@ -61,7 +63,7 @@ AWARDS_ONLY_ARC = [
 # Award schedule where the player went to all Grimoire events with one character.
 AWARDS_ONLY_GRM = [
     AwardRecord(
-        character="Bob",
+        character=0,
         date=event.date,
         description=event.chapter,
         event_xp=event.xp_value,
@@ -76,9 +78,7 @@ AWARDS_HALF_ARC = [award for (i, award) in enumerate(AWARDS_ONLY_ARC) if i % 2 =
 
 # Award schedule where the player went to all events, but played a different character in each chapter.
 AWARDS_SPLIT_CHARACTER = [
-    award.model_copy(
-        update={"character": "Adam" if award.description == ARC else "Greg"}
-    )
+    award.model_copy(update={"character": 1 if award.description == ARC else 2})
     for award in AWARDS_SINGLE_ALL
 ]
 
@@ -89,7 +89,7 @@ AWARDS_DAYGAMER = [
 
 
 PLAYER = PlayerRecord(
-    user="Test Player",
+    user=1337,
 )
 
 
@@ -108,12 +108,12 @@ def test_awards_single_all():
     assert updated.xp == CAMPAIGN.max_xp == 68
 
     # The character actually played gets all the CP.
-    bob = updated.characters["Bob"]
-    assert bob.event_cp == CAMPAIGN.max_cp
+    char = updated.characters[0]
+    assert char.event_cp == CAMPAIGN.max_cp
 
     # The character attended 4 events over the CP cap (8), so they
     # should have saturated their Bonus CP allowance.
-    assert bob.bonus_cp == CAMPAIGN.max_bonus_cp
+    assert char.bonus_cp == CAMPAIGN.max_bonus_cp
 
     # No other character records present.
     assert len(updated.characters) == 1
@@ -125,7 +125,7 @@ def test_awards_arc_only():
     assert updated.xp == CAMPAIGN.max_xp
 
     # The character actually played gets all the CP.
-    bob = updated.characters["Bob"]
+    bob = updated.characters[0]
     assert bob.event_cp == CAMPAIGN.max_cp
 
     # The character attended no events over the CP cap (8), so they
@@ -145,7 +145,7 @@ def test_awards_grm_only():
 
     # The character only went to four games, so they have 4 Event CP.
     # This happens to also be the CP floor.
-    bob = updated.characters["Bob"]
+    bob = updated.characters[0]
     assert bob.event_cp == 6
     assert bob.bonus_cp == 0
 
@@ -169,14 +169,14 @@ def test_awards_split():
     # All games attended = Max XP
     assert updated.xp == CAMPAIGN.max_xp
 
-    adam = updated.characters["Adam"]  # Went to 8 Arc games
-    greg = updated.characters["Greg"]  # Went to 4 Grim games
+    char1 = updated.characters[1]  # Went to 8 Arc games
+    char2 = updated.characters[2]  # Went to 4 Grim games
 
-    assert adam.event_cp == 8
-    assert adam.bonus_cp == 0
+    assert char1.event_cp == 8
+    assert char1.bonus_cp == 0
 
-    assert greg.event_cp == 6
-    assert adam.bonus_cp == 0
+    assert char2.event_cp == 6
+    assert char2.bonus_cp == 0
 
     # No other character records present.
     assert len(updated.characters) == 2
@@ -190,7 +190,7 @@ def test_awards_daygamer():
     assert updated.xp == 60
 
     # But Bob went to all the Arc events, so he gets all the CP
-    bob = updated.characters["Bob"]
+    bob = updated.characters[0]
     assert bob.event_cp == CAMPAIGN.max_cp
     assert bob.bonus_cp == 0  # But not Bonus CP.
 
@@ -200,14 +200,14 @@ def test_awards_daygamer():
 
 def test_incremental_updates_all_events():
     """Play out a season incrementally."""
-    campaign = Campaign(name="Tempest Test", start_year=2023)
+    campaign = CampaignRecord(name="Tempest Test", start_year=2023)
     awards = []
     player = PLAYER
     for event in EVENT_HISTORY:
         new_award = AwardRecord(
             date=event.date,
             description=event.chapter,
-            character="Bob",
+            character=0,
             event_xp=event.xp_value,
             event_cp=event.cp_value,
         )
@@ -218,8 +218,8 @@ def test_incremental_updates_all_events():
     all_at_once_player = PLAYER.update(campaign, awards)
 
     assert player.xp == campaign.max_xp == 68
-    assert player.characters["Bob"].event_cp == 8
-    assert player.characters["Bob"].bonus_cp == 3
+    assert player.characters[0].event_cp == 8
+    assert player.characters[0].bonus_cp == 3
 
     assert campaign == CAMPAIGN
     assert player == all_at_once_player
@@ -227,7 +227,7 @@ def test_incremental_updates_all_events():
 
 def test_incremental_updates_daygaming():
     """Play out a season incrementally, but only daygame Arcanorum."""
-    campaign = Campaign(name="Tempest Test", start_year=2023)
+    campaign = CampaignRecord(name="Tempest Test", start_year=2023)
     awards = []
     player = PLAYER
     for event in EVENT_HISTORY:
@@ -236,7 +236,7 @@ def test_incremental_updates_daygaming():
             new_award = AwardRecord(
                 date=event.date,
                 description=event.chapter,
-                character="Bob",
+                character=0,
                 event_xp=4,
                 event_cp=event.cp_value,
             )
@@ -290,26 +290,26 @@ def test_backstory_approval():
         [
             AwardRecord(
                 date=date(2023, 3, 3),
-                character="Fred",
+                character=0,
                 backstory_approved=True,
             )
         ],
     )
 
-    assert approved_player.characters["Fred"].backstory_approved
+    assert approved_player.characters[0].backstory_approved
 
     revoked_player = approved_player.update(
         CAMPAIGN,
         [
             AwardRecord(
                 date=date(2023, 3, 4),
-                character="Fred",
+                character=0,
                 backstory_approved=False,
             )
         ],
     )
 
-    assert not revoked_player.characters["Fred"].backstory_approved
+    assert not revoked_player.characters[0].backstory_approved
 
 
 def test_player_flags():
@@ -371,7 +371,7 @@ def test_character_flags():
         [
             AwardRecord(
                 date=date(2024, 1, 1),
-                character="Eve",
+                character=3,
                 character_flags={
                     "FOO": "bar",
                     "BAZ": 42,
@@ -381,7 +381,7 @@ def test_character_flags():
         ],
     )
 
-    assert player.characters["Eve"].flags == {
+    assert player.characters[3].flags == {
         "FOO": "bar",
         "BAZ": 42,
         "things": ["stuff", 3, "10"],
@@ -393,7 +393,7 @@ def test_character_flags():
         [
             AwardRecord(
                 date=date(2024, 1, 2),
-                character="Eve",
+                character=3,
                 character_flags={
                     "FOO": None,
                     "BAZ": "forty two",
@@ -402,7 +402,7 @@ def test_character_flags():
         ],
     )
 
-    assert player.characters["Eve"].flags == {
+    assert player.characters[3].flags == {
         "BAZ": "forty two",
         "things": ["stuff", 3, "10"],
     }
@@ -415,26 +415,26 @@ def test_character_grants():
         [
             AwardRecord(
                 date=date(2024, 1, 1),
-                character="Eve",
+                character=3,
                 character_grants=["divine_favor:3", "spoons"],
             )
         ],
     )
 
-    assert player.characters["Eve"].grants == ["divine_favor:3", "spoons"]
+    assert player.characters[3].grants == ["divine_favor:3", "spoons"]
 
     player = player.update(
         CAMPAIGN,
         [
             AwardRecord(
                 date=date(2024, 1, 2),
-                character="Eve",
+                character=3,
                 character_grants=["fighter:1", "lore#Soup"],
             )
         ],
     )
 
-    assert player.characters["Eve"].grants == [
+    assert player.characters[3].grants == [
         "divine_favor:3",
         "spoons",
         "fighter:1",
@@ -447,13 +447,13 @@ def test_character_grants():
         [
             AwardRecord(
                 date=date(2023, 12, 25),
-                character="Eve",
+                character=3,
                 character_grants=["patron"],
             )
         ],
     )
 
-    assert player.characters["Eve"].grants == [
+    assert player.characters[3].grants == [
         "patron",
         "divine_favor:3",
         "spoons",

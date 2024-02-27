@@ -18,6 +18,8 @@ import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import PlayerRecord
+from camp.engine.rules.tempest.records import PlayerRecordAdapter
 
 User: TypeAlias = get_user_model()  # type: ignore
 
@@ -552,7 +554,7 @@ class Campaign(RulesModel):
     engine_data: dict[str, Any] = models.JSONField(null=True, blank=True, default=None)
 
     @property
-    def record(self) -> campaign.Campaign:
+    def record(self) -> campaign.CampaignRecord:
         if self.engine_data:
             model = campaign.CampaignAdapter.validate_python(self.engine_data)
             if model.name != self.name or model.start_year != self.start_year:
@@ -560,13 +562,13 @@ class Campaign(RulesModel):
                     update={"name": self.name, "start_year": self.start_year},
                 )
             return model
-        return campaign.Campaign(
+        return campaign.CampaignRecord(
             name=self.name,
             start_year=self.start_year,
         )
 
     @record.setter
-    def record(self, model: campaign.Campaign):
+    def record(self, model: campaign.CampaignRecord):
         self.engine_data = model.model_dump(mode="json")
 
     def __str__(self) -> str:
@@ -667,3 +669,36 @@ class ChapterRole(RulesModel):
             "view": can_manage_chapter | can_manage_game,
             "delete": can_manage_chapter,
         }
+
+
+class PlayerCampaignData(RulesModel):
+    user = models.ForeignKey(
+        _settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="player_data",
+    )
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name="player_data",
+    )
+    data = models.JSONField(default=None, null=True, blank=True)
+
+    @property
+    def record(self) -> PlayerRecord:
+        if self.data is None:
+            return PlayerRecord(
+                user=self.user_id,
+            )
+        return PlayerRecordAdapter.validate_python(self.data)
+
+    @record.setter
+    def record(self, value: PlayerRecord):
+        self.data = value.model_dump(mode="json")
+
+    def __str__(self):
+        return f"PlayerData({self.user}, {self.campaign})"
+
+    class Meta:
+        unique_together = [["user", "campaign"]]

@@ -1,14 +1,23 @@
 from datetime import UTC
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 
 import pytest
 import time_machine
 
+from camp.accounts.models import User
+from camp.character.models import Character
+from camp.engine.rules.tempest.records import AwardCategory
+from camp.engine.rules.tempest.records import AwardRecord
+from camp.engine.rules.tempest.records import CharacterRecord
 from camp.game.models import Campaign
 from camp.game.models import Chapter
 from camp.game.models import Event
 from camp.game.models import Game
+from camp.game.models.event_models import EventRegistration
+from camp.game.models.event_models import Lodging
+from camp.game.models.game_models import PlayerCampaignData
 
 
 @pytest.fixture
@@ -165,3 +174,140 @@ def test_mark_events_out_of_order(campaign, event, event2):
     campaign_record = campaign.record
     assert len(campaign_record.recent_events) == 1
     assert campaign_record.max_xp == 8
+
+
+@pytest.mark.django_db
+def test_apply_award(campaign, game, event):
+    """A player registered for an event that completes; marking their attendance works."""
+    user = User.objects.create(username="testuser")
+    logi = User.objects.create(username="logistics")
+
+    character = Character.objects.create(
+        name="Bob",
+        game=game,
+        campaign=campaign,
+        owner=user,
+    )
+    registration = EventRegistration.objects.create(
+        event=event,
+        user=user,
+        character=character,
+        lodging=Lodging.NONE,
+    )
+
+    apply_time = event.event_end_date + timedelta(hours=1)
+
+    with time_machine.travel(apply_time, tick=False):
+        event.mark_complete()
+        registration.apply_award(applied_by=logi)
+
+    player_data = PlayerCampaignData.objects.get(user=user, campaign=campaign)
+    record = player_data.record
+
+    assert registration.award_applied_by == logi
+    assert registration.award_applied_date == apply_time
+    assert registration.attended
+
+    assert record.user == user.id
+    assert record.last_campaign_date == event.event_end_date.date()
+    assert record.xp == 8
+    assert record.awards == [
+        AwardRecord(
+            date=event.event_end_date.date(),
+            source_id=event.id,
+            category=AwardCategory.EVENT,
+            description="PC Event Credit for Test Event 1",
+            character=character.id,
+            event_xp=8,
+            event_cp=1,
+        )
+    ]
+    assert record.characters == {
+        character.id: CharacterRecord(
+            id=character.id,
+            event_cp=1,
+        )
+    }
+
+
+@pytest.mark.django_db
+def test_apply_award_not_complete(campaign, game, event):
+    """Marking attendance won't work until the event is marked complete."""
+    user = User.objects.create(username="testuser")
+    logi = User.objects.create(username="logistics")
+
+    character = Character.objects.create(
+        name="Bob",
+        game=game,
+        campaign=campaign,
+        owner=user,
+    )
+    registration = EventRegistration.objects.create(
+        event=event,
+        user=user,
+        character=character,
+        lodging=Lodging.NONE,
+    )
+
+    apply_time = event.event_end_date + timedelta(hours=1)
+
+    with time_machine.travel(apply_time, tick=False):
+        # Event NOT marked complete
+        with pytest.raises(ValueError):
+            registration.apply_award(applied_by=logi)
+
+
+@pytest.mark.django_db
+def test_apply_award_canceled_registration(campaign, game, event):
+    """Marking attendance for a canceled registration fails."""
+    user = User.objects.create(username="testuser")
+    logi = User.objects.create(username="logistics")
+
+    character = Character.objects.create(
+        name="Bob",
+        game=game,
+        campaign=campaign,
+        owner=user,
+    )
+    registration = EventRegistration.objects.create(
+        event=event,
+        user=user,
+        character=character,
+        lodging=Lodging.NONE,
+        canceled_date=event.event_start_date - timedelta(days=1),
+    )
+
+    apply_time = event.event_end_date + timedelta(hours=1)
+
+    with time_machine.travel(apply_time, tick=False):
+        event.mark_complete()
+        with pytest.raises(ValueError):
+            registration.apply_award(applied_by=logi)
+
+
+@pytest.mark.django_db
+def test_apply_award_twice(campaign, game, event):
+    """Marking attendance twice doesn't work."""
+    user = User.objects.create(username="testuser")
+    logi = User.objects.create(username="logistics")
+
+    character = Character.objects.create(
+        name="Bob",
+        game=game,
+        campaign=campaign,
+        owner=user,
+    )
+    registration = EventRegistration.objects.create(
+        event=event,
+        user=user,
+        character=character,
+        lodging=Lodging.NONE,
+    )
+
+    apply_time = event.event_end_date + timedelta(hours=1)
+
+    with time_machine.travel(apply_time, tick=False):
+        event.mark_complete()
+        registration.apply_award(applied_by=logi)  # Works the first time
+        with pytest.raises(ValueError):
+            registration.apply_award(applied_by=logi)

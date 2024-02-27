@@ -28,10 +28,10 @@ from pydantic import ValidationInfo
 from pydantic import field_validator
 
 # Used for sorting/searching through events and value entries
-DATE_KEY: Callable[[Event | CampaignValues], datetime.date] = lambda e: e.date
+DATE_KEY: Callable[[EventRecord | CampaignValues], datetime.date] = lambda e: e.date
 
 
-class Event(BaseModel, frozen=True, extra="forbid"):
+class EventRecord(BaseModel, frozen=True, extra="forbid"):
     """Representation of game event.
 
     The representation is pared down to only what is necessary in this module.
@@ -85,7 +85,7 @@ class CampaignValues(BaseModel, frozen=True, extra="forbid"):
         return self.max_cp // 2
 
 
-class Campaign(BaseModel, frozen=True, extra="forbid"):
+class CampaignRecord(BaseModel, frozen=True, extra="forbid"):
     """Represents the campaign as a whole over time.
 
     Attributes:
@@ -102,7 +102,7 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
     start_year: int
     bonus_cp_per_season: int = 3
     value_table: list[CampaignValues] = Field(default_factory=list)
-    recent_events: list[Event] = Field(default_factory=list)
+    recent_events: list[EventRecord] = Field(default_factory=list)
     last_event_date: datetime.date = datetime.date(1, 1, 1)
 
     @property
@@ -163,7 +163,7 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
         """The minimum amount of Event CP a character can have at this time."""
         return self.max_cp // 2
 
-    def add_events(self, new_events: list[Event]) -> Campaign:
+    def add_events(self, new_events: list[EventRecord]) -> CampaignRecord:
         """Integrates events into the value table."""
         if not new_events:
             return self
@@ -188,7 +188,7 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
         value_table = self.value_table.copy()
 
         # 1. Group all events by logistics month
-        months: dict[tuple[int, int], list[Event]] = defaultdict(list)
+        months: dict[tuple[int, int], list[EventRecord]] = defaultdict(list)
         for event in new_events:
             events = months[event.date.year, event.date.month]
             events.append(event)
@@ -268,8 +268,8 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
     @field_validator("value_table")
     @classmethod
     def validate_entries_sorted(
-        cls, v: list[Event], info: ValidationInfo
-    ) -> list[Event]:
+        cls, v: list[EventRecord], info: ValidationInfo
+    ) -> list[EventRecord]:
         """Enforce that the value table must be sorted by date, otherwise we can't search it."""
         if not v:
             return v
@@ -279,4 +279,4 @@ class Campaign(BaseModel, frozen=True, extra="forbid"):
         return v
 
 
-CampaignAdapter = TypeAdapter(Campaign)
+CampaignAdapter = TypeAdapter(CampaignRecord)

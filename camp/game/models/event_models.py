@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import logging
 import uuid
 from decimal import Decimal
 from typing import TypeAlias
@@ -27,7 +28,7 @@ User: TypeAlias = get_user_model()  # type: ignore
 
 
 # TODO: Make this a campaign setting
-_XP_PER_HALFDAY = 2
+_XP_PER_HALFDAY = Decimal(2)
 
 
 class Month(models.IntegerChoices):
@@ -172,8 +173,8 @@ class Event(RulesModel):
         return self.event_end_date.strftime("%b %Y")
 
     @property
-    def record(self) -> campaign.Event:
-        return campaign.Event(
+    def record(self) -> campaign.EventRecord:
+        return campaign.EventRecord(
             chapter=self.chapter.slug,
             date=self.event_end_date.date(),
             xp_value=int(self.logistics_periods * _XP_PER_HALFDAY),
@@ -361,11 +362,17 @@ class EventRegistration(RulesModel):
     # Fields for post-game record keeping.
     attended = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
-    award_applied = models.DateTimeField(
+    award_applied_date = models.DateTimeField(
         null=True,
         blank=True,
         default=None,
         help_text="Timestamp when this award was applied to the character record, if it was applied.",
+    )
+    award_applied_by = models.ForeignKey(
+        User,
+        null=True,
+        default=None,
+        on_delete=models.SET_NULL,
     )
 
     # Fields for logi to fill in regarding payment.
@@ -373,20 +380,33 @@ class EventRegistration(RulesModel):
     payment_complete: bool = models.BooleanField(default=False)
     payment_note: str = models.TextField(blank=True, default="")
 
-    def award_record(self) -> AwardRecord:
+    def award_record(
+        self, logistics_periods: int | Decimal | None = None
+    ) -> AwardRecord:
+        """Generates an award record suitable for this event registration.
+
+        Arguments:
+            logistics_periods: If specified (and positive), the number of logistics
+                periods (half-days, in Tempest) to base rewards on. If not specified,
+                this defaults to whatever the `attendance` field indicates.
+        """
+        # TODO: Once we're tracking SP, include a configurable default SP award for NPC registrations.
         event = self.event
-        match self.attendance:
-            case Attendance.FULL:
-                xp = _XP_PER_HALFDAY * event.logistics_periods
-            case Attendance.DAY:
-                xp = _XP_PER_HALFDAY * 2
+        if logistics_periods is None:
+            logistics_periods = self.default_logistics_periods
+        else:
+            logistics_periods = max(
+                min(event.logistics_periods, logistics_periods), Decimal(0)
+            )
+        xp = int(_XP_PER_HALFDAY * logistics_periods)
 
         return AwardRecord(
             date=event.event_end_date.date(),
             source_id=event.pk,
+            character=self.character_id,
             category=AwardCategory.EVENT,
             description=f"{self.pc_npc} Event Credit for {event}",
-            event_xp=int(xp),
+            event_xp=xp,
             event_cp=1 if xp > 0 else 0,
         )
 
@@ -412,6 +432,51 @@ class EventRegistration(RulesModel):
     @property
     def pc_npc(self) -> str:
         return "NPC" if self.is_npc else "PC"
+
+    @transaction.atomic
+    def apply_award(
+        self, applied_by: User, logistics_periods: int | Decimal | None = None
+    ) -> None:
+        if not self.event.completed:
+            raise ValueError(
+                f"Can't apply credit for event '{self.event}' until it is completed."
+            )
+        if self.canceled_date is not None:
+            raise ValueError("Registration was withdrawn")
+        if self.attended:
+            # TODO: Support revising a previously applied award.
+            raise ValueError("Already marked attendance for this player")
+        if logistics_periods is None:
+            logistics_periods = self.default_logistics_periods
+        self.attended = True
+        self.attended_periods = logistics_periods
+        self.award_applied_by = applied_by
+        self.award_applied_date = timezone.now()
+        campaign = self.event.campaign
+
+        award = self.award_record(logistics_periods=logistics_periods)
+
+        player_data, _ = game_models.PlayerCampaignData.objects.get_or_create(
+            user=self.user,
+            campaign=campaign,
+        )
+        player_record = player_data.record
+        player_data.record = player_record.update(campaign.record, [award])
+        player_data.save()
+
+    @property
+    def default_logistics_periods(self) -> Decimal:
+        match self.attendance:
+            case Attendance.FULL:
+                logistics_periods = self.event.logistics_periods
+            case Attendance.DAY:
+                logistics_periods = Decimal(2)
+            case _:
+                logging.warning(
+                    "Unknown attendance type %s", self.get_attendance_label()
+                )
+                logistics_periods = Decimal(0)
+        return logistics_periods
 
     def get_absolute_url(self):
         return reverse(

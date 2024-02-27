@@ -73,6 +73,10 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
       background_approved: This award marks the character as having an approved background. Even
         if the character receives more than one of these (from separate chapters, say) they still
         only get the credit once.
+      event_played: If true, increases the character's "events played" counter. Normally only true
+        on PC event awards. Certain rules interact with this: you can freely rewrite your character
+        until a character's second game, certain flags may allow specific changes until the played
+        counter ticks, and the undo stack can't cross a played events boundary.
       player_flags: Arbitrary flags to add to the player. For use in role/class/art access.
       character_flags: Arbitrary flags to add to the character. For use in role/class/art access.
       character_grants: Arbitrary grant strings, like "lore#Nature" or "divine-favor:3" or "lp:2",
@@ -88,6 +92,7 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool | None = None
+    event_played: bool = False
     player_flags: dict[str, FlagValues | None] | None = None
     character_flags: dict[str, FlagValues | None] | None = None
     character_grants: list[str] | None = None
@@ -97,16 +102,14 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
         """True if a player or logistics needs to associated a character with this record."""
         if not self.character:
             # We need a character assigned if any of the following fields is set:
-            if self.event_cp != 0:
-                return True
-            if self.bonus_cp != 0:
-                return True
-            if self.backstory_approved is not None:
-                return True
-            if self.character_flags:
-                return True
-            if self.character_grants:
-                return True
+            return (
+                self.event_cp != 0
+                or self.bonus_cp != 0
+                or self.backstory_approved is not None
+                or self.character_flags
+                or self.character_grants
+                or self.event_played
+            )
         return False
 
 
@@ -126,6 +129,8 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
       event_cp: Amount of Event CP earned by this character (or received as floor CP)
       bonus_cp: Amount of Bonus CP assigned to this character.
       backstory_approved: Flags that this character should receive +2 CP due to an approved backstory.
+      events_played: Number of events attended as a PC.
+      last_played: Last date when this character was used as a PC.
       flags: Dictionary of flag values awarded to this character in particular. These may override player-level flags.
         Examples include advanced class unlock flags, role flags, etc.
       grants: A list of straight-up bonus grants in the same format used by the character sheet engine.
@@ -137,6 +142,8 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
     event_cp: int = 0
     bonus_cp: int = 0
     backstory_approved: bool = False
+    events_played: int = 0
+    last_played: datetime.date | None = None
     flags: dict[str, FlagValues] = Field(default_factory=dict)
     grants: list[str] = Field(default_factory=list)
 
@@ -151,6 +158,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
       user: If populated, either the username of the player or something
         descriptive. This is only used for debugging purposes.
       xp: Amount of XP the player has earned.
+      events_played: Number of events attended as a PC.
+      last_played: Last date when any character was used as a PC.
       awards: List of all awards associated with this player.
         Any awards meant for a specific character will also be copied into
         that character's awards list.
@@ -164,6 +173,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
 
     user: int | None = None
     xp: int = 0
+    events_played: int = 0
+    last_played: datetime.date | None = None
     awards: list[AwardRecord] = Field(default_factory=list)
     characters: dict[int, CharacterRecord] = Field(default_factory=dict)
     last_campaign_date: datetime.date | None = None
@@ -200,11 +211,17 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
 
         xp = player.xp
         player_flags = player.flags.copy()
+        player_events_played = player.events_played
+        player_last_played = player.last_played
         event_cp = {id: c.event_cp for id, c in player.characters.items()}
         bonus_cp = {id: c.bonus_cp for id, c in player.characters.items()}
         backstory = {id: c.backstory_approved for id, c in player.characters.items()}
         character_flags = {id: c.flags.copy() for id, c in player.characters.items()}
         character_grants = {id: c.grants.copy() for id, c in player.characters.items()}
+        character_plays = {id: c.events_played for id, c in player.characters.items()}
+        character_last_played = {
+            id: c.last_played for id, c in player.characters.items()
+        }
 
         # 3. At each point in the player’s event history:
         for award in new_awards:
@@ -216,6 +233,11 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
             # b. If the player is below the previous XP floor, set them to the previous XP floor.
             # c. If any of the player’s characters in this campaign are below the previous CP floor, set them to the previous CP floor.
             xp = _constrain(prev, xp, event_cp, bonus_cp)
+
+            if award.event_played:
+                player_events_played += 1
+                if player_last_played is None or player_last_played < award.date:
+                    player_last_played = award.date
 
             # d. If the award includes XP, award the stated amount if they are at the previous cap,
             #    else award double the stated value.
@@ -260,6 +282,18 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                 if award.backstory_approved is not None:
                     backstory[award.character] = award.backstory_approved
 
+                # Track the event play counter
+                if award.event_played:
+                    current_events_played = character_plays.get(award.character, 0)
+                    current_last_played = character_last_played.get(
+                        award.character, award.date
+                    )
+                    current_events_played += 1
+                    if current_last_played < award.date:
+                        current_last_played = award.date
+                    character_plays[award.character] = current_events_played
+                    character_last_played[award.character] = current_last_played
+
                 # Track character flags. These work just like player flags, but for a character.
                 # When character metadata is evaluated, a flag on a character overrides that same
                 # flag on the player as a whole.
@@ -298,6 +332,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
             new_backstory = backstory.get(id, False)
             flags = character_flags.get(id, {})
             grants = character_grants.get(id, [])
+            char_events_played = character_plays.get(id, 0)
+            char_last_played = character_last_played.get(id, None)
 
             # If the character record already existed, updated. Otherwise, make it fresh.
             if id in player.characters:
@@ -305,6 +341,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                     update={
                         "event_cp": new_cp,
                         "bonus_cp": new_bonus_cp,
+                        "events_played": char_events_played,
+                        "last_played": char_last_played,
                         "backstory_approved": new_backstory,
                         "flags": flags,
                         "grants": grants,
@@ -315,6 +353,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
                     id=id,
                     event_cp=new_cp,
                     bonus_cp=new_bonus_cp,
+                    events_played=char_events_played,
+                    last_played=char_last_played,
                     backstory_approved=new_backstory,
                     flags=flags,
                     grants=grants,
@@ -324,6 +364,8 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
         return player.model_copy(
             update={
                 "xp": xp,
+                "events_played": player_events_played,
+                "last_played": player_last_played,
                 "characters": new_characters,
                 "last_campaign_date": campaign.last_event_date,
                 "awards": player.awards + new_awards,
@@ -331,18 +373,22 @@ class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
             }
         )
 
-    def metadata_for(self, character_id: int | str) -> CharacterMetadata:
+    def metadata_for(self, character_id: int) -> CharacterMetadata:
         """Produce character metadata for the indicated character."""
         awards = {"xp": self.xp, "cp": 0}
         flags = self.flags.copy()
+        events_played = 0
+        last_played = None
         if char := self.characters.get(character_id):
             awards["cp"] += char.event_cp + char.bonus_cp
             if char.backstory_approved:
                 awards["cp"] += 2
             flags.update(char.flags)
+            events_played = char.events_played
+            last_played = char.last_played
         return CharacterMetadata(
-            id=character_id,
-            player_id=self.user,
+            events_played=events_played,
+            last_played=last_played,
             awards=awards,
             flags=flags,
         )

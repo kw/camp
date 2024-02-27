@@ -697,6 +697,19 @@ class PlayerCampaignData(RulesModel):
     def record(self, value: PlayerRecord):
         self.data = value.model_dump(mode="json")
 
+    @classmethod
+    def retrieve_model(
+        cls, user: User, campaign: Campaign, update: bool = True
+    ) -> PlayerCampaignData:
+        model, _ = cls.objects.get_or_create(user=user, campaign=campaign)
+        campaign_record = campaign.record
+        player_record = model.record
+        if update:
+            new_player_record = player_record.update(campaign_record)
+            if new_player_record != player_record:
+                model.record = new_player_record
+        return model
+
     def __str__(self):
         return f"PlayerData({self.user}, {self.campaign})"
 

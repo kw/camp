@@ -16,6 +16,7 @@ import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 import camp.game.models
 from camp.engine.rules.base_engine import Engine
+from camp.engine.rules.base_models import CharacterMetadata
 from camp.engine.rules.base_models import Mutation
 from camp.engine.rules.base_models import load_mutation
 from camp.game.models import game_models
@@ -51,6 +52,23 @@ class Character(RulesModel):
         related_name="characters",
         help_text="The user who owns this character. Not necessarily the character's portrayer.",
     )
+    discarded_date = models.DateTimeField(null=True, default=None)
+    discarded_by = models.ForeignKey(
+        User, null=True, default=None, on_delete=models.SET_NULL
+    )
+
+    @property
+    def is_discarded(self) -> bool:
+        return self.discarded_date is not None
+
+    @property
+    def metadata(self) -> CharacterMetadata | None:
+        if self.campaign is None:
+            return None
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            user=self.owner, campaign=self.campaign
+        )
+        return player_data.record.metadata_for(self.id)
 
     @property
     def primary_sheet(self) -> Sheet:
@@ -67,13 +85,7 @@ class Character(RulesModel):
                 ruleset=ruleset,
                 primary=True,
             )
-            metadata = camp.engine.rules.base_models.CharacterMetadata(
-                id=self.id,
-                character_name=self.name,
-                player_id=self.owner.id,
-                player_name=self.player_name or self.owner.username,
-            )
-            sheet.controller = engine.new_character(id=sheet.id, metadata=metadata)
+            sheet.controller = engine.new_character(id=sheet.id)
             sheet.save()
             return sheet
         raise ValueError(f"No enabled ruleset found for {self.game}.")
@@ -83,7 +95,10 @@ class Character(RulesModel):
         return self.sheets.filter(primary=False)
 
     def __str__(self) -> str:
-        return self.name or "[Unnamed]"
+        name = self.name or "[Unnamed]"
+        if self.is_discarded:
+            return f"{name} (Discarded)"
+        return name
 
     def __repr__(self) -> str:
         return f"<Character {self.id} {self.name}>"
@@ -148,7 +163,10 @@ class Sheet(RulesModel):
     @property
     def controller(self) -> camp.engine.rules.base_engine.CharacterController:
         if self._controller is None:
-            self._controller = self.ruleset.engine.load_character(self.data)
+            metadata = None
+            if self.character.campaign is not None:
+                metadata = self.character.metadata
+            self._controller = self.ruleset.engine.load_character(self.data, metadata)
         return self._controller
 
     @controller.setter

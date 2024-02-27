@@ -42,6 +42,10 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
       <button name="apply" value="mark_paid" class="btn btn-success" :disabled="!selected.length">Mark Paid</button>
       <button name="apply" value="mark_unpaid" class="btn btn-danger" :disabled="!selected.length">Mark Unpaid</button>
   </div>
+
+  {% if event.completed %}
+  <button name="apply" value="mark_attendance" class="btn btn-primary" :disabled="!selected.length">Mark Attendance</button>
+  {% endif %}
   {% include 'events/event_report_progress.html' %}
 
 
@@ -50,18 +54,21 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
     <thead>
       <tr>
         <th></th>
+        {% if event.completed %}
+        <th class="text-center">Attended?</th>
+        {% endif %}
         <th>Username</th>
         <th>Name</th>
         <th>Minor?</th>
         <th>Attendance</th>
         <th>Lodging</th>
-        <th>Character</th>
-        <th>New Player?</th>
-        <th>New Character?</th>
-        <th>Paid?</th>
+        <th class="text-center">Character</th>
+        <th class="text-center">New Player?</th>
+        <th class="text-center">New Character?</th>
+        <th class="text-center">Paid?</th>
         <th>Registered</th>
         <th>Updated</th>
-        <th>Actions</th>
+        <th class="text-center">Edit</th>
       </tr>
     <tbody>
     {% for registration in registrations %}
@@ -81,6 +88,23 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
             value="{{registration.user.username}}"/>
             {% endif %}
         </td>
+        {% if event.completed %}
+        <td class="text-center">
+          {% if registration.attended %}
+          <i
+            class="bi bi-check-square"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-html="true"
+            title="<p>Attended {{ registration.attended_periods|floatformat }} periods</p>
+                  <p>Marked by {{ registration.award_applied_by }}</p>
+                  <p>{{ registration.award_applied_date }}</p>"
+          ></i>
+          {% else %}
+          <i class="bi bi-square"></i>
+          {% endif %}
+        </td>
+        {% endif %}
         <td><a href="{% url 'profile-view' registration.user.username %}">
           {{registration.user.username}}
         </a></td>
@@ -91,23 +115,25 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
           <td>{% if registration.profile.age < 18 %}{{registration.profile.age}}{% endif %}</td>
           <td>{{registration.get_attendance_display}}</td>
           <td>{{registration.get_lodging_display}}</td>
-          <td>
+          <td class="text-center">
             {% if registration.is_npc %}
             NPC
             {% else %}
             <a href="{{registration.character.get_absolute_url}}" hx-boosted="false">{{registration.character}}</a>
             {% endif %}
           </td>
-          <td>{# PLACEHOLDER #}🆕</td>
-          <td>
-            {% if registration.is_npc %}
-            -
-            {% else %}
-            {# PLACEHOLDER #}🆕
+          <td class="text-center">
+            {% if registration.player_is_new %}
+            🆕
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if registration.character_is_new %}
+            🆕
             {% endif %}
           </td>
         {% endif %}
-        <td>
+        <td class="text-center">
           <div
             {% if registration.payment_note %}
             data-bs-toggle="tooltip"
@@ -125,7 +151,11 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
         </td>
         <td>{{registration.registered_date}}</td>
         <td>{{registration.updated_date}}</td>
-        <td><a href="{% url 'registration-view' event.pk registration.user.username %}" data-bs-toggle="tooltip" data-bs-placement="top" title="View/Edit">📝</a>
+        <td class="text-center">
+          <a href="{% url 'registration-view' event.pk registration.user.username %}"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="View/Edit">📝</a>
         </li></td>
       </tr>
     {% empty %}

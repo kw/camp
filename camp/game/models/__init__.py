@@ -6,6 +6,7 @@ from .game_models import Chapter
 from .game_models import ChapterRole
 from .game_models import Game
 from .game_models import GameRole
+from .game_models import PlayerCampaignData
 from .game_models import Ruleset
 from .game_models import can_manage_chapter
 from .game_models import can_manage_chapter_not_self
@@ -33,6 +34,7 @@ __all__ = [
     "ChapterRole",
     "Campaign",
     "Ruleset",
+    "PlayerCampaignData",
     "Event",
     "EventRegistration",
     "EventReport",

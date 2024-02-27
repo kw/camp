@@ -105,7 +105,7 @@ class RegisterForm(forms.ModelForm):
         # to the registering player. It will behave a little differently
         # if you have no characters (we'll create a blank character upon
         # successful registration).
-        char_query = self.instance.user.characters
+        char_query = self.instance.user.characters.filter(discarded_date=None)
         # If this is not a freeplay event, only allow characters from
         # the event's campaign.
         event: models.Event = self.instance.event

@@ -43,6 +43,7 @@ AWARDS_SINGLE_ALL = [
         description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
+        event_played=True,
     )
     for event in EVENT_HISTORY
 ]
@@ -55,6 +56,7 @@ AWARDS_ONLY_ARC = [
         description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
+        event_played=True,
     )
     for event in EVENT_HISTORY
     if event.chapter is ARC
@@ -68,6 +70,7 @@ AWARDS_ONLY_GRM = [
         description=event.chapter,
         event_xp=event.xp_value,
         event_cp=event.cp_value,
+        event_played=True,
     )
     for event in EVENT_HISTORY
     if event.chapter is GRM
@@ -87,6 +90,10 @@ AWARDS_DAYGAMER = [
     award.model_copy(update={"event_xp": 4}) for award in AWARDS_ONLY_ARC
 ]
 
+# Unmark the "event played" flag to indicate this was an NPC award.
+AWARDS_NPC = [
+    award.model_copy(update={"event_played": False}) for award in AWARDS_SINGLE_ALL
+]
 
 PLAYER = PlayerRecord(
     user=1337,
@@ -97,6 +104,8 @@ def test_no_awards():
     """If you didn't get any awards, that's ok."""
     updated = PLAYER.update(CAMPAIGN)
     assert updated.xp == CAMPAIGN.floor_xp
+    assert updated.events_played == 0
+    assert updated.last_played is None
 
     # No character records present.
     assert len(updated.characters) == 0
@@ -106,10 +115,16 @@ def test_awards_single_all():
     """What a dedicated player! They get all the things."""
     updated = PLAYER.update(CAMPAIGN, AWARDS_SINGLE_ALL)
     assert updated.xp == CAMPAIGN.max_xp == 68
+    assert updated.events_played == len(AWARDS_SINGLE_ALL)
+    assert updated.last_played == date(2023, 10, 29)
 
     # The character actually played gets all the CP.
     char = updated.characters[0]
     assert char.event_cp == CAMPAIGN.max_cp
+
+    # The character has the same number of played events as the player.
+    assert char.events_played == len(AWARDS_SINGLE_ALL)
+    assert char.last_played == date(2023, 10, 29)
 
     # The character attended 4 events over the CP cap (8), so they
     # should have saturated their Bonus CP allowance.
@@ -123,14 +138,20 @@ def test_awards_arc_only():
     """They only played Arcanorum, no Bonus CP."""
     updated = PLAYER.update(CAMPAIGN, AWARDS_ONLY_ARC)
     assert updated.xp == CAMPAIGN.max_xp
+    assert updated.events_played == len(AWARDS_ONLY_ARC)
+    assert updated.last_played == date(2023, 10, 2)
 
     # The character actually played gets all the CP.
-    bob = updated.characters[0]
-    assert bob.event_cp == CAMPAIGN.max_cp
+    char = updated.characters[0]
+    assert char.event_cp == CAMPAIGN.max_cp
+    assert char.events_played == len(AWARDS_ONLY_ARC)
+
+    assert char.events_played == 8
+    assert char.last_played == date(2023, 10, 2)
 
     # The character attended no events over the CP cap (8), so they
     # should have zero Bonus CP.
-    assert bob.bonus_cp == 0
+    assert char.bonus_cp == 0
 
     # No other character records present.
     assert len(updated.characters) == 1
@@ -142,12 +163,16 @@ def test_awards_grm_only():
     # Miraculously, if you played only Grimoire games, I believe
     # you'd still hit Campaign Max XP due to floor hits and doubling.
     assert updated.xp == CAMPAIGN.max_xp
+    assert updated.events_played == len(AWARDS_ONLY_GRM)
+    assert updated.last_played == date(2023, 10, 29)
 
     # The character only went to four games, so they have 4 Event CP.
     # This happens to also be the CP floor.
-    bob = updated.characters[0]
-    assert bob.event_cp == 6
-    assert bob.bonus_cp == 0
+    char = updated.characters[0]
+    assert char.event_cp == 6
+    assert char.bonus_cp == 0
+    assert char.events_played == 4
+    assert char.last_played == date(2023, 10, 29)
 
     # No other character records present.
     assert len(updated.characters) == 1
@@ -158,6 +183,7 @@ def test_awards_half_arc():
     updated = PLAYER.update(CAMPAIGN, AWARDS_HALF_ARC)
     # They don't *quite* get to Max XP, but it's close.
     assert updated.xp == 56
+    assert updated.events_played == len(AWARDS_HALF_ARC)
 
     # No other character records present.
     assert len(updated.characters) == 1
@@ -168,15 +194,21 @@ def test_awards_split():
     updated = PLAYER.update(CAMPAIGN, AWARDS_SPLIT_CHARACTER)
     # All games attended = Max XP
     assert updated.xp == CAMPAIGN.max_xp
+    assert updated.events_played == 12
+    assert updated.last_played == date(2023, 10, 29)
 
     char1 = updated.characters[1]  # Went to 8 Arc games
     char2 = updated.characters[2]  # Went to 4 Grim games
 
     assert char1.event_cp == 8
     assert char1.bonus_cp == 0
+    assert char1.events_played == 8
+    assert char1.last_played == date(2023, 10, 2)
 
     assert char2.event_cp == 6
     assert char2.bonus_cp == 0
+    assert char2.events_played == 4
+    assert char2.last_played == date(2023, 10, 29)
 
     # No other character records present.
     assert len(updated.characters) == 2
@@ -188,11 +220,13 @@ def test_awards_daygamer():
 
     # This player doesn't quite manage to keep up with the Campaign Max XP
     assert updated.xp == 60
+    assert updated.events_played == len(AWARDS_DAYGAMER)
 
     # But Bob went to all the Arc events, so he gets all the CP
-    bob = updated.characters[0]
-    assert bob.event_cp == CAMPAIGN.max_cp
-    assert bob.bonus_cp == 0  # But not Bonus CP.
+    char = updated.characters[0]
+    assert char.event_cp == CAMPAIGN.max_cp
+    assert char.bonus_cp == 0  # But not Bonus CP.
+    assert char.events_played == len(AWARDS_DAYGAMER)
 
     # No other character records present.
     assert len(updated.characters) == 1
@@ -210,6 +244,7 @@ def test_incremental_updates_all_events():
             character=0,
             event_xp=event.xp_value,
             event_cp=event.cp_value,
+            event_played=True,
         )
         awards.append(new_award)
         campaign = campaign.add_events([event])
@@ -218,8 +253,10 @@ def test_incremental_updates_all_events():
     all_at_once_player = PLAYER.update(campaign, awards)
 
     assert player.xp == campaign.max_xp == 68
+    assert player.events_played == len(EVENT_HISTORY)
     assert player.characters[0].event_cp == 8
     assert player.characters[0].bonus_cp == 3
+    assert player.characters[0].events_played == len(EVENT_HISTORY)
 
     assert campaign == CAMPAIGN
     assert player == all_at_once_player
@@ -460,3 +497,26 @@ def test_character_grants():
         "fighter:1",
         "lore#Soup",
     ]
+
+
+def test_awards_not_played():
+    """The player only NPC'd, so their events played counter didn't tick up."""
+    updated = PLAYER.update(CAMPAIGN, AWARDS_NPC)
+    assert updated.xp == CAMPAIGN.max_xp == 68
+    assert updated.events_played == 0
+    assert updated.last_played is None
+
+    # The character actually played gets all the CP.
+    char = updated.characters[0]
+    assert char.event_cp == CAMPAIGN.max_cp
+
+    # The character has the same number of played events as the player.
+    assert char.events_played == 0
+    assert char.last_played is None
+
+    # The character attended 4 events over the CP cap (8), so they
+    # should have saturated their Bonus CP allowance.
+    assert char.bonus_cp == CAMPAIGN.max_bonus_cp
+
+    # No other character records present.
+    assert len(updated.characters) == 1

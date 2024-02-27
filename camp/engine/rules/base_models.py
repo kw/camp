@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import re
 import types
 import typing
@@ -748,7 +749,7 @@ class FeatureMatcher(BaseModel, extra="allow"):
         return True
 
 
-class CharacterMetadata(BaseModel):
+class CharacterMetadata(pydantic.BaseModel):
     """Overarching character data.
 
     While a character might have multiple sheets for various occassions,
@@ -764,14 +765,8 @@ class CharacterMetadata(BaseModel):
     capped event.
 
     Attributes:
-        id: The character ID this applies to.
-        player_id: The player ID this applies to.
-        character_name: The actual name of the character. A single character
-            might have various sheets with their own sheet names, but the
-            actual character name will be in the metadata.
-        player_name: The actual name of the player. Mostly here for offline
-            use in the future, where a character data blob might need to be
-            printed without datatabase access.
+        events_played: Number of events this character has been played.
+        last_played: Date when the character was last played.
         awards: Awarded currency values. Since the award schedule isn't necessarily
             deterministic, this is left as an out-of-engine concern. For example,
             Tempest awards bonus CP for turning in a backstory, and +1 CP for each
@@ -786,15 +781,13 @@ class CharacterMetadata(BaseModel):
             see certain secret purchase options, and so on.
     """
 
-    id: str | int = pydantic.Field(default_factory=make_uuid)
-    player_id: str | int | None = None
-    character_name: str | None = None
-    player_name: str | None = None
+    events_played: int = 0
+    last_played: datetime.date | None = None
     awards: dict[str, int] = pydantic.Field(default_factory=dict)
     flags: dict[str, FlagValues] = pydantic.Field(default_factory=dict)
 
 
-class CharacterModel(BaseModel, ABC):
+class CharacterModel(pydantic.BaseModel, ABC):
     """Represents the serializable data of a character sheet.
 
     Individual rulesets can override this to add fields for
@@ -829,7 +822,7 @@ class CharacterModel(BaseModel, ABC):
     name: str | None = None
 
 
-class RankMutation(BaseModel):
+class RankMutation(pydantic.BaseModel):
     """Represents a specific purchase event for a character feature.
 
     Note that "purchase" may be a misnomer if your game offers a way to
@@ -871,7 +864,7 @@ class RankMutation(BaseModel):
         )
 
 
-class ChoiceMutation(BaseModel):
+class ChoiceMutation(pydantic.BaseModel):
     type: Literal["choice"] = "choice"
     id: str
     choice: str
@@ -879,13 +872,13 @@ class ChoiceMutation(BaseModel):
     remove: bool = False
 
 
-class NoteMutation(BaseModel):
+class NoteMutation(pydantic.BaseModel):
     type: Literal["note"] = "note"
     id: str
     note: str
 
 
-class PlotMutation(BaseModel):
+class PlotMutation(pydantic.BaseModel):
     type: Literal["plot"] = "plot"
     id: str
     ranks: int | None = None

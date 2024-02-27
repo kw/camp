@@ -209,6 +209,8 @@ def test_apply_award(campaign, game, event):
     assert registration.attended
 
     assert record.user == user.id
+    assert record.events_played == 1
+    assert record.last_played == event.event_end_date.date()
     assert record.last_campaign_date == event.event_end_date.date()
     assert record.xp == 8
     assert record.awards == [
@@ -217,6 +219,7 @@ def test_apply_award(campaign, game, event):
             source_id=event.id,
             category=AwardCategory.EVENT,
             description="PC Event Credit for Test Event 1",
+            event_played=True,
             character=character.id,
             event_xp=8,
             event_cp=1,
@@ -226,6 +229,8 @@ def test_apply_award(campaign, game, event):
         character.id: CharacterRecord(
             id=character.id,
             event_cp=1,
+            events_played=1,
+            last_played=event.event_end_date.date(),
         )
     }
 

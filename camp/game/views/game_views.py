@@ -31,7 +31,8 @@ class HomePageView(DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context["character_list"] = Character.objects.filter(
-                owner=self.request.user
+                owner=self.request.user,
+                discarded_date=None,
             )
         else:
             context["character_list"] = self.model.objects.none()

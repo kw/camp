@@ -408,6 +408,8 @@ class EventRegistration(RulesModel):
             description=f"{self.pc_npc} Event Credit for {event}",
             event_xp=xp,
             event_cp=1 if xp > 0 else 0,
+            # Events that grant no XP don't flag the PC as "played"
+            event_played=(not self.is_npc) if xp > 0 else False,
         )
 
     @property
@@ -433,6 +435,23 @@ class EventRegistration(RulesModel):
     def pc_npc(self) -> str:
         return "NPC" if self.is_npc else "PC"
 
+    @property
+    def player_is_new(self) -> bool:
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            self.user, self.event.campaign, update=False
+        )
+        record = player_data.record
+        return record.events_played < 1
+
+    @property
+    def character_is_new(self) -> bool:
+        if self.is_npc:
+            return False
+        if character := self.character:
+            if metadata := character.metadata:
+                return metadata.events_played < 1
+        return False
+
     @transaction.atomic
     def apply_award(
         self, applied_by: User, logistics_periods: int | Decimal | None = None
@@ -456,9 +475,10 @@ class EventRegistration(RulesModel):
 
         award = self.award_record(logistics_periods=logistics_periods)
 
-        player_data, _ = game_models.PlayerCampaignData.objects.get_or_create(
+        player_data = game_models.PlayerCampaignData.retrieve_model(
             user=self.user,
             campaign=campaign,
+            update=False,
         )
         player_record = player_data.record
         player_data.record = player_record.update(campaign.record, [award])

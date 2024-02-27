@@ -10,9 +10,17 @@
                 Manage
             </a>
             <ul class="dropdown-menu">
+                {% if not character.campaign %}
                 <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setAttrsModal">Set Attributes</a></li>
+                {% endif %}
                 <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setNameModal">Change Name</a></li>
-                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#deleteCharacterModal">Delete Character</a></li>
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#deleteCharacterModal">
+                    {% if character.campaign %}
+                    Discard Character
+                    {% else %}
+                    Delete Character
+                    {% endif %}
+                </a></li>
                 {% if undo %}
                 <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#undoModal">{{undo}}</a></li>
                 {% else %}
@@ -125,6 +133,7 @@
 </div>
 
 
+{% if not character.campaign %}
 <!-- Set XP/CP Modal -->
 <div class="modal fade" id="setAttrsModal" tabindex="-1" aria-labelledby="setAttrsLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -155,6 +164,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- Set Name Modal -->
 <div class="modal fade" id="setNameModal" tabindex="-1" aria-labelledby="setNameLabel" aria-hidden="true">
@@ -187,16 +197,31 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteCharacterLabel">Delete Character</h1>
+                <h1 class="modal-title fs-5" id="deleteCharacterLabel">
+                    {% if character.campaign %}
+                    Discard Character
+                    {% else %}
+                    Delete Character
+                    {% endif %}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                {% if character.campaign %}
+                The character "{{ character }}" will be marked discarded.
+                {% else %}
                 The character "{{ character }}" will be permanently deleted. This action cannot be undone.
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <form method="post" action="{% url 'character-delete' character.id %}">{% csrf_token %}
-                    <button id='deleteCharacterButton' type="submit" class="btn btn-danger">Permanently Delete "{{ character }}"</button>
+                    <button id='deleteCharacterButton' type="submit" class="btn btn-danger">
+                        {% if character.campaign %}
+                        Discard "{{ character }}"
+                        {% else %}
+                        Permanently Delete "{{ character }}"
+                        {% endif %}
+                    </button>
                 </form>
             </div>
         </div>

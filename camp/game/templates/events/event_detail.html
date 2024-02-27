@@ -16,7 +16,7 @@
   <li><b>Event Type:</b> {{event.get_type_display}}</li>
   <li><b>Event Start:</b> {{event.event_start_date|chapterzone:event.chapter }}</li>
   <li><b>Event End:</b> {{event.event_end_date|chapterzone:event.chapter }}</li>
-  <li><b>Long Rests:</b> {{event.logistics_periods}}</li>
+  <li><b>Half Days:</b> {{event.logistics_periods|floatformat}}</li>
   {% if event.registration_open %}
   <li><b>Registration Open:</b> {{ event.registration_open|chapterzone:event.chapter }}</li>
   {% endif %}
@@ -34,7 +34,7 @@
 {% if event.description %}
 {{ event.description | markdown }}
 {% else %}
-<p>{{event.campaign}} {{event.chapter}} event for {{event.event_end_date.logistics_month_label}}.</p>
+<p>{{event.campaign}} {{event.chapter}} event for {{event.event_end_date|date:"F Y"}}.</p>
 {% endif %}
 
 {% if registration %}

@@ -357,6 +357,8 @@ def list_registrations(request, pk):
                 _mark_paid(request, event)
             case "mark_unpaid":
                 _mark_unpaid(request, event)
+            case "mark_attendance":
+                _mark_attended(request, event)
             case _:
                 messages.warning(request, f"Unregistered action '{apply}'")
         return redirect("registration-list", pk=event.pk)
@@ -537,6 +539,32 @@ def _mark_unpaid(request, event):
     transaction.on_commit(
         lambda: messages.success(request, f"Marked {count} users unpaid.")
     )
+
+
+@transaction.atomic
+def _mark_attended(request, event):
+    usernames = request.POST.getlist("selected", [])
+    users = User.objects.filter(username__in=usernames)
+    reg: models.EventRegistration
+    count = 0
+    skipped = 0
+    for reg in event.registrations.filter(user__in=users):
+        if not reg.attended:
+            count += 1
+            reg.apply_award(applied_by=request.user)
+            reg.save()
+        else:
+            skipped += 1
+    if skipped:
+        transaction.on_commit(
+            lambda: messages.success(
+                request, f"Marked {count} attended. {skipped} were already marked."
+            )
+        )
+    else:
+        transaction.on_commit(
+            lambda: messages.success(request, f"Marked {count} attended.")
+        )
 
 
 def _get_event(pk):

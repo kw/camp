@@ -1210,7 +1210,9 @@ class Engine(ABC):
             ),
         )
 
-    def load_character(self, data: dict) -> CharacterController:
+    def load_character(
+        self, data: dict, metadata: base_models.CharacterMetadata | None = None
+    ) -> CharacterController:
         """Load the given character data with this ruleset.
 
         Returns:
@@ -1223,6 +1225,8 @@ class Engine(ABC):
         """
         updated_data = self.update_data(data)
         model = self.sheet_type(**updated_data)
+        if metadata:
+            model.metadata = metadata
         c = self.character_controller(self, model)
         c.reconcile()
         return c

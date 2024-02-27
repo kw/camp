@@ -17,8 +17,9 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
-from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import ListView
 from rules.contrib.views import AutoPermissionRequiredMixin
@@ -96,65 +97,88 @@ class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class DeleteCharacterView(AutoPermissionRequiredMixin, DeleteView):
-    model = Character
-
-    def get_success_url(self):
-        return reverse("character-list")
+@permission_required(
+    "character.change_character", fn=objectgetter(Character), raise_exception=True
+)
+@require_POST
+def delete_character(request, pk):
+    character = get_object_or_404(Character, pk=pk)
+    if character.campaign is None:
+        # Freeplay characters can be freely deleted.
+        character.delete()
+        messages.warning(request, "Freeplay character permanently deleted.")
+    else:
+        if character.discarded_date is None:
+            character.discarded_date = timezone.now()
+            character.discarded_by = request.user
+            character.save()
+            messages.warning(request, "Character discarded.")
+        else:
+            messages.warning(request, "Character was already discarded.")
+    return redirect("home")
 
 
 @permission_required(
     "character.change_character", fn=objectgetter(Character), raise_exception=True
 )
+@require_POST
 def set_attr(request, pk):
     """Set the character's Level or CP to an arbitrary value."""
     # TODO: Restrict this to either freeplay mode or maybe logistics action.
     character = get_object_or_404(Character, id=pk)
-    if request.POST:
-        sheet = character.primary_sheet
-        controller = sheet.controller
-        if "level" in request.POST:
-            level = request.POST["level"]
-            try:
-                level = int(level)
-            except ValueError:
-                messages.error(request, "Level must be an integer.")
-                return redirect("character-detail", pk=pk)
-            if controller.xp_level != level:
-                controller.xp_level = level
-                messages.success(request, f"Level set to {level}.")
-        if "cp" in request.POST:
-            cp = request.POST["cp"]
-            try:
-                cp = int(cp)
-            except ValueError:
-                messages.error(request, "Awarded CP must be an integer.")
-                return redirect("character-detail", pk=pk)
-            if controller.awarded_cp != cp:
-                controller.awarded_cp = cp
-                messages.success(request, f"Awarded CP set to {cp}.")
+    if character.is_discarded:
+        messages.warning(request, "Can't update discarded character.")
+        return redirect(character)
+    if character.campaign is not None:
+        raise ValueError(
+            f"User {request.user} can't edit attributes for campaign character {character.id}"
+        )
+    sheet = character.primary_sheet
+    controller = sheet.controller
+    if "level" in request.POST:
+        level = request.POST["level"]
+        try:
+            level = int(level)
+        except ValueError:
+            messages.error(request, "Level must be an integer.")
+            return redirect("character-detail", pk=pk)
+        if controller.xp_level != level:
+            controller.xp_level = level
+            messages.success(request, f"Level set to {level}.")
+    if "cp" in request.POST:
+        cp = request.POST["cp"]
+        try:
+            cp = int(cp)
+        except ValueError:
+            messages.error(request, "Awarded CP must be an integer.")
+            return redirect("character-detail", pk=pk)
+        if controller.awarded_cp != cp:
+            controller.awarded_cp = cp
+            messages.success(request, f"Awarded CP set to {cp}.")
 
-        if d := controller.validate():
-            sheet.save()
-        else:
-            messages.error(request, "Error validating character: %s" % d.reason)
+    if d := controller.validate():
+        sheet.save()
+    else:
+        messages.error(request, "Error validating character: %s" % d.reason)
     return redirect("character-detail", pk=pk)
 
 
 @permission_required(
     "character.change_character", fn=objectgetter(Character), raise_exception=True
 )
+@require_POST
 def set_name(request, pk):
     """Sets the character's name."""
     character = get_object_or_404(Character, id=pk)
-    if request.POST:
-        if new_name := request.POST.get("name", "").strip():
-            character.name = new_name
-            character.save()
-            messages.success(request, f"Name changed to {new_name}")
-        else:
-            messages.error(request, "Character name can't be empty.")
-    return redirect("character-detail", pk=pk)
+    if character.is_discarded:
+        messages.warning(request, "Can't update discarded character.")
+    elif new_name := request.POST.get("name", "").strip():
+        character.name = new_name
+        character.save()
+        messages.success(request, f"Name changed to {new_name}")
+    else:
+        messages.error(request, "Character name can't be empty.")
+    return redirect(character)
 
 
 @permission_required(
@@ -162,6 +186,9 @@ def set_name(request, pk):
 )
 def feature_view(request, pk, feature_id):
     character = get_object_or_404(Character, id=pk)
+    if character.is_discarded:
+        messages.warning(request, "Can't update discarded character.")
+        return redirect(character)
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
     try:

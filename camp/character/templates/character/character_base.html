@@ -8,7 +8,12 @@
 
 {% block body_title %}
 <div class="{% if request.resolver_match.url_name != 'character-detail' %}d-print-none {% endif %}">
-<a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover" href="{% url 'character-detail' character.id %}">{{ character }}</a>
+<a
+  class="{% if character.is_discarded %}link-danger{% else %}link-body-emphasis{% endif %}
+        link-underline-opacity-0 link-underline-opacity-100-hover"
+  href="{% url 'character-detail' character.id %}">
+    {{ character }}
+    </a>
 <div>
 {% endblock %}
 

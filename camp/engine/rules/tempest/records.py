@@ -443,4 +443,5 @@ def _constrain(
     return xp
 
 
+AwardRecordAdapter = TypeAdapter(AwardRecord)
 PlayerRecordAdapter = TypeAdapter(PlayerRecord)

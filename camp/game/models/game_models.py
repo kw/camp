@@ -7,9 +7,12 @@ from typing import Any
 from typing import TypeAlias
 
 import rules
+from allauth.account.models import EmailAddress
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import QuerySet
+from django.db.models.functions import Upper
 from django.urls import reverse
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
@@ -18,6 +21,8 @@ import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import AwardRecord
+from camp.engine.rules.tempest.records import AwardRecordAdapter
 from camp.engine.rules.tempest.records import PlayerRecord
 from camp.engine.rules.tempest.records import PlayerRecordAdapter
 
@@ -715,3 +720,95 @@ class PlayerCampaignData(RulesModel):
 
     class Meta:
         unique_together = [["user", "campaign"]]
+
+
+class Award(RulesModel):
+    """Represents generic award data.
+
+    This doesn't necessarily encompass all awards, since we can represent some
+    with things like EventRegistrations. The primary use for this is things like
+    marking backstory credit, giving out bonus CP, or handing out special unlock flags.
+
+    One of the key features is that the award model doesn't need the actual player
+    or character ID. If all you know is the player's email address, put it in, and
+    if a player has a matching verified email, they can claim the award. Additionally,
+    if a claimed award needs to associate with a character, the player will be prompted
+    to select or create one.
+    """
+
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    player = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    character = models.ForeignKey(
+        "character.Character", null=True, on_delete=models.SET_NULL
+    )
+    email = models.EmailField(null=True)
+    award_data = models.JSONField()
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    chapter = models.ForeignKey(
+        Chapter, null=True, on_delete=models.SET_NULL, default=None
+    )
+    awarded_by = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        default=None,
+        related_name="awards_created",
+    )
+
+    def check_applied(self) -> bool:
+        if self.player is None:
+            return False
+        # If this award needs a character assigned, we haven't
+        # applied it if we don't have the character yet.
+        my_award = self.record
+        if my_award.needs_character and self.character_id is None:
+            return False
+
+        player_data = PlayerCampaignData.retrieve_model(
+            user=self.player,
+            campaign=self.campaign,
+            update=False,
+        )
+        player_record = player_data.record
+
+        for award in player_record.awards:
+            if my_award == award:
+                return True
+        return False
+
+    @property
+    def record(self) -> AwardRecord:
+        r = AwardRecordAdapter.validate_python(self.award_data)
+        if r.character != self.character_id:
+            r = r.model_copy(update={"character": self.character_id})
+        return r
+
+    @record.setter
+    def record(self, value: AwardRecord):
+        self.award_data = value.model_dump(mode="json")
+
+    @classmethod
+    def unclaimed_for(cls, player: User) -> tuple[QuerySet[Award], QuerySet[Award]]:
+        """Queryset of awards this player could potentially claim."""
+        emails = EmailAddress.objects.filter(user=player)
+
+        # Only awards matching verified emails are claimable.
+        claimable_email = [e.email.upper() for e in emails.filter(verified=True)]
+
+        # But we'll still try out the rest so we can nudge the player if they
+        # have rewards they _could_ claim if they'd just verify their email.
+        hintable_email = [e.email.upper() for e in emails.filter(verified=False)]
+
+        # We're only looking for unclaimed awards, those where the player/character
+        # fields have not yet been assigned.
+        awards = (
+            cls.objects.annotate(upper_email=Upper("email"))
+            .filter(player_id=None, character_id=None)
+            .order_by("created_date")
+        )
+
+        claimable_awards = awards.filter(upper_email__in=claimable_email)
+        hintable_awards = awards.filter(upper_email__in=hintable_email)
+
+        return claimable_awards, hintable_awards

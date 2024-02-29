@@ -1,6 +1,7 @@
 from .event_models import Event
 from .event_models import EventRegistration
 from .event_models import EventReport
+from .game_models import Award
 from .game_models import Campaign
 from .game_models import Chapter
 from .game_models import ChapterRole
@@ -28,6 +29,7 @@ from .game_models import is_plot
 from .game_models import is_self
 
 __all__ = [
+    "Award",
     "Game",
     "Chapter",
     "GameRole",

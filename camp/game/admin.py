@@ -57,3 +57,8 @@ class EventReportAdmin(admin.ModelAdmin):
 @admin.register(models.PlayerCampaignData)
 class PlayerCampaignAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.Award)
+class AwardAdmin(admin.ModelAdmin):
+    pass

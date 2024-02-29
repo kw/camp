@@ -744,11 +744,11 @@ class Award(RulesModel):
     """
 
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
-    player = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    player = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     character = models.ForeignKey(
-        "character.Character", null=True, on_delete=models.SET_NULL
+        "character.Character", null=True, blank=True, on_delete=models.SET_NULL
     )
-    email = models.EmailField(null=True)
+    email = models.EmailField(null=True, blank=True)
     award_data = models.JSONField()
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -758,10 +758,35 @@ class Award(RulesModel):
     awarded_by = models.ForeignKey(
         User,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         default=None,
         related_name="awards_created",
     )
+
+    def __str__(self):
+        if not self.award_data:
+            award_description = "Null Award"
+        else:
+            record = self.record
+            award_description = record.description
+            if not award_description:
+                describe = []
+                if record.backstory_approved:
+                    describe.append("Backstory Approval")
+                if record.bonus_cp:
+                    describe.append(f"Bonus CP: {record.bonus_cp}")
+                if record.event_xp or record.event_cp:
+                    describe.append(
+                        f"Event: {record.event_xp} XP + {record.event_cp} CP"
+                    )
+                if record.character_flags or record.player_flags:
+                    describe.append("???")
+                award_description = ", ".join(describe)
+        if self.player:
+            return f"Award for {self.player}: {award_description}"
+        else:
+            return f"Award for {self.email}: {award_description}"
 
     def check_applied(self) -> bool:
         if self.player is None:

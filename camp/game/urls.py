@@ -5,7 +5,7 @@ from .views import game_views
 
 urlpatterns = [
     # Home / Game Views
-    path("", game_views.HomePageView.as_view(), name="home"),
+    path("", game_views.home_view, name="home"),
     path("manage/", game_views.ManageGameView.as_view(), name="game-manage"),
     # Game Roles
     path(

@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -12,6 +13,7 @@ from rules.contrib.views import AutoPermissionRequiredMixin
 from camp.character.models import Character
 from camp.engine.rules.base_engine import Engine
 
+from ..models import Award
 from ..models import Campaign
 from ..models import Chapter
 from ..models import ChapterRole
@@ -20,23 +22,23 @@ from ..models import GameRole
 from ..models import Ruleset
 
 
-class HomePageView(DetailView):
-    model = Game
-    template_name_suffix = "_home"
+def home_view(request):
+    game = request.game
+    context = {"game": game}
 
-    def get_object(self):
-        return self.request.game
+    if request.user.is_authenticated:
+        context["character_list"] = Character.objects.filter(
+            owner=request.user,
+            discarded_date=None,
+        )
+        claimable, unclaimable = Award.unclaimed_for(request.user)
+        context["claimable_awards"] = claimable.all()
+        context["unclaimable_award_count"] = unclaimable.count()
+        context["unclaimable_award_emails"] = sorted(
+            {a.email.lower() for a in unclaimable}
+        )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context["character_list"] = Character.objects.filter(
-                owner=self.request.user,
-                discarded_date=None,
-            )
-        else:
-            context["character_list"] = self.model.objects.none()
-        return context
+    return render(request, "game/game_home.html", context)
 
 
 class ManageGameView(AutoPermissionRequiredMixin, UpdateView):

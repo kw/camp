@@ -85,24 +85,21 @@ class CampaignValues(BaseModel, frozen=True, extra="forbid"):
         return self.max_cp // 2
 
 
-class CampaignRecord(BaseModel, frozen=True, extra="forbid"):
+class CampaignRecord(BaseModel, frozen=True):
     """Represents the campaign as a whole over time.
 
     Attributes:
         name: The name of the campaign, mainly so that test campaign data is
             identified as such if seen in logs.
         value_table: List of CampaignValues
-        recent_events: List of events that took place in the most recent game month.
-            Due to the way that monthly XP/CP caps are computed, we need to keep all
-            events from a particular month on hand to properly integrate new events
-            for that month.
+        events: List of all events that have place.
     """
 
     name: str
     start_year: int
     bonus_cp_per_season: int = 3
     value_table: list[CampaignValues] = Field(default_factory=list)
-    recent_events: list[EventRecord] = Field(default_factory=list)
+    events: list[EventRecord] = Field(default_factory=list)
     last_event_date: datetime.date = datetime.date(1, 1, 1)
 
     @property
@@ -170,32 +167,19 @@ class CampaignRecord(BaseModel, frozen=True, extra="forbid"):
 
         last_event_date = self.last_event_date
 
-        new_events.sort(key=DATE_KEY)
+        all_events = sorted(set(self.events + new_events), key=DATE_KEY)
 
-        if self.recent_events:
-            # If the new events include events from the most recent month on record,
-            # we'll need the previous events from that month to properly compute the future.
-            last_old_date = self.recent_events[-1].date
-            first_new_date = new_events[0].date
-            if (last_old_date.year, last_old_date.month) == (
-                first_new_date.year,
-                first_new_date.month,
-            ):
-                # The logistics month continues.
-                new_events = self.recent_events + new_events
-            # Otherwise we're past that month and can disregard it.
-
-        value_table = self.value_table.copy()
+        value_table = []
 
         # 1. Group all events by logistics month
         months: dict[tuple[int, int], list[EventRecord]] = defaultdict(list)
-        for event in new_events:
+        for event in all_events:
             events = months[event.date.year, event.date.month]
             events.append(event)
 
         month_keys = sorted(months.keys())
         last_values = self.get_historical_values(
-            new_events[0].date - datetime.timedelta(days=1)
+            all_events[0].date - datetime.timedelta(days=1)
         )
 
         # 2. For each logistics month, in ascending order:
@@ -241,19 +225,10 @@ class CampaignRecord(BaseModel, frozen=True, extra="forbid"):
                     if not value_table or value_table[-1].date < last_values.date:
                         value_table.append(last_values)
 
-        # Update the recent event tracker, if appropriate. We'll need these if a new
-        # event is added to this month later.
-        recent_events = recent_events = months[month_keys[-1]]
-        if self.recent_events:
-            # If the new recent events aren't actually recent, use the old recent events.
-            # (That is, if only old events were added, skip)
-            if recent_events[-1].date < self.recent_events[-1].date:
-                recent_events = self.recent_events.copy()
-
         return self.model_copy(
             update={
                 "value_table": value_table,
-                "recent_events": recent_events,
+                "events": all_events,
                 "last_event_date": last_event_date,
             }
         )

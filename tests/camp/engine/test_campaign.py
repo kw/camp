@@ -186,20 +186,3 @@ def test_add_old_events(campaign: CampaignRecord):
 
     updated_campaign = campaign.add_events(EVENT_HISTORY)
     assert updated_campaign == campaign
-
-
-def test_add_ahistorical_events(campaign: CampaignRecord):
-    """Adding events to the past that could affect the future doesn't affect the future."""
-
-    # An extra Arcanorum March game would unbalance the space-time continuum!
-    updated_campaign = campaign.add_events(
-        [
-            EventRecord(
-                chapter=ARC,
-                date=date(2023, 3, 31),
-                xp_value=8,
-            )
-        ]
-    )
-
-    assert updated_campaign == campaign

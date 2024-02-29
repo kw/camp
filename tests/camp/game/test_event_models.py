@@ -77,7 +77,7 @@ def test_mark_event_complete_during_event(campaign, event):
     """Marking the event complete works after the event starts."""
     # Before we start, this campaign doesn't have any progress.
     campaign_record = campaign.record
-    assert not campaign_record.recent_events
+    assert not campaign_record.events
     assert campaign_record.max_xp == 0
 
     with time_machine.travel(date(2020, 1, 3)):
@@ -92,7 +92,7 @@ def test_mark_event_complete_during_event(campaign, event):
     # Now, the campaign has progressed, and there's a recent event.
     campaign.refresh_from_db()
     campaign_record = campaign.record
-    assert len(campaign_record.recent_events) == 1
+    assert len(campaign_record.events) == 1
     assert campaign_record.max_xp == 8
 
 
@@ -130,7 +130,7 @@ def test_mark_event_complete_twice(campaign, event):
     # The campaign remains properly marked.
     campaign.refresh_from_db()
     campaign_record = campaign.record
-    assert len(campaign_record.recent_events) == 1
+    assert len(campaign_record.events) == 1
     assert campaign_record.max_xp == 8
 
 
@@ -142,7 +142,7 @@ def test_mark_second_event(campaign, event, event2):
         event.mark_complete()
 
     campaign.refresh_from_db()
-    assert len(campaign.record.recent_events) == 1
+    assert len(campaign.record.events) == 1
 
     with time_machine.travel(date(2020, 2, 3)):
         event2.mark_complete()
@@ -150,8 +150,7 @@ def test_mark_second_event(campaign, event, event2):
     # The campaign remains properly marked.
     campaign.refresh_from_db()
     campaign_record = campaign.record
-    # Only 1 event in recent_events because each event is in a different month.
-    assert len(campaign_record.recent_events) == 1
+    assert len(campaign_record.events) == 2
     assert campaign_record.max_xp == 16
 
 
@@ -172,7 +171,7 @@ def test_mark_events_out_of_order(campaign, event, event2):
     # The campaign remains properly marked.
     campaign.refresh_from_db()
     campaign_record = campaign.record
-    assert len(campaign_record.recent_events) == 1
+    assert len(campaign_record.events) == 1
     assert campaign_record.max_xp == 8
 
 

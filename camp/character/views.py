@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import logging
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
@@ -25,6 +26,7 @@ from django.views.generic import ListView
 from rules.contrib.views import AutoPermissionRequiredMixin
 from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
+from sentry_sdk import capture_exception
 
 from camp.character.models import Character
 from camp.character.models import Sheet
@@ -350,6 +352,8 @@ def _try_apply_purchase(
                     request, "Could not apply mutation for unspecified reasons."
                 )
         except Exception as exc:
+            logging.exception("Error applying mutation")
+            capture_exception(exc)
             messages.error(request, f"Error applying mutation: {exc}")
     return False, pf
 

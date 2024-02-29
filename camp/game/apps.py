@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from .management import create_default_game
+from .management.utils import create_default_game
 
 
 class GameConfig(AppConfig):

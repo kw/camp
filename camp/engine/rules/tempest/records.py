@@ -42,7 +42,7 @@ class AwardCategory(str, Enum):
     )
 
 
-class AwardRecord(BaseModel, frozen=True, extra="forbid"):
+class AwardRecord(BaseModel, frozen=True):
     """Represents awards, normally from events.
 
     Additionally, bonus CP, purchased SP, and role/class flags can be set here.
@@ -113,7 +113,7 @@ class AwardRecord(BaseModel, frozen=True, extra="forbid"):
         return False
 
 
-class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
+class CharacterRecord(BaseModel, frozen=True):
     """Represents a character record.
 
     Due to the existence of pre-CMA records, a character record may not initially
@@ -148,7 +148,7 @@ class CharacterRecord(BaseModel, frozen=True, extra="forbid"):
     grants: list[str] = Field(default_factory=list)
 
 
-class PlayerRecord(BaseModel, frozen=True, extra="forbid"):
+class PlayerRecord(BaseModel, frozen=True):
     """Represents player event and award attendance.
 
     Due to the existence of a pre-CMA records, a player record may not initially

@@ -11,6 +11,7 @@ from allauth.account.models import EmailAddress
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from django.db.models import QuerySet
 from django.db.models.functions import Upper
 from django.urls import reverse
@@ -702,6 +703,12 @@ class PlayerCampaignData(RulesModel):
     def record(self, value: PlayerRecord):
         self.data = value.model_dump(mode="json")
 
+    @transaction.atomic
+    def apply(self, award: AwardRecord):
+        player_record = self.record
+        campaign_record = self.campaign.record
+        self.record = player_record.update(campaign_record, [award])
+
     @classmethod
     def retrieve_model(
         cls, user: User, campaign: Campaign, update: bool = True
@@ -788,9 +795,61 @@ class Award(RulesModel):
     def record(self, value: AwardRecord):
         self.award_data = value.model_dump(mode="json")
 
+    @property
+    def needs_character(self) -> bool:
+        return self.record.needs_character
+
+    @transaction.atomic
+    def claim(self, player: User, character=None):
+        """Claim this award on behalf of this user.
+
+        Arguments:
+            player: The player to claim for.
+            character: The character to apply this award for.
+                Not all awards need a character, so this is only
+                required for awards that do. This will fail if
+                the character is not owned by the indicated player
+                or a part of this award's campaign.
+
+        This will cause the player's campaign data to be updated.
+        """
+        if self.player is not None:
+            raise ValueError("Award is already claimed")
+        claimable, _ = Award.unclaimed_for(player)
+        if self not in claimable:
+            raise ValueError(f"{player} is not eligible to claim this award.")
+        self.player = player
+        if character is not None:
+            if character.owner != player:
+                raise ValueError(f"{player} is not the owner of {character}")
+            if character.campaign != self.campaign:
+                raise ValueError(f"{character} is not part of {self.campaign}")
+            self.character = character
+            self.record = self.record.model_copy(update={"character": character.id})
+        elif self.needs_character:
+            raise ValueError("Character required for this award.")
+        player_data: PlayerCampaignData = PlayerCampaignData.retrieve_model(
+            player, self.campaign, update=False
+        )
+        player_data.apply(self.record)
+        self.save()
+        player_data.save()
+
     @classmethod
     def unclaimed_for(cls, player: User) -> tuple[QuerySet[Award], QuerySet[Award]]:
-        """Queryset of awards this player could potentially claim."""
+        """Queryset of awards this player could potentially claim.
+
+        Arguments:
+            user: The user whose awards should be found. The basis
+                for the search will be the allauth EmailAddress
+                models associated with the user.
+
+        Returns:
+            (claimable, unclaimable): Querysets containing awards
+                that could be claimed by this player. The awards in
+                the `unclaimable` set are associated with an email
+                address the player has not yet verified.
+        """
         emails = EmailAddress.objects.filter(user=player)
 
         # Only awards matching verified emails are claimable.

@@ -1,0 +1,5 @@
+{% load crispy_forms_tags %}
+<form method="post" action="{% url 'character-add' %}">{% csrf_token %}
+  {{ form | crispy }}
+  <input type="submit" class="btn btn-primary" value="Create">
+</form>

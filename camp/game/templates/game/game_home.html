@@ -30,19 +30,19 @@
     {% endif %}
 {% endif %}
 
-<h2>Characters</h2>
-<ul>
-{% for character in character_list %}
+{% regroup character_list by campaign as campaign_list %}
+{% for campaign, characters in campaign_list %}
+<h2>{{campaign|default:"Freeplay"}} Characters</h2>
+    {% for character in characters %}
     <li><a href="{% url 'character-detail' character.id %}" hx-boost="false">
         {{ character }}
-        {% if character.campaign is None %}[Freeplay]{% endif %}
     </a></li>
+    {% endfor %}
 {% empty %}
-    <li>You do not have any characters yet.</li>
+<p>You do not have any characters yet.</p>
 {% endfor %}
-</ul>
 
-<a href="{% url 'character-add' %}">Create a new character</a>
+<p class="my-3"><a class="btn btn-primary" href="{% url 'character-add' %}">New Character</a></p>
 
 {% else %}
 <p>You must <a href="{% url 'account_login' %}">login</a> or <a href="{% url 'account_signup' %}">sign up</a> to view or create characters.</p>

@@ -2,9 +2,13 @@ from __future__ import annotations
 
 from django import forms
 
+from camp.character.models import Character
 from camp.engine.rules.base_engine import ChoiceController
 from camp.engine.rules.tempest.controllers.class_controller import ClassController
 from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
+from camp.game.models import Campaign
+
+OPEN_CAMPAIGNS = Campaign.objects.filter(is_open=True).order_by("name")
 
 
 class FeatureForm(forms.Form):
@@ -150,3 +154,18 @@ class ChoiceForm(forms.Form):
                 label="Available Choices",
                 help_text="Make a selection.",
             )
+
+
+class NewCharacterForm(forms.ModelForm):
+    campaign = forms.ModelChoiceField(
+        queryset=OPEN_CAMPAIGNS,
+        empty_label="Freeplay (build experiments, not playable)",
+        help_text="Will this be a campaign character, or a freeplay character? Freeplay characters can be edited freely and are useful for build planning, but can't be used at events.",
+        widget=forms.RadioSelect,
+        required=False,
+        blank=True,
+    )
+
+    class Meta:
+        model = Character
+        fields = ["name", "campaign"]

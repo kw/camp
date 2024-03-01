@@ -35,7 +35,7 @@ def home_view(request):
         context["character_list"] = Character.objects.filter(
             owner=request.user,
             discarded_date=None,
-        )
+        ).order_by("-campaign", "name")
         claimable, unclaimable = Award.unclaimed_for(request.user)
         context["claimable_awards"] = claimable.all()
         context["unclaimable_award_count"] = unclaimable.count()

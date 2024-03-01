@@ -7,6 +7,7 @@ from functools import cached_property
 from itertools import chain
 from typing import Iterable
 from typing import cast
+from typing import override
 
 from django.conf import settings
 from django.contrib import messages
@@ -77,13 +78,20 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
 
 class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
     model = Character
-    fields = ["name"]
+    form_class = forms.NewCharacterForm
 
     @property
     def success_url(self):
         if self.object:
             return reverse("character-detail", args=[self.object.id])
         return "/"
+
+    @override
+    def get_initial(self) -> dict:
+        kwargs = super().get_initial()
+        if campaign := forms.OPEN_CAMPAIGNS.first():
+            kwargs["campaign"] = campaign
+        return kwargs
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""

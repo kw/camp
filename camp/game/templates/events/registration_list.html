@@ -177,12 +177,10 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
   }
 
   function selectNone() {
-    //setAll(document.querySelectorAll('input[name="selected"]'), false);
     selected = [];
   }
 
   function selectAll() {
-    //setAll(document.querySelectorAll('input[name="selected"]'), true)
     return [...document.querySelectorAll('input[name="selected"]')].map(e => e.value);
   }
 

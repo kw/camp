@@ -97,6 +97,22 @@ class AwardRecord(BaseModel, frozen=True):
     character_flags: dict[str, FlagValues | None] | None = None
     character_grants: list[str] | None = None
 
+    def describe(self) -> str:
+        if self.description:
+            return self.description
+        parts = []
+        if self.backstory_approved:
+            parts.append("Backstory Approval")
+        if self.bonus_cp:
+            parts.append(f"Bonus CP: {self.bonus_cp}")
+        if self.event_xp or self.event_cp:
+            parts.append(f"Event: {self.event_xp} XP + {self.event_cp} CP")
+        if self.character_flags or self.player_flags:
+            parts.append("Secret Flags")
+        if parts:
+            return ", ".join(parts)
+        return "Unknown"
+
     @property
     def needs_character(self) -> bool:
         """True if a player or logistics needs to associated a character with this record."""

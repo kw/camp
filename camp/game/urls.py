@@ -83,6 +83,11 @@ urlpatterns = [
         game_views.DeleteCampaignView.as_view(),
         name="campaign-delete",
     ),
+    path(
+        "campaigns/<slug:slug>/myawards/",
+        game_views.myawards_view,
+        name="myawards",
+    ),
     # Events
     path("events/", event_views.event_list, name="events-list"),
     path("events/<int:pk>/", event_views.event_detail, name="event-detail"),

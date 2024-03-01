@@ -22,6 +22,7 @@ import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import AwardCategory
 from camp.engine.rules.tempest.records import AwardRecord
 from camp.engine.rules.tempest.records import AwardRecordAdapter
 from camp.engine.rules.tempest.records import PlayerRecord
@@ -764,6 +765,17 @@ class Award(RulesModel):
         related_name="awards_created",
     )
 
+    def describe(self) -> str:
+        return self.record.describe()
+
+    @property
+    def date(self) -> date:
+        return self.record.date
+
+    @property
+    def category(self) -> AwardCategory:
+        return self.record.category
+
     def __str__(self):
         if not self.award_data:
             award_description = "Null Award"
@@ -771,18 +783,7 @@ class Award(RulesModel):
             record = self.record
             award_description = record.description
             if not award_description:
-                describe = []
-                if record.backstory_approved:
-                    describe.append("Backstory Approval")
-                if record.bonus_cp:
-                    describe.append(f"Bonus CP: {record.bonus_cp}")
-                if record.event_xp or record.event_cp:
-                    describe.append(
-                        f"Event: {record.event_xp} XP + {record.event_cp} CP"
-                    )
-                if record.character_flags or record.player_flags:
-                    describe.append("???")
-                award_description = ", ".join(describe)
+                award_description = record.describe()
         if self.player:
             return f"Award for {self.player}: {award_description}"
         else:
@@ -861,7 +862,9 @@ class Award(RulesModel):
         player_data.save()
 
     @classmethod
-    def unclaimed_for(cls, player: User) -> tuple[QuerySet[Award], QuerySet[Award]]:
+    def unclaimed_for(
+        cls, player: User, campaign: Campaign | None = None
+    ) -> tuple[QuerySet[Award], QuerySet[Award]]:
         """Queryset of awards this player could potentially claim.
 
         Arguments:
@@ -891,6 +894,8 @@ class Award(RulesModel):
             .filter(player_id=None, character_id=None)
             .order_by("created_date")
         )
+        if campaign is not None:
+            awards = awards.filter(campaign=campaign)
 
         claimable_awards = awards.filter(upper_email__in=claimable_email)
         hintable_awards = awards.filter(upper_email__in=hintable_email)

@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -19,6 +20,7 @@ from ..models import Chapter
 from ..models import ChapterRole
 from ..models import Game
 from ..models import GameRole
+from ..models import PlayerCampaignData
 from ..models import Ruleset
 
 
@@ -293,3 +295,23 @@ class DeleteCampaignView(AutoPermissionRequiredMixin, DeleteView):
         if self.object:
             return reverse("campaign-update", args=[self.object.slug])
         return "/"
+
+
+@login_required
+def myawards_view(request, slug):
+    context = {}
+    context["campaign"] = campaign = get_object_or_404(Campaign, slug=slug)
+
+    claimable, unclaimable = Award.unclaimed_for(request.user, campaign)
+    characters = request.user.characters.filter(campaign=campaign)
+    context["characters"] = list(characters.filter(discarded_date=None))
+    charmap = {c.id: c for c in characters}
+    context["claimable"] = list(claimable)
+    context["unclaimable"] = list(unclaimable)
+    context["player"] = player = PlayerCampaignData.retrieve_model(
+        request.user, campaign, update=False
+    ).record
+    context["award_history"] = [
+        (award, charmap.get(award.character, None)) for award in player.awards
+    ]
+    return render(request, "game/myawards.html", context)

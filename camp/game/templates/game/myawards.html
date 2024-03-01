@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block head_title %}{% block body_title %}
+{{campaign}} Awards
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+{% if claimable %}
+<h2>Unclaimed Awards</h2>
+<div x-data="{selected: []}">
+  <p>
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" @click="selected = []">None</button>
+      <button class="btn btn-outline-primary" @click="selected = selectAll()">All</button>
+    </div>
+    <span :hidden="!selected.length"><span x-text="selected.length"></span> selected.</span>
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in claimable %}
+        <tr>
+          <td><input type="checkbox" x-model="selected"
+                name="claim_award" value="{{a.id}}"></input></td>
+          <td>{{a.date}}</td>
+          <td>{{a.category.name.title}}</td>
+          <td>{{a.describe}}</td>
+        </tr>
+        {% empty %}
+        <tr colspan="4" class="text-center">No awards available.</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p><label for="character-selector">Select a character to receive awards</label></p>
+    <select class="form-select form-select-lg mb-3"
+            id="character-selector" name="character">
+      {% for c in characters %}
+      <option value="{{c.id}}">{{c}}</option>
+      {% endfor %}
+      <option>[New {{campaign}} Character]</option>
+    </select>
+    <button class="btn btn-primary"
+            :disabled="selected.length == 0">
+      Claim Awards
+    </button>
+  </form>
+</div>
+{% endif %}
+
+<h2>Award History</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Character</th>
+      <th>Category</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a, char in award_history %}
+    <tr>
+      <td>{{a.date}}</td>
+      <td><a href="{% url 'character-detail' char.id %}"
+        hx-boost="false" class="link-body-emphasis">
+        {{char.name}}
+      </a></td>
+      <td>{{a.category.name.title}}</td>
+      <td>{{a.describe}}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" class="text-center">No award history.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  function selectNone() {
+    selected = [];
+  }
+
+  function selectAll() {
+    return [...document.querySelectorAll('input[name="claim_award"]')].map(e => e.value);
+  }
+</script>
+{% endblock %}

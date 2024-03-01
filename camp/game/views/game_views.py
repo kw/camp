@@ -1,5 +1,8 @@
+from django import http
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -302,8 +305,51 @@ def myawards_view(request, slug):
     context = {}
     context["campaign"] = campaign = get_object_or_404(Campaign, slug=slug)
 
-    claimable, unclaimable = Award.unclaimed_for(request.user, campaign)
-    characters = request.user.characters.filter(campaign=campaign)
+    with transaction.atomic():
+        claimable, unclaimable = Award.unclaimed_for(request.user, campaign)
+        characters = request.user.characters.filter(campaign=campaign)
+
+        if request.method == "POST":
+            try:
+                claim_ids = [int(c) for c in request.POST.getlist("claim_award", [])]
+            except ValueError:
+                return http.HttpResponseBadRequest("Invalid claim award list")
+            awards = claimable.filter(id__in=claim_ids)
+            if awards:
+                # If a character was specified, it must be one this player owns from the
+                # appropriate campaign. If it's not specified, create one.
+                character_id = request.POST.get("character", None)
+                if character_id is None or character_id == "":
+                    new_name = request.POST.get("new_name", "")
+                    character = Character.objects.create(
+                        name=new_name,
+                        game=request.game,
+                        campaign=campaign,
+                        owner=request.user,
+                    )
+                    messages.info(request, f"Created character '{character}'")
+                else:
+                    try:
+                        character_id = int(character_id)
+                        character = characters.get(id=character_id)
+                    except (ValueError, Character.DoesNotExist):
+                        return http.HttpResponseBadRequest("Invalid character ID")
+
+                for a in awards:
+                    a.claim(request.user, character)
+                messages.success(
+                    request, f"Claimed {len(awards)} award(s) for {character}"
+                )
+
+                # Preserve the character selection between actions
+                context["selected_character"] = character.id
+
+                # Update the list of awards and characters, since both may have changed.
+                claimable, unclaimable = Award.unclaimed_for(request.user, campaign)
+                characters = request.user.characters.filter(campaign=campaign)
+            else:
+                messages.warning(request, "No valid awards selected.")
+
     context["characters"] = list(characters.filter(discarded_date=None))
     charmap = {c.id: c for c in characters}
     context["claimable"] = list(claimable)
@@ -314,4 +360,7 @@ def myawards_view(request, slug):
     context["award_history"] = [
         (award, charmap.get(award.character, None)) for award in player.awards
     ]
+
+    context["unclaimable_award_count"] = unclaimable.count()
+    context["unclaimable_award_emails"] = sorted({a.email.lower() for a in unclaimable})
     return render(request, "game/myawards.html", context)

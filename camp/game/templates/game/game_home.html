@@ -18,7 +18,9 @@
     <ul>
     {% for campaign, awards in campaign_list %}
         {# TODO: Make the claims page and link it from here. #}
-        <li>{{ campaign }} Awards: <a class="link-body-emphasis" href="#"><b>{{claimable_awards|length}}</b> unclaimed.</a></li>
+        <li>{{ campaign }} Awards: <a class="link-body-emphasis"
+            href="{% url 'myawards' campaign.slug %}">
+            <b>{{claimable_awards|length}}</b> unclaimed.</a></li>
     {% endfor %}
     </ul>
 

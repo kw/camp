@@ -154,8 +154,8 @@ def set_attr(request, pk):
         except ValueError:
             messages.error(request, "Awarded CP must be an integer.")
             return redirect("character-detail", pk=pk)
-        if controller.awarded_cp != cp:
-            controller.awarded_cp = cp
+        if controller.freeplay_cp != cp:
+            controller.freeplay_cp = cp
             messages.success(request, f"Awarded CP set to {cp}.")
 
     if d := controller.validate():

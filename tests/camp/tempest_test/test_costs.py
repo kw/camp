@@ -8,7 +8,7 @@ def test_basic_cp_math(character: TempestCharacter):
     # Starting CP is 1 + 2*Level
     assert character.cp.value == 5
     # If we add some CP...
-    character.awarded_cp = 5
+    character.freeplay_cp = 5
     assert character.cp.value == 10
     # If we spend CP (basic-skill costs 1 CP)
     character.apply("basic-skill")
@@ -21,7 +21,7 @@ def test_basic_cp_math(character: TempestCharacter):
 
 
 def test_basic_refund(character: TempestCharacter):
-    character.awarded_cp = 14
+    character.freeplay_cp = 14
     cp = character.cp.value
     assert character.apply("discounted-skill:5")
     assert character.cp.value == cp - 15
@@ -40,7 +40,7 @@ def test_discounted_skill(character: TempestCharacter):
 
     'discounted-skill' has a total of 5 ranks, each costing 3 CP.
     """
-    character.awarded_cp = 14
+    character.freeplay_cp = 14
     cp = character.cp.value
     assert character.apply("discounted-skill:5")
     assert character.cp.value == cp - 15
@@ -57,7 +57,7 @@ def test_discounted_skill(character: TempestCharacter):
 
 def test_discount_with_grants(character: TempestCharacter):
     """If a skill with grants have discounts applied, the grants provide an extra discount."""
-    character.awarded_cp = 14
+    character.freeplay_cp = 14
     cp = character.cp.value
     assert character.apply("discounted-skill:5")
     assert character.cp.value == cp - 15

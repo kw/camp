@@ -22,7 +22,7 @@ def test_basic_cp_math(starter: TempestCharacter):
     # Starting CP is 1 + 2*Level
     assert starter.cp.value == 5
     # If we add some CP...
-    starter.awarded_cp = 5
+    starter.freeplay_cp = 5
     assert starter.cp.value == 10
     # If we spend CP (basic-skill costs 1 CP)
     starter.apply("basic-skill")
@@ -52,7 +52,7 @@ def test_two_requirements_missing(starter: TempestCharacter):
 
 
 def test_two_requirements_met(starter: TempestCharacter):
-    starter.awarded_cp = 25
+    starter.freeplay_cp = 25
     assert starter.apply("basic-skill")
     assert starter.apply("one-requirement")
     assert not starter.can_purchase("two-requirements")
@@ -61,7 +61,7 @@ def test_two_requirements_met(starter: TempestCharacter):
 
 
 def test_two_requirements_met_via_grant(starter: TempestCharacter):
-    starter.awarded_cp = 30
+    starter.freeplay_cp = 30
     starter.apply("basic-skill")
     starter.apply("one-requirement")
     starter.apply("grants-skill")
@@ -69,7 +69,7 @@ def test_two_requirements_met_via_grant(starter: TempestCharacter):
 
 
 def test_one_requirement_met(starter: TempestCharacter):
-    starter.awarded_cp = 30
+    starter.freeplay_cp = 30
     starter.apply("basic-skill")
     assert starter.can_purchase("one-requirement")
     assert starter.apply("one-requirement")
@@ -197,7 +197,7 @@ def test_inherited_option_skill(starter: TempestCharacter):
 
 
 def test_skill_with_option_requirements(starter: TempestCharacter):
-    starter.awarded_cp = 5
+    starter.freeplay_cp = 5
     assert not starter.options_values_for_feature("requires-option")
 
     starter.apply("basic-skill")

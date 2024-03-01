@@ -838,6 +838,7 @@ class Award(RulesModel):
                 or a part of this award's campaign.
 
         This will cause the player's campaign data to be updated.
+        All mutated objects will have save() called.
         """
         if self.player is not None:
             raise ValueError("Award is already claimed")

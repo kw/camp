@@ -391,17 +391,18 @@ class PlayerRecord(BaseModel, frozen=True):
 
     def metadata_for(self, character_id: int) -> CharacterMetadata:
         """Produce character metadata for the indicated character."""
-        awards = {"xp": self.xp, "cp": 0}
+        awards = {"xp": self.xp, "event_cp": 0, "bonus_cp": 0, "backstory_cp": 0}
         flags = self.flags.copy()
         events_played = 0
         last_played = None
         if char := self.characters.get(character_id):
-            awards["cp"] += char.event_cp + char.bonus_cp
             if char.backstory_approved:
-                awards["cp"] += 2
+                awards["backstory_cp"] = 2
             flags.update(char.flags)
             events_played = char.events_played
             last_played = char.last_played
+            awards["event_cp"] = char.event_cp
+            awards["bonus_cp"] = char.bonus_cp
         return CharacterMetadata(
             events_played=events_played,
             last_played=last_played,

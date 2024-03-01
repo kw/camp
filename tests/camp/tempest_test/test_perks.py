@@ -19,7 +19,7 @@ def test_basic_perk(character: TempestCharacter):
 
 def test_advanced_perk(character: TempestCharacter):
     """Perks with requirements work as expected."""
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     assert not character.can_purchase("advanced-perk")
     character.apply("basic-perk")
     assert character.can_purchase("advanced-perk")
@@ -29,7 +29,7 @@ def test_advanced_perk(character: TempestCharacter):
 
 def test_grants_bonus_lp(character: TempestCharacter):
     """Some perks grant bonus life points."""
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     starting_lp = character.lp.value
     assert character.apply("grants-bonus-lp-perk")
     assert character.lp.value == starting_lp + 3
@@ -39,7 +39,7 @@ def test_grants_bonus_lp(character: TempestCharacter):
 
 
 def test_skill_discount(character: TempestCharacter):
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     character.apply("skill-discount-perk")
 
     base_cp = character.cp.spent_cp
@@ -53,7 +53,7 @@ def test_skill_discount(character: TempestCharacter):
 
 
 def test_perk_discount(character: TempestCharacter):
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     character.apply("perk-discount-perk")
 
     base_cp = character.cp.spent_cp
@@ -74,14 +74,14 @@ def test_patron_has_discount_choices(character: TempestCharacter):
 
     Before a feature is taken, it does not advertise its choices.
     """
-    character.awarded_cp = 3
+    character.freeplay_cp = 3
     assert not character.feature_controller("patron").choices
     assert character.apply("patron")
     assert "discount" in character.feature_controller("patron").choices
 
 
 def test_patron_choice_contains_perks(character: TempestCharacter):
-    character.awarded_cp = 3
+    character.freeplay_cp = 3
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
     choices = discount.available_choices()
@@ -91,7 +91,7 @@ def test_patron_choice_contains_perks(character: TempestCharacter):
 
 def test_patron_choice_does_not_contain_tagged(character: TempestCharacter):
     """Perks tagged `no-patron` aren't available for Patron discount."""
-    character.awarded_cp = 3
+    character.freeplay_cp = 3
     character.apply("patron")
     discount = character.feature_controller("patron").choices["discount"]
     choices = discount.available_choices()
@@ -101,7 +101,7 @@ def test_patron_choice_does_not_contain_tagged(character: TempestCharacter):
 
 
 def test_patron_discount_applied(character: TempestCharacter):
-    character.awarded_cp = 9
+    character.freeplay_cp = 9
     character.apply("patron")
     assert character.cp.spent_cp == 4
     assert character.apply("grants-bonus-lp-perk")

@@ -2,7 +2,7 @@ from camp.engine.rules.tempest.controllers.character_controller import TempestCh
 
 
 def test_temporal_awareness_can_increase(character: TempestCharacter):
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     assert character.apply("cleric:2")
     assert character.apply("ascendant")
     assert character.apply("rewind")
@@ -13,7 +13,7 @@ def test_temporal_awareness_can_increase(character: TempestCharacter):
 
 
 def test_temporal_awareness_available(character: TempestCharacter):
-    character.awarded_cp = 2
+    character.freeplay_cp = 2
     assert character.apply("cleric:2")
     assert character.apply("ascendant")
     assert character.apply("rewind")

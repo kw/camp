@@ -94,14 +94,26 @@ class TempestCharacter(base_engine.CharacterController):
         return self.ruleset.cp_baseline + (self.ruleset.cp_per_level * self.level.value)
 
     @property
-    def awarded_cp(self) -> int:
-        """CP granted by fiat (backstory writing, etc)."""
+    def freeplay_cp(self) -> int:
+        """CP assigned in freeplay mode."""
         return self.model.metadata.awards.get("cp", 0)
 
-    @awarded_cp.setter
-    def awarded_cp(self, value: int) -> None:
+    @freeplay_cp.setter
+    def freeplay_cp(self, value: int) -> None:
         self.model.metadata.awards["cp"] = value
         self.mutated = True
+
+    @property
+    def event_cp(self) -> int:
+        return self.model.metadata.awards.get("event_cp", 0)
+
+    @property
+    def bonus_cp(self) -> int:
+        return self.model.metadata.awards.get("bonus_cp", 0)
+
+    @property
+    def backstory_cp(self) -> int:
+        return self.model.metadata.awards.get("backstory_cp", 0)
 
     @property
     def base_lp(self) -> int:
@@ -229,7 +241,7 @@ class TempestCharacter(base_engine.CharacterController):
         return classes
 
     @property
-    def archetype_legal_classes(self) -> list(class_controller.ClassController):
+    def archetype_legal_classes(self) -> list[class_controller.ClassController]:
         """List of classes that are legal to be the character's archetype."""
         classes = self.classes
         max_level = max([c.value for c in classes], default=0)

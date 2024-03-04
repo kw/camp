@@ -1,4 +1,6 @@
+from datetime import UTC
 from datetime import date
+from datetime import datetime
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -86,7 +88,31 @@ def test_unclaimed_awards(campaign):
         verified=False,
     )
 
-    should_be_claimable = {award1.id, award2.id}
+    # Award where Bob is the assigned player, but it hasn't
+    # been claimed yet.
+    award6 = Award.objects.create(
+        campaign=campaign,
+        player=bob,
+        award_data={},
+    )
+
+    # Award assigned to Bob that has already been claimed.
+    Award.objects.create(
+        campaign=campaign,
+        player=bob,
+        award_data={},
+        applied_date=datetime(2020, 1, 1, tzinfo=UTC),
+    )
+
+    # Award assigned to another player that should be
+    # claimable, but not by Bob.
+    Award.objects.create(
+        campaign=campaign,
+        player=other,
+        award_data={},
+    )
+
+    should_be_claimable = {award1.id, award2.id, award6.id}
     should_be_unclaimable = {award5.id}
 
     # Finally, actually test it.
@@ -102,7 +128,7 @@ def test_unclaimed_awards(campaign):
 
 @pytest.mark.django_db
 def test_claim_award(game, campaign):
-    """In the happy path, claiming works as expected."""
+    """In the happy path, claiming works as expected for email awards."""
     bob = User.objects.create(username="bob")
     EmailAddress.objects.create(
         user=bob,
@@ -128,6 +154,37 @@ def test_claim_award(game, campaign):
 
     award.claim(bob, character)
 
+    assert award.applied_date is not None
+    assert award.check_applied()
+
+    record = PlayerCampaignData.retrieve_model(bob, campaign).record
+    assert record.characters[character.id].bonus_cp == 1
+
+
+@pytest.mark.django_db
+def test_claim_assigned_award(game, campaign):
+    """In the happy path, claiming works as expected for assigned awards."""
+    bob = User.objects.create(username="bob")
+
+    award = Award.objects.create(
+        campaign=campaign,
+        player=bob,
+        award_data=AwardRecord(date=date(2020, 2, 2), bonus_cp=1).model_dump(
+            mode="json"
+        ),
+    )
+
+    character = Character.objects.create(
+        owner=bob,
+        game=game,
+        campaign=campaign,
+    )
+
+    assert award.needs_character
+
+    award.claim(bob, character)
+
+    assert award.applied_date is not None
     assert award.check_applied()
 
     record = PlayerCampaignData.retrieve_model(bob, campaign).record
@@ -161,6 +218,9 @@ def test_claim_award_unverified(game, campaign):
     with pytest.raises(ValueError):
         award.claim(bob, character)
 
+    assert award.applied_date is None
+    assert not award.check_applied()
+
 
 @pytest.mark.django_db
 def test_claim_award_freeplay(game, campaign):
@@ -188,6 +248,9 @@ def test_claim_award_freeplay(game, campaign):
 
     with pytest.raises(ValueError):
         award.claim(bob, character)
+
+    assert award.applied_date is None
+    assert not award.check_applied()
 
 
 @pytest.mark.django_db
@@ -218,3 +281,35 @@ def test_claim_award_other_character(game, campaign):
 
     with pytest.raises(ValueError):
         award.claim(bob, character)
+
+    assert award.applied_date is None
+    assert not award.check_applied()
+
+
+@pytest.mark.django_db
+def test_claim_assigned_to_other_player(game, campaign):
+    """Can't claim an award assigned to someone else."""
+    bob = User.objects.create(username="bob")
+    other = User.objects.create(username="other")
+
+    award = Award.objects.create(
+        campaign=campaign,
+        player=other,
+        award_data=AwardRecord(date=date(2020, 2, 2), bonus_cp=1).model_dump(
+            mode="json"
+        ),
+    )
+
+    character = Character.objects.create(
+        owner=bob,
+        game=game,
+        campaign=campaign,
+    )
+
+    assert award.needs_character
+
+    with pytest.raises(ValueError):
+        award.claim(bob, character)
+
+    assert award.applied_date is None
+    assert not award.check_applied()

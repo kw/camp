@@ -15,6 +15,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.db.models.functions import Upper
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
 
@@ -774,6 +775,11 @@ class Award(RulesModel):
     email = models.EmailField(null=True, blank=True)
     award_data = models.JSONField()
     created_date = models.DateTimeField(auto_now_add=True)
+    applied_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+    )
 
     chapter = models.ForeignKey(
         Chapter,
@@ -885,12 +891,20 @@ class Award(RulesModel):
         This will cause the player's campaign data to be updated.
         All mutated objects will have save() called.
         """
-        if self.player is not None:
+        if self.applied_date:
             raise ValueError("Award is already claimed")
-        claimable, _ = Award.unclaimed_for(player)
-        if self not in claimable:
-            raise ValueError(f"{player} is not eligible to claim this award.")
-        self.player = player
+        if self.player == player:
+            pass
+        elif self.player is None:
+            claimable, _ = Award.unclaimed_for(player)
+            if self not in claimable:
+                raise ValueError(f"{player} is not eligible to claim this award.")
+            self.player = player
+            self.character = None
+        else:
+            # This award is assigned to a different player already.
+            raise ValueError(f"{player} can't accept award assigned to {self.player}")
+        self.character = None
         if character is not None:
             if character.owner != player:
                 raise ValueError(f"{player} is not the owner of {character}")
@@ -904,6 +918,8 @@ class Award(RulesModel):
         self.apply()
 
     def apply(self):
+        if self.applied_date:
+            raise ValueError("Already applied")
         if not self.player:
             raise ValueError("Player not specified.")
         elif self.needs_character:
@@ -911,6 +927,8 @@ class Award(RulesModel):
         player_data: PlayerCampaignData = PlayerCampaignData.retrieve_model(
             self.player, self.campaign, update=False
         )
+        self.applied_date = timezone.now()
+        self.save()
         player_data.apply(self.record)
         player_data.save()
 
@@ -940,17 +958,30 @@ class Award(RulesModel):
         # have rewards they _could_ claim if they'd just verify their email.
         hintable_email = [e.email.upper() for e in emails.filter(verified=False)]
 
-        # We're only looking for unclaimed awards, those where the player/character
+        # We're mainly looking for unclaimed awards, those where the player/character
         # fields have not yet been assigned.
-        awards = (
+        email_awards = (
             cls.objects.annotate(upper_email=Upper("email"))
-            .filter(player_id=None, character_id=None)
+            .filter(player_id=None, character_id=None, applied_date=None)
             .order_by("created_date")
         )
-        if campaign is not None:
-            awards = awards.filter(campaign=campaign)
 
-        claimable_awards = awards.filter(upper_email__in=claimable_email)
-        hintable_awards = awards.filter(upper_email__in=hintable_email)
+        # There are also cases where the player account is known,
+        # but the player doesn't have a character created yet
+        # or the awarder doesn't know where it should go.
+        player_awards = cls.objects.filter(
+            player=player,
+            applied_date=None,
+        )
+        if campaign is not None:
+            email_awards = email_awards.filter(campaign=campaign)
+            player_awards = player_awards.filter(campaign=campaign)
+
+        claimable_awards = (
+            email_awards.filter(upper_email__in=claimable_email) | player_awards
+        ).order_by("created_date")
+        hintable_awards = email_awards.filter(upper_email__in=hintable_email).order_by(
+            "created_date"
+        )
 
         return claimable_awards, hintable_awards

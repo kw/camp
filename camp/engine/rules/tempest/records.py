@@ -332,7 +332,7 @@ class PlayerRecord(BaseModel, frozen=True):
                         award.character, award.date
                     )
                     current_events_played += 1
-                    if current_last_played < award.date:
+                    if current_last_played is None or current_last_played < award.date:
                         current_last_played = award.date
                     character_plays[award.character] = current_events_played
                     character_last_played[award.character] = current_last_played

@@ -8,10 +8,7 @@
 {% if claimable %}
 <h2>Unclaimed Awards</h2>
 <div x-data='{selected: [], target_char: "{{selected_character}}" }'>
-  <p>The following awards must be applied to specific characters. Once applied,
-    your selection can't be changed. If you want to apply these to a different
-    account entirely, remove the associated
-    <a href="{% url 'account_email' %}">email address</a> and add it to another account.
+  <p>The following awards must be applied to specific characters. Once applied, your selection can't be changed.
   </p>
   <p>
     <div class="btn-group" role="group">
@@ -38,7 +35,7 @@
           <td><input type="checkbox" x-model="selected"
                 name="claim_award" value="{{a.id}}"></input></td>
           <td>{{a.date}}</td>
-          <td>{{a.email}}</td>
+          <td>{{a.email|default:"n/a"}}</td>
           <td>{{a.category.name.title}}</td>
           <td>{{a.describe}}</td>
         </tr>

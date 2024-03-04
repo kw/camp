@@ -217,7 +217,12 @@ class _AwardStepTwo(AwardPlayerStep):
         widget=forms.HiddenInput,
         required=True,
     )
-    character = forms.ModelChoiceField(queryset=None, required=True)
+    character = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        empty_label="[Not bound to a character]",
+        help_text="Select a character. If not bound, this will not be applied immediately, and the player will choose what character to apply it to (if needed).",
+    )
     description = forms.CharField(
         required=False, help_text="(Optional) Enter a description for this award"
     )
@@ -303,7 +308,7 @@ class AwardEventStep(_AwardStepTwo):
                 award_data=record.model_dump(mode="json"),
             )
 
-            if player:
+            if player and character:
                 award.apply()
         return award
 
@@ -409,7 +414,7 @@ class AwardPlotStep(_AwardStepTwo):
                 award_data=record.model_dump(mode="json"),
             )
 
-            if player:
+            if player and character:
                 award.apply()
         return award
 

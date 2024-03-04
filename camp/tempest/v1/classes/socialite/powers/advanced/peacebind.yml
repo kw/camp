@@ -1,10 +1,10 @@
 name: Peacebind
-incant: '“Let your weapons be bound”'
-call: '“Short Obey: Use no weapons nor offensive spells in this building until physically or magically attacked.”'
+incant: "“Let your weapons be bound”"
+call: "“Long Obey: Use no weapons nor offensive spells in this building until physically or magically attacked.”"
 target: Individual
 delivery: Touch
 accent: None
-duration: Short Rest
+duration: Long Rest
 refresh: Immediate
 effect: Obey
 description: |

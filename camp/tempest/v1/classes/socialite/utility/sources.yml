@@ -7,4 +7,7 @@ accent: None
 duration: Instantaneous
 refresh: Event
 effect: Special
-description: At Check-In, the Socialite may purchase a number of items from the closed markets made available to them by business partners or associates. The Socialite can purchase any of a number of items from the Available Items List presented at Check-In. These items’ price and quantity are determined by staff, and will be dependent on current plot circumstances. The Check-In list may contain anything from basic resources, items not otherwise available in this area, information, or other curios and oddities as Plot deems fit.
+description: |
+  The Socialite has access to closed markets before gatherings via business partners and associates.
+
+  A Sources List containing prices and quantities will be available at Check-In. Basic Resources, otherwise unavailable items, information, or other curiosities and oddities Plot deems fit will rotate through this list.

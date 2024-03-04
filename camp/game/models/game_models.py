@@ -1,22 +1,40 @@
 from __future__ import annotations
 
+import datetime
 from functools import cached_property
 from functools import lru_cache
 from typing import Any
+from typing import TypeAlias
 
 import rules
+from allauth.account.models import EmailAddress
 from django.conf import settings as _settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
+from django.db.models import QuerySet
+from django.db.models.functions import Upper
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from rules.contrib.models import RulesModel
 
 import camp.engine.loader
 import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
+from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import AwardCategory
+from camp.engine.rules.tempest.records import AwardRecord
+from camp.engine.rules.tempest.records import AwardRecordAdapter
+from camp.engine.rules.tempest.records import PlayerRecord
+from camp.engine.rules.tempest.records import PlayerRecordAdapter
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
+
+
+def _this_year():
+    return datetime.date.today().year
+
 
 # Authorization rules for game models.
 is_authenticated = rules.is_authenticated
@@ -167,7 +185,19 @@ def is_plot(user: User, obj):
 
 
 @rules.predicate
-def is_owner(user: User, obj):
+def is_manager(user: User, obj):
+    """Does this user manage (or own) any chapter?"""
+    game = get_game(obj)
+    if game is None:
+        return False
+    return any(
+        is_chapter_manager(user, chapter) or is_chapter_owner(user, chapter)
+        for chapter in game.chapters.all()
+    )
+
+
+@rules.predicate
+def is_object_owner(user: User, obj):
     """Is this user an owner of the object?"""
     if user.is_anonymous:
         return False
@@ -182,6 +212,16 @@ def is_owner(user: User, obj):
         else:
             return user in obj.owners
     return False
+
+
+# This includes almost every role except for tavernkeep.
+# Basically, this is folks who should have access to special plot
+# or game runner tools.
+# The Tavernkeep position exists to allow designated folks to see
+# certain registration and profile data, not to manipulate anything
+# or see secret things.
+# We may cut this down further as the role distinctions become refined.
+has_staff_powers = is_logistics | is_plot | is_manager | is_game_rules_staff
 
 
 def get_game(obj) -> Game | None:
@@ -255,8 +295,8 @@ class Game(RulesModel):
     """
 
     name: str = models.CharField(blank=False, max_length=100, default="Game")
-    description: str = models.TextField(blank=True)
-    home_footer: str = models.TextField(blank=True)
+    description: str = models.TextField(blank=True, default="")
+    home_footer: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=False)
     # If a user is set as a game owner, they are always considered to have
     # role admin privileges, even if the corresponding roles are
@@ -429,7 +469,7 @@ class Chapter(RulesModel):
     )
     slug: str = models.SlugField(unique=True)
     name: str = models.CharField(max_length=50)
-    description: str = models.TextField(blank=True)
+    description: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=True)
     owners: set[User] = models.ManyToManyField(_settings.AUTH_USER_MODEL)
     timezone: str = models.CharField(max_length=50, help_text="e.g. 'America/Denver'")
@@ -534,13 +574,32 @@ class Campaign(RulesModel):
         related_name="campaigns",
     )
     slug: str = models.SlugField(unique=True)
-    name: str = models.CharField(blank=True, max_length=100)
-    description: str = models.TextField(blank=True)
+    name: str = models.CharField(blank=True, max_length=100, default="Campaign")
+    start_year = models.IntegerField(default=_this_year)
+    description: str = models.TextField(blank=True, default="")
     is_open: bool = models.BooleanField(default=False)
     ruleset: Ruleset = models.ForeignKey(
         Ruleset, null=True, on_delete=models.PROTECT, related_name="campaigns"
     )
-    data: dict[str, Any] = models.JSONField(default=dict, blank=True)
+    engine_data: dict[str, Any] = models.JSONField(null=True, blank=True, default=None)
+
+    @property
+    def record(self) -> campaign.CampaignRecord:
+        if self.engine_data:
+            model = campaign.CampaignAdapter.validate_python(self.engine_data)
+            if model.name != self.name or model.start_year != self.start_year:
+                model = model.model_copy(
+                    update={"name": self.name, "start_year": self.start_year},
+                )
+            return model
+        return campaign.CampaignRecord(
+            name=self.name,
+            start_year=self.start_year,
+        )
+
+    @record.setter
+    def record(self, model: campaign.CampaignRecord):
+        self.engine_data = model.model_dump(mode="json")
 
     def __str__(self) -> str:
         if self.name:
@@ -640,3 +699,294 @@ class ChapterRole(RulesModel):
             "view": can_manage_chapter | can_manage_game,
             "delete": can_manage_chapter,
         }
+
+
+class PlayerCampaignData(RulesModel):
+    user = models.ForeignKey(
+        _settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="player_data",
+    )
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name="player_data",
+    )
+    data = models.JSONField(default=None, null=True, blank=True)
+
+    @property
+    def record(self) -> PlayerRecord:
+        if self.data is None:
+            return PlayerRecord(
+                user=self.user_id,
+            )
+        return PlayerRecordAdapter.validate_python(self.data)
+
+    @record.setter
+    def record(self, value: PlayerRecord):
+        self.data = value.model_dump(mode="json")
+
+    @transaction.atomic
+    def apply(self, award: AwardRecord):
+        player_record = self.record
+        campaign_record = self.campaign.record
+        self.record = player_record.update(campaign_record, [award])
+
+    @classmethod
+    def retrieve_model(
+        cls, user: User, campaign: Campaign, update: bool = True
+    ) -> PlayerCampaignData:
+        model, _ = cls.objects.get_or_create(user=user, campaign=campaign)
+        campaign_record = campaign.record
+        player_record = model.record
+        if update:
+            new_player_record = player_record.update(campaign_record)
+            if new_player_record != player_record:
+                model.record = new_player_record
+        return model
+
+    def __str__(self):
+        return f"PlayerData({self.user}, {self.campaign})"
+
+    class Meta:
+        unique_together = [["user", "campaign"]]
+
+
+class Award(RulesModel):
+    """Represents generic award data.
+
+    This doesn't necessarily encompass all awards, since we can represent some
+    with things like EventRegistrations. The primary use for this is things like
+    marking backstory credit, giving out bonus CP, or handing out special unlock flags.
+
+    One of the key features is that the award model doesn't need the actual player
+    or character ID. If all you know is the player's email address, put it in, and
+    if a player has a matching verified email, they can claim the award. Additionally,
+    if a claimed award needs to associate with a character, the player will be prompted
+    to select or create one.
+    """
+
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    player = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    character = models.ForeignKey(
+        "character.Character", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    email = models.EmailField(null=True, blank=True)
+    award_data = models.JSONField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    applied_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+    )
+
+    chapter = models.ForeignKey(
+        Chapter,
+        null=True,
+        on_delete=models.SET_NULL,
+        default=None,
+        blank=True,
+    )
+    event = models.ForeignKey(
+        "game.Event",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    awarded_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        default=None,
+        related_name="awards_created",
+    )
+
+    class Meta:
+        rules_permissions = {
+            "add": has_staff_powers,
+            "view": has_staff_powers,
+            "delete": has_staff_powers,
+        }
+
+    def describe(self) -> str:
+        return self.record.describe()
+
+    @property
+    def game(self) -> Game:
+        # This is needed to properly process the "add" permission
+        return self.campaign.game
+
+    @property
+    def date(self) -> date:
+        return self.record.date
+
+    @property
+    def category(self) -> AwardCategory:
+        return self.record.category
+
+    def __str__(self):
+        if not self.award_data:
+            award_description = "Null Award"
+        else:
+            record = self.record
+            award_description = record.description
+            if not award_description:
+                award_description = record.describe()
+        if self.player:
+            return f"Award for {self.player}: {award_description}"
+        else:
+            return f"Award for {self.email}: {award_description}"
+
+    def check_applied(self) -> bool:
+        if self.player is None:
+            return False
+        # If this award needs a character assigned, we haven't
+        # applied it if we don't have the character yet.
+        my_award = self.record
+        if my_award.needs_character and self.character_id is None:
+            return False
+
+        player_data = PlayerCampaignData.retrieve_model(
+            user=self.player,
+            campaign=self.campaign,
+            update=False,
+        )
+        player_record = player_data.record
+
+        for award in player_record.awards:
+            if my_award == award:
+                return True
+        return False
+
+    @property
+    def record(self) -> AwardRecord:
+        r = AwardRecordAdapter.validate_python(self.award_data)
+        if r.character != self.character_id:
+            r = r.model_copy(update={"character": self.character_id})
+        return r
+
+    @record.setter
+    def record(self, value: AwardRecord):
+        self.award_data = value.model_dump(mode="json")
+
+    @property
+    def needs_character(self) -> bool:
+        return self.record.needs_character and not self.character
+
+    @transaction.atomic
+    def claim(self, player: User, character=None):
+        """Claim this award on behalf of this user.
+
+        Arguments:
+            player: The player to claim for.
+            character: The character to apply this award for.
+                Not all awards need a character, so this is only
+                required for awards that do. This will fail if
+                the character is not owned by the indicated player
+                or a part of this award's campaign.
+
+        This will cause the player's campaign data to be updated.
+        All mutated objects will have save() called.
+        """
+        if self.applied_date:
+            raise ValueError("Award is already claimed")
+        if self.player == player:
+            pass
+        elif self.player is None:
+            claimable, _ = Award.unclaimed_for(player)
+            if self not in claimable:
+                raise ValueError(f"{player} is not eligible to claim this award.")
+            self.player = player
+            self.character = None
+        else:
+            # This award is assigned to a different player already.
+            raise ValueError(f"{player} can't accept award assigned to {self.player}")
+        self.character = None
+        if character is not None:
+            if character.owner != player:
+                raise ValueError(f"{player} is not the owner of {character}")
+            if character.campaign != self.campaign:
+                raise ValueError(f"{character} is not part of {self.campaign}")
+            self.character = character
+            self.record = self.record.model_copy(update={"character": character.id})
+        elif self.needs_character:
+            raise ValueError("Character required for this award.")
+        self.save()
+        self.apply()
+
+    def apply(self):
+        if self.applied_date:
+            raise ValueError("Already applied")
+        if not self.player:
+            raise ValueError("Player not specified.")
+        elif self.needs_character:
+            raise ValueError("Character not specified.")
+        player_data: PlayerCampaignData = PlayerCampaignData.retrieve_model(
+            self.player, self.campaign, update=False
+        )
+        self.applied_date = timezone.now()
+        self.save()
+        player_data.apply(self.record)
+        player_data.save()
+
+    @classmethod
+    def unclaimed_for(
+        cls, player: User, campaign: Campaign | None = None
+    ) -> tuple[QuerySet[Award], QuerySet[Award]]:
+        """Queryset of awards this player could potentially claim.
+
+        Arguments:
+            user: The user whose awards should be found. The basis
+                for the search will be the allauth EmailAddress
+                models associated with the user.
+            campaign: The campaign to check. If None, awards for
+                all open campaigns are returned.
+
+        Returns:
+            (claimable, unclaimable): Querysets containing awards
+                that could be claimed by this player. The awards in
+                the `unclaimable` set are associated with an email
+                address the player has not yet verified.
+        """
+        emails = EmailAddress.objects.filter(user=player)
+
+        # Only awards matching verified emails are claimable.
+        claimable_email = [e.email.upper() for e in emails.filter(verified=True)]
+
+        # But we'll still try out the rest so we can nudge the player if they
+        # have rewards they _could_ claim if they'd just verify their email.
+        hintable_email = [e.email.upper() for e in emails.filter(verified=False)]
+
+        # We're mainly looking for unclaimed awards, those where the player/character
+        # fields have not yet been assigned.
+        email_awards = (
+            cls.objects.annotate(upper_email=Upper("email"))
+            .filter(player_id=None, character_id=None, applied_date=None)
+            .order_by("created_date")
+        )
+
+        # There are also cases where the player account is known,
+        # but the player doesn't have a character created yet
+        # or the awarder doesn't know where it should go.
+        player_awards = cls.objects.filter(
+            player=player,
+            applied_date=None,
+        )
+        if campaign is not None:
+            email_awards = email_awards.filter(campaign=campaign)
+            player_awards = player_awards.filter(campaign=campaign)
+        else:
+            email_awards = email_awards.filter(campaign__is_open=True)
+            player_awards = player_awards.filter(campaign__is_open=True)
+
+        claimable_awards = (
+            email_awards.filter(upper_email__in=claimable_email) | player_awards
+        ).order_by("created_date")
+        hintable_awards = email_awards.filter(upper_email__in=hintable_email).order_by(
+            "created_date"
+        )
+
+        return claimable_awards, hintable_awards

@@ -1,10 +1,10 @@
 name: Faith's Lash
-incant: '“... to strike with faith”'
-call: '“Short Imbue Radiance to Self”'
+incant: "“... to strike with faith”"
+call: “Short Grant Radiance to Self”
 target: Self
 delivery: None
 accent: Radiance
 duration: Short
-effect: Imbue
+effect: Grant Accent
 description: |
-  Calling on their Devotion, this spell allows the caster to add the Radiance Accent to otherwise unaccented melee attacks when expending a Spike. Note: this spell does not consume a Spike itself, and as such may be used with other powers or spells that do.
+  Calling on their Devotion, this spell allows the caster to add the Radiance Accent to otherwise unaccented melee attacks.

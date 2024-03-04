@@ -1,11 +1,13 @@
 from .event_models import Event
 from .event_models import EventRegistration
 from .event_models import EventReport
+from .game_models import Award
 from .game_models import Campaign
 from .game_models import Chapter
 from .game_models import ChapterRole
 from .game_models import Game
 from .game_models import GameRole
+from .game_models import PlayerCampaignData
 from .game_models import Ruleset
 from .game_models import can_manage_chapter
 from .game_models import can_manage_chapter_not_self
@@ -22,17 +24,19 @@ from .game_models import is_game_manager
 from .game_models import is_game_owner
 from .game_models import is_game_rules_staff
 from .game_models import is_logistics
-from .game_models import is_owner
+from .game_models import is_object_owner
 from .game_models import is_plot
 from .game_models import is_self
 
 __all__ = [
+    "Award",
     "Game",
     "Chapter",
     "GameRole",
     "ChapterRole",
     "Campaign",
     "Ruleset",
+    "PlayerCampaignData",
     "Event",
     "EventRegistration",
     "EventReport",
@@ -47,7 +51,7 @@ __all__ = [
     "is_game_owner",
     "is_game_rules_staff",
     "is_logistics",
-    "is_owner",
+    "is_object_owner",
     "is_plot",
     "is_self",
     "can_manage_events",

@@ -31,7 +31,7 @@ def test_mage_spellscholar(character: TempestCharacter):
 def test_extended_capacity(character: TempestCharacter):
     """Check that Extended Capacity skills allow a sphere to be selected multiple times."""
     assert character.apply("mage:2")
-    character.awarded_cp = 10
+    character.freeplay_cp = 10
     slots = character.get("arcane.spell_slots@1")
     # Buy 3 ranks of Extended Capacity.
     assert character.apply("extended-capacity-novice:3")

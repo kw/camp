@@ -14,12 +14,11 @@ description: |
     * Harm Constructs: “Piercing 3 to Construct.” If the caster expends a Spike
       an additional Spell ball is charged.
     * Dispel any of the following: “Dispel Protects”, “Dispel Summoned Armor”,
-      “Dispel Barrier”, or a specific Condition: “Dispel [Condition]” (remember
-      that Immunity is also a Condition).
-    * Dispel all Conditions caused by a specific Accent: “Dispel [Accent]”.
+      “Dispel Barrier”, or a specific Condition: “Dispel [Condition]”.
+    * Dispel all Conditions caused by a specific Accent: “Dispel [Accent].”
     * Break any circle represented by a cord, rope, or the like:
-      “Dispel Circle”. This will end spells like Elemental Node.
+      “Dispel Circle.”
     * Deactivate a Glyph for a Slow Count of 60: “Dispel Magic: Deactivate
-      Glyph, Slow 60”.
+      Glyph, Slow 60.”
 
   Note: By game-design, Dispel Magic may have other specific uses.

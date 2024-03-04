@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import datetime
+import logging
 import uuid
 from decimal import Decimal
+from typing import TypeAlias
 
 from celery.result import AsyncResult
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db import transaction
 from django.db.models import F
 from django.db.models import Q
 from django.db.models import QuerySet
@@ -15,10 +18,17 @@ from django.utils import timezone
 from rules.contrib.models import RulesModel
 
 import camp.accounts.models as account_models
+from camp.engine.rules.tempest import campaign
+from camp.engine.rules.tempest.records import AwardCategory
+from camp.engine.rules.tempest.records import AwardRecord
 
 from . import game_models
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
+
+
+# TODO: Make this a campaign setting
+_XP_PER_HALFDAY = Decimal(2)
 
 
 class Month(models.IntegerChoices):
@@ -110,48 +120,19 @@ class Event(RulesModel):
         max_digits=4,
         decimal_places=2,
         default=Decimal(4),
-        help_text="How many long rests?",
+        help_text="How many half days?",
     )
     daygame_logistics_periods = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         default=Decimal(2),
-        help_text="How many long rests for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
+        help_text="How many half-days for a daygamer? Set to zero to disallow daygaming. Must be less than the normal reward.",
     )
-    logistics_year = models.IntegerField(
-        blank=True,
-        default=0,
-        help_text="What year of the campaign is this event in? Must match the event start or end date.",
-    )
-    logistics_month = models.IntegerField(
-        blank=True,
-        default=0,
-        choices=Month.choices,
-        help_text=(
-            "What month of the campaign should this be counted as? "
-            "Must match the event start or end date."
-        ),
-    )
+    completed = models.BooleanField(default=False)
 
     registrations: QuerySet[EventRegistration]
 
     def save(self, *args, **kwargs):
-        # The logistics month defaults to the end date of the event.
-        if not self.logistics_year:
-            self.logistics_year = self.event_end_date.year
-        if not self.logistics_month:
-            self.logistics_month = self.event_end_date.month
-
-        # If a logistics month is specified that doesn't correspond to either
-        # the start of the event or the end of the event, reset it.
-        valid_logi_periods = {
-            (self.event_start_date.year, self.event_start_date.month),
-            (self.event_end_date.year, self.event_end_date.month),
-        }
-        if (self.logistics_year, self.logistics_month) not in valid_logi_periods:
-            self.logistics_year = self.event_end_date.year
-            self.logistics_month = self.event_end_date.month
-
         if not self.name:
             self.name = str(self)
         super().save(*args, **kwargs)
@@ -160,9 +141,7 @@ class Event(RulesModel):
         if self.name:
             effective_name = self.name
         else:
-            effective_name = (
-                f"{self.chapter} {self.logistics_year}-{self.logistics_month}"
-            )
+            effective_name = f"{self.chapter} {self.logistics_month_label}"
         if self.is_canceled:
             effective_name = f"{effective_name} [CANCELED]"
         return effective_name
@@ -190,8 +169,28 @@ class Event(RulesModel):
         return self.event_start_date <= timezone.now() <= self.event_end_date
 
     @property
+    def logistics_month_label(self) -> str:
+        return self.event_end_date.strftime("%b %Y")
+
+    @property
+    def record(self) -> campaign.EventRecord:
+        return campaign.EventRecord(
+            chapter=self.chapter.slug,
+            date=self.event_end_date.date(),
+            xp_value=int(self.logistics_periods * _XP_PER_HALFDAY),
+            cp_value=1 if self.logistics_periods else 0,
+        )
+
+    @property
     def is_canceled(self):
         return bool(self.canceled_date)
+
+    @property
+    def is_old(self):
+        """An event is _old_ if it is both complete/canceled and in the past."""
+        return self.event_end_date < timezone.now() and (
+            self.completed or self.is_canceled
+        )
 
     @property
     def lodging_choices(self):
@@ -201,6 +200,59 @@ class Event(RulesModel):
         if self.cabin_allowed:
             choices.append((Lodging.CABIN.value, Lodging.CABIN.label))
         return choices
+
+    def can_complete(self) -> tuple[bool, str]:
+        """Determine if the event can currently be marked 'complete'.
+
+        Returns: (completable: bool, reason: str)
+        completable: If true, it's safe to perform the completion task.
+        reason: Otherwise, the reason for the failure is given here.
+        """
+        if self.completed:
+            return False, "Already marked complete."
+
+        # Depending on the logistics team, someone might want to mark attendance during the game,
+        # possibly even as soon as during checkin. But, under no circumstances should a game be
+        # marked complete before it has even started.
+        if self.event_start_date > timezone.now():
+            return False, "Event hasn't even started yet."
+
+        if self.is_canceled:
+            return False, "A canceled event can't be marked complete."
+
+        previous_date = self.campaign.record.last_event_date
+        if previous_date > self.record.date:
+            return False, (
+                "Event could not be integrated into the campaign model. "
+                f"It occurred prior to the last event ({previous_date})."
+            )
+
+        return True, "Event can be completed."
+
+    @transaction.atomic
+    def mark_complete(self):
+        """Updates the campaign's progress, then marks the event as complete.
+
+        This is an atomic operation. The model will be saved with complete=True
+        if this succeeds, which will have occurred unless an exception is raised.
+        """
+        can, reason = self.can_complete()
+        if not can:
+            raise ValueError(reason)
+
+        campaign = self.campaign
+        campaign_model = campaign.record
+        event_model = self.record
+        previous_date = campaign_model.last_event_date
+        if previous_date > event_model.date:
+            raise ValueError(
+                "Event could not be integrated into the campaign model. "
+                f"It occurred prior to the last event ({previous_date})."
+            )
+        campaign.record = campaign_model.add_events([event_model])
+        self.completed = True
+        campaign.save()
+        self.save()
 
     def get_registration(self, user: User) -> EventRegistration | None:
         """Returns the event registration corresponding to this user, if it exists.
@@ -240,8 +292,8 @@ class Event(RulesModel):
 
         indexes = [
             models.Index(
-                fields=["campaign", "chapter", "logistics_year", "logistics_month"],
-                name="game-campaign-year-month-idx",
+                fields=["campaign", "chapter"],
+                name="game-campaign-idx",
             ),
         ]
 
@@ -308,21 +360,62 @@ class EventRegistration(RulesModel):
     canceled_date = models.DateTimeField(null=True, blank=True)
 
     # Fields for post-game record keeping.
-    attended: bool = models.BooleanField(default=False)
+    attended = models.BooleanField(default=False)
     attended_periods = models.DecimalField(max_digits=4, decimal_places=2, default=0)
+    award_applied_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Timestamp when this award was applied to the character record, if it was applied.",
+    )
+    award_applied_by = models.ForeignKey(
+        User,
+        null=True,
+        default=None,
+        on_delete=models.SET_NULL,
+    )
 
     # Fields for logi to fill in regarding payment.
     # Later, a payment system might handle this.
     payment_complete: bool = models.BooleanField(default=False)
     payment_note: str = models.TextField(blank=True, default="")
 
+    def award_record(
+        self, logistics_periods: int | Decimal | None = None
+    ) -> AwardRecord:
+        """Generates an award record suitable for this event registration.
+
+        Arguments:
+            logistics_periods: If specified (and positive), the number of logistics
+                periods (half-days, in Tempest) to base rewards on. If not specified,
+                this defaults to whatever the `attendance` field indicates.
+        """
+        # TODO: Once we're tracking SP, include a configurable default SP award for NPC registrations.
+        event = self.event
+        if logistics_periods is None:
+            logistics_periods = self.default_logistics_periods
+        else:
+            logistics_periods = max(
+                min(event.logistics_periods, logistics_periods), Decimal(0)
+            )
+        xp = int(_XP_PER_HALFDAY * logistics_periods)
+
+        return AwardRecord(
+            date=event.event_end_date.date(),
+            source_id=event.pk,
+            character=self.character_id,
+            category=AwardCategory.EVENT,
+            description=f"{self.pc_npc} Event Credit for {event}",
+            event_xp=xp,
+            event_cp=1 if xp > 0 else 0,
+            # Events that grant no XP don't flag the PC as "played"
+            event_played=(not self.is_npc) if xp > 0 else False,
+            event_staffed=self.is_npc,
+        )
+
     @property
     def is_canceled(self):
         return bool(self.canceled_date)
-
-    @property
-    def logistics_window(self) -> tuple[int, int]:
-        return self.event.logistics_year, self.event.logistics_month
 
     @property
     def profile(self) -> account_models.Membership:
@@ -342,6 +435,77 @@ class EventRegistration(RulesModel):
     @property
     def pc_npc(self) -> str:
         return "NPC" if self.is_npc else "PC"
+
+    @property
+    def player_is_new(self) -> bool:
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            self.user, self.event.campaign, update=False
+        )
+        record = player_data.record
+        return (record.events_played + record.events_staffed) < 1
+
+    @property
+    def npc_is_new(self) -> bool:
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            self.user, self.event.campaign, update=False
+        )
+        record = player_data.record
+        return record.events_staffed < 1
+
+    @property
+    def character_is_new(self) -> bool:
+        if self.is_npc:
+            return False
+        if character := self.character:
+            if metadata := character.metadata:
+                return metadata.events_played < 1
+        return False
+
+    @transaction.atomic
+    def apply_award(
+        self, applied_by: User, logistics_periods: int | Decimal | None = None
+    ) -> None:
+        if not self.event.completed:
+            raise ValueError(
+                f"Can't apply credit for event '{self.event}' until it is completed."
+            )
+        if self.canceled_date is not None:
+            raise ValueError("Registration was withdrawn")
+        if self.attended:
+            # TODO: Support revising a previously applied award.
+            raise ValueError("Already marked attendance for this player")
+        if logistics_periods is None:
+            logistics_periods = self.default_logistics_periods
+        self.attended = True
+        self.attended_periods = logistics_periods
+        self.award_applied_by = applied_by
+        self.award_applied_date = timezone.now()
+        campaign = self.event.campaign
+
+        award = self.award_record(logistics_periods=logistics_periods)
+
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            user=self.user,
+            campaign=campaign,
+            update=False,
+        )
+        player_record = player_data.record
+        player_data.record = player_record.update(campaign.record, [award])
+        player_data.save()
+
+    @property
+    def default_logistics_periods(self) -> Decimal:
+        match self.attendance:
+            case Attendance.FULL:
+                logistics_periods = self.event.logistics_periods
+            case Attendance.DAY:
+                logistics_periods = Decimal(2)
+            case _:
+                logging.warning(
+                    "Unknown attendance type %s", self.get_attendance_label()
+                )
+                logistics_periods = Decimal(0)
+        return logistics_periods
 
     def get_absolute_url(self):
         return reverse(

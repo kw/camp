@@ -3,14 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}{% block body_title %}
-{{ character }}
+New Character
 {% endblock %}{% endblock %}
 
 {% block content %}
 
-<form method="post">{% csrf_token %}
-    {{ form | crispy }}
-    <input type="submit" class="btn btn-primary" value="Save">
-</form>
+{% include 'character/new_character_snippet.html' %}
 
 {% endblock %}

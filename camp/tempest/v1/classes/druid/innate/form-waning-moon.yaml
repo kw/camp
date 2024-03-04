@@ -2,7 +2,7 @@ name: Form of the Waning Moon
 requires: druid:2
 tags: [form]
 incant: RP - Slow 300 spent in a rite dedicating oneself to nature
-call: “Imbue Form of the Waning Moon to Self”
+call: “Grant Form of the Waning Moon”
 target: Self
 delivery: None
 accent: None

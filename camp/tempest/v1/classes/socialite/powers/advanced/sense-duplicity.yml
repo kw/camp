@@ -1,9 +1,9 @@
 name: Sense Duplicity
 incant: None
-call: '“[Name or Description] Subtle Discern by Mind: Do you believe the last thing you said was a lie?”'
+call: "“[Name or Description] Subtle Discern by Mind: Do you believe the last thing you said was a lie?” or “[Name or Description] Subtle Discern by Mind: Have you knowingly told a lie in the past five minutes”"
 target: Individual
 delivery: Verbal
 duration: Instantaneous
-refresh: Long Rest
+refresh: Short Rest
 description: |
-  The Socialite may determine if a spoken statement was a lie or not (according to the speaker), listening to subtle cues in the speaker’s voice.
+  By listening to subtle cues in the speaker’s voice, a Socialite may determine if a spoken statement was a lie (according to the speaker).

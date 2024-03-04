@@ -1,7 +1,7 @@
 name: Ensnare
 tags: [waning-moon]
 incant: "...I ensnare your legs."
-call: '"Short Root by Poison", "Quick Root by Ice"'
+call: '"Short Root by Poison", "Short Root by Ice"'
 target: Individual
 delivery: Weapon
 accent: Poison, Ice

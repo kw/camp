@@ -1,6 +1,6 @@
 name: Force Shield
 incant: "... for a force shield."
-call: "Grant Protect vs Force or Mind to Self"
+call: "Grant Protect vs Force or Mind"
 target: Self
 duration: Until Used
 refresh: Focus Quick 100

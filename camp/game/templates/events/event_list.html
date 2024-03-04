@@ -5,19 +5,37 @@ Events
 {% endblock %}{% endblock %}
 
 {% block content %}
+<div x-data="{show_old: false}">
+  <input class="btn-check" id="old" type="checkbox" x-model="show_old"></input>
+  <label class="btn btn-outline-primary" for="old">Show Old Events</label>
 
-{% for chapter, events in chapter_events %}
-  <h2>{{chapter}}</h2>
-  <ul>
-    {% for event in events %}
-    <li><a href="{{ event.get_absolute_url }}">{{ event }} ({{event.event_start_date|date:"N j"}} - {{event.event_end_date|date:"N j"}})</a></li>
-    {% empty %}
-    <li>No events scheduled.</li>
-    {% endfor %}
-  </ul>
-  {% has_perm 'game.add_event' user chapter as can_create_event %}
-  {% if can_create_event %}
-  <p><a href="{% url 'event-create' chapter.slug %}">Create Event in {{chapter.name}}...</a></p>
-  {% endif %}
-{% endfor %}
+  {% for chapter, events in chapter_events %}
+    <h2>{{chapter}}</h2>
+    <ul>
+      {% for event in events %}
+      <li
+        {% if event.is_old %}
+        x-show="show_old" x-transition
+        {% endif %}
+      >
+        <a href="{{ event.get_absolute_url }}"
+            class="link-{% if event.completed %}secondary{% elif event.is_canceled %}danger{% else %}primary{% endif %}"
+          >{{ event }} ({{event.event_start_date|date:"N j"}} - {{event.event_end_date|date:"N j"}})
+        {% if event.completed %}
+        (Complete)
+        {% elif event.is_canceled %}
+        (Canceled)
+        {% endif %}
+        </a>
+      </li>
+      {% empty %}
+      <li>No events scheduled.</li>
+      {% endfor %}
+    </ul>
+    {% has_perm 'game.add_event' user chapter as can_create_event %}
+    {% if can_create_event %}
+    <p><a href="{% url 'event-create' chapter.slug %}">Create Event in {{chapter.name}}...</a></p>
+    {% endif %}
+  {% endfor %}
+</div>
 {% endblock content %}

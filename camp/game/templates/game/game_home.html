@@ -10,19 +10,54 @@
 {% endif %}
 
 {% if user.is_authenticated %}
-<h2>Characters</h2>
-<ul>
-{% for character in character_list %}
+
+{% if claimable_awards or unclaimable_award_count > 0 %}
+<h2>Unclaimed Awards</h2>
+<p>Claim event and other awards imported from previous seasons, or otherwise entered by email address.</p>
+    {% regroup claimable_awards by campaign as campaign_list %}
+    <ul>
+    {% for campaign, awards in campaign_list %}
+        {# TODO: Make the claims page and link it from here. #}
+        <li>{{ campaign }} Awards: <a class="link-body-emphasis"
+            href="{% url 'myawards' campaign.slug %}">
+            <b>{{claimable_awards|length}}</b> unclaimed.</a></li>
+    {% endfor %}
+    </ul>
+
+    {% if unclaimable_award_count > 0 %}
+    <p>You have <b>{{unclaimable_award_count}}</b> award{{unclaimable_award_count|pluralize}} associated with your unverified email address{{unclaimable_award_emails|length|pluralize:"es"}} {{unclaimable_award_emails|join:", "}}.
+        <a class="link-success" href="{% url 'account_email' %}">Verify</a> to claim these awards.</p>
+    {% endif %}
+{% endif %}
+
+{% regroup character_list by campaign as campaign_list %}
+{% for campaign, characters in campaign_list %}
+<h2 class="my-2">{{campaign|default:"Freeplay"}} Characters</h2>
+    {% for character in characters %}
     <li><a href="{% url 'character-detail' character.id %}" hx-boost="false">
         {{ character }}
-        {% if character.campaign is None %}[Freeplay]{% endif %}
     </a></li>
+    {% endfor %}
 {% empty %}
-    <li>You do not have any characters yet.</li>
+<p>You do not have any characters yet.</p>
 {% endfor %}
-</ul>
 
-<a href="{% url 'character-add' %}">Create a new character</a>
+<p class="my-3"><a class="btn btn-primary" href="{% url 'character-add' %}">New Character</a></p>
+
+{% has_perm "game.add_award" user game as can_grant_award %}
+{% if can_grant_award %}
+<h1>Staff Tools</h1>
+<ul>
+    {% for campaign in open_campaigns %}
+    <li><a href="{% url 'grant-award' campaign.slug %}">
+        Grant {{campaign}} Awards
+    </a></li>
+    {% empty %}
+    <li>No open campaigns yet.</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% else %}
 <p>You must <a href="{% url 'account_login' %}">login</a> or <a href="{% url 'account_signup' %}">sign up</a> to view or create characters.</p>
 <p>Or, sign in directly with a social account:</p>

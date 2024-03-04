@@ -5,7 +5,7 @@ from .views import game_views
 
 urlpatterns = [
     # Home / Game Views
-    path("", game_views.HomePageView.as_view(), name="home"),
+    path("", game_views.home_view, name="home"),
     path("manage/", game_views.ManageGameView.as_view(), name="game-manage"),
     # Game Roles
     path(
@@ -83,6 +83,16 @@ urlpatterns = [
         game_views.DeleteCampaignView.as_view(),
         name="campaign-delete",
     ),
+    path(
+        "campaigns/<slug:slug>/myawards/",
+        game_views.myawards_view,
+        name="myawards",
+    ),
+    path(
+        "campaigns/<slug:slug>/awards/grant/",
+        game_views.grant_award,
+        name="grant-award",
+    ),
     # Events
     path("events/", event_views.event_list, name="events-list"),
     path("events/<int:pk>/", event_views.event_detail, name="event-detail"),
@@ -111,6 +121,11 @@ urlpatterns = [
         "events/<int:pk>/registrations/<str:username>/",
         event_views.view_registration,
         name="registration-view",
+    ),
+    path(
+        "events/<int:pk>/complete/",
+        event_views.mark_event_complete,
+        name="event-complete",
     ),
     # Event reports
     path(

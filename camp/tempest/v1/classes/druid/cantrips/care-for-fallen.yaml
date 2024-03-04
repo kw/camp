@@ -6,7 +6,7 @@ target: Individual
 delivery: Touch
 accent: None
 duration: Instantaneous
-refresh: Immediate
+refresh: Quick 100
 effect: Stabilize, Heal
 description: |
   A simple trick taught by Druids of the past to prevent the transition to death, the caster can Stabilize the dying.

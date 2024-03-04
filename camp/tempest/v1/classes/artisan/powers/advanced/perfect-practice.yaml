@@ -1,6 +1,5 @@
 name: Perfect Practice
 tags: [crafter, mystic]
-ranks: 2
 incant: None
 call: Special
 target: Self
@@ -21,4 +20,4 @@ description: |
     100 Count to a Quick 30 Count once.
   * Each Ritual that the Artisan is a Primary or Secondary Ritualist in that is completed
     allows the Artisan to charge a spell-ball with Lightning with the Incantation “I charge
-    this with thunder.” The spell-ball will do “Wounding 2 by Lightning” when thrown.
+    this with thunder.” The spell-ball will do “Wounding 4 by Lightning” when thrown.

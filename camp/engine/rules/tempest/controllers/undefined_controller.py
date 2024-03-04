@@ -15,6 +15,8 @@ class UndefinedFeatureController(feature_controller.FeatureController):
     child_ids: frozenset[str] = frozenset()
     parent: None = None
     parent_def: None = None
+    supersedes: None = None
+    superseded_by: None = None
     meets_requirements: Decision = Decision.OK
     tags: set[str] = frozenset({"Undefined"})
     description: str = "This feature isn't defined."

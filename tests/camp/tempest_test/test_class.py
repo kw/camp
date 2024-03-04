@@ -225,7 +225,7 @@ def test_mixed_spell_slots(character: TempestCharacter):
 
 def test_bonus_spell_slots(character: TempestCharacter):
     assert character.apply("wizard:2")
-    character.awarded_cp = 10
+    character.freeplay_cp = 10
     novice_slots = character.get("arcane.spell_slots@1")
     assert novice_slots > 0
     intermediate_slots = character.get("arcane.spell_slots@2")

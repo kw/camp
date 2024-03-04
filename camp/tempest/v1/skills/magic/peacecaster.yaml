@@ -5,6 +5,6 @@ requires:
     - arcane.spell_slots@1
     - divine.spell_slots@1
 description: |
-  The caster can heal one additional point with all healing Spells (not Cantrips) they cast. If the spell grants multiple charges then this skill will only increase the healing of the first charge, no matter how it is delivered.  For spells such as Cleric’s Benediction or Salvation that target multiple targets with a single call, Peacecaster affects the effect for each target, not just one.
+  The caster can heal one additional point with all healing Spells (not Cantrips) they cast. If the spell grants multiple charges then this skill will only increase the healing of the first charge, no matter how it is delivered.  For spells such as Cleric’s Benediction or Salvation that target multiple targets with a single call, Peacecaster affects the Effect for each target, not just one.
 
   Additionally, Peacecaster allows the caster to at will convert Novice or Adept Divine Touch-based spells that would be effected by Peacecaster to packet (spellball) based delivery.  This is optional and the Peacecaster may still deliver these spells by touch.

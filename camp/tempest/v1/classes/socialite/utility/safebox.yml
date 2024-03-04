@@ -8,10 +8,13 @@ duration: Event
 refresh: Long Rest
 effect: Special
 description: |
-  This box can then be used to hold items that might be part of a deal, and the contents will be generally unreachable unless both parties agree that it should be opened. After a few moments of tinkering, the Socialite can set a box so that the next time it is closed, it will become a Safebox. The Socialite will need an item information card from a Tinkering Station to add to the box. The maximum dimensions of this vault should be no more than 2’x2’x3’. The box gains Inherent Shatter immunity.
+  After a few moments of tinkering the Socialite can trigger a container to become a Safebox the next time it is closed. A Safebox’s contents are generally unreachable unless all parties involved in its creation agree that it should be opened. Certain Powers (Dispel Magic, Ritual Disjunction, etc) will get past the safeguards.
 
-  The card should be marked with a black keyhole Sigil and attached to the box. Around the keyhole should be written, “Only opens once both [Name #1] touches the box and says, ‘_Open_’ and [Name #2] touches the box and says, ‘_Open_.’ Each Name should be checked off when this occurs.” The two people that are named must be present when the box is created. The Socialite may be one of these names.
+  The Safebox needs to be created at a Tinkering Station with an Item Info Card containing the following:
 
-  Additionally, the Tinkering recipe “General Forged Item” may be used to create unique keys that can be consumed in the creation of the Safebox to add additional names to the Information Card.
-
-  **Note**: This effect may be removed by certain Powers, such as Dispel Magic, or the Ritual Disjunction, etc..
+  * Attach the item information card to the Safebox when complete
+  * The Safebox’s maximum dimensions are 2’x2’x3’
+  * The Safebox gains Inherent Shatter immunity
+  * Two people (one of them may be the Socialite) present during its creation must be listed on the card
+  * “Generic Forged Item” may create ‘keys’ that add additional names to the Information Card
+  * Add a black keyhole Sigil and write “Only opens once all listed parties touch the box and say ‘Open’”

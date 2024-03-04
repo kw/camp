@@ -86,6 +86,7 @@ def dump_dict(
         exclude_none=True,
         exclude_unset=exclude_unset,
         exclude_defaults=exclude_defaults,
+        mode="json",
     )
 
 

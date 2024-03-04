@@ -114,11 +114,9 @@ def _write_pc_regs(
         user = r.user
         profile = r.profile
         age = profile.age if profile.age < 18 else None
-        if char := r.character:
-            new_character = True  # TODO: Implement
-        else:
-            new_character = True
-        new_player = True  # TODO: Implement
+        char = r.character
+        new_character = r.character_is_new
+        new_player = r.player_is_new
         paid = r.payment_complete
         reg_date = r.registered_date
 
@@ -161,6 +159,7 @@ def _write_npc_regs(
             "Attendance",
             "Lodging",
             "New Player?",
+            "New NPC?",
             "Registered",
             "Link to Registration",
         ],
@@ -171,7 +170,8 @@ def _write_npc_regs(
         user = r.user
         profile = r.profile
         age = profile.age if profile.age < 18 else None
-        new_player = True  # TODO: Implement
+        new_player = r.player_is_new
+        new_npc = r.npc_is_new
         reg_date = r.registered_date
 
         sheet.write(i, 0, user.username)
@@ -180,10 +180,11 @@ def _write_npc_regs(
         sheet.write(i, 3, r.get_attendance_display())
         sheet.write(i, 4, r.get_lodging_display())
         sheet.write(i, 5, new_player)
-        sheet.write(i, 6, reg_date)
+        sheet.write(i, 6, new_npc)
+        sheet.write(i, 7, reg_date)
         sheet.write_url(
             i,
-            7,
+            8,
             urljoin(base_url, r.get_absolute_url()),
             string=f"Registration for {profile}",
         )

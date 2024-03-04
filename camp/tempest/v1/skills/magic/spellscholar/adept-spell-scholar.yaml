@@ -3,11 +3,11 @@ cost: 4
 ranks: unlimited
 requires:
   - any:
-    - arcane.spell_slots@2
-    - divine.spell_slots@2
+      - arcane.spell_slots@2
+      - divine.spell_slots@2
   - any:
-    - basic-arcane
-    - basic-faith
+      - basic-arcane
+      - basic-faith
 choices:
   spell:
     name: Adept Spell
@@ -21,4 +21,4 @@ choices:
     choice_requires:
       arcane: -sourcerer
 description: |
-  The character can add two spells from a spell-casting class they have levels in and add them to their spellbook. These spells can be of any tier (although that will not make them castable). If the character does not have a class spell-list, they may pick spells from any class’ spell list.
+  The character can choose two spells from a spell-casting class they have levels in and add them to their spellbook. These spells can be of any tier (although that will not make them castable). If the character does not have a class spell-list, they may pick spells from any class’ spell list.

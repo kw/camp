@@ -1,6 +1,6 @@
 name: Let’s You and Them Fight
-incant: 'RP: Short Distracting Phrase'
-call: '“[Name or Description] Quick Dominate by Illusion”'
+incant: "RP: Short Distracting Phrase"
+call: "“[Name or Description] Quick Dominate by Illusion: Attack someone else.”"
 target: Individual
 delivery: Verbal
 accent: None

@@ -1,6 +1,6 @@
 name: Mark for Death
-incant: 'RP: “Bounty against [Individual’s Name]”'
-call: '“Grant Bounty”, “Grant Protect vs Damage from [Target] to Self”'
+incant: "RP: Make, post, and maintain wanted posters"
+call: “Grant Protect vs Damage from [Target] to Self”
 target: Individual
 delivery: None
 accent: None
@@ -8,12 +8,11 @@ duration: Event
 refresh: Event
 effect: Grant Resistance
 description: |
-  The Socialite may place a contract on a named individual by going to the Plot Staff and paying a cost of 10 Wealth to create a Bounty of 20 Wealth. This Bounty will be held by Plot Staff, and may be added to by characters and NPCs as outlined below.
+  The Socialite may pay 10 Wealth to Plot to place a Bounty of 20 Wealth on a named individual. Once the payment is accepted, the Socialite must post the individual’s name, likeness, and description in at least three conspicuous locations to make the Bounty active. If the Socialite is aware of posters being removed and does not replace them, the Protect (described below) and Bounty both end.
 
-  For the duration, all characters who have this power (or similar ones), may provide proof to the Plot Staff of the death of the target, and collect the Bounty.
+  The following effects are in play for the duration of the Bounty:
 
-  For the duration of the Bounty, the Socialite may call “Grant Protect vs Damage from [Target] to Self” each time they Short Rest. They may only have one bonus against a single target at any one time.
+  * Characters with proof of the target’s death may collect the Bounty from Plot
+  * The Socialite may call “Grant Protect vs Damage from [Target] to Self” each time they Short Rest, but may only have one bonus against a single target at any one time
 
-  For this Bounty to be active, the Socialite must post the individual’s name, likeness, and description in at least three conspicuous locations. If the posters are removed and the Socialite does not replace them after becoming aware, the Bonus is removed and Bounty ends.
-
-  If a Socialite has this power, and finds a Bounty poster, they may add 10 Wealth (Paying 5 Wealth) to the Bounty (by going to Plot) to gain the same Bonus without expending their use of this power.
+  A Socialite with Mark for Death may pay 5 Wealth to Plot to add 10 to a Bounty on a poster, other than their own, without expending their power.

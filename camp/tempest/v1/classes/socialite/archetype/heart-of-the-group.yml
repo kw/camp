@@ -1,19 +1,19 @@
 name: Heart of the Group
 requires: socialite:3
-incant: '“Welcome to [Group Name], [Character Name]”'
-call: '“Grant Inherent Type: Member of [Group Name]”'
+incant: "“Welcome to [Group Name], [Character Name]”"
+call: "“Grant Inherent Type: Member of [Group Name]”"
 target: Individual
 delivery: Touch
 accent: None
 duration: Permanent
 refresh: Short Rest
-effect: 'Grant Type: Member of [Group Name]'
+effect: "Grant Type: Member of [Group Name]"
 description: |
   Socialites tend to find themselves at the center of social cliques. Acting as the cog of a wheel can confer many benefits to its members, including organization, information disbursement, and even mental health.
 
   A Socialite may extend a formal invitation after spending 5-10 minutes discussing the group with the potential new member. Invitees must accept of their own free will, automatically resisting any compulsions to join.
 
-  The new member gains the Inherent Type: Member of [Group Name]. In addition, they gain effects from other Socialite powers targeting the group. However, they may leave at any time by informing the Socialite or by notifying Staff between games.
+  The new member gains the Inherent Qualifier: Member of [Group Name]. In addition, they gain effects from other Socialite powers targeting the group. However, they may leave at any time by informing the Socialite or by notifying Staff between games.
 
   The Socialite gains a number of "Counters" equal to their levels in Socialite usable against any attack or power from any member of their group.
 

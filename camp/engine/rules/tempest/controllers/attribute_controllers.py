@@ -76,7 +76,10 @@ class CharacterPointController(AttributeController):
     @property
     def total_cp(self) -> int:
         return (
-            self.character.awarded_cp
+            self.character.freeplay_cp
+            + self.character.event_cp
+            + self.character.bonus_cp
+            + self.character.backstory_cp
             + self.character.base_cp
             + self.bonus
             + self.flaw_award_cp

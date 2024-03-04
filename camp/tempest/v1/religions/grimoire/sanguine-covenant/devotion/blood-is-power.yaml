@@ -9,8 +9,8 @@ description: |
   _“The Chosen of Diavalla are well known for delving into the Rite of Blood, and their experience is such that they may call upon these profane magics at a moment's notice. Trading their own life essence for power, they are able to extend their magical ability beyond most practitioners' ability, but at a gruesome price.”_
 subcard:
   name: Blood is Power [Devotion][Adept]
-  incant: “I call my faith, divine and right, I wield and shape creation's light, With fervent plea and ardent zeal, I summon strength for woe and weal…”
-  call: '“Grant [X] Blood Points”'
+  incant: “I give my blood, this gift in plight, I beckon our Mother's grace and might. Now wrap your wings around your flock, strength not ours, not taken nor bought… to realize power in suffering.”
+  call: "“Grant [X] Blood Points”"
   target: Self
   delivery: None
   accent: None

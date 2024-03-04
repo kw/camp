@@ -8,7 +8,12 @@
 
 {% block body_title %}
 <div class="{% if request.resolver_match.url_name != 'character-detail' %}d-print-none {% endif %}">
-<a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover" href="{% url 'character-detail' character.id %}">{{ character }}</a>
+<a
+  class="{% if character.is_discarded %}link-danger{% else %}link-body-emphasis{% endif %}
+        link-underline-opacity-0 link-underline-opacity-100-hover"
+  href="{% url 'character-detail' character.id %}">
+    {{ character }}
+    </a>
 <div>
 {% endblock %}
 
@@ -41,11 +46,23 @@
     <li class="list-group-item"
         data-bs-toggle="tooltip" data-bs-html="true"
         data-bs-placement="bottom"
+        data-bs-custom-class="listgroup-tooltip"
         data-bs-title="
-        <p>Base: {{ controller.base_cp }}</p>
-        <p>Awarded: {{ controller.awarded_cp }}</p>
-        <p>Flaw Awards: {{ controller.cp.flaw_award_cp }}</p>
-        <p>Spent: {{ controller.cp.spent_cp }}</p>">
+        <ul class='list-group list-group-flush'>
+        <li class='list-group-item'>Base: {{ controller.base_cp }}</li>
+        {% if controller.freeplay_cp %}
+        <li class='list-group-item'>Freeplay: {{ controller.freeplay_cp }}</li>
+        {% endif %}
+        <li class='list-group-item'>Event: {{ controller.event_cp }}</li>
+        <li class='list-group-item'>Bonus: {{ controller.bonus_cp }}</li>
+        <li class='list-group-item'>Backstory: {{ controller.backstory_cp }}</li>
+        <li class='list-group-item'>Flaw Awards: {{ controller.cp.flaw_award_cp }}</li>
+        {% if controller.cp.bonus %}
+        <li class='list-group-item'>Other: {{ controller.cp.bonus }}</li>
+        {% endif %}
+        <li class='list-group-item'><b>Total</b>: {{ controller.cp.total_cp }}</li>
+        <li class='list-group-item'><b>Spent</b>: {{ controller.cp.spent_cp }}</li>
+        </ul>">
         <span class="align-middle">CP: {% get 'cp' %}</span></li>
     <li class="list-group-item"><span class="align-middle">LP: {% get 'lp' %}</span></li>
     <li class="list-group-item"><span class="align-middle">Spikes: {% get 'spikes' %}</span></li>

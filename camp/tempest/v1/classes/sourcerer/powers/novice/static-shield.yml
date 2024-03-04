@@ -1,0 +1,25 @@
+name: Static Shield
+incant: '"... to siphon my foe’s power.”'
+call: Short Grant Galvanic Shield
+target: Self
+delivery: None
+accent: None
+duration: Short Rest
+refresh: Spell
+effect: Grant Galvanic Shield
+description: |
+  Until the Sourceror’s next Short Rest, each time the caster lands a Cantrip or Spell with a packet delivery on a foe who is **_not_** helpless, with the Lightning Accent and the target doesn’t prevent it, the caster gains the **Galvanic Shield** Power below:
+subcard:
+  name: Galvanic Shield
+  incant: None
+  call: “Grant 1 Barrier by Lightning”
+  target: Self
+  duration: Instantaneous
+  delivery: None
+  refresh: Spell
+  accent: Lightning
+  effect: Grant Barrier
+  description: |
+    The Character may call “Grant 1 Barrier by Lightning.”
+
+    **Note**: This power may not raise your Barrier beyond 3.

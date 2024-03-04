@@ -1,7 +1,7 @@
 name: Advanced Treatment
 tags: [mystic, crafter]
 incant: RP Focus Slow 10 per individual
-call: '“Heal to Full by Poison, Cure All Conditions by Poison”'
+call: “Short Grant +1 Maximum Life Points.”
 target: Up to Six Individuals
 delivery: Touch
 accent: Poison
@@ -9,4 +9,4 @@ duration: Instantaneous
 refresh: Short Rest
 effect: Heal
 description: |
-  This Power can only be used out of combat. By expending one Bloom and one Rare Mineral, the Artisan can provide a powerful curative brew for up to six Individuals, moving from one to the other giving each a sip which will heal their wounds and injuries. No one target can be given more than one sip. The Artisan must Focus for at least 10 seconds over each character to be Treated. As each one is treated, the Artisan may call “Short Grant +1 Maximum Life Points by Poison. Heal to full Life Points by Poison. Cure all Conditions by Poison.” The Resources should be deposited in an Ashbin at the earliest opportunity.
+  This Power can only be used out of combat. By expending one Bloom and one Rare Mineral, the Artisan can provide a powerful curative brew for up to six Individuals, moving from one to the other giving each a sip which will heal their wounds and injuries. No one target can be given more than one sip. The Artisan must Focus for at least 10 seconds over each character to be Treated. As each one is treated, the Artisan may call “Short Grant +1 Maximum Life Points by Poison.” The Resources should be deposited in an Ashbin at the earliest opportunity.

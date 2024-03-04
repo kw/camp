@@ -1,6 +1,6 @@
 name: Inspiration
-incant: 'RP: Slow 300'
-call: '“By My Voice, [Grant 2 Barrier / Refresh One Novice Spell] to Members of [Group Name]"'
+incant: "RP: about 5 minutes"
+call: '“By My Voice, [Grant 2 Barrier or Refresh One Novice Spell] to Members of [Group Name]"'
 target: Individuals, Members of [Group Name]
 delivery: Voice
 duration: Instantaneous

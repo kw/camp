@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block head_title %}{% block body_title %}
+{{campaign}} Awards
+{% endblock %}{% endblock %}
+
+{% block content %}
+
+{% if claimable %}
+<h2>Unclaimed Awards</h2>
+<div x-data='{selected: [], target_char: "{{selected_character}}" }'>
+  <p>The following awards must be applied to specific characters. Once applied, your selection can't be changed.
+  </p>
+  <p>
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" @click="selected = []">None</button>
+      <button class="btn btn-outline-primary" @click="selected = selectAll()">All</button>
+    </div>
+    <span :hidden="!selected.length"><span x-text="selected.length"></span> selected.</span>
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Date</th>
+          <th>Email</th>
+          <th>Category</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in claimable %}
+        <tr>
+          <td><input type="checkbox" x-model="selected"
+                name="claim_award" value="{{a.id}}"></input></td>
+          <td>{{a.date}}</td>
+          <td>{{a.email|default:"n/a"}}</td>
+          <td>{{a.category.name.title}}</td>
+          <td>{{a.describe}}</td>
+        </tr>
+        {% empty %}
+        <tr colspan="5" class="text-center">No awards available.</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p><label class="form-label" for="character-selector">Select a character to receive awards</label></p>
+    <div class="row g-3">
+      <div class="col-auto">
+        <select class="form-select form-select mb-3"
+                x-model="target_char"
+                id="character-selector" name="character">
+          {% for c in characters %}
+          <option value="{{c.id}}">{{c}}</option>
+          {% endfor %}
+          <option value="">[New {{campaign}} Character]</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <input class="mx-2 form-control" type="text" name="new_name" placeholder="New character name" :hidden="!!target_char" :required="!target_char" maxlength="255"></input>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary"
+                :disabled="selected.length == 0">
+          Claim Awards
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endif %}
+
+{% if unclaimable_award_count > 0 %}
+  <p>You have <b>{{unclaimable_award_count}}</b> award{{unclaimable_award_count|pluralize}} associated with your unverified email address{{unclaimable_award_emails|length|pluralize:"es"}} {{unclaimable_award_emails|join:", "}}.
+      <a class="link-success" href="{% url 'account_email' %}">Verify</a> to claim these awards.</p>
+{% endif %}
+
+<h2>Award History</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Character</th>
+      <th>Category</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a, char in award_history %}
+    <tr>
+      <td>{{a.date}}</td>
+      <td><a href="{% url 'character-detail' char.id %}"
+        hx-boost="false" class="link-body-emphasis">
+        {{char.name}}
+      </a></td>
+      <td>{{a.category.name.title}}</td>
+      <td>{{a.describe}}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" class="text-center">No award history.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  function selectNone() {
+    selected = [];
+  }
+
+  function selectAll() {
+    return [...document.querySelectorAll('input[name="claim_award"]')].map(e => e.value);
+  }
+</script>
+{% endblock %}

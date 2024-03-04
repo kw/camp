@@ -6,6 +6,6 @@ delivery: None
 accent: None
 duration: Passive
 refresh: None
-effect: Grant Maximum Base Armor
+effect: Grant Plus Armor
 description: |
-  Whenever the Fighter is wearing and using at least 1 Armor Point of physical armor, she gains one additional point to her physical armor Maximum Armor Points.
+  Whenever the Fighter is wearing and using at least 1 Armor Point of physical armor, she gains one additional point to her physical armor points.

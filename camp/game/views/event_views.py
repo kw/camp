@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
+from django_htmx.http import HttpResponseClientRefresh
 from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
 
@@ -30,7 +31,7 @@ from .. import tasks
 
 
 def event_list(request):
-    chapters = request.game.chapters.order_by("name")
+    chapters = request.game.chapters.filter(is_open=True).order_by("name")
     chapter_events = [(c, c.events.order_by("event_start_date")) for c in chapters]
     return render(request, "events/event_list.html", {"chapter_events": chapter_events})
 
@@ -53,6 +54,9 @@ def event_detail(request, pk):
 )
 def event_edit(request, pk):
     event = _get_event(pk)
+    if event.completed:
+        messages.warning(request, "Events can't be edited once complete.")
+        return redirect("event-detail", pk=pk)
     chapter = event.chapter
     _ = event.campaign
     timezone.activate(chapter.timezone)
@@ -90,14 +94,15 @@ def event_create(request, slug):
 @permission_required(
     "game.change_event", fn=objectgetter(models.Event), raise_exception=True
 )
+@require_POST
 def event_cancel(request, pk):
-    if request.method == "GET":
-        # Don't allow an event to be canceled via GET
-        return redirect("event-update", pk=pk)
-
     event = _get_event(pk)
 
-    if not event.canceled_date:
+    if event.completed:
+        messages.warning(
+            request, "Event is already marked complete, a little late for that."
+        )
+    elif not event.canceled_date:
         event.canceled_date = timezone.now()
         event.save()
         messages.warning(request, "Event canceled.")
@@ -123,6 +128,16 @@ def event_uncancel(request, pk):
     else:
         messages.warning(request, "Event had not been canceled, so good?")
     return redirect(event)
+
+
+@permission_required(
+    "game.change_event", fn=objectgetter(models.Event), raise_exception=True
+)
+@require_POST
+def mark_event_complete(request, pk):
+    event = get_object_or_404(models.Event, pk=pk)
+    event.mark_complete()
+    return HttpResponseClientRefresh()
 
 
 @login_required
@@ -342,31 +357,39 @@ def list_registrations(request, pk):
                 _mark_paid(request, event)
             case "mark_unpaid":
                 _mark_unpaid(request, event)
+            case "mark_attendance":
+                _mark_attended(request, event)
             case _:
                 messages.warning(request, f"Unregistered action '{apply}'")
         return redirect("registration-list", pk=event.pk)
 
-    registrations = event.registrations.order_by("registered_date").prefetch_related(
-        "user", "character"
+    registrations = event.registrations.order_by(
+        "canceled_date", "is_npc", "registered_date"
+    ).prefetch_related("user", "character")
+
+    pc_count = sum(
+        1 if r.canceled_date is None and not r.is_npc else 0 for r in registrations
     )
-
-    withdrawn_registrations = [r for r in registrations if r.is_canceled]
-    registrations = [r for r in registrations if not r.is_canceled]
-
-    pc_registrations = [r for r in registrations if not r.is_npc]
-    npc_registrations = [r for r in registrations if r.is_npc]
+    npc_count = sum(
+        1 if r.canceled_date is None and r.is_npc else 0 for r in registrations
+    )
+    withdrew_count = sum(1 if r.canceled_date is not None else 0 for r in registrations)
 
     report = _fetch_report(pk, "registration_list")
+
+    can_complete, _ = event.can_complete()
 
     return render(
         request,
         "events/registration_list.html",
         context={
             "event": event,
-            "pc_registrations": pc_registrations,
-            "npc_registrations": npc_registrations,
-            "withdrawn_registrations": withdrawn_registrations,
+            "registrations": registrations,
+            "pc_count": pc_count,
+            "npc_count": npc_count,
+            "withdrew_count": withdrew_count,
             "report": report,
+            "can_complete": can_complete,
         },
     )
 
@@ -376,12 +399,15 @@ def list_registrations(request, pk):
 )
 @require_POST
 def trigger_event_report(request, pk, report_type):
+    event = get_object_or_404(models.Event, pk=pk)
+
     if existing_report := _fetch_report(pk, report_type):
         if result := existing_report.result:
             result.revoke()
             result.forget()
             existing_report.delete()
 
+    logging.info("Triggering generate_report task for %s, %s", pk, report_type)
     try:
         report, result = tasks.generate_report(
             report_type=report_type,
@@ -399,7 +425,7 @@ def trigger_event_report(request, pk, report_type):
     return render(
         request,
         "events/event_report_progress.html",
-        {"report": report},
+        {"report": report, "event": event},
     )
 
 
@@ -408,8 +434,11 @@ def trigger_event_report(request, pk, report_type):
 )
 @require_GET
 def poll_event_report(request, pk, report_type):
+    event = get_object_or_404(models.Event, pk=pk)
     report = _fetch_report(pk, report_type)
-    return render(request, "events/event_report_progress.html", {"report": report})
+    return render(
+        request, "events/event_report_progress.html", {"report": report, "event": event}
+    )
 
 
 @permission_required(
@@ -440,6 +469,7 @@ def _fetch_report(event_id, report_type) -> models.EventReport | None:
     # TODO: If we have multiple report types, show the latest of each.
     if reports:
         report = reports[0]
+        logging.debug("Report found for event %s: %r", event_id, report)
         for old_report in reports[1:]:
             logging.info(
                 "Cleaning up old report: %s from %s", old_report.pk, old_report.started
@@ -455,6 +485,7 @@ def _fetch_report(event_id, report_type) -> models.EventReport | None:
             report.delete()
             report = None
     else:
+        logging.debug("No reports found for event %s", event_id)
         report = None
     return report
 
@@ -508,6 +539,32 @@ def _mark_unpaid(request, event):
     transaction.on_commit(
         lambda: messages.success(request, f"Marked {count} users unpaid.")
     )
+
+
+@transaction.atomic
+def _mark_attended(request, event):
+    usernames = request.POST.getlist("selected", [])
+    users = User.objects.filter(username__in=usernames)
+    reg: models.EventRegistration
+    count = 0
+    skipped = 0
+    for reg in event.registrations.filter(user__in=users):
+        if not reg.attended:
+            count += 1
+            reg.apply_award(applied_by=request.user)
+            reg.save()
+        else:
+            skipped += 1
+    if skipped:
+        transaction.on_commit(
+            lambda: messages.success(
+                request, f"Marked {count} attended. {skipped} were already marked."
+            )
+        )
+    else:
+        transaction.on_commit(
+            lambda: messages.success(request, f"Marked {count} attended.")
+        )
 
 
 def _get_event(pk):

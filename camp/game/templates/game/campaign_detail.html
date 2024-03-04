@@ -15,4 +15,17 @@
 {{ campaign.description | markdown}}
 {% endif %}
 
+{% with record=campaign.record %}
+
+<ul>
+  <li>Season: {{record.season}}</li>
+  <li>Campaign Max XP: {{record.max_xp}}</li>
+  <li>Campaign Max Event CP: {{record.max_cp}}</li>
+  <li>Campaign Max Bonus CP: {{record.max_bonus_cp}}</li>
+  <li>Campaign Floor XP: {{record.floor_xp}}</li>
+  <li>Campaign Floor Event CP: {{record.floor_cp}}</li>
+  <li>Last Event Completed: {{record.last_event_date}}</li>
+</ul>
+{% endwith %}
+
 {% endblock content %}

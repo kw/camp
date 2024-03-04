@@ -1,17 +1,21 @@
 name: Inspirational Leader
 cost: 4
 requires: socialite:7
-incant: RP for Slow 100, Rousing Speech
+incant: RP for about 2 minutes, Rousing Speech
 call: Special
 target: Individuals
 delivery: Verbal
 accent: Will
 duration: Short Rest, Special
 refresh: Event
-effect: Grant
+effect: Grant, Refresh
 description: |
-  Often before battle, the Socialite is seen making rounds inspiring and rousing their allies’ morale. Once per Event, the Socialite can spend a Slow 100 inspiring their allies with rousing words of victory. Once their allies are suitably inspired, they gain a number of charges equal to their Socialite class-level. These charges will last until the Socialite is dropped to Dying or takes a Short Rest, whichever comes first. By spending a Quick 100 roleplaying encouraging an ally, the Socialite may spend a charge to do one of the following:
+  Whether walking the lines before a battle, delving into a dungeon, or starting off a council meeting, Socialites know how to inspire allies.
+
+  The Socialite gains charges equal to their Socialite class level after inspiring their allies with rousing words of victory for a couple minutes. By spending about 15 seconds roleplaying encouraging an ally, the Socialite may spend a charge to do one of the following:
 
   * “[Name or Description] Grant 1 Spike by Will”
   * “[Name or Description] Grant 3 Barrier by Will”
   * “[Name or Description] Grant Protect vs Fear by Will”
+
+  Unspent charges will expire after a Short Rest, or if the Socialite becomes Helpless.

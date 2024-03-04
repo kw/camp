@@ -2,7 +2,7 @@ name: The Right Hand
 cost: 1
 requires: socialite:2
 incant: RP
-call: '“Long Grant Bodyguard Type by Contract”'
+call: "“Long Grant Bodyguard Qualifier by Contract”"
 target: Individual
 delivery: Touch
 accent: Contract

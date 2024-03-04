@@ -1,6 +1,6 @@
 name: Gift of Life
 incant: '"... to grant the Gift of Life.”'
-call: '“Grant Life by Radiance”'
+call: "“Grant Life by Radiance”"
 target: Individual
 delivery: Touch
 accent: Radiance
@@ -8,4 +8,4 @@ duration: Instantaneous
 effect: Grant Life
 refresh: Spell, Long Rest
 description: |
-  This powerful spell washes the target in life-energy. If the target is a corpse, it will bring it back to the living with 1 Life Point. Grant Life used on the undead will cause the target to drop to 0 Life Points and lose its Undead Type if it isn't Inherent. This spell can only be used to bring one corpse back from the dead once per Long Rest. Casting this spell adds seven points to the Cleric’s Healing Touch pool if they have one. If the caster has the Peacecaster skill, instead they will add eight points into their Healing Touch pool if they have one. If a power refreshes a Long Rest ability, it can target the “one per Long Rest” limitation of this spell, allowing one more individual to be brought back to life by this spell.
+  This powerful spell washes the target in life-energy. If the target is a corpse, it will bring it back to the living with 1 Life Point. Grant Life used on an Undead, it will cause the creature to immediately discorporate and take Spirit Form. This spell can only be used to bring one corpse back from the dead once per Long Rest. Casting this spell adds seven points to the Cleric’s Healing Touch pool if they have one. If the caster has the Peacecaster skill, instead they will add eight points into their Healing Touch pool if they have one. If a power refreshes a Long Rest ability, it can target the “one per Long Rest” limitation of this spell, allowing one more individual to be brought back to life by this spell.

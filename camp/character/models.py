@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TypeAlias
 from typing import cast
 
 from django.conf import settings as _settings
@@ -16,22 +16,23 @@ import camp.engine.rules.base_engine
 import camp.engine.rules.base_models
 import camp.game.models
 from camp.engine.rules.base_engine import Engine
+from camp.engine.rules.base_models import CharacterMetadata
 from camp.engine.rules.base_models import Mutation
 from camp.engine.rules.base_models import load_mutation
 from camp.game.models import game_models
 
-User = get_user_model()
+User: TypeAlias = get_user_model()  # type: ignore
 
 
 class Character(RulesModel):
-    name: str = models.CharField(max_length=255, help_text="Name of the character.")
-    game: camp.game.models.Game = models.ForeignKey(
+    name = models.CharField(max_length=255, help_text="Name of the character.")
+    game = models.ForeignKey(
         camp.game.models.Game,
         on_delete=models.CASCADE,
         related_name="characters",
         help_text="The game this character belongs to.",
     )
-    campaign: camp.game.models.Campaign = models.ForeignKey(
+    campaign = models.ForeignKey(
         camp.game.models.Campaign,
         blank=True,
         null=True,
@@ -39,18 +40,35 @@ class Character(RulesModel):
         related_name="characters",
         help_text="The campaign this character belongs to.",
     )
-    player_name: str = models.CharField(
+    player_name = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         help_text="Name of the player, if different from the owner. Typically used when managing characters for family members.",
     )
-    owner: User = models.ForeignKey(
+    owner = models.ForeignKey(
         _settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="characters",
         help_text="The user who owns this character. Not necessarily the character's portrayer.",
     )
+    discarded_date = models.DateTimeField(null=True, default=None)
+    discarded_by = models.ForeignKey(
+        User, null=True, default=None, on_delete=models.SET_NULL
+    )
+
+    @property
+    def is_discarded(self) -> bool:
+        return self.discarded_date is not None
+
+    @property
+    def metadata(self) -> CharacterMetadata | None:
+        if self.campaign is None:
+            return None
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            user=self.owner, campaign=self.campaign
+        )
+        return player_data.record.metadata_for(self.id)
 
     @property
     def primary_sheet(self) -> Sheet:
@@ -67,13 +85,7 @@ class Character(RulesModel):
                 ruleset=ruleset,
                 primary=True,
             )
-            metadata = camp.engine.rules.base_models.CharacterMetadata(
-                id=self.id,
-                character_name=self.name,
-                player_id=self.owner.id,
-                player_name=self.player_name or self.owner.username,
-            )
-            sheet.controller = engine.new_character(id=sheet.id, metadata=metadata)
+            sheet.controller = engine.new_character(id=sheet.id)
             sheet.save()
             return sheet
         raise ValueError(f"No enabled ruleset found for {self.game}.")
@@ -83,7 +95,10 @@ class Character(RulesModel):
         return self.sheets.filter(primary=False)
 
     def __str__(self) -> str:
-        return self.name or "[Unnamed]"
+        name = self.name or "[Unnamed]"
+        if self.is_discarded:
+            return f"{name} (Discarded)"
+        return name
 
     def __repr__(self) -> str:
         return f"<Character {self.id} {self.name}>"
@@ -93,19 +108,19 @@ class Character(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_owner
+            "view": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "change": game_models.is_owner
+            "change": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "delete": game_models.is_owner | game_models.is_logistics,
+            "delete": game_models.is_object_owner | game_models.is_logistics,
             "add": game_models.is_authenticated,
         }
 
 
 class Sheet(RulesModel):
-    character: Character = models.ForeignKey(
+    character = models.ForeignKey(
         Character,
         on_delete=models.CASCADE,
         related_name="sheets",
@@ -121,7 +136,7 @@ class Sheet(RulesModel):
         default=False,
         help_text="Whether this sheet is the primary sheet for the character.",
     )
-    label: str = models.CharField(
+    label = models.CharField(
         max_length=255,
         blank=True,
         null=True,
@@ -131,7 +146,7 @@ class Sheet(RulesModel):
             "use in other chapters, test sheets, etc."
         ),
     )
-    data: dict[str, Any] = models.JSONField(
+    data = models.JSONField(
         default=dict,
         help_text="The data for this sheet, in the format expected by the ruleset.",
     )
@@ -148,7 +163,10 @@ class Sheet(RulesModel):
     @property
     def controller(self) -> camp.engine.rules.base_engine.CharacterController:
         if self._controller is None:
-            self._controller = self.ruleset.engine.load_character(self.data)
+            metadata = None
+            if self.character.campaign is not None:
+                metadata = self.character.metadata
+            self._controller = self.ruleset.engine.load_character(self.data, metadata)
         return self._controller
 
     @controller.setter
@@ -199,14 +217,14 @@ class Sheet(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_owner
+            "view": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "change": game_models.is_owner
+            "change": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "delete": game_models.is_owner | game_models.is_logistics,
-            "add": game_models.is_owner | game_models.is_logistics,
+            "delete": game_models.is_object_owner | game_models.is_logistics,
+            "add": game_models.is_object_owner | game_models.is_logistics,
         }
 
 

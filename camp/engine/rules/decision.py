@@ -31,7 +31,7 @@ class Decision(BaseModel, frozen=True):
 
     success: bool = False
     needs_option: bool = False
-    reason: str | None = None
+    reason: str = "Unknown"
     amount: int | None = None
     need_currency: dict[str, int] | None = None
     mutation_applied: bool = False

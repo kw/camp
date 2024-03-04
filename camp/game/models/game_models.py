@@ -942,6 +942,8 @@ class Award(RulesModel):
             user: The user whose awards should be found. The basis
                 for the search will be the allauth EmailAddress
                 models associated with the user.
+            campaign: The campaign to check. If None, awards for
+                all open campaigns are returned.
 
         Returns:
             (claimable, unclaimable): Querysets containing awards
@@ -976,6 +978,9 @@ class Award(RulesModel):
         if campaign is not None:
             email_awards = email_awards.filter(campaign=campaign)
             player_awards = player_awards.filter(campaign=campaign)
+        else:
+            email_awards = email_awards.filter(campaign__is_open=True)
+            player_awards = player_awards.filter(campaign__is_open=True)
 
         claimable_awards = (
             email_awards.filter(upper_email__in=claimable_email) | player_awards

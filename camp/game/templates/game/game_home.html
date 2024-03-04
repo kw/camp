@@ -32,7 +32,7 @@
 
 {% regroup character_list by campaign as campaign_list %}
 {% for campaign, characters in campaign_list %}
-<h2>{{campaign|default:"Freeplay"}} Characters</h2>
+<h2 class="my-2">{{campaign|default:"Freeplay"}} Characters</h2>
     {% for character in characters %}
     <li><a href="{% url 'character-detail' character.id %}" hx-boost="false">
         {{ character }}
@@ -52,6 +52,8 @@
     <li><a href="{% url 'grant-award' campaign.slug %}">
         Grant {{campaign}} Awards
     </a></li>
+    {% empty %}
+    <li>No open campaigns yet.</li>
     {% endfor %}
 </ul>
 {% endif %}

@@ -29,7 +29,42 @@ def campaign(game):
         name="Test Campaign",
         start_year=2020,
         game=game,
+        is_open=True,
     )
+
+
+@pytest.mark.django_db
+def test_closed_campaign(campaign):
+    """Only awards for open campaigns are displayed."""
+    campaign.is_open = False
+    campaign.save()
+
+    bob = User.objects.create(username="bob")
+
+    # Regardless of whether the awards are tied to a
+    # verified email, an unverified email, or directly to
+    # a player account, they won't be returned.
+    Award.objects.create(
+        campaign=campaign,
+        email="Bob@GMail.com",
+        award_data={},
+    )
+
+    Award.objects.create(
+        campaign=campaign,
+        email="robert@gmail.com",
+        award_data={},
+    )
+
+    Award.objects.create(
+        campaign=campaign,
+        player=bob,
+        award_data={},
+    )
+
+    claimable, unclaimable = Award.unclaimed_for(bob)
+    assert claimable.count() == 0
+    assert unclaimable.count() == 0
 
 
 @pytest.mark.django_db
@@ -37,6 +72,17 @@ def test_unclaimed_awards(campaign):
     """We can retrieve awards that could be claimed for a player."""
     bob = User.objects.create(username="bob")
     other = User.objects.create(username="other")
+
+    EmailAddress.objects.create(
+        user=bob,
+        email="bob@gmail.com",
+        verified=True,
+    )
+    EmailAddress.objects.create(
+        user=bob,
+        email="robert@gmail.com",
+        verified=False,
+    )
 
     # These awards have slight variations on Bob's email,
     # and will be included as claimable.
@@ -77,17 +123,6 @@ def test_unclaimed_awards(campaign):
         award_data={},
     )
 
-    EmailAddress.objects.create(
-        user=bob,
-        email="bob@gmail.com",
-        verified=True,
-    )
-    EmailAddress.objects.create(
-        user=bob,
-        email="robert@gmail.com",
-        verified=False,
-    )
-
     # Award where Bob is the assigned player, but it hasn't
     # been claimed yet.
     award6 = Award.objects.create(
@@ -117,7 +152,7 @@ def test_unclaimed_awards(campaign):
 
     # Finally, actually test it.
 
-    claimable, unclaimable = list(Award.unclaimed_for(bob))
+    claimable, unclaimable = Award.unclaimed_for(bob)
 
     claimable_ids = {a.id for a in claimable}
     unclaimable_ids = {a.id for a in unclaimable}

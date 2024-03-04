@@ -410,6 +410,7 @@ class EventRegistration(RulesModel):
             event_cp=1 if xp > 0 else 0,
             # Events that grant no XP don't flag the PC as "played"
             event_played=(not self.is_npc) if xp > 0 else False,
+            event_staffed=self.is_npc,
         )
 
     @property
@@ -441,7 +442,15 @@ class EventRegistration(RulesModel):
             self.user, self.event.campaign, update=False
         )
         record = player_data.record
-        return record.events_played < 1
+        return (record.events_played + record.events_staffed) < 1
+
+    @property
+    def npc_is_new(self) -> bool:
+        player_data = game_models.PlayerCampaignData.retrieve_model(
+            self.user, self.event.campaign, update=False
+        )
+        record = player_data.record
+        return record.events_staffed < 1
 
     @property
     def character_is_new(self) -> bool:

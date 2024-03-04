@@ -195,12 +195,16 @@ def test_apply_award(campaign, game, event):
     )
 
     apply_time = event.event_end_date + timedelta(hours=1)
+    player_data = PlayerCampaignData.retrieve_model(user=user, campaign=campaign)
+    record = player_data.record
+    assert record.events_played == 0
+    assert record.events_staffed == 0
 
     with time_machine.travel(apply_time, tick=False):
         event.mark_complete()
         registration.apply_award(applied_by=logi)
 
-    player_data = PlayerCampaignData.objects.get(user=user, campaign=campaign)
+    player_data = PlayerCampaignData.retrieve_model(user=user, campaign=campaign)
     record = player_data.record
 
     assert registration.award_applied_by == logi
@@ -209,6 +213,7 @@ def test_apply_award(campaign, game, event):
 
     assert record.user == user.id
     assert record.events_played == 1
+    assert record.events_staffed == 0
     assert record.last_played == event.event_end_date.date()
     assert record.last_campaign_date == event.event_end_date.date()
     assert record.xp == 8
@@ -230,6 +235,74 @@ def test_apply_award(campaign, game, event):
             event_cp=1,
             events_played=1,
             last_played=event.event_end_date.date(),
+        )
+    }
+
+
+@pytest.mark.django_db
+def test_apply_award_npc(campaign, game, event):
+    """An NPC registered for an event that completes; marking their attendance works."""
+    user = User.objects.create(username="testuser")
+    logi = User.objects.create(username="logistics")
+
+    character = Character.objects.create(
+        name="Bob",
+        game=game,
+        campaign=campaign,
+        owner=user,
+    )
+    registration = EventRegistration.objects.create(
+        event=event,
+        user=user,
+        character=character,
+        lodging=Lodging.NONE,
+        is_npc=True,
+    )
+
+    player_data = PlayerCampaignData.retrieve_model(user=user, campaign=campaign)
+    record = player_data.record
+    assert record.events_played == 0
+    assert record.events_staffed == 0
+
+    apply_time = event.event_end_date + timedelta(hours=1)
+
+    with time_machine.travel(apply_time, tick=False):
+        event.mark_complete()
+        registration.apply_award(applied_by=logi)
+
+    player_data = PlayerCampaignData.retrieve_model(user=user, campaign=campaign)
+    record = player_data.record
+
+    assert registration.award_applied_by == logi
+    assert registration.award_applied_date == apply_time
+    assert registration.attended
+
+    assert record.user == user.id
+    assert record.events_played == 0
+    assert record.events_staffed == 1
+    assert record.last_staffed == event.event_end_date.date()
+    assert record.last_played is None
+    assert record.last_campaign_date == event.event_end_date.date()
+    assert record.xp == 8
+    assert record.awards == [
+        AwardRecord(
+            date=event.event_end_date.date(),
+            source_id=event.id,
+            category=AwardCategory.EVENT,
+            description="NPC Event Credit for Test Event 1",
+            event_played=False,
+            event_staffed=True,
+            character=character.id,
+            event_xp=8,
+            event_cp=1,
+        )
+    ]
+    assert record.characters == {
+        character.id: CharacterRecord(
+            id=character.id,
+            event_cp=1,
+            events_played=0,
+            last_played=None,
         )
     }
 

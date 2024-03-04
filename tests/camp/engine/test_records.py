@@ -92,7 +92,8 @@ AWARDS_DAYGAMER = [
 
 # Unmark the "event played" flag to indicate this was an NPC award.
 AWARDS_NPC = [
-    award.model_copy(update={"event_played": False}) for award in AWARDS_SINGLE_ALL
+    award.model_copy(update={"event_played": False, "event_staffed": True})
+    for award in AWARDS_SINGLE_ALL
 ]
 
 PLAYER = PlayerRecord(
@@ -105,6 +106,7 @@ def test_no_awards():
     updated = PLAYER.update(CAMPAIGN)
     assert updated.xp == CAMPAIGN.floor_xp
     assert updated.events_played == 0
+    assert updated.events_staffed == 0
     assert updated.last_played is None
 
     # No character records present.
@@ -504,6 +506,7 @@ def test_awards_not_played():
     updated = PLAYER.update(CAMPAIGN, AWARDS_NPC)
     assert updated.xp == CAMPAIGN.max_xp == 68
     assert updated.events_played == 0
+    assert updated.events_staffed == 12
     assert updated.last_played is None
 
     # The character actually played gets all the CP.

@@ -88,6 +88,11 @@ urlpatterns = [
         game_views.myawards_view,
         name="myawards",
     ),
+    path(
+        "campaigns/<slug:slug>/awards/grant/",
+        game_views.grant_award,
+        name="grant-award",
+    ),
     # Events
     path("events/", event_views.event_list, name="events-list"),
     path("events/<int:pk>/", event_views.event_detail, name="event-detail"),

@@ -24,7 +24,7 @@ from .game_models import is_game_manager
 from .game_models import is_game_owner
 from .game_models import is_game_rules_staff
 from .game_models import is_logistics
-from .game_models import is_owner
+from .game_models import is_object_owner
 from .game_models import is_plot
 from .game_models import is_self
 
@@ -51,7 +51,7 @@ __all__ = [
     "is_game_owner",
     "is_game_rules_staff",
     "is_logistics",
-    "is_owner",
+    "is_object_owner",
     "is_plot",
     "is_self",
     "can_manage_events",

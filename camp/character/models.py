@@ -108,13 +108,13 @@ class Character(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_owner
+            "view": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "change": game_models.is_owner
+            "change": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "delete": game_models.is_owner | game_models.is_logistics,
+            "delete": game_models.is_object_owner | game_models.is_logistics,
             "add": game_models.is_authenticated,
         }
 
@@ -217,14 +217,14 @@ class Sheet(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_owner
+            "view": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "change": game_models.is_owner
+            "change": game_models.is_object_owner
             | game_models.is_logistics
             | game_models.is_plot,
-            "delete": game_models.is_owner | game_models.is_logistics,
-            "add": game_models.is_owner | game_models.is_logistics,
+            "delete": game_models.is_object_owner | game_models.is_logistics,
+            "add": game_models.is_object_owner | game_models.is_logistics,
         }
 
 

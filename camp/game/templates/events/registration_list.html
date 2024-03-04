@@ -124,12 +124,14 @@ Registrations for <a href="{% url 'event-detail' event.pk %}">{{event}}</a>
           </td>
           <td class="text-center">
             {% if registration.player_is_new %}
-            🆕
+            New Player!
             {% endif %}
           </td>
           <td class="text-center">
             {% if registration.character_is_new %}
-            🆕
+            New Character!
+            {% elif registration.npc_is_new %}
+            New NPC!
             {% endif %}
           </td>
         {% endif %}

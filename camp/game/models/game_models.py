@@ -184,7 +184,19 @@ def is_plot(user: User, obj):
 
 
 @rules.predicate
-def is_owner(user: User, obj):
+def is_manager(user: User, obj):
+    """Does this user manage (or own) any chapter?"""
+    game = get_game(obj)
+    if game is None:
+        return False
+    return any(
+        is_chapter_manager(user, chapter) or is_chapter_owner(user, chapter)
+        for chapter in game.chapters.all()
+    )
+
+
+@rules.predicate
+def is_object_owner(user: User, obj):
     """Is this user an owner of the object?"""
     if user.is_anonymous:
         return False
@@ -199,6 +211,16 @@ def is_owner(user: User, obj):
         else:
             return user in obj.owners
     return False
+
+
+# This includes almost every role except for tavernkeep.
+# Basically, this is folks who should have access to special plot
+# or game runner tools.
+# The Tavernkeep position exists to allow designated folks to see
+# certain registration and profile data, not to manipulate anything
+# or see secret things.
+# We may cut this down further as the role distinctions become refined.
+has_staff_powers = is_logistics | is_plot | is_manager | is_game_rules_staff
 
 
 def get_game(obj) -> Game | None:
@@ -754,7 +776,18 @@ class Award(RulesModel):
     created_date = models.DateTimeField(auto_now_add=True)
 
     chapter = models.ForeignKey(
-        Chapter, null=True, on_delete=models.SET_NULL, default=None
+        Chapter,
+        null=True,
+        on_delete=models.SET_NULL,
+        default=None,
+        blank=True,
+    )
+    event = models.ForeignKey(
+        "game.Event",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
     )
     awarded_by = models.ForeignKey(
         User,
@@ -765,8 +798,20 @@ class Award(RulesModel):
         related_name="awards_created",
     )
 
+    class Meta:
+        rules_permissions = {
+            "add": has_staff_powers,
+            "view": has_staff_powers,
+            "delete": has_staff_powers,
+        }
+
     def describe(self) -> str:
         return self.record.describe()
+
+    @property
+    def game(self) -> Game:
+        # This is needed to properly process the "add" permission
+        return self.campaign.game
 
     @property
     def date(self) -> date:
@@ -823,7 +868,7 @@ class Award(RulesModel):
 
     @property
     def needs_character(self) -> bool:
-        return self.record.needs_character
+        return self.record.needs_character and not self.character
 
     @transaction.atomic
     def claim(self, player: User, character=None):
@@ -855,11 +900,18 @@ class Award(RulesModel):
             self.record = self.record.model_copy(update={"character": character.id})
         elif self.needs_character:
             raise ValueError("Character required for this award.")
+        self.save()
+        self.apply()
+
+    def apply(self):
+        if not self.player:
+            raise ValueError("Player not specified.")
+        elif self.needs_character:
+            raise ValueError("Character not specified.")
         player_data: PlayerCampaignData = PlayerCampaignData.retrieve_model(
-            player, self.campaign, update=False
+            self.player, self.campaign, update=False
         )
         player_data.apply(self.record)
-        self.save()
         player_data.save()
 
     @classmethod

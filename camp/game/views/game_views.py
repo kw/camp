@@ -1,3 +1,4 @@
+from allauth.account.models import EmailAddress
 from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -5,31 +6,44 @@ from django.db import IntegrityError
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from rules.contrib.views import AutoPermissionRequiredMixin
+from rules.contrib.views import permission_required
 
+from camp.accounts.models import Membership
 from camp.character.models import Character
 from camp.engine.rules.base_engine import Engine
+from camp.engine.rules.tempest.records import AwardCategory
 
+from .. import forms
 from ..models import Award
 from ..models import Campaign
 from ..models import Chapter
 from ..models import ChapterRole
+from ..models import Event
 from ..models import Game
 from ..models import GameRole
 from ..models import PlayerCampaignData
 from ..models import Ruleset
 
 
+def _get_game(request, *args, **kwargs):
+    return request.game
+
+
+@require_GET
 def home_view(request):
     game = request.game
-    context = {"game": game}
+    context = {"game": game, "open_campaigns": game.campaigns.filter(is_open=True)}
 
     if request.user.is_authenticated:
         context["character_list"] = Character.objects.filter(
@@ -301,6 +315,7 @@ class DeleteCampaignView(AutoPermissionRequiredMixin, DeleteView):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def myawards_view(request, slug):
     context = {}
     context["campaign"] = campaign = get_object_or_404(Campaign, slug=slug)
@@ -364,3 +379,103 @@ def myawards_view(request, slug):
     context["unclaimable_award_count"] = unclaimable.count()
     context["unclaimable_award_emails"] = sorted({a.email.lower() for a in unclaimable})
     return render(request, "game/myawards.html", context)
+
+
+@permission_required("game.add_award", _get_game, raise_exception=True)
+@require_http_methods(["GET", "POST"])
+def grant_award(request, slug):
+    campaign = get_object_or_404(Campaign, slug=slug)
+    context = {"campaign": campaign, "step": 1}
+    template = "game/grant_award.html"
+
+    if request.method == "GET":
+        context["form"] = forms.AwardPlayerStep(initial=request.GET)
+        return render(request, template, context)
+    else:
+        # Pick the form class depending on what step we're on.
+        current_step = int(request.POST["step"])
+
+        # Always check that the base form is still valid.
+        step1_form = forms.AwardPlayerStep(request.POST)
+        if not step1_form.is_valid():
+            context["form"] = step1_form
+            return render(request, template, context)
+
+        category = step1_form.cleaned_data["award_category"]
+        player = step1_form.cleaned_data.get("player")
+        email = step1_form.cleaned_data.get("email")
+
+        if email:
+            # Check if we can resolve the email to a verified account.
+            if address := EmailAddress.objects.filter(email=email).first():
+                if address.verified:
+                    player = address.user
+                    email = None
+                else:
+                    context["maybe_player"] = maybe_player = address.user
+                    context["maybe_profile"] = Membership.find(request, maybe_player)
+
+        if player:
+            characters = Character.objects.filter(
+                campaign=campaign, owner=player, discarded_date=None
+            )
+            context["profile"] = Membership.find(request, player)
+        else:
+            # No character selection if we're doing email-based awards.
+            # The player will select one when they claim it.
+            characters = None
+
+        initial = {
+            "player": player,
+            "email": email,
+            "award_category": category,
+        }
+
+        context.update(initial)
+        context["category_label"] = forms.CATEGORY_CHOICE_DICT.get(category)
+
+        # If step 2 data was submitted, we'll validate it.
+        # Otherwise we'll return fresh Step 2 forms with the previous
+        # step's initial data loaded.
+        if current_step > 1:
+            data = request.POST
+        else:
+            data = None
+
+        if category == AwardCategory.EVENT:
+            # TODO: Only show events in the list if the current user
+            # would normally be allowed to control them.
+            events = Event.objects.filter(campaign=campaign, completed=True).order_by(
+                "-event_end_date"
+            )
+            form = forms.AwardEventStep(
+                data=data,
+                initial=initial,
+                character_query=characters,
+                event_query=events,
+            )
+        elif category == AwardCategory.PLOT:
+            form = forms.AwardPlotStep(
+                data=data,
+                initial=initial,
+                character_query=characters,
+            )
+        else:
+            # Someone's been tricky. Return to start.
+            context["form"] = step1_form
+            return render(request, template, context)
+
+        context["form"] = form
+        context["step"] = 2
+
+        if current_step == 1:
+            # Return the fresh step 2 form.
+            return render(request, template, context)
+
+        # Otherwise, try to finish the grant.
+        if form.is_valid():
+            form.create_award(campaign, request)
+            messages.success(request, "Award created successfully.")
+            # TODO: Redirect somewhere better
+            return redirect("home")
+        return render(request, template, context)

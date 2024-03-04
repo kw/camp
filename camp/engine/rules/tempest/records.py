@@ -16,7 +16,7 @@ https://docs.google.com/document/d/1qva8lxQqHIJZ-vl4OWU7cu_9i2uaUc_1AGjQPgHGzNA/
 from __future__ import annotations
 
 import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -31,7 +31,7 @@ from .campaign import CampaignRecord
 from .campaign import CampaignValues
 
 
-class AwardCategory(str, Enum):
+class AwardCategory(StrEnum):
     UNKNOWN = "unknown"  # Not specified.
     EVENT = "event"  # This is normal event credit.
     NPC_SHIFT = "npc-shift"  # Awards for NPC shifts, on top of normal event awards.
@@ -40,6 +40,7 @@ class AwardCategory(str, Enum):
     POINT_PURCHASE = (
         "point-purchase"  # Awards purchased using Service Points or equivalent.
     )
+    PLOT = "plot"  # Plot-based awards.
 
 
 class AwardRecord(BaseModel, frozen=True):
@@ -77,6 +78,8 @@ class AwardRecord(BaseModel, frozen=True):
         on PC event awards. Certain rules interact with this: you can freely rewrite your character
         until a character's second game, certain flags may allow specific changes until the played
         counter ticks, and the undo stack can't cross a played events boundary.
+      event_staffed: If true, increases the player's "events staffed" counter. Normally true for
+        an event where the player registers as full-time NPC/Staff.
       player_flags: Arbitrary flags to add to the player. For use in role/class/art access.
       character_flags: Arbitrary flags to add to the character. For use in role/class/art access.
       character_grants: Arbitrary grant strings, like "lore#Nature" or "divine-favor:3" or "lp:2",
@@ -93,11 +96,12 @@ class AwardRecord(BaseModel, frozen=True):
     bonus_cp: int = 0
     backstory_approved: bool | None = None
     event_played: bool = False
+    event_staffed: bool = False
     player_flags: dict[str, FlagValues | None] | None = None
     character_flags: dict[str, FlagValues | None] | None = None
     character_grants: list[str] | None = None
 
-    def describe(self) -> str:
+    def describe(self, secrets=False) -> str:
         if self.description:
             return self.description
         parts = []
@@ -107,8 +111,22 @@ class AwardRecord(BaseModel, frozen=True):
             parts.append(f"Bonus CP: {self.bonus_cp}")
         if self.event_xp or self.event_cp:
             parts.append(f"Event: {self.event_xp} XP + {self.event_cp} CP")
-        if self.character_flags or self.player_flags:
-            parts.append("Secret Flags")
+        if self.character_flags or self.player_flags or self.character_grants:
+            if not secrets:
+                parts.append("Secret Flags")
+            else:
+                if self.player_flags:
+                    pflags = []
+                    for flag, value in self.player_flags.items():
+                        pflags.append(f"{flag}:{value:r}")
+                    parts.append(f"Player Flags: [{';'.join(pflags)}]")
+                if self.character_flags:
+                    pflags = []
+                    for flag, value in self.character_flags.items():
+                        pflags.append(f"{flag}:{value:r}")
+                    parts.append(f"Character Flags: [{';'.join(pflags)}]")
+                if self.character_grants:
+                    parts.append(f"Grants: [{';'.join(self.character_grants)}]")
         if parts:
             return ", ".join(parts)
         return "Unknown"
@@ -190,7 +208,9 @@ class PlayerRecord(BaseModel, frozen=True):
     user: int | None = None
     xp: int = 0
     events_played: int = 0
+    events_staffed: int = 0
     last_played: datetime.date | None = None
+    last_staffed: datetime.date | None = None
     awards: list[AwardRecord] = Field(default_factory=list)
     characters: dict[int, CharacterRecord] = Field(default_factory=dict)
     last_campaign_date: datetime.date | None = None
@@ -228,7 +248,9 @@ class PlayerRecord(BaseModel, frozen=True):
         xp = player.xp
         player_flags = player.flags.copy()
         player_events_played = player.events_played
+        player_events_staffed = player.events_staffed
         player_last_played = player.last_played
+        player_last_staffed = player.last_staffed
         event_cp = {id: c.event_cp for id, c in player.characters.items()}
         bonus_cp = {id: c.bonus_cp for id, c in player.characters.items()}
         backstory = {id: c.backstory_approved for id, c in player.characters.items()}
@@ -254,6 +276,11 @@ class PlayerRecord(BaseModel, frozen=True):
                 player_events_played += 1
                 if player_last_played is None or player_last_played < award.date:
                     player_last_played = award.date
+
+            if award.event_staffed:
+                player_events_staffed += 1
+                if player_last_staffed is None or player_last_staffed < award.date:
+                    player_last_staffed = award.date
 
             # d. If the award includes XP, award the stated amount if they are at the previous cap,
             #    else award double the stated value.
@@ -381,7 +408,9 @@ class PlayerRecord(BaseModel, frozen=True):
             update={
                 "xp": xp,
                 "events_played": player_events_played,
+                "events_staffed": player_events_staffed,
                 "last_played": player_last_played,
+                "last_staffed": player_last_staffed,
                 "characters": new_characters,
                 "last_campaign_date": campaign.last_event_date,
                 "awards": player.awards + new_awards,
@@ -395,6 +424,7 @@ class PlayerRecord(BaseModel, frozen=True):
         flags = self.flags.copy()
         events_played = 0
         last_played = None
+        # TODO: Implement grants.
         if char := self.characters.get(character_id):
             if char.backstory_approved:
                 awards["backstory_cp"] = 2

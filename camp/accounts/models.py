@@ -87,7 +87,7 @@ class Membership(RulesModel):
 
     class Meta:
         rules_permissions = {
-            "view": game_models.is_owner | game_models.is_logistics,
-            "change": game_models.is_owner | game_models.is_logistics,
-            "delete": game_models.is_owner | game_models.is_logistics,
+            "view": game_models.is_object_owner | game_models.is_logistics,
+            "change": game_models.is_object_owner | game_models.is_logistics,
+            "delete": game_models.is_object_owner | game_models.is_logistics,
         }

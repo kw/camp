@@ -44,6 +44,18 @@
 
 <p class="my-3"><a class="btn btn-primary" href="{% url 'character-add' %}">New Character</a></p>
 
+{% has_perm "game.add_award" user game as can_grant_award %}
+{% if can_grant_award %}
+<h1>Staff Tools</h1>
+<ul>
+    {% for campaign in open_campaigns %}
+    <li><a href="{% url 'grant-award' campaign.slug %}">
+        Grant {{campaign}} Awards
+    </a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% else %}
 <p>You must <a href="{% url 'account_login' %}">login</a> or <a href="{% url 'account_signup' %}">sign up</a> to view or create characters.</p>
 <p>Or, sign in directly with a social account:</p>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head_title %}{% block body_title %}
+{% if category_label %}
+Grant {{category_label}}
+{% else %}
+Grant Award
+{% endif %}
+{% endblock %}{% endblock %}
+
+{% block content %}
+{% if player %}
+<p><b>Grant for Player:</b> {{ player }}
+  {% if profile %}
+  ({{profile}})
+  {% endif %}
+</p>
+{% elif email %}
+<p><b>Grant by Email:</b> {{ email }}
+  {% if maybe_player %}
+  - Unverified address of {{ maybe_player}}
+    {% if maybe_profile %}
+    ({{maybe_profile}})
+    {% endif %}
+  {% endif %}
+  </p>
+{% endif %}
+
+<form method="post">{% csrf_token %}
+    {{ form | crispy }}
+    <input type="submit" class="btn btn-primary"
+      {% if step == 1 %}
+      value="Next"
+      {% elif step == 2 %}
+      value="Grant Award"
+      {% else %}
+      value="Submit"
+      {% endif %}
+    >
+</form>
+{% endblock content %}

@@ -16,12 +16,18 @@ class _Extension(md.extensions.Extension):
 
 _MD = md.Markdown(
     output="html",
-    extensions=["tables", "smarty", _Extension()],
+    extensions=["tables", "smarty", "attr_list"],
 )
 
 
 @register.filter()
 @mark_safe
 @stringfilter
-def markdown(value):
-    return nh3.clean(_MD.convert(value))
+def markdown(value, arg=None):
+    if arg:
+        attr_values = {
+            "p": {"class": arg},
+        }
+    else:
+        attr_values = None
+    return nh3.clean(_MD.convert(value), set_tag_attribute_values=attr_values)

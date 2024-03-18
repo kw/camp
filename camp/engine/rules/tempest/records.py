@@ -145,6 +145,7 @@ class AwardRecord(BaseModel, frozen=True):
             or self.character_flags
             or self.character_grants
             or self.event_played
+            or self.event_staffed
         )
 
 
@@ -366,7 +367,10 @@ class PlayerRecord(BaseModel, frozen=True):
             | backstory.keys()
             | character_flags.keys()
             | character_grants.keys()
+            | character_plays.keys()
+            | character_last_played.keys()
         )
+
         for id in all_character_ids:
             new_cp = event_cp.get(id, campaign.floor_cp)
             new_backstory = backstory.get(id, False)
@@ -375,7 +379,7 @@ class PlayerRecord(BaseModel, frozen=True):
             char_events_played = character_plays.get(id, 0)
             char_last_played = character_last_played.get(id, None)
 
-            # If the character record already existed, updated. Otherwise, make it fresh.
+            # If the character record already existed, update it. Otherwise, make it fresh.
             if id in player.characters:
                 char = player.characters[id].model_copy(
                     update={

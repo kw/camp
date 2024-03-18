@@ -1,4 +1,5 @@
 name: Flurry of Cuts
+cost: 4
 requires:
   - parrying-dagger
   - martial:10

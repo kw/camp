@@ -1,0 +1,5 @@
+name: Spirit Shell
+cost: 4
+requires: -shell-of-ancient-spirit
+description: |
+  The rahkdari may beckon the spirits to come to its aid. Once per Short Rest, the rahkdari may complete a Focus Quick 100 and Sacrifice any number of Spikes to gain X points of Barrier. X is equal to the number of Spikes spent. A Rahkdari can expend up to 3 Spikes for this power. This Advantage can’t be taken with the Shell of the Ancient Spirit Breed Advantage.

@@ -1,0 +1,21 @@
+name: Steps of the Sire
+level: advanced
+cost: 3
+ranks: 3
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  _“The Theurge’s grace was second to none, deftly stepping from stone to stone across the river, never seeming off balance, hands clasped behind his back. More than a dozen stones lay between the two sides of the river, undisturbed by the teachers passing. Naturally, the Acolytes pride got the best of them, and each found themselves topping over into the bone-chilling water, wondering how the master had managed three steps across the stones, let alone a dozen.”_
+subcard:
+  name: Steps of the Sire [Devotion]
+  incant: None
+  target: Self
+  delivery: None
+  accent: None
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Counter
+  description: |
+    The Acolyte has mastered the Dance of the Riverwalk Steps and now instinctively avoids dangerous paths that would bring them to harm. The Acolyte may call this defense when they are struck by a Root, a Disable that affects one or both of their legs, a Slow or a Repel Effect.

@@ -168,22 +168,30 @@ class BaseFeatureDef(base_models.BaseFeatureDef, PowerCard):
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.grants:
-            ruleset.validate_identifiers(_grantable_identifiers(self.grants))
+            ruleset.validate_identifiers(
+                _grantable_identifiers(self.grants), path=self.def_path
+            )
         if self.grant_if:
-            ruleset.validate_identifiers(self.grant_if.keys())
+            ruleset.validate_identifiers(self.grant_if.keys(), path=self.def_path)
             for grant, req in self.grant_if.items():
                 # Normalize the requirements. This mirrors BaseFeatureDef.post_validate's
                 # handling of the `requirements` field.
-                ruleset.validate_identifiers(list(req.identifiers()))
+                ruleset.validate_identifiers(
+                    list(req.identifiers()), path=self.def_path
+                )
         if self.rank_grants:
             grantables = list(self.rank_grants.values())
-            ruleset.validate_identifiers(_grantable_identifiers(grantables))
+            ruleset.validate_identifiers(
+                _grantable_identifiers(grantables), path=self.def_path
+            )
         if self.discounts:
-            ruleset.validate_identifiers(self.discounts.keys())
+            ruleset.validate_identifiers(self.discounts.keys(), path=self.def_path)
         if self.choices:
             for choice_def in self.choices.values():
                 if choice_def.matcher and choice_def.matcher.id:
-                    ruleset.validate_identifiers(choice_def.matcher.id)
+                    ruleset.validate_identifiers(
+                        choice_def.matcher.id, path=self.def_path
+                    )
         if self.tags and isinstance(ruleset, Ruleset):
             # Verify that all tags are declared in the ruleset.
             for tag in self.tags:
@@ -212,15 +220,18 @@ class ClassDef(BaseFeatureDef):
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.starting_features:
-            ruleset.validate_identifiers(_grantable_identifiers(self.starting_features))
+            ruleset.validate_identifiers(
+                _grantable_identifiers(self.starting_features), path=self.def_path
+            )
         if self.multiclass_features:
             ruleset.validate_identifiers(
-                _grantable_identifiers(self.multiclass_features)
+                _grantable_identifiers(self.multiclass_features), path=self.def_path
             )
 
 
 class SkillDef(BaseFeatureDef):
     type: Literal["skill"] = "skill"
+    cost: CostDef  # Required
     category: str = "General Skills"
     uses: int | None = None
     rank_labels: dict[int, str] | None = None
@@ -259,11 +270,12 @@ class FlawDef(BaseFeatureDef):
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.award_mods:
-            ruleset.validate_identifiers(self.award_mods.keys())
+            ruleset.validate_identifiers(self.award_mods.keys(), path=self.def_path)
 
 
 class PerkDef(BaseFeatureDef):
     type: Literal["perk"] = "perk"
+    cost: CostDef  # Required
     category: str = "General Perks"
     rank_labels: dict[int, str] | None = None
     creation_only: bool = False
@@ -307,6 +319,7 @@ class Religion(BaseFeatureDef):
 
 class DevotionPower(BaseFeatureDef):
     type: Literal["devotion"] = "devotion"
+    cost: CostDef
     level: Literal["bonus", "basic", "advanced"]
     parent: str  # Parent is _required_
 
@@ -338,7 +351,7 @@ class BreedChallenge(BaseFeatureDef):
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.subbreed:
-            ruleset.validate_identifiers(self.subbreed)
+            ruleset.validate_identifiers(self.subbreed, path=self.def_path)
         parent = ruleset.features[self.parent]
         if not isinstance(parent, (Breed, BreedChallenge)):
             raise ValueError(
@@ -370,7 +383,7 @@ class BreedAdvantage(BaseFeatureDef):
     def post_validate(self, ruleset: base_models.BaseRuleset) -> None:
         super().post_validate(ruleset)
         if self.subbreed:
-            ruleset.validate_identifiers(self.subbreed)
+            ruleset.validate_identifiers(self.subbreed, path=self.def_path)
         parent = ruleset.features[self.parent]
         if not isinstance(parent, Breed):
             raise ValueError(

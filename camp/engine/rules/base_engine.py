@@ -122,14 +122,16 @@ class CharacterController(ABC):
         else:
             for id, definition in self.ruleset.features.items():
                 if id in self.features and (fc := self.feature_controller(id)):
-                    if fc.should_show_in_list:
+                    if fc.should_show_in_list and not fc.unused_bonus:
                         continue
                 if type and definition.type != type:
                     continue
                 fc = self.feature_controller(id)
                 rd = fc.can_increase()
                 if available:
-                    if not rd and fc.is_option_template:
+                    if fc.available_options and fc.unused_bonus:
+                        pass
+                    elif not rd and fc.is_option_template:
                         # Even if the option template isn't available, some options might still be available.
                         # Consider a character with 1 CP trying to purchase Lore: Noble. Lore costs 2 CP, so it won't
                         # be displayed. However, the character is an Edosite and has a -1 discount on Lore: Noble, and
@@ -343,14 +345,17 @@ class CharacterController(ABC):
     def choose(self, entry: base_models.ChoiceMutation) -> Decision: ...
 
     def meets_requirements(
-        self, requirement: base_models.Requirement | str, prop_id: str | None = None
+        self,
+        requirement: base_models.Requirement | str,
+        prop_id: str | None = None,
+        overrides: dict[str, int] | None = None,
     ) -> Decision:
         messages: list[str] = []
         if isinstance(requirement, str):
             # It's unlikely that an unparsed string gets here, but if so,
             # go ahead and parse it.
             requirement = base_models.parse_req(requirement)
-        if not (rd := requirement.evaluate(self)):
+        if not (rd := requirement.evaluate(self, overrides=overrides)):
             messages.append(rd.reason)
         if messages:
             if prop_id:
@@ -610,7 +615,7 @@ class PropertyController(ABC):
             return True
         match other:
             case PropertyController():
-                return self.value == other.value
+                return self.full_id == other.full_id and self.value == other.value
             case _:
                 return self.value == other
 

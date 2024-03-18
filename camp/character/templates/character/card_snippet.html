@@ -14,26 +14,34 @@
             <tbody>
                 {% if card.incant %}
                 <tr>
-                    <td colspan="2"><span class="card-text"><strong>Incantation:</strong> {{card.incant}}</span>
+                    <td colspan="2"><span><strong>Incantation:</strong>
+                        {{card.incant|markdown:"d-inline"}}</span>
                 </tr>
                 {% endif %}
                 {% if card.call %}
                 <tr>
-                    <td colspan="2"><strong>Call:</strong> {{card.call}}</td>
+                    <td colspan="2"><strong>Call:</strong>
+                        {{card.call|markdown:"d-inline"}}</td>
                 </tr>
                 {% endif %}
 
                 <tr>
-                    <td><strong>Target:</strong> {{card.target}}</td>
-                    <td><strong>Duration:</strong> {{card.duration}}</td>
+                    <td><strong>Target:</strong>
+                        {{card.target|markdown:"d-inline"}}</td>
+                    <td><strong>Duration:</strong>
+                        {{card.duration|markdown:"d-inline"}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Delivery:</strong> {{card.delivery}}</td>
-                    <td><strong>Refresh:</strong> {{card.refresh}}</td>
+                    <td><strong>Delivery:</strong>
+                        {{card.delivery|markdown:"d-inline"}}</td>
+                    <td><strong>Refresh:</strong>
+                        {{card.refresh|markdown:"d-inline"}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Accent:</strong> {{card.accent}}</td>
-                    <td><strong>Effect:</strong> {{card.effect}}</td>
+                    <td><strong>Accent:</strong>
+                        {{card.accent|markdown:"d-inline"}}</td>
+                    <td><strong>Effect:</strong>
+                        {{card.effect|markdown:"d-inline"}}</td>
                 </tr>
             </tbody>
         </table>

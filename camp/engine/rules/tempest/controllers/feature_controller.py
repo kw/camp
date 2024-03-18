@@ -19,7 +19,7 @@ from . import choice_controller
 
 _MUST_BE_POSITIVE = Decision(success=False, reason="Value must be positive.")
 _NO_RESPEND = Decision(success=False, reason="Respend not currently available.")
-_NO_PURCHASE = Decision(success=False, reason="Feature cannot be purchased.")
+_NO_PURCHASE = Decision(success=False, reason="")
 
 _SUBFEATURE_TYPES: set[str] = {
     "subfeature",
@@ -227,9 +227,12 @@ class FeatureController(base_engine.BaseFeatureController):
         return None
 
     def purchase_cost_string(
-        self, ranks: int = 1, cost: int | None = None
+        self,
+        ranks: int = 1,
+        cost: int | None = None,
+        grants: int | None = None,
     ) -> str | None:
-        if self.currency and self.cost_def is not None:
+        if self.currency and (self.cost_def is not None or cost is not None):
             if cost is None:
                 if self.is_option_template:
                     grants = 0
@@ -560,7 +563,7 @@ class FeatureController(base_engine.BaseFeatureController):
         purchaseable = self.purchaseable_ranks
         current = self.value
         if purchaseable <= 0:
-            return Decision(success=False)
+            return Decision.NO
         # If the parent feature has purchase limits for children, enforce it.
         if self.parent and self.parent.supports_child_purchases:
             if (remaining := self.parent.child_purchase_remaining) is not None:
@@ -577,6 +580,11 @@ class FeatureController(base_engine.BaseFeatureController):
                 reason=f"Max is {self.definition.ranks}, so can't increase to {current + value}",
                 amount=purchaseable,
             )
+
+        # Do we have unused bonus to apply?
+        if self.option_def and self.unused_bonus and self.can_take_new_option:
+            return Decision.NEEDS_OPTION
+
         # Does the character meet the prerequisites?
         if not (rd := self.meets_requirements):
             return rd
@@ -669,12 +677,12 @@ class FeatureController(base_engine.BaseFeatureController):
         return Decision.OK
 
     def increase(self, value: int) -> Decision:
-        if (oc := self.option_parent) and oc.unused_bonus:
-            if oc.model.choices is None:
-                oc.model.choices = {}
-            oc.model.choices[_OPTION_BONUS] = [self.full_id]
-            oc.reconcile()
-            return Decision(success=True, amount=1, mutation_applied=True)
+        if (
+            (oc := self.option_parent)
+            and oc.unused_bonus
+            and (choice_controller := oc.choices.get(_OPTION_BONUS))
+        ):
+            return choice_controller.choose(self.full_id)
         if not (rd := self.can_increase(value)):
             return rd
         if rd.needs_option:

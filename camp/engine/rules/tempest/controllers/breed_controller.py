@@ -259,15 +259,16 @@ class SubbreedController(feature_controller.FeatureController):
 class BreedAdvantageController(feature_controller.FeatureController):
     character: character_controller.TempestCharacter
     definition: defs.BreedAdvantage
-    parent: BreedController
+    parent: BreedController | BreedChallengeController
     _WRONG_BREED = Decision(success=False, reason="Breed not taken")
     _WRONG_SUBBREED = Decision(success=False, reason="Subbreed not taken")
 
     @property
     def currency(self) -> str:
-        if not self.parent.value > 0:
+        breed = self.parent_breed
+        if not breed.value > 0:
             return "bp"
-        if self.parent.is_primary:
+        if breed.is_primary:
             return "bp-primary"
         return "bp-secondary"
 
@@ -277,6 +278,22 @@ class BreedAdvantageController(feature_controller.FeatureController):
         if self.subbreed_id:
             return tags | {self.subbreed_id}
         return tags
+
+    @property
+    def parent_breed(self) -> BreedController:
+        parent = self.parent
+        while not isinstance(parent, BreedController):
+            parent = parent.parent
+        return parent
+
+    def cost_for(self, purchased_ranks: int, granted_ranks: int = 0) -> int:
+        base_cost = super().cost_for(purchased_ranks + granted_ranks)
+        for child in self.subfeatures:
+            base_cost += child.cost_for(child.value)
+        return base_cost
+
+    def cost_string(self, **kw) -> str | None:
+        return self.purchase_cost_string(cost=self.cost_for(self.value))
 
     @property
     def subbreed_id(self) -> str | None:
@@ -292,7 +309,7 @@ class BreedAdvantageController(feature_controller.FeatureController):
     def meets_requirements(self) -> Decision:
         if not (rd := super().meets_requirements):
             return rd
-        if not self.parent.value > 0:
+        if not self.parent_breed.value > 0:
             return self._WRONG_BREED
         if (sb := self.subbreed) and (sb.value <= 0):
             return self._WRONG_SUBBREED
@@ -438,8 +455,8 @@ class BreedChallengeController(feature_controller.FeatureController):
         return descr
 
     def cost_string(self, **kw) -> str | None:
-        if (cost := self.award_bp) or self.paid_ranks:
-            return self.purchase_cost_string(cost=cost)
+        if self.value:
+            return self.purchase_cost_string(cost=self.award_bp)
         return self.purchase_cost_string()
 
     def purchase_cost_string(self, ranks: int = 1, cost: int | None = None) -> str:

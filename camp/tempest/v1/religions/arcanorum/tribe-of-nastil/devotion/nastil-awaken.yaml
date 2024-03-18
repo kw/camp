@@ -1,0 +1,25 @@
+name: Awaken
+level: advanced
+cost: 3
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  _“The Body may be bound in ropes and chains, easily freed, but the Mind is not so easily released: the thoughts of the oppressed circle like a whirlpool, reinforcing their own imprisonment. Only through forceful action, through pain, can they be freed. Many will recoil from change and uncertainty, but you must be the herald of what’s to come: unfettered sight into the world as it is, and not the illusion that governs most.”_
+subcard:
+  name: Awaken [Devotion] [Adept]
+  incant: "“I call upon the Scythe Heart's will, may their voice guide me. Awaken; cast aside your chains: your mind is set free.”"
+  call: “[Name or Description] Dispel [Charm/Dominate/Berserk] by Agony”
+  target: Other Individual
+  duration: Instantaneous
+  delivery: Verbal
+  refresh: Spell
+  accent: Agony
+  effect: Dispel
+  description: |
+    Through the passionate voice of the true believer, the words of the divine can flow, unbinding the minds of those whose free will has been suppressed. With a short incantation and prayer to the Breaker of Chains, the Tribesman may call “[Name or Description] Dispel [Charm/Dominate/Berserk] by Agony” upon a single target they can see.
+
+    If this spell appears to successfully Dispel one of the listed conditions, the caster may Refresh a Spike.
+
+    The first time this spell is cast each long rest it will not consume a spell slot.

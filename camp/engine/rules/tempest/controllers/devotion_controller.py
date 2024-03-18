@@ -22,6 +22,14 @@ class DevotionController(feature_controller.FeatureController):
         return self.definition.level
 
     @property
+    def level_value(self) -> int:
+        if self.is_advanced:
+            return 2
+        elif self.is_basic:
+            return 1
+        return 0
+
+    @property
     def is_basic(self) -> bool:
         return self.definition.level == "basic"
 

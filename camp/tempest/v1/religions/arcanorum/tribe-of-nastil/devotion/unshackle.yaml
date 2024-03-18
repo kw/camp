@@ -1,0 +1,25 @@
+name: Unshackle
+cost: 3
+level: advanced
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  _“Unbind the slave, cast off the chains of the oppressed from within and without. Freedom from the will of others, to do as we please, unbounded by the curse of law, order, and oppression, all one and the same before the eyes of The Ungilted.”_
+subcard:
+  name: Unshackle [Devotion]
+  incant: Q30 RP - A short prayer to Nastil
+  call: Dispel [Root, Slow, Bind] by Will
+  target: Other Individual
+  delivery: Touch
+  accent: Will
+  duration: Instantaneous
+  refresh: Focus Quick 100
+  effect: Dispel
+  description: |
+    Seeing their brothers and sisters, Tribesmen now or in the future, bound to the wills of others infuriates the Tribe. They know well the lures of the oppressive, and will cast off the chains of others, ready or not to see the world for what it is.
+
+    Focusing inward, they may call upon their divine connection to free the others of the burdens placed upon them. With but a prayer and a touch, they may call to the Ungilted to free another.
+
+    If this Power appears to successfully Dispel one of the listed conditions, the user may Refresh a Spike.

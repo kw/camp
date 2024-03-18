@@ -48,12 +48,9 @@ class FeatureForm(forms.Form):
         else:
             current = c.value
         choices = []
-        if available == 1 and c.max_ranks == 1:
-            # The only thing that can happen here is purchasing 1 rank, so don't
-            # bother with a choice field.
-            if c.unused_bonus > 0:
-                self.button_label = "Get!"
-                self.button_level = "success"
+        if c.unused_bonus > 0 and c.max_ranks == 1:
+            self.button_label = "Get!"
+            self.button_level = "success"
             return
         if available > 0 and c.max_ranks != 1:
             next_value = c.next_value

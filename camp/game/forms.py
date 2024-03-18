@@ -286,7 +286,7 @@ class AwardEventStep(_AwardStepTwo):
         event_xp = max(min(event_max_xp, event_xp), 0)
 
         record = AwardRecord(
-            date=event.event_end_date,
+            date=event.event_end_date.date(),
             source_id=event.id,
             category=AwardCategory.EVENT,
             description=description,
@@ -384,7 +384,9 @@ class AwardPlotStep(_AwardStepTwo):
         character_flags = None
         grants = None
 
-        backdate = self.cleaned_data.get("backdate", timezone.now().date())
+        backdate = self.cleaned_data.get("backdate")
+        if not backdate:
+            backdate = timezone.now().date()
 
         if raw_player_flag:
             player_flags: dict[str, FlagValue] = {}

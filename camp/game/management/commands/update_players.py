@@ -44,8 +44,12 @@ class Command(BaseCommand):
                 total = query.count()
                 self.stdout.write(f"Regenerating {total} player records")
                 for pd in query.all():
-                    prev_record = pd.record
-                    if regenerate_awards:
+                    try:
+                        prev_record = pd.record
+                    except Exception:
+                        self.stdout.write("Error reading previous record.")
+                        prev_record = None
+                    if regenerate_awards or not prev_record:
                         new_record = pd.regenerate_awards()
                     else:
                         new_record = prev_record.regenerate(pd.campaign.record)

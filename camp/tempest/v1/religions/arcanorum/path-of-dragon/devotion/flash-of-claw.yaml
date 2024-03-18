@@ -1,0 +1,25 @@
+name: Flash of Claw
+level: advanced
+cost: 3
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  _“The Theurge spun with grace and ease deftly dodging the blows of their students: no less than four Acolytes, all well trained and skilled with the blade, allowing not a single blow to land. And yet, when the battle was over, the chagrined students protested that while they had not landed a blow upon the master, that he too had failed to land on of his own. Only then did the master smile and ask: ‘Are you so sure?’”_
+subcard:
+  name: Flash of Claw [Devotion] [Adept]
+  incant: “By the grace and claw of the sire, I rake and rend the foe asunder.“
+  call: “Double 1”
+  target: Individual
+  delivery: Weapon
+  accent: None
+  duration: Short Rest
+  refresh: Spell
+  effect: Grant Double
+  description: |
+    Once this spell is cast, the caster gains a number of charges of “Double 1” equal to the amount of CP spent in this religion. These charges are lost if the caster becomes Helpless or completes a Short Rest.
+
+    If the caster expends a Spike, they may add two to the call and add the Lightning Accent, making the call “Double 3 by Lightning.”
+
+    The first time this spell is cast each long rest it will not consume a spell slot.

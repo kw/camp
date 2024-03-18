@@ -60,7 +60,7 @@ class Decision(BaseModel, frozen=True):
         return self.success
 
 
-Decision.OK = Decision(success=True)
-Decision.NO = Decision(success=False)
+Decision.OK = Decision(success=True, reason="")
+Decision.NO = Decision(success=False, reason="")
 Decision.NEEDS_OPTION = Decision(success=True, needs_option=True)
 Decision.NEEDS_OPTION_FAIL = Decision(success=False, needs_option=True)

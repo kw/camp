@@ -1,0 +1,5 @@
+name: Shell of the Ancient Spirit
+cost: 8
+requires: -spirit-shell
+description: |
+  The sacrosanct calls upon their ancestors' blessings to protect them. Once per Long Rest, the sacrosanct may gain 2 points of Barrier. Cannot be taken with Spirit Shell. This Advantage refreshes whenever the sacrosanct Deathblows or uses a Death effect that is not negated on a living creature.

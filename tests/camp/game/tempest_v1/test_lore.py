@@ -87,3 +87,62 @@ class TestSharpMind:
         features = character.list_features(type="skill", taken=False, available=True)
         feature_ids = [f.full_id for f in features]
         assert "lore" in feature_ids
+
+
+class TestOptionBonusRouter:
+
+    def test_single_bonus(self, character: TempestCharacter):
+        # Mage grants +1 Bonus Lore
+        assert character.apply("mage:2")
+
+        # If we try to buy a new Lore skill while a bonus is in place (from Mage),
+        # the bonus choice will absorb it.
+        original_cp = character.cp.value
+        assert character.apply("lore+Religion")
+        assert character.cp.value == original_cp
+
+        # If we buy another lore, it is purchased normally.
+        assert character.apply("lore+Arcane")
+        assert character.cp.value == original_cp - 2
+
+        # We have all of the requested lores.
+        features = character.list_features(type="skill", taken=True, available=False)
+        feature_ids = {f.full_id for f in features if f.expr.prop == "lore"}
+        assert feature_ids == {"lore+Religion", "lore+Arcane"}
+
+    def test_multiple_bonus(self, character: TempestCharacter):
+        # Rahkdari Guardian Spirit grants +2 Bonus Lore
+        assert character.apply("rahkdari")
+        # Guardian Spirit costs 4 BP. Eye of the Realm covers it.
+        assert character.apply("eye-of-the-realm")
+        assert character.apply("guardian-spirit")
+
+        # We can buy two lore skills without costing CP
+        original_cp = character.cp.value
+        assert character.apply("lore+Religion")
+        assert character.apply("lore+Arcane")
+        assert character.cp.value == original_cp
+
+        # Another Lore will cost
+        assert character.apply("lore+Shadow")
+        assert character.cp.value == original_cp - 2
+
+        # And at the end, we have all of the requested lores
+        features = character.list_features(type="skill", taken=True, available=False)
+        feature_ids = {f.full_id for f in features if f.expr.prop == "lore"}
+        assert feature_ids == {"lore+Religion", "lore+Arcane", "lore+Shadow"}
+
+    def test_lore_available_at_0_cp(self, character: TempestCharacter):
+        assert character.apply("mage")
+        assert character.apply(
+            "generous-soul"
+        )  # To use up the base 5 CP we start with.
+        assert character.cp.value == 0
+
+        assert character.can_purchase("lore")
+        lore = character.feature_controller("lore")
+        assert lore.can_increase()
+
+        features = character.list_features(type="skill", taken=False, available=True)
+        feature_ids = [f.full_id for f in features]
+        assert feature_ids == ["lore"]

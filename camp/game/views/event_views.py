@@ -2,7 +2,6 @@ import datetime
 import io
 import logging
 
-from celery.result import AsyncResult
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -456,8 +455,8 @@ def download_event_report(request, pk, report_type):
     report = _fetch_report(pk, report_type)
     if report and report.download_ready:
         if report.task_id:
-            result = AsyncResult(report.task_id)
-            result.forget()
+            report.result.forget()
+            report.task_id = None
         return _report_download_response(report)
     return Http404
 
@@ -481,16 +480,26 @@ def _fetch_report(event_id, report_type) -> models.EventReport | None:
             logging.info(
                 "Cleaning up old report: %s from %s", old_report.pk, old_report.started
             )
-            old_report.result.revoke()
-            old_report.result.forget()
+            if old_result := old_report.result:
+                old_result.revoke()
+                old_result.forget()
             old_report.delete()
-        if report.result.failed():
+        if report.task_id is None:
+            return report
+        elif report.result.failed():
             logging.info(
                 "Cleaning up failed report: %s from %s", report.pk, report.started
             )
+            report.message = "Report generation failed."
             report.result.forget()
-            report.delete()
-            report = None
+            report.task_id = None
+            report.save()
+        elif report.result.state == "PENDING":
+            # If the task hasn't started within 10 seconds, report it failed.
+            if timezone.now() - report.started > datetime.timedelta(seconds=10):
+                report.task_id = None
+                report.message = "Report task did not start after 10 seconds."
+                report.save()
     else:
         logging.debug("No reports found for event %s", event_id)
         report = None

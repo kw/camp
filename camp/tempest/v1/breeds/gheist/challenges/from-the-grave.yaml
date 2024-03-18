@@ -1,4 +1,5 @@
 name: From the Grave
 award: 3
+requires: -carnal-creature
 description: |
   Gheist are partially dead, some might even say undead, you are part of the population that tends towards the latter. This character has zero death timer, thus when they reach the end of their dying timer, they immediately turn into a Spirit.

@@ -220,6 +220,7 @@ DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
 
 
 # Celery task queue
+CELERY_TASK_TRACK_STARTED = True
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BROKER_URL = REDIS_URL
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -234,6 +235,7 @@ CELERY_TASK_TIME_LIMIT = env.int("TASK_HARD_TIMEOUT_SECONDS", default=3600 * 2)
 # Sentry error reporting
 if sentry_dsn := env.str("SENTRY_DSN", default=None):
     import sentry_sdk
+    from sentry_sdk.integrations.celery import CeleryIntegration
     from sentry_sdk.integrations.django import DjangoIntegration
 
     if traces_sample_rate := env.float("SENTRY_SAMPLE_RATE", default=None):
@@ -241,9 +243,15 @@ if sentry_dsn := env.str("SENTRY_DSN", default=None):
             traces_sample_rate = 0.0
         if traces_sample_rate > 1:
             traces_sample_rate = 1.0
+    enable_tracing = env.bool("SENTRY_ENABLE_TRACING", default=False)
 
     sentry_sdk.init(
         dsn=sentry_dsn,
-        integrations=[DjangoIntegration()],
+        send_default_pii=True,
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+        ],
+        enable_tracing=enable_tracing,
         traces_sample_rate=traces_sample_rate,
     )

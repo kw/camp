@@ -1,0 +1,21 @@
+name: Sentinel's Challenge
+level: advanced
+cost: 3
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  “Suffer not the villain to strike at those who rely on you. Instead, be the first to call their evil: That should they wish to harm those who stand beside you, they have a silver shield to get through first.”
+subcard:
+  name: Sentinel's Challenge [Devotion]
+  incant: "RP: Make a verbal challenge to an opponent that they acknowledge."
+  call: “[Name or Description] Taunt 3 by Will”
+  target: Individual
+  delivery: Verbal
+  accent: Will
+  duration: Instantaneous
+  refresh: Short Rest
+  effect: Taunt
+  description: |
+    The words of the Sentinel strike at the very core of their target. The enraged target thinks of little but trying to show the Sentinel the error of their ways. The Sentinel may call “[Name or Description] Taunt 3 by Will.”

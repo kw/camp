@@ -547,7 +547,7 @@ class EventRegistration(RulesModel):
 
 
 def _task_uuid():
-    return uuid.uuid4().hex
+    return f"report-{uuid.uuid4().hex}"
 
 
 class EventReport(RulesModel):
@@ -569,6 +569,8 @@ class EventReport(RulesModel):
     )
     task_id: str = models.CharField(
         default=_task_uuid,
+        null=True,
+        blank=True,
         max_length=100,
         help_text="Task ID used by the underlying task queue system.",
     )
@@ -595,6 +597,7 @@ class EventReport(RulesModel):
         default=False,
         help_text="Marked True by the task once the report download is ready.",
     )
+    message: str = models.TextField(blank=True, null=True, default=None)
 
     @property
     def result(self) -> AsyncResult | None:

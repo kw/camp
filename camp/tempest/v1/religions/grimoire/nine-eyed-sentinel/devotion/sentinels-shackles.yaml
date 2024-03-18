@@ -1,0 +1,23 @@
+name: Sentinel's Shackles
+cost: 3
+level: advanced
+requires:
+  any:
+    - spell@2
+    - power@2
+description: |
+  _“Bind that which cannot be destroyed, until the moment that it can. Frozen by the icy glare of Kerberos, even the most mighty of the Dark’s minions will find themselves surrounded, outnumbered, and outmatched.”_
+subcard:
+  name: Sentinel’s Shackles [Devotion] [Adept]
+  incant: “I call my faith, divine and right, I wield and shape the Sentinel’s might. I draw His strength to protect and fight. Gather now within my hand, to bind the monsters of this land.”
+  call: “Short Bind by Ice”
+  target: Individual
+  delivery: Packet (Spell-Ball), Weapon
+  accent: Ice
+  duration: Short Rest
+  refresh: Spell
+  effect: Bind
+  description: |
+    After the incantation, the Sentinel may either charge two spell-balls, or make one attack with a weapon to Bind an individual that they believe to be evil.
+
+    The first time this spell is cast each Long Rest it will not consume a spell-slot.

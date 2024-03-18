@@ -1,4 +1,5 @@
 name: Polearmcraft
+cost: 4
 requires:
   - great-weapons
   - martial:2

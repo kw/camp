@@ -2,13 +2,18 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from functools import cached_property
+from typing import Iterable
 from typing import Literal
 from typing import cast
 
 from camp.engine.rules import base_engine
+from camp.engine.rules.base_models import AllOf
+from camp.engine.rules.base_models import AnyOf
+from camp.engine.rules.base_models import BoolExpr
 from camp.engine.rules.base_models import Discount
 from camp.engine.rules.base_models import Issue
 from camp.engine.rules.base_models import PropExpression
+from camp.engine.rules.base_models import parse_req
 
 from ...decision import Decision
 from .. import defs
@@ -131,9 +136,9 @@ class ChoiceController(base_engine.ChoiceController):
             choices.remove(choice)
         else:
             expr = PropExpression.parse(choice)
-            expr.value = choice_ranks[choice]
+            expr = expr.model_copy(update={"value": choice_ranks[choice]})
             choices.remove(repr(expr))
-            expr.value -= 1
+            expr = expr.model_copy(update={"value": expr.value - 1})
             choices.append(repr(expr))
 
         self._feature.model.choices[self._choice] = choices
@@ -163,9 +168,9 @@ class ChoiceController(base_engine.ChoiceController):
             # Already taken. If this is a multi-choice, we need to increment the value.
             if self.definition.multi:
                 expr = PropExpression.parse(choice)
-                expr.value = choice_ranks[choice]
+                expr = expr.model_copy(update={"value": choice_ranks[choice]})
                 choices.remove(repr(expr))
-                expr.value += 1
+                expr = expr.model_copy(update={"value": expr.value + 1})
                 choices.append(repr(expr))
             else:
                 # Can't take a choice more than once!
@@ -244,6 +249,8 @@ class BaseFeatureChoice(ChoiceController):
                 success=False,
                 reason=f"`{choice}` does not match choice definition for {self._feature.full_id}/{self._choice}",
             )
+        if not (rd := self._check_req(choice)):
+            return rd
         return super().choose(choice)
 
     def available_choices(self) -> dict[str, str]:
@@ -356,6 +363,82 @@ class GrantChoice(BaseFeatureChoice):
             grants[choice] += ranks
 
 
+class AncestorManifestedChoice(GrantChoice):
+
+    def choose(self, choice: str) -> Decision:
+        if choice not in self._matching_features():
+            return Decision(
+                success=False, reason=f"{choice} not available at this time."
+            )
+        return super().choose(choice)
+
+    def update_propagation(
+        self, grants: dict[str, int], discounts: dict[str, list[Discount]]
+    ) -> None:
+        super().update_propagation(grants, discounts)
+        character = self._feature.character
+
+        for choice, _ in self.choice_ranks().items():
+            cc = character.feature_controller(choice)
+            requires = cc.definition.requires
+            challenge_reqs = _find_challenge_requirements(character, requires)
+            for req in challenge_reqs:
+                grants[req] = 1
+
+    def _matching_features(self) -> set[str]:
+        # Only match features within our current BP budget.
+        choice_ids = super()._matching_features()
+        feature = self._feature
+        character = feature.character
+        try:
+            parent = feature.parent_breed
+            max_bp = parent.bp.value
+        except AttributeError:
+            max_bp = 0
+
+        filtered_choices = set()
+        for cid in choice_ids:
+            choice = character.feature_controller(cid)
+            if choice.value > 0:
+                continue
+            if choice.cost_for(1) <= max_bp:
+                filtered_choices.add(cid)
+        return filtered_choices
+
+    def _check_req(self, choice: str) -> Decision:
+        # Any requirements of the advantage that _are not_
+        # positive Breed Challenge requirements must still be met.
+        feature = self._feature
+        character = feature.character
+        cc = character.feature_controller(choice)
+        requires = cc.definition.requires
+        challenge_reqs = _find_challenge_requirements(character, requires)
+        overrides = {c: 1 for c in challenge_reqs}
+        if rd := character.meets_requirements(requires, overrides=overrides):
+            return rd
+        return Decision.NO
+
+
+def _find_challenge_requirements(
+    character: base_engine.CharacterController, req: BoolExpr | str
+) -> Iterable[str]:
+    if isinstance(req, str):
+        req = parse_req(req)
+    match req:
+        case PropExpression(prop=prop):
+            if feat_def := character.ruleset.features.get(prop):
+                if feat_def.type == "breedchallenge":
+                    yield req.full_id
+        case AllOf(all=all_reqs):
+            for a in all_reqs:
+                yield from _find_challenge_requirements(character, a)
+        case AnyOf(any=any_reqs):
+            for a in any_reqs:
+                for r in _find_challenge_requirements(character, a):
+                    yield r
+                    return
+
+
 class PointPickerChoice(GrantChoice):
     @property
     def points(self) -> int:
@@ -450,8 +533,8 @@ class AccessibleClassPowerChoice(GrantChoice):
             if character.get(f"{parent.full_id}.powers@{tier}") <= 0:
                 return False
         elif feat.feature_type == "utility":
-            if character.get(f"{parent.full_id}.utilities") <= 0:
-                return False
+            # You can take a Utility power at any level.
+            return True
         else:
             # Don't grant anything that isn't a power or utility.
             return False
@@ -600,6 +683,8 @@ def make_controller(
             return AgileLearnerChoice(feature, choice_id)
         case "point-picker":
             return PointPickerChoice(feature, choice_id)
+        case "ancestor-manifested":
+            return AncestorManifestedChoice(feature, choice_id)
         case None:
             return GrantChoice(feature, choice_id)
         case _:

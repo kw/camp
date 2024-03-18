@@ -1,0 +1,7 @@
+name: Silvered Shield
+cost: 2
+level: basic
+description: |
+  The Sentinel may gain a Protect vs Darkness when they complete a Long Rest.
+
+  While this Sentinel is wielding a shield, they may Resist a number of Effects with the Darkness Accent equal to the character’s Maximum Life Points per Event.

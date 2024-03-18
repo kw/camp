@@ -6,7 +6,7 @@ from .. import defs
 from .. import models
 from . import feature_controller
 
-_NO_PURCHASE = Decision(success=False)
+_NO_PURCHASE = Decision(success=False, reason="")
 
 
 class SubfeatureController(feature_controller.FeatureController):

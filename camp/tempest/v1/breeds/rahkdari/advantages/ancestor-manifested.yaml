@@ -1,0 +1,23 @@
+name: Ancestor Manifested
+choices:
+  advantage:
+    name: Ancestor Manifested Advantage
+    controller: ancestor-manifested
+    description: Select a single advantage from another breed that you can afford
+    matcher:
+      type: breedadvantage
+      parent:
+        id: -rahkdari
+        type: breed
+description: |
+  Sometimes, the teachings, mannerisms, habits or otherwise traits of a Rahkdari’s ancestor shows especially bright. In these cases, the rahkdari are able to draw on certain perks and quirks of other lineages, owed to their latent connection to them via their ancestors. The rahkdari may choose one Advantage from another breed or sub breed and gain that Advantage as a Rahkdari Advantage. The cost of Ancestor Manifested is equal to the cost of the chosen Advantage.
+
+  If the chosen advantage has any Disadvantages tied to it, they also gain those disadvantages, but do not earn Advantage points for that disadvantage.
+
+  For instance, a Rahkdari  who uses Ancestor Manifested may take the Left Arm of Doom Drimmen Rahl Subbreed advantage for (9) breed points, but must rep the Left Arm of Doom without earning its 4 Advantage points, and must wear the costuming requirement therein. In doing so, they are able to use the Left Arm of Doom advantage in any situation  where they normally would be able to do so.
+
+  ### CMA Note
+
+  At present time, challenges gained from this advantage will _display_ a BP award, but they (correctly) won't be tallied.
+
+  This particular advantage is pretty tough to test, so please report any difficulties with it.

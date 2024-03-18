@@ -9,7 +9,28 @@
       "name": "Run Server",
       "program": "${workspaceFolder}/manage.py",
       "request": "launch",
-      "type": "python"
+      "type": "debugpy"
+    },
+    {
+      "args": [
+        "runserver"
+      ],
+      "django": true,
+      "name": "Python Debugger: Django",
+      "program": "${workspaceFolder}/manage.py",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "args": [
+        "update_players",
+        "--regenerate"
+      ],
+      "django": true,
+      "name": "Update Players",
+      "program": "${workspaceFolder}/manage.py",
+      "request": "launch",
+      "type": "debugpy"
     }
   ],
   "version": "0.2.0"

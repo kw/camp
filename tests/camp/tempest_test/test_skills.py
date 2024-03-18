@@ -236,3 +236,8 @@ def test_skill_with_one_grant_sellback(starter: TempestCharacter):
     assert starter.meets_requirements("granted-skill")
     assert starter.apply("grants-skill:-1")
     assert not starter.meets_requirements("granted-skill")
+
+
+def test_skill_with_comma_in_name(starter: TempestCharacter):
+    assert starter.apply("i,-robot")
+    assert starter.meets_requirements("i,-robot")

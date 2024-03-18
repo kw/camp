@@ -396,6 +396,7 @@ def _features(
     use_type_name: bool = False,
 ) -> list[FeatureGroup]:
     by_type: dict[str, FeatureGroup] = {}
+    taken_ids = set()
     for feat in feats:
         if hide_internal and feat.internal and feat.parent and feat.parent.value > 0:
             # Don't include internal features in the list, since they will appear
@@ -416,7 +417,10 @@ def _features(
             )
         group = by_type[feature_type]
         if feat.should_show_in_list:
-            group.taken.append(feat)
+            # if feat not in group.taken:
+            if feat.full_id not in taken_ids:
+                taken_ids.add(feat.full_id)
+                group.taken.append(feat)
         elif feat.is_option_template:
             # Option templates should only appear in the available list,
             # and only if another option is available.

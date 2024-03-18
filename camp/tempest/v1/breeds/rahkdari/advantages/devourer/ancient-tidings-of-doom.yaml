@@ -1,0 +1,16 @@
+name: Ancient Tidings of Doom
+cost: 6
+description: |
+  The devourer may take time to conduct a ritual with the intention of empowering their weapon with spiritual force to slay their foes. The devourer gains the Ancient Tidings of Doom power below.
+subcard:
+  name: Ancient Tidings of Doom [Breed]
+  incant: “May the Ancients guide my blade, strong and true, to purge the land of my foes.”
+  call: “Imbue Wounding By Will”
+  target: Weapon
+  delivery: Touch
+  accent: Will
+  duration: Intantaneous, Short Rest
+  refresh: Long Rest
+  effect: Imbue Weapon Wounding By Will
+  description: |
+    The devourer may take 5 minutes to imbue their own weapon with the ability to add the “Wounding 4” for three melee attacks with the weapon. These swings cannot be used in conjunction with other powers nor may the call be altered by other Powers. At the end of the ritual to imbue the weapon, they must shout the incant of this power.

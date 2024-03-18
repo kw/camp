@@ -223,6 +223,12 @@ class TempestCharacter(base_engine.CharacterController):
         return None
 
     @property
+    def subbreed(self) -> breed_controller.SubbreedController | None:
+        if pb := self.primary_breed:
+            return pb.subbreed
+        return None
+
+    @property
     def religion(self) -> religion_controller.ReligionController | None:
         for feature in self.features.values():
             if feature.feature_type == "religion" and feature.value > 0:

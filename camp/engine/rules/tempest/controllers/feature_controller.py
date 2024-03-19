@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections import defaultdict
 from functools import cached_property
 from typing import Iterable
 from typing import Type
@@ -805,19 +806,23 @@ class FeatureController(base_engine.BaseFeatureController):
                     data.discount = d
         return props
 
-    def _gather_grants(self, grants: defs.Grantable) -> dict[str, int]:
-        grant_map: dict[str, int] = {}
+    def _gather_grants(
+        self, grants: defs.Grantable, grant_map: dict | None = None
+    ) -> dict[str, int]:
+        if grant_map is None:
+            grant_map: dict[str, int] = defaultdict(int)
         if not grants:
             return grant_map
         elif isinstance(grants, str):
             expr = PropExpression.parse(grants)
             value = expr.value or 1
-            grant_map[expr.full_id] = value
+            grant_map[expr.full_id] += value
         elif isinstance(grants, list):
             for grant in grants:
-                grant_map.update(self._gather_grants(grant))
+                self._gather_grants(grant, grant_map)
         elif isinstance(grants, dict):
-            grant_map.update(grants)
+            for k, v in grants.items():
+                grant_map[k] += v
         elif isinstance(grants, defs.GrantDef):
             grant_value = grants.value
             self_value = self.value
@@ -825,7 +830,7 @@ class FeatureController(base_engine.BaseFeatureController):
                 grant_value = utils.table_lookup(grant_value, self_value)
             if grants.per_rank:
                 grant_value *= self_value
-            grant_map[grants.id] = grant_value
+            grant_map[grants.id] += grant_value
         else:
             raise NotImplementedError(f"Unexpected grant value: {grants}")
         return grant_map
@@ -1019,3 +1024,52 @@ class SkillController(FeatureController):
 class PerkController(FeatureController):
     definition: defs.PerkDef
     currency: str = "cp"
+
+
+class PlotController(FeatureController):
+    """Source for plot feature awards.
+
+    This controller isn't linked to any actual game feature, but is instead
+    directly injected into the feature list with value=1. Its purpose is to read
+    the character's external metadata and, if any plot grants are indicated, grant them.
+
+    Why not grant them directly the same way we grant _this_ feature? So that when
+    the player clicks on an unexpected item on their character sheet that they can't remove,
+    they can see the "Granted by: Plot" notice, and follow that to see their other plot grants.
+    """
+
+    definition: defs.BaseFeatureDef = defs.BaseFeatureDef(
+        id="__plot__",
+        type="plot",
+        name="Plot",
+    )
+
+    value = 1
+    should_show_in_list = False
+    internal = True
+    tags = {"???"}
+
+    def issues(self) -> list[Issue | None]:
+        grants = self.extra_grants()
+        ruleset = self.character.ruleset
+        issues = []
+        for expr, value in grants.items():
+            if value == 0:
+                continue
+            if not ruleset.identifier_defined(expr):
+                issues.append(
+                    Issue(
+                        issue_code="plot",
+                        reason=f"Granted {value} ranks of {expr}, but I don't know what that is (contact plot).",
+                    )
+                )
+        return issues
+
+    def can_increase(self, value: int = 1) -> Decision:
+        return Decision.NO
+
+    def can_decrease(self, value: int = 1) -> Decision:
+        return Decision.NO
+
+    def extra_grants(self) -> dict[str, int]:
+        return self._gather_grants(self.character.model.metadata.grants)

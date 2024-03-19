@@ -8,12 +8,6 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-
-class _Extension(md.extensions.Extension):
-    def extendMarkdown(self, md):
-        md.registerExtension(self)
-
-
 _MD = md.Markdown(
     output="html",
     extensions=["tables", "smarty", "attr_list"],

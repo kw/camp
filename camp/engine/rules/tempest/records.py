@@ -436,6 +436,7 @@ class PlayerRecord(BaseModel, frozen=True):
             "backstory_cp": 0,
         }
         flags = self.flags.copy()
+        grants = []
         events_played = 0
         last_played = None
         # TODO: Implement grants.
@@ -446,11 +447,13 @@ class PlayerRecord(BaseModel, frozen=True):
             events_played = char.events_played
             last_played = char.last_played
             awards["event_cp"] = char.event_cp
+            grants.extend(char.grants)
         return CharacterMetadata(
             events_played=events_played,
             last_played=last_played,
             awards=awards,
             flags=flags,
+            grants=grants,
         )
 
     @field_validator("awards")

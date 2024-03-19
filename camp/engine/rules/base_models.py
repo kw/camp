@@ -814,6 +814,7 @@ class CharacterMetadata(pydantic.BaseModel):
     last_played: datetime.date | None = None
     awards: dict[str, int] = pydantic.Field(default_factory=dict)
     flags: dict[str, FlagValues] = pydantic.Field(default_factory=dict)
+    grants: list[str] = pydantic.Field(default_factory=list)
 
 
 class CharacterModel(pydantic.BaseModel, ABC):

@@ -186,6 +186,7 @@ class TempestCharacter(base_engine.CharacterController):
         if self._features:
             return self._features
         self._features = {id: self._new_controller(id) for id in self.model.features}
+        self._features["__plot__"] = feature_controller.PlotController("__plot__", self)
         return self._features
 
     @property

@@ -13,6 +13,7 @@ asgiref==3.8.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.
 billiard==4.2.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0" \
     --hash=sha256:07aa978b308f334ff8282bd4a746e681b3513db5c9a514cbdd810cbbdc19714d \
     --hash=sha256:9a3c3184cb275aa17a732f93f65b20c525d3d9f253722d26a82194803ade5a2c
+camp-engine @ git+https://github.com/kw/camp-engine.git@136aa8b986739d5e8bce3250c606a3292d606f6f ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 celery==5.3.6 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0" \
     --hash=sha256:870cc71d737c0200c397290d730344cc991d13a057534353d124c9380267aab9 \
     --hash=sha256:9da4ea0118d232ce97dff5ed4974587fb1c0ff5c10042eb15278487cdd27d1af

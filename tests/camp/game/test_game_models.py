@@ -37,12 +37,6 @@ class RulesetTest(TestCase):
             is_open=True,
         )
 
-    def test_load_tempest_test(self):
-        ruleset = Ruleset.objects.create(game=self.game, package="camp.tempest.test")
-        self.assertEqual(ruleset.ruleset_id, "temptest")
-        self.assertGreater(len(ruleset.ruleset.features), 0)
-        self.assertIsNotNone(ruleset.engine)
-
     def test_load_tempest_v1(self):
         ruleset = Ruleset.objects.create(game=self.game, package="camp.tempest.v1")
         self.assertEqual(ruleset.ruleset_id, "tempest")

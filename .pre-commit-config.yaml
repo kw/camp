@@ -45,6 +45,9 @@ repos:
     rev: "1.8.0"
     hooks:
       - id: poetry-check
+  - repo: https://github.com/python-poetry/poetry-plugin-export
+    rev: "1.7.1"
+    hooks:
       - id: poetry-export
         args:
           [

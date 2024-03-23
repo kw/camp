@@ -1,9 +1,0 @@
-name: Only One Option
-option:
-  values: [Rock, Paper, Scissors]
-  multiple: false
-ranks: 10
-cost: 1
-description: >
-  This skill requires an option be picked, but you can only pick one.
-  It has multiple ranks.

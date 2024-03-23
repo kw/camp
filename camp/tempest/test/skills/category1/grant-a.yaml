@@ -1,9 +1,0 @@
-name: Grant A
-cost: 0
-ranks: 10
-grants:
-  id: discounted-skill
-  value: 1
-  per_rank: true
-description: >
-  Grants `Discounted Skill` by 1 per rank.

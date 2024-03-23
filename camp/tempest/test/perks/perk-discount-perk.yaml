@@ -1,8 +1,0 @@
-name: Perk Discount Perk
-cost: 1
-tags: [no-patron]
-discounts:
-  # Basic Perk only costs 1 per rank, so this does nothing
-  basic-perk: 1
-  # But Advanced Perk costs 2, so this'll do something
-  advanced-perk: 1

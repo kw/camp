@@ -1,7 +1,0 @@
-name: Skill Discount Perk
-cost: 1
-discounts:
-  # Basic Skill only costs 1 per rank, so this does nothing
-  basic-skill: 1
-  # But One Requirement costs 2, so this'll do something
-  one-requirement: 1

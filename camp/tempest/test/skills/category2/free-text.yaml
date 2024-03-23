@@ -1,8 +1,0 @@
-name: Free Text
-option:
-  freeform: True
-ranks: 10
-cost: 1
-description: >
-  This skill can be purchased multiple times, each with a different
-  free-text option.

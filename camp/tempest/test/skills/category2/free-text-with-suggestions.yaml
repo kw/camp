@@ -1,9 +1,0 @@
-name: Free Text with Suggestions
-option:
-  values: [Rock, Paper, Scissors]
-  freeform: true
-cost: 1
-ranks: 10
-description: >
-  This skill requires an option be picked.
-  You can also type in your own option.

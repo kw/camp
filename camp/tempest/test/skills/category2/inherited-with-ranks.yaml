@@ -1,9 +1,0 @@
-# Just like Inherited Option, but this one requires more than just taking the option.
-#
-name: Inherited With Ranks
-cost: 1
-option:
-  inherit: specific-options:4
-requires: specific-options$4
-description: >
-  This skill's options are limited to what has been taken in the Specific Option skill.

@@ -1,8 +1,0 @@
-name: Wandomancy
-cost: 2
-description: >
-  You can use wands to cast spells. A wand holds a specific wizard spell or (rarely) a cantrip,
-  and attuning to the wand allows you to cast that spell or cantrip as though it were prepared/known.
-  You have less difficulty attuning to multiple wands. A attunement slot can be used to attune to
-  up to three separate wands. You can change what wands you are attuned to whenever you change your
-  prepared spells without needing to use the Attunement ritual.

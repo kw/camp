@@ -1,5 +1,0 @@
-name: Creation Only Perk
-cost: 4
-creation_only: true
-description: >
-  This perk is only available at character creation.

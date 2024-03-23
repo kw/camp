@@ -1,6 +1,0 @@
-name: Uses Per Rank
-ranks: 5
-uses: 1
-cost: 1
-description: >
-  Skill has multiple ranks, and they grant uses of the skill.

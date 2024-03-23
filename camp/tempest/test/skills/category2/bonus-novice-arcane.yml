@@ -1,6 +1,0 @@
-name: Bonus Novice Arcane
-cost: 2
-ranks: 5
-grants: {id: arcane.spell_slots@1, per_rank: true}
-description: >
-  Grants a bonus novice spell slot of Arcane sphere.

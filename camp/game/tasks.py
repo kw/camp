@@ -18,8 +18,10 @@ from camp.engine.rules.base_engine import PropertyController
 from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter
 from camp.engine.rules.tempest.controllers.feature_controller import FeatureController
 from camp.game.models import Event
+from camp.game.models import Ruleset
 
 from . import models
+from . import remote_loader
 
 _WORKBOOK_OPTIONS = {
     "constant_memory": False,
@@ -488,3 +490,10 @@ def _write_npc_regs(
 
 def _filenameize(string: str) -> str:
     return string.translate(_FILENAME_TABLE)
+
+
+@shared_task(ignore_result=True)
+def update_remote_ruleset(ruleset_id):
+    ruleset = Ruleset.objects.get(id=ruleset_id)
+    remote_loader.fetch_ruleset(ruleset)
+    ruleset.save()

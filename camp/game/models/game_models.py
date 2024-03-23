@@ -286,6 +286,18 @@ def load_ruleset(path: str) -> camp.engine.rules.base_models.BaseRuleset:
     return camp.engine.loader.load_ruleset(path, with_bad_defs=False)
 
 
+# TODO: This cache assumes that the server will only have a single ruleset
+# in active use at any time. This is accurate under current conditions but in the future
+# we should support something more robust (e.g. one active ruleset object per Game, or per Ruleset,
+# if a game has multiple active rulesets. We don't support either at this time yet.)
+@lru_cache(maxsize=1)
+def _deserialize_ruleset(
+    ruleset_id, timestamp
+) -> camp.engine.rules.base_models.BaseRuleset:
+    ruleset = Ruleset.objects.get(ruleset_id)
+    return camp.engine.loader.deserialize_ruleset(ruleset.remote_data)
+
+
 class Game(RulesModel):
     """Represents a top-level game.
 
@@ -402,14 +414,63 @@ class Ruleset(RulesModel):
     with, and later add support for ruleset uploads.
     """
 
-    game: Game = models.ForeignKey(
-        Game, on_delete=models.CASCADE, related_name="rulesets"
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="rulesets")
+    package = models.CharField(
+        blank=True,
+        null=True,
+        max_length=100,
+        help_text=(
+            "Python package where ruleset data can be loaded from. "
+            "If a remote is provided, this is used only until remote data is loaded successfully."
+        ),
     )
-    package: str = models.CharField(blank=True, null=True, max_length=100)
-    enabled: bool = models.BooleanField(default=True)
+    enabled = models.BooleanField(default=True)
+
+    remote_url = models.CharField(
+        blank=True,
+        default="",
+        max_length=500,
+        help_text="URL to load from.",
+    )
+    remote_token = models.CharField(
+        blank=True,
+        default="",
+        max_length=500,
+        help_text="Bearer token to provide in HTTP requests.",
+    )
+    remote_data = models.TextField(
+        blank=True,
+        default="",
+        help_text="Cached ruleset data, if it is successfully retrieved and validated.",
+    )
+    remote_last_updated = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Last time the remote data was successfully retrieved and validated.",
+    )
+    remote_last_attempt = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Last time an attempt was made to retrieve remote data.",
+    )
+    remote_ok = models.BooleanField(
+        blank=True,
+        null=True,
+        default=None,
+        help_text="Was the last attempt to retrieve and validate remote data successful?",
+    )
+    remote_error = models.TextField(
+        blank=True,
+        default="",
+        help_text="If the last attempt to retrieve and validate remote data failed, the error message.",
+    )
 
     @cached_property
     def ruleset(self) -> camp.engine.rules.base_models.BaseRuleset:
+        if self.remote_data:
+            return _deserialize_ruleset(self.id, self.remote_last_updated)
         if not self.package:
             raise ValueError(f"No package specified for ruleset {self.name}")
         # Package loading behavior is triggered by prefixing a package with a $ character.

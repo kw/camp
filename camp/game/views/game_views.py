@@ -177,7 +177,7 @@ class DeleteChapterRoleView(AutoPermissionRequiredMixin, DeleteView):
 
 class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):
     model = Ruleset
-    fields = ["package", "enabled"]
+    fields = ["package", "enabled", "remote_url", "remote_token"]
     success_url = reverse_lazy("game-manage")
     permission_required = "game.change_game"
 
@@ -204,7 +204,7 @@ class CreateRulesetView(AutoPermissionRequiredMixin, CreateView):
 
 class UpdateRulesetView(AutoPermissionRequiredMixin, UpdateView):
     model = Ruleset
-    fields = ["package", "enabled"]
+    fields = ["package", "enabled", "remote_url", "remote_token"]
     success_url = reverse_lazy("game-manage")
 
 

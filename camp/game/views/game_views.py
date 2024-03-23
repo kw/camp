@@ -12,11 +12,13 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
 from django.views.generic import UpdateView
 from rules.contrib.views import AutoPermissionRequiredMixin
+from rules.contrib.views import objectgetter
 from rules.contrib.views import permission_required
 
 from camp.accounts.models import Membership
@@ -25,6 +27,7 @@ from camp.engine.rules.base_engine import Engine
 from camp.engine.rules.tempest.records import AwardCategory
 
 from .. import forms
+from .. import remote_loader
 from ..models import Award
 from ..models import Campaign
 from ..models import Chapter
@@ -211,6 +214,17 @@ class UpdateRulesetView(AutoPermissionRequiredMixin, UpdateView):
 class DeleteRulesetView(AutoPermissionRequiredMixin, DeleteView):
     model = Ruleset
     success_url = reverse_lazy("game-manage")
+
+
+@permission_required("game.change_ruleset", objectgetter(Ruleset), raise_exception=True)
+@require_POST
+def fetch_ruleset_view(request, pk):
+    ruleset = Ruleset.objects.get(pk=pk)
+    remote_loader.fetch_ruleset(ruleset)
+    ruleset.save()
+    return render(
+        request, "game/ruleset_remote_status.html", context={"ruleset": ruleset}
+    )
 
 
 class CreateGameRoleView(AutoPermissionRequiredMixin, CreateView):

@@ -294,7 +294,7 @@ def load_ruleset(path: str) -> camp.engine.rules.base_models.BaseRuleset:
 def _deserialize_ruleset(
     ruleset_id, timestamp
 ) -> camp.engine.rules.base_models.BaseRuleset:
-    ruleset = Ruleset.objects.get(ruleset_id)
+    ruleset = Ruleset.objects.get(pk=ruleset_id)
     return camp.engine.loader.deserialize_ruleset(ruleset.remote_data)
 
 

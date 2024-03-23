@@ -64,6 +64,11 @@ urlpatterns = [
         game_views.DeleteRulesetView.as_view(),
         name="ruleset-delete",
     ),
+    path(
+        "manage/rulesets/<int:pk>/fetch/",
+        game_views.fetch_ruleset_view,
+        name="fetch-ruleset",
+    ),
     # Campaign management
     path(
         "campaigns/new/", game_views.CreateCampaignView.as_view(), name="campaign-add"

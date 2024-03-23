@@ -21,10 +21,25 @@
             {{ruleset.name}} [{{ruleset.ruleset_id}} {{ruleset.version}}]: Disabled.
         {% endif %}
             {% if can_change_ruleset %}
-                <a href="{% url 'ruleset-update' ruleset.id %}">📝</a>
+                <a class="link-body-emphasis link-underline link-underline-opacity-0 link-underline-opacity-100-hover"
+                   href="{% url 'ruleset-update' ruleset.id %}">
+                    <i class="bi bi-pen"></i>
+                </a>
+                {% if ruleset.remote_url %}
+                <a class="link-body-emphasis link-underline link-underline-opacity-0 link-underline-opacity-100-hover"
+                   href="#" hx-post="{% url 'fetch-ruleset' ruleset.id %}"
+                   hx-target="#operation-target"
+                   hx-indicator="#operation-spinner"
+                   >
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+                {% endif %}
             {% endif %}
             {% if can_delete_ruleset %}
-                <a href="{% url 'ruleset-delete' ruleset.id %}">❌</a>
+                <a class="link-body-emphasis link-underline link-underline-opacity-0 link-underline-opacity-100-hover"
+                    href="{% url 'ruleset-delete' ruleset.id %}">
+                    <i class="bi bi-trash-fill"></i>
+                </a>
             {% endif %}
     </li>
 
@@ -34,6 +49,11 @@
     <p><a href="{% url 'ruleset-add' %}">Add Ruleset</a></p>
 {% endif %}
 </ul>
+
+<div id="operation-spinner" class="spinner-border htmx-indicator" role="status">
+    <span class="visually-hidden">Loading...</span>
+</div>
+<div id="operation-target"></div>
 
 <h1>Campaigns</h1>
 <ul>

@@ -1,0 +1,10 @@
+{% if not ruleset.remote_url %}
+<span class="p3">No ruleset URL provided.</span>
+{% elif ruleset.remote_ok %}
+<span class="text-bg-success p3">Successfully loaded {{ruleset.ruleset.features|length}} features.</span>
+{% else %}
+<span class="text-bg-danger p3">Ruleset load failed.</span>
+<code>
+  {{ruleset.remote_error}}
+</code>
+{% endif %}

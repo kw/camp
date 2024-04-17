@@ -1,9 +1,12 @@
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.templatetags.static import static
 from django.urls import include
 from django.urls import path
 from django.views.generic.base import RedirectView
+
+admin.site.login = staff_member_required(admin.site.login, login_url=settings.LOGIN_URL)
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),

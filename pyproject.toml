@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Ken Moriarty <kwatford@gmail.com>"]
 readme = "README.md"
-packages = [{include = "camp"}]
+packages = [{ include = "camp" }]
 
 [build-system]
 requires = ["poetry-core"]
@@ -16,41 +16,41 @@ force_single_line = true
 
 [tool.poetry.dependencies]
 python = "^3.12.0"
-crispy-bootstrap5 = "==0.6"
-django = "4.2.11"
-django-allauth = "==0.50.0"
-django-crispy-forms = "==1.14.0"
+crispy-bootstrap5 = "^2024.2"
+django = "^5.0.4"
+django-allauth = "^0.61.1"
+django-crispy-forms = "^2.1"
 django-debug-toolbar = "^4.3.0"
-whitenoise = "==6.0.0"
-environs = {extras = ["django"], version = "==9.5.0"}
-gunicorn = "==20.1.0"
-rules = "==3.3"
+whitenoise = "^6.6.0"
+environs = { extras = ["django"], version = "^11.0.0" }
+gunicorn = "^22.0.0"
+rules = "^3.3"
 pydantic = "^2.1.1"
 pyyaml = "^6.0"
 markdown = "^3.4.3"
 nh3 = "^0.2.13"
 sentry-sdk = "^1.30.0"
 django-htmx = "^1.17.2"
-celery = {extras = ["redis"], version = "^5.3.6"}
+celery = { extras = ["redis"], version = "^5.3.6" }
 django-celery-results = "^2.5.1"
 xlsxwriter = "^3.1.9"
 time-machine = "^2.13.0"
-httpx = {extras = ["http2"], version = "^0.27.0"}
+httpx = { extras = ["http2"], version = "^0.27.0" }
 puremagic = "^1.21"
-camp-engine = {git = "https://github.com/kw/camp-engine.git"}
+camp-engine = { git = "https://github.com/kw/camp-engine.git" }
 django-recaptcha = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "~=8.2"
 pre-commit = "*"
 pytest = "^7.1"
-pytest-django = "==4.5.2"
+pytest-django = "^4.8.0"
 
 [tool.poetry.group.postgres]
 optional = true
 
 [tool.poetry.group.postgres.dependencies]
-psycopg = {extras = ["binary"], version = "^3.1.8"}
+psycopg = { extras = ["binary"], version = "^3.1.18" }
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = 'config.settings'

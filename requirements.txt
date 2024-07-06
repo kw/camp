@@ -6,7 +6,7 @@ billiard==4.2.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0
 camp-engine @ git+https://github.com/kw/camp-engine.git@b7d936293df7c1f410b0d16a1425617e6b88677c ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 celery==5.3.6 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 celery[redis]==5.3.6 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
-certifi==2024.2.2 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
+certifi==2024.7.4 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 cffi==1.16.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0" and platform_python_implementation != "PyPy"
 charset-normalizer==3.3.2 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 click-didyoumean==0.3.1 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"

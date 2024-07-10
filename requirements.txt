@@ -26,7 +26,7 @@ django-crispy-forms==2.1 ; python_full_version >= "3.12.0" and python_full_versi
 django-debug-toolbar==4.3.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 django-htmx==1.17.3 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 django-recaptcha==4.0.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
-django==5.0.4 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
+django==5.0.7 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 environs[django]==11.0.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 gunicorn==22.0.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"
 h11==0.14.0 ; python_full_version >= "3.12.0" and python_full_version < "4.0.0"

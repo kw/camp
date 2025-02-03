@@ -4,7 +4,7 @@ default_language_version:
   python: python3.12
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         args: ["--markdown-linebreak-ext=md,markdown,yaml,yml"]
@@ -25,28 +25,28 @@ repos:
       - id: pretty-format-json
         args: ["--autofix"]
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 25.1.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.0.0
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.0
+    rev: 7.1.1
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/bandit
-    rev: 1.7.9
+    rev: 1.8.2
     hooks:
       - id: bandit
         args: ["-c", "bandit.yaml"]
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.8.0"
+    rev: "2.0.1"
     hooks:
       - id: poetry-check
   - repo: https://github.com/python-poetry/poetry-plugin-export
-    rev: "1.8.0"
+    rev: "1.9.0"
     hooks:
       - id: poetry-export
         args:

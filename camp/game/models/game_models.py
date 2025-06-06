@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import logging
 import os
 from functools import cached_property
 from functools import lru_cache
@@ -29,6 +30,8 @@ from camp.engine.rules.tempest.records import AwardRecord
 from camp.engine.rules.tempest.records import AwardRecordAdapter
 from camp.engine.rules.tempest.records import PlayerRecord
 from camp.engine.rules.tempest.records import PlayerRecordAdapter
+
+LOGGER = logging.getLogger(__name__)
 
 User: TypeAlias = get_user_model()  # type: ignore
 
@@ -474,7 +477,7 @@ class Ruleset(RulesModel):
             try:
                 return _deserialize_ruleset(self.id, self.remote_last_updated)
             except Exception:
-                pass
+                LOGGER.exception("Exception while deserializing last remote data")
         if not self.package:
             raise ValueError(f"No package specified for ruleset {self.name}")
         # During local development, allow loading from a local path.

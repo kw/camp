@@ -1,6 +1,0 @@
-name: Faith's Resilience
-requires: cleric:10
-description: |
-  The character may choose to Resist Effects with the Accent of their Devotion that strikes them. The character gains charges equal to half their Cleric Class Level, rounded down. They may expend a charge to Resist an effect with the Accent that is the same as their Devotion. The character regains all charges when they Long Rest.
-
-  If the Cleric is Undevoted, they gain no benefit from this power as the Undevoted path has no Accent.

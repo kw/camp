@@ -1,9 +1,0 @@
-name: Focused Results
-requires:
-  - cleric:6
-  - basic-classes<2
-grants:
-  - cleric.cantrips:1
-  - cleric.spell_slots@1:1
-description: |
-  The Cleric gains an additional Cantrip from the Cleric Class list and an additional Novice Spell Slot.

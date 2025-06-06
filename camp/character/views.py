@@ -229,7 +229,10 @@ def feature_view(request, pk, feature_id):
         feature_controller = controller.feature_controller(feature_id)
     except ValueError:
         raise Http404(f"Feature with ID '{feature_id}' not found or is seeekrit.")
-    issues = feature_controller.issues() or []
+    if feature_controller is not None:
+        issues = feature_controller.issues() or []
+    else:
+        issues = []
 
     can_dec = feature_controller.can_decrease()
     if can_dec:

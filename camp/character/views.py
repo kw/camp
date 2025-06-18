@@ -225,14 +225,15 @@ def feature_view(request, pk, feature_id):
         return redirect(character)
     sheet = character.primary_sheet
     controller = cast(TempestCharacter, sheet.controller)
+    feature_controller = None
     try:
         feature_controller = controller.feature_controller(feature_id)
     except ValueError:
+        pass
+    if feature_controller is None:
         raise Http404(f"Feature with ID '{feature_id}' not found or is seeekrit.")
-    if feature_controller is not None:
-        issues = feature_controller.issues() or []
-    else:
-        issues = []
+
+    issues = feature_controller.issues() or []
 
     can_dec = feature_controller.can_decrease()
     if can_dec:

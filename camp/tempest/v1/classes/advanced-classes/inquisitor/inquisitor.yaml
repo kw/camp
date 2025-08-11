@@ -14,14 +14,14 @@ flags: flag+inquisitor
 level_grants:
   5: inquisitor-spike-bonus
 description: |
-  The Inquisitor is no mere Cleric or street corner preacher. The Inquisitor serves as an agent of the deity they serve. Their relationship is much closer than that of most of the clergy. When the Inquisitor speaks, their deity listens, and often may even agree. The Inquisitor's place in the world is a unique one. Their set of skills best places them in a position to streamline the justice process. They are the investigator, the judge and jury, and for added efficacy the executioner too. Intimidating and frighteningly efficient at what they do, some Inquisitors can even press the question after the subject has passed from this world to the next.
+  The Inquisitor is no mere Cleric or street corner preacher. The Inquisitor serves as an agent of the deity they serve. Their relationship is much closer than that of most of the clergy. When the Inquisitor speaks, their deity listens, and often may even agree. The Inquisitor’s place in the world is a unique one. Their set of skills best places them in a position to streamline the justice process. They are the investigator, the judge and jury, and for added efficacy the executioner too. Intimidating and frighteningly efficient at what they do, some Inquisitors can even press the question after the subject has passed from this world to the next.
 
   ### Base Incant
 
-  > "I call my faith: divine and right, I wield and shape creation's light,
+  > “I call my faith: divine and right, I wield and shape creation's light,
   > With fervent plea and ardent zeal, I summon strength for woe and weal,
   > From realms beyond, my power's source, With prayer and faith I give it force,
-  > As vessel for the will divine, I claim the power that is mine…"
+  > As vessel for the will divine, I claim the power that is mine…”
 ---
 id: inquisitor-spike-bonus
 type: subfeature

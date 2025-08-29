@@ -17,7 +17,7 @@
         <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issues.0.feature_id %}"
            hx-get="{% url 'character-feature-view' character.id issues.0.feature_id %}?partial=1"
            hx-target="#featureModalContent" hx-swap="innerHTML"
-           data-bs-toggle="modal" data-bs-target="#featureModal">
+           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal">
             {{issues.0.reason | markdown}}
         </a>
     </li>
@@ -44,7 +44,7 @@
                         <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issue.feature_id %}"
                            hx-get="{% url 'character-feature-view' character.id issue.feature_id %}?partial=1"
                            hx-target="#featureModalContent" hx-swap="innerHTML"
-                           data-bs-toggle="modal" data-bs-target="#featureModal">
+                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal">
                             {{issue.reason | markdown}}
                         </a>
                     </li>
@@ -70,7 +70,7 @@
                 {{ group.name }}
                 {% if group.has_available %}
                 <a class="icon-link icon-link-hover link-success d-print-none" href="#" role="button"
-                    data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type|slugify}}"
+                    data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type|slugify}}" data-bs-dismiss="modal"
                     aria-expanded="false" aria-controls="newFeatureModal_{{group.type|slugify}}">
                     <i class="bi bi-plus-circle"></i>
                 </a>
@@ -89,7 +89,7 @@
                         <a href="{% url 'character-feature-view' character.id f.full_id %}"
                            hx-get="{% url 'character-feature-view' character.id f.full_id %}?partial=1"
                            hx-target="#featureModalContent" hx-swap="innerHTML"
-                           data-bs-toggle="modal" data-bs-target="#featureModal"
+                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
                            data-bs-html="true"
                            data-bs-placement="top"
                            data-bs-custom-class="skill-tooltip"
@@ -118,7 +118,7 @@
                                 <a href="{% url 'character-feature-view' character.id sf.full_id%}"
                                    hx-get="{% url 'character-feature-view' character.id sf.full_id%}?partial=1"
                                    hx-target="#featureModalContent" hx-swap="innerHTML"
-                                   data-bs-toggle="modal" data-bs-target="#featureModal"
+                                   data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
                                    data-bs-html="true"
                                    data-bs-placement="top"
                                    data-bs-custom-class="skill-tooltip"
@@ -156,7 +156,7 @@
 <!-- Add Feature Modals -->
 {% for group in feature_groups %}
 {% if group.has_available %}
-<div class="modal fade" id="newFeatureModal_{{group.type|slugify}}" tabindex="-1" aria-labelledby="newFeatureModalLabel_{{group.type|slugify}}" aria-hidden="true">
+<div class="modal fade" id="newFeatureModal_{{group.type|slugify}}" tabindex="-1" aria-labelledby="newFeatureModalLabel_{{group.type|slugify}}" aria-hidden="true" hx-preserve>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -174,7 +174,7 @@
                             <a href="{% url 'character-feature-view' character.id f.full_id%}"
                                hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
                                hx-target="#featureModalContent" hx-swap="innerHTML"
-                               data-bs-toggle="modal" data-bs-target="#featureModal"
+                               data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
                                data-bs-html="true"
                                data-bs-placement="top"
                                data-bs-custom-class="skill-tooltip"
@@ -224,7 +224,7 @@
                                         <a href="{% url 'character-feature-view' character.id f.full_id%}"
                                            hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
                                            hx-target="#featureModalContent" hx-swap="innerHTML"
-                                           data-bs-toggle="modal" data-bs-target="#featureModal"
+                                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
                                            data-bs-html="true"
                                            data-bs-placement="top"
                                            data-bs-custom-class="skill-tooltip"

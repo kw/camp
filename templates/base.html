@@ -193,8 +193,16 @@
       }
     });
 
-    // Also hide tooltips when any Bootstrap modal is about to show
-    document.body.addEventListener('show.bs.modal', function(){ hideAllTooltips(); });
+    // Hide tooltips when any Bootstrap modal is about to show
+    document.body.addEventListener('show.bs.modal', function(evt){
+      // Dismiss any currently open modal to avoid stacking focus issues
+      const openModalEl = document.querySelector('.modal.show');
+      if (openModalEl && openModalEl !== evt.target) {
+        const instance = bootstrap.Modal.getInstance(openModalEl) || new bootstrap.Modal(openModalEl);
+        instance.hide();
+      }
+      hideAllTooltips();
+    });
 
     // Dispose tooltips when a Bootstrap modal is fully hidden
     document.body.addEventListener('hidden.bs.modal', function(evt){

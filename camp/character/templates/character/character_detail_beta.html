@@ -41,9 +41,11 @@
 
 {% block content %}
 
+<div id="character-root">
+
 <div id="character-summary"
      hx-get="{% url 'character-summary' character.id %}"
-     hx-trigger="load, refresh-character from:body"
+     hx-trigger="load"
      hx-swap="outerHTML">
     {% include "character/_character_summary.html" %}
  </div>
@@ -60,7 +62,7 @@
             </div>
             <div class="modal-body">
                 <form id='set-attr' action="{% url 'character-set-attr' character.id %}" method='POST'
-                      hx-post="{% url 'character-set-attr' character.id %}" hx-target="#featureModalContent" hx-swap="none">
+                      hx-post="{% url 'character-set-attr' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
                 {% csrf_token %}
                 <div>
                     <label for="set-level" class="form-label">Level</label>
@@ -93,7 +95,7 @@
             </div>
             <div class="modal-body">
                 <form id='set-name-form' action="{% url 'character-set-name' character.id %}" method='POST'
-                      hx-post="{% url 'character-set-name' character.id %}" hx-target="#featureModalContent" hx-swap="none">
+                      hx-post="{% url 'character-set-name' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
                 {% csrf_token %}
                 <div>
                     <label for="set-name" class="form-label">Name</label>
@@ -133,7 +135,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <form method="post" action="{% url 'character-delete' character.id %}"
-                      hx-post="{% url 'character-delete' character.id %}" hx-target="#featureModalContent" hx-swap="none">{% csrf_token %}
+                      hx-post="{% url 'character-delete' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">{% csrf_token %}
                     <button id='deleteCharacterButton' type="submit" class="btn btn-danger">
                         {% if character.campaign %}
                         Discard "{{ character }}"
@@ -164,7 +166,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <form method="post" action="{% url 'character-undo' character.id %}"
-                      hx-post="{% url 'character-undo' character.id %}" hx-target="#featureModalContent" hx-swap="none">{% csrf_token %}
+                      hx-post="{% url 'character-undo' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">{% csrf_token %}
                     <input type="hidden" name="undo" value="{{ undo.id }}" />
                     <input type="submit" class="btn btn-danger" value="Undo" />
                 </form>
@@ -184,7 +186,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{% url 'character-copy' character.id %}"
-                  hx-post="{% url 'character-copy' character.id %}" hx-target="#featureModalContent" hx-swap="none">
+                  hx-post="{% url 'character-copy' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
                 {% csrf_token %}
                 <div class="modal-body">
                     <div class="mb-3">
@@ -209,8 +211,16 @@
 <div class="modal fade" id="featureModal" tabindex="-1" aria-labelledby="featureModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content" id="featureModalContent">
+            <div id="featureModalSpinner" class="p-2" style="display:none">
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+                    <span>Loading…</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+ </div>
 
 {% endblock %}

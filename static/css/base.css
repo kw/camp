@@ -26,3 +26,5 @@
 .modal-dialog-scrollable .modal-body {
   overflow-y: auto;
 }
+
+/* Character busy state overlay (disabled to avoid modal interaction issues) */

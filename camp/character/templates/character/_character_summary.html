@@ -1,7 +1,10 @@
 {% load character_sheet %}
 {% load markdown %}
 
-<div id="character-summary">
+<div id="character-summary"
+     hx-get="{% url 'character-summary' character.id %}"
+     hx-trigger="refresh-character from:body"
+     hx-swap="outerHTML">
 
 {% comment %} OOB messages so alerts update during HTMX swaps {% endcomment %}
 {% if request.htmx %}{% include "snippets/messages.html" %}{% endif %}

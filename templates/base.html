@@ -159,20 +159,16 @@
       });
     }
 
-    htmx.onLoad(function installTooltips() {
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-title]');
+    htmx.onLoad(function(elt) {
+      const root = elt && elt.querySelector ? elt : document;
+      const tooltipTriggerList = root.querySelectorAll('[data-bs-title]');
       const tooltipList = [...tooltipTriggerList].map(function(el){
         return new bootstrap.Tooltip(el, { trigger: 'hover', container: 'body' });
       });
     });
 
-    // Close any open Bootstrap modal when the server triggers a refresh-character event
+    // On refresh-character, just hide tooltips; summary updates listen on their own
     document.body.addEventListener('refresh-character', function() {
-      const openModalEl = document.querySelector('.modal.show');
-      if (openModalEl) {
-        const modalInstance = bootstrap.Modal.getInstance(openModalEl) || new bootstrap.Modal(openModalEl);
-        modalInstance.hide();
-      }
       hideAllTooltips();
     });
 
@@ -205,6 +201,14 @@
           // Unspecified failure, usually caused by network error
           console.error("Unexpected htmx error", evt.detail);
       }
+  });
+
+  // Prevent stale HTMX responses from swapping into the DOM after navigation
+  document.body.addEventListener('htmx:beforeSwap', function (evt) {
+    const target = evt.detail && evt.detail.target;
+    if (target && !document.body.contains(target)) {
+      evt.preventDefault();
+    }
   });
 
   {% if debug %}

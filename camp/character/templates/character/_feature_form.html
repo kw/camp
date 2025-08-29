@@ -11,13 +11,7 @@
 {% comment %} OOB messages so alerts update during HTMX swaps {% endcomment %}
 {% if request.htmx %}{% include "snippets/messages.html" %}{% endif %}
 
-{% if trigger_refresh %}
-<div hx-get="{% url 'character-summary' character.id %}"
-     hx-trigger="load"
-     hx-target="#character-summary"
-     hx-swap="outerHTML"
-     style="display:none"></div>
-{% endif %}
+{# Removed hidden auto-refresh; rely on HX-Trigger "refresh-character" and event-driven summary refresh #}
 
 {% if issues %}
 <!-- Issues -->
@@ -68,7 +62,8 @@
         <div class="d-print-none">
         <form method="post" id="purchaseForm"
               hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
-              hx-target="#featureModalContent" hx-swap="innerHTML">
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
                 {{ purchase_form | crispy }}
                 {% if purchase_form.show_remove_button %}
@@ -177,7 +172,8 @@
         <h4 class="d-print-none">Selected Choices</h4>
         <form method="post"
               hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
-              hx-target="#featureModalContent" hx-swap="innerHTML">
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
             <input type="hidden" name="unchoose" value="1">
             <input type="hidden" name="choice" value="{{choice.id}}">
@@ -220,7 +216,8 @@
         {% if choice.available %}
         <form method="post" class="d-print-none"
               hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
-              hx-target="#featureModalContent" hx-swap="innerHTML">
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
             {{ choice | crispy }}
             <button type="submit" name="choice" value="{{choice.id}}" class="btn btn-primary">Choose this option</button>
@@ -412,8 +409,8 @@ htmx.onLoad(function() {
 });
 
 // Rewrite relative links in Details markdown to feature links and enable HTMX modal navigation
-htmx.onLoad(function() {
-  const container = document.querySelector('#featureModalContent') || document;
+htmx.onLoad(function(elt) {
+  const container = elt.querySelector ? (elt.querySelector('#featureModalContent') || elt) : document;
   const anchors = container.querySelectorAll('a[href]');
   const characterId = '{{ character.id }}';
   anchors.forEach(function(a) {
@@ -431,6 +428,9 @@ htmx.onLoad(function() {
     a.setAttribute('hx-get', url + '?partial=1');
     a.setAttribute('hx-target', '#featureModalContent');
     a.setAttribute('hx-swap', 'innerHTML');
+    a.setAttribute('hx-sync', '#featureModalContent:queue');
+    // throttle clicks but allow normal navigation timing for responsiveness
+    a.setAttribute('hx-trigger', 'click throttle:150ms');
   });
 });
 </script>

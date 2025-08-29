@@ -159,6 +159,18 @@
       });
     }
 
+    function disposeTooltips(root) {
+      const scope = root || document;
+      scope.querySelectorAll('[data-bs-title]').forEach(function(el){
+        const instance = bootstrap.Tooltip.getInstance(el);
+        if (instance) { instance.dispose(); }
+      });
+      // Fallback: remove any stray tooltip elements left in the DOM
+      document.querySelectorAll('.tooltip').forEach(function(t){
+        if (t && t.parentElement) { t.parentElement.removeChild(t); }
+      });
+    }
+
     htmx.onLoad(function(elt) {
       const root = elt && elt.querySelector ? elt : document;
       const tooltipTriggerList = root.querySelectorAll('[data-bs-title]');
@@ -184,6 +196,12 @@
     // Also hide tooltips when any Bootstrap modal is about to show
     document.body.addEventListener('show.bs.modal', function(){ hideAllTooltips(); });
 
+    // Dispose tooltips when a Bootstrap modal is fully hidden
+    document.body.addEventListener('hidden.bs.modal', function(evt){
+      const modal = evt.target;
+      disposeTooltips(modal);
+    });
+
     document.body.addEventListener('htmx:afterRequest', function (evt) {
       // Adapted from https://xvello.net/blog/htmx-error-handling/
       const errorTarget = document.getElementById("htmx-alert")
@@ -206,9 +224,20 @@
   // Prevent stale HTMX responses from swapping into the DOM after navigation
   document.body.addEventListener('htmx:beforeSwap', function (evt) {
     const target = evt.detail && evt.detail.target;
+    if (target) {
+      // Dispose tooltips in the region about to be swapped
+      disposeTooltips(target);
+    }
     if (target && !document.body.contains(target)) {
       evt.preventDefault();
     }
+  });
+
+  // After swap, ensure no stray tooltip remnants remain
+  document.body.addEventListener('htmx:afterSwap', function(){
+    document.querySelectorAll('.tooltip').forEach(function(t){
+      if (t && t.parentElement) { t.parentElement.removeChild(t); }
+    });
   });
 
   {% if debug %}

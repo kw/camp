@@ -58,7 +58,7 @@ class Command(BaseCommand):
                         pd.save()
                         updated += 1
 
-                    self.stdout.write(f"Updating {pd.user.username}\n")
+                    self.stdout.write(f"Updating {pd}\n")
                     self.stdout.write(f"Previous: {prev_record}\n")
                     self.stdout.write(f"New: {new_record}\n\n")
 

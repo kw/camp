@@ -81,7 +81,7 @@ pyyaml = ">=6.0,<7.0"
 type = "git"
 url = "https://github.com/kw/camp-engine.git"
 reference = "HEAD"
-resolved_reference = "d5760178b0233078349ddd5eb4de2f97a814e88c"
+resolved_reference = "319ff73bd9c5b88c426a9bb2596a8c6f125e9f7f"
 
 [[package]]
 name = "certifi"

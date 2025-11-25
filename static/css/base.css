@@ -21,3 +21,10 @@
 .skill-tooltip .tooltip-content strong {
   color: #3498db;
 }
+
+/* Feature modal content: ensure long content scrolls instead of cutting off */
+.modal-dialog-scrollable .modal-body {
+  overflow-y: auto;
+}
+
+/* Character busy state overlay (disabled to avoid modal interaction issues) */

@@ -22,6 +22,12 @@ urlpatterns = [
     path("", views.CharacterListView.as_view(), name="character-list"),
     path("new/", views.CreateCharacterView.as_view(), name="character-add"),
     path("<int:pk>/", views.CharacterView.as_view(), name="character-detail"),
+    path(
+        "<int:pk>/beta/",
+        views.CharacterViewBeta.as_view(),
+        name="character-detail-beta",
+    ),
+    path("<int:pk>/summary/", views.character_summary_view, name="character-summary"),
     path("<int:pk>/delete/", views.delete_character, name="character-delete"),
     path("<int:pk>/set/", views.set_attr, name="character-set-attr"),
     path("<int:pk>/name/", views.set_name, name="character-set-name"),

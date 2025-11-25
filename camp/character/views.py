@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db import transaction
 from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -78,6 +79,10 @@ class CharacterView(AutoPermissionRequiredMixin, DetailView):
         return context
 
 
+class CharacterViewBeta(CharacterView):
+    template_name = "character/character_detail_beta.html"
+
+
 class CreateCharacterView(AutoPermissionRequiredMixin, CreateView):
     model = Character
     form_class = forms.NewCharacterForm
@@ -127,6 +132,10 @@ def delete_character(request, pk):
             messages.warning(request, "Character discarded.")
         else:
             messages.warning(request, "Character was already discarded.")
+    if getattr(request, "htmx", False):
+        response = redirect("home")
+        response["HX-Redirect"] = response.url
+        return response
     return redirect("home")
 
 
@@ -172,6 +181,11 @@ def set_attr(request, pk):
         sheet.save()
     else:
         messages.error(request, "Error validating character: %s" % d.reason)
+    if getattr(request, "htmx", False):
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "refresh-character"
+        response["HX-Trigger-Target"] = "body"
+        return response
     return redirect("character-detail", pk=pk)
 
 
@@ -194,6 +208,11 @@ def apply_view(request, pk):
         messages.success(request, result.reason or "Change applied.")
     else:
         messages.error(request, result.reason or "Could not apply change.")
+    if getattr(request, "htmx", False):
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "refresh-character"
+        response["HX-Trigger-Target"] = "body"
+        return response
     return HttpResponseClientRefresh()
 
 
@@ -212,6 +231,11 @@ def set_name(request, pk):
         messages.success(request, f"Name changed to {new_name}")
     else:
         messages.error(request, "Character name can't be empty.")
+    if getattr(request, "htmx", False):
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "refresh-character"
+        response["HX-Trigger-Target"] = "body"
+        return response
     return redirect(character)
 
 
@@ -248,13 +272,64 @@ def feature_view(request, pk, feature_id):
     pf = None
 
     if can_inc or can_dec:
-        if request.POST and "purchase" in request.POST or "remove" in request.POST:
+        if request.POST and ("purchase" in request.POST or "remove" in request.POST):
             success, pf = _try_apply_purchase(
                 sheet, feature_id, feature_controller, controller, request
             )
-            if success:
-                # If we purchased a feature and it has a choice that can be made,
-                # stay on the feature page. Otherwise, return to the character page.
+            if success and getattr(request, "htmx", False):
+                # Rebuild controller state and return partial with trigger
+                try:
+                    feature_controller = controller.feature_controller(feature_id)
+                except Exception:
+                    # If the feature no longer exists (e.g., removed), try parent; otherwise fall back to character page via empty context
+                    if feature_controller.internal and feature_controller.parent:
+                        feature_controller = feature_controller.parent
+                issues = feature_controller.issues() or []
+                if (
+                    feature_controller.value > 0
+                    and feature_controller.supports_child_purchases
+                ):
+                    subfeatures = feature_controller.subfeatures
+                    subfeatures_available = _features(
+                        controller,
+                        feature_controller.subfeatures_available,
+                        hide_internal=False,
+                    )
+                else:
+                    subfeatures = []
+                    subfeatures_available = []
+                for sf in subfeatures:
+                    if sf_issues := sf.issues():
+                        issues.extend(sf_issues)
+                choices = feature_controller.choices
+                context = {
+                    "character": character,
+                    "controller": controller,
+                    "feature": feature_controller,
+                    "subfeatures": subfeatures,
+                    "subfeatures_available": subfeatures_available,
+                    "explain_ranks": feature_controller.explain,
+                    "feature_base": reverse("character-detail", args=[character.id])
+                    + "f/",
+                    "choices": (
+                        {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
+                        if choices
+                        else {}
+                    ),
+                    "purchase_form": forms.FeatureForm(feature_controller),
+                    "issues": issues,
+                }
+                # Recheck increment permission on fresh controller
+                can_inc = feature_controller.can_increase()
+                if not can_inc:
+                    context["no_purchase_reason"] = can_inc.reason
+                context["trigger_refresh"] = True
+                response = render(request, "character/_feature_form.html", context)
+                response["HX-Trigger"] = "refresh-character"
+                response["HX-Trigger-Target"] = "body"
+                return response
+            elif success:
+                # Existing non-HTMX behavior
                 stay = False
                 if feature_controller.has_available_choices:
                     messages.info(request, "Choices are available for this feature.")
@@ -302,6 +377,52 @@ def feature_view(request, pk, feature_id):
                 messages.success(request, result.reason)
             else:
                 messages.error(request, result.reason or "Could not apply choice.")
+        if getattr(request, "htmx", False):
+            # Re-render partial with updated state and trigger a summary refresh
+            feature_controller = controller.feature_controller(feature_id)
+            issues = feature_controller.issues() or []
+            if (
+                feature_controller.value > 0
+                and feature_controller.supports_child_purchases
+            ):
+                subfeatures = feature_controller.subfeatures
+                subfeatures_available = _features(
+                    controller,
+                    feature_controller.subfeatures_available,
+                    hide_internal=False,
+                )
+            else:
+                subfeatures = []
+                subfeatures_available = []
+            for sf in subfeatures:
+                if sf_issues := sf.issues():
+                    issues.extend(sf_issues)
+            choices = feature_controller.choices
+            context = {
+                "character": character,
+                "controller": controller,
+                "feature": feature_controller,
+                "subfeatures": subfeatures,
+                "subfeatures_available": subfeatures_available,
+                "explain_ranks": feature_controller.explain,
+                "feature_base": reverse("character-detail", args=[character.id]) + "f/",
+                "choices": (
+                    {k: forms.ChoiceForm(c) for (k, c) in choices.items()}
+                    if choices
+                    else {}
+                ),
+                "purchase_form": pf,
+                "issues": issues,
+            }
+            # Recheck increment permission on fresh controller
+            can_inc = feature_controller.can_increase()
+            if not can_inc:
+                context["no_purchase_reason"] = can_inc.reason
+            context["trigger_refresh"] = True
+            response = render(request, "character/_feature_form.html", context)
+            response["HX-Trigger"] = "refresh-character"
+            response["HX-Trigger-Target"] = "body"
+            return response
         return redirect("character-feature-view", pk=pk, feature_id=feature_id)
 
     if feature_controller.value > 0 and feature_controller.supports_child_purchases:
@@ -326,6 +447,7 @@ def feature_view(request, pk, feature_id):
         "subfeatures": subfeatures,
         "subfeatures_available": subfeatures_available,
         "explain_ranks": feature_controller.explain,
+        "feature_base": reverse("character-detail", args=[character.id]) + "f/",
         "choices": (
             {k: forms.ChoiceForm(c) for (k, c) in choices.items()} if choices else {}
         ),
@@ -334,7 +456,30 @@ def feature_view(request, pk, feature_id):
     }
     if not can_inc:
         context["no_purchase_reason"] = can_inc.reason
+    # Render full page or partial depending on HTMX/param
+    if getattr(request, "htmx", False) or request.GET.get("partial"):
+        return render(request, "character/_feature_form.html", context)
     return render(request, "character/feature_form.html", context)
+
+
+@permission_required(
+    "character.view_character", fn=objectgetter(Character), raise_exception=True
+)
+def character_summary_view(request, pk):
+    character = get_object_or_404(Character, id=pk)
+    sheet: Sheet = cast(Sheet, character.primary_sheet)
+    controller: CharacterController = sheet.controller
+    taken_features = controller.list_features(taken=True, available=False)
+    available_features = controller.list_features(available=True, taken=False)
+    context = {
+        "character": character,
+        "controller": controller,
+        "feature_groups": _features(
+            controller, chain(taken_features, available_features)
+        ),
+        "issues": controller.issues(),
+    }
+    return render(request, "character/_character_summary.html", context)
 
 
 def _try_apply_purchase(
@@ -412,8 +557,18 @@ def undo_view(request, pk):
                 else:
                     description = "the last action"
                 messages.success(request, f"Undid {description}")
+                if getattr(request, "htmx", False):
+                    response = HttpResponse(status=204)
+                    response["HX-Trigger"] = "refresh-character"
+                    response["HX-Trigger-Target"] = "body"
+                    return response
                 return redirect("character-detail", pk=pk)
     messages.error(request, "Invalid undo request.")
+    if getattr(request, "htmx", False):
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "refresh-character"
+        response["HX-Trigger-Target"] = "body"
+        return response
     return redirect("character-detail", pk=pk)
 
 
@@ -443,6 +598,10 @@ def copy_view(request, pk):
         controller.model = new_model
         new_sheet.controller = controller
         new_sheet.save()
+    if getattr(request, "htmx", False):
+        response = redirect(new_character)
+        response["HX-Redirect"] = response.url
+        return response
     return redirect(new_character)
 
 

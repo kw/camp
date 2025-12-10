@@ -12,8 +12,8 @@ docker, see [Getting Started without Docker](./getting-started-non-docker.md)
 
 ### Requirements
 
-* [`pre-commit`](https://pre-commit.com/)
-* [Docker for Desktop](https://www.docker.com/products/docker-desktop/)
+- [`pre-commit`](https://pre-commit.com/)
+- [Docker for Desktop](https://www.docker.com/products/docker-desktop/)
 
 ### Setup
 
@@ -21,39 +21,40 @@ To install the project's development requirements, visit this repo in
 your shell and run:
 
 ```sh
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 This will build and start the container. It may take a while on the first run.
 
 Now, try browsing to http://localhost:8000. If you get an error screen saying
 
-  OperationalError at /
-  no such table: game_game
+OperationalError at /
+no such table: game_game
 
 then so far, so good! We just need to populate the database.
 
 You can send commands directly to the container. To run tests, try:
 
 ```sh
-docker-compose exec web pytest
+docker compose exec web pytest
 ```
 
 Alternatively, if you plan on issuing several commands, start a shell
 directly within the container:
 
 ```sh
-docker-compose exec web bash
+docker compose exec web bash
 ```
 
 #### Stopping the container
 
 Later, when you want to stop the container:
+
 ```sh
-docker-compose down
+docker compose down
 ```
 
-And repeat `docker-compose up -d --build` to start it back up.
+And repeat `docker compose up -d --build` to start it back up.
 
 ### Django
 
@@ -63,7 +64,7 @@ If you haven't used Django before, the tutorial on their website, or the
 to start. The rest of this document assumes some familiarity.
 
 The commands below are all to be run **inside** the container. Either start
-a shell in the container using `docker-compose exec web shell` or send them
+a shell in the container using `docker compose exec web shell` or send them
 individually.
 
 #### Run Tests

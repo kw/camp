@@ -8,5 +8,7 @@ delivery: None
 refresh: None
 accent: None
 effect: None
+grants:
+  - mentalist.powers@2
 description:
   Gain a single Mentalist Martial Power of the Advanced Tier.

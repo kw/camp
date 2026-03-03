@@ -186,15 +186,15 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 # TODO: Rate limiting requires a cache other than DummyCache. Ensure we have that set up.
 ACCOUNT_RATE_LIMITS = {
     # Change password view (for users already logged in)
-    "change_password": "5/m",
+    "change_password": "5/m",  # nosec B105
     # Email management (e.g. add, remove, change primary)
     "manage_email": "10/m",
     # Request a password reset, global rate limit per IP
-    "reset_password": "20/m",
+    "reset_password": "20/m",  # nosec B105
     # Rate limit measured per individual email address
-    "reset_password_email": "5/m",
+    "reset_password_email": "5/m",  # nosec B105
     # Password reset (the view the password reset email links to).
-    "reset_password_from_key": "20/m",
+    "reset_password_from_key": "20/m",  # nosec B105
     # Signups.
     "signup": "20/m",
     # NOTE: Login is already protected via `ACCOUNT_LOGIN_ATTEMPTS_LIMIT`
@@ -203,7 +203,7 @@ ACCOUNT_SIGNUP_ENABLED = env.bool("SIGNUP_ENABLED", default=True)
 ACCOUNT_FORMS = {
     "login": "camp.accounts.forms.LoginForm",
     "signup": "camp.accounts.forms.SignupForm",
-    "reset_password": "camp.accounts.forms.ResetPasswordForm",
+    "reset_password": "camp.accounts.forms.ResetPasswordForm",  # nosec B105
     "add_email": "camp.accounts.forms.AddEmailForm",
 }
 

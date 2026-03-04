@@ -2,7 +2,7 @@
 name = "camp"
 version = "0.1.0"
 description = ""
-authors = ["Kel Moriarty <kel@kmoriarty.dev"]
+authors = ["Kel Moriarty <kel@kmoriarty.dev>"]
 readme = "README.md"
 packages = [{ include = "camp" }]
 

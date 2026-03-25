@@ -194,7 +194,7 @@ def apply_view(request, pk):
 
     # TODO: Certain mutations may need additional privileges.
 
-    if result := _apply_mutation(mutation, sheet, controller):
+    if result := _apply_mutation(mutation, sheet, controller, request):
         messages.success(request, result.reason or "Change applied.")
     else:
         messages.error(request, result.reason or "Could not apply change.")
@@ -302,7 +302,7 @@ def feature_view(request, pk, feature_id):
                 value=request.POST["selection"],
                 remove=request.POST.get("unchoose", False),
             )
-            if result := _apply_mutation(mutation, sheet, controller):
+            if result := _apply_mutation(mutation, sheet, controller, request):
                 messages.success(request, result.reason)
             else:
                 messages.error(request, result.reason or "Could not apply choice.")

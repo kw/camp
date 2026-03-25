@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import logging
 from collections import defaultdict
 from functools import cached_property
@@ -42,6 +43,9 @@ from camp.engine.rules.base_models import RankMutation
 from camp.engine.rules.base_models import dump_mutation
 from camp.engine.rules.decision import Decision
 from camp.engine.rules.tempest.controllers.character_controller import TempestCharacter
+from camp.engine.rules.tempest.records import AwardCategory
+from camp.engine.rules.tempest.records import AwardRecord
+from camp.game import models as game_models
 
 from . import forms
 
@@ -362,7 +366,7 @@ def _try_apply_purchase(
             option=pf.selected_option() or expr.option,
         )
         try:
-            if result := _apply_mutation(rm, sheet, controller):
+            if result := _apply_mutation(rm, sheet, controller, request):
                 feature_controller = controller.feature_controller(expr.full_id)
                 if ranks > 0:
                     messages.success(
@@ -563,7 +567,7 @@ class FeatureGroup:
 
 
 def _apply_mutation(
-    mutation: Mutation, sheet: Sheet, controller: TempestCharacter
+    mutation: Mutation, sheet: Sheet, controller: TempestCharacter, request
 ) -> Decision:
     undo_data = controller.dump_dict()
     result = controller.apply(mutation)
@@ -576,4 +580,22 @@ def _apply_mutation(
             )
             if len(sheet.undo_stack.all()) > settings.UNDO_STACK_SIZE:
                 sheet.undo_stack.order_by("timestamp").first().delete()
+            if result.metadata_update and sheet.character.campaign:
+                record: AwardRecord = AwardRecord(
+                    date=datetime.date.today(),
+                    source_id=None,
+                    category=AwardCategory.CHARACTER,
+                    description=result.metadata_update.description,
+                    character=sheet.character.id,
+                    character_flags=result.metadata_update.character_flags,
+                )
+                award: game_models.Award = game_models.Award.objects.create(
+                    campaign=sheet.character.campaign,
+                    player=sheet.character.owner,
+                    character=sheet.character,
+                    awarded_by=request.user,
+                    award_data=record.model_dump(mode="json"),
+                )
+                award.apply()
+                messages.warning(request, "Plot will remember that.")
     return result

@@ -4,7 +4,7 @@ category: Basic Class
 sphere: arcane
 starting_features:
   - basic-arcane
-  - advanced-recharge
+  - warcaster
 multiclass_features:
   - basic-arcane
 level_grants:

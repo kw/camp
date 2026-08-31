@@ -1,0 +1,226 @@
+{% extends "character/character_base.html" %}
+{% load rules %}
+{% load character_sheet %}
+{% load markdown %}
+
+{% block extra_header_bar %}
+    <li class="list-group-item d-print-none">
+        <div class="dropdown">
+            <a href="#" class="link-body-emphasis" data-bs-toggle="dropdown" aria-expanded="false">
+                Manage
+            </a>
+            <ul class="dropdown-menu">
+                {% if not character.campaign %}
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setAttrsModal">Set Attributes</a></li>
+                {% endif %}
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#setNameModal">Change Name</a></li>
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#deleteCharacterModal">
+                    {% if character.campaign %}
+                    Discard Character
+                    {% else %}
+                    Delete Character
+                    {% endif %}
+                </a></li>
+                {% if controller.can_respend %}
+                <li><a class="dropdown-item btn-secondary-outline" role="button"
+                        hx-post="{% url 'character-apply' character.pk %}"
+                        hx-confirm="This will remove ALL choices you have made on this character."
+                        hx-vals='{"mutation": {"type": "respend"}}'
+                    >Apply Full Character Respend</a></li>
+                {% endif %}
+                {% if undo %}
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#undoModal">{{undo}}</a></li>
+                {% else %}
+                <li><a class="dropdown-item btn-secondary-outline disabled" role="button">Undo not available</a></li>
+                {% endif %}
+                <li><a class="dropdown-item btn-secondary-outline" role="button" data-bs-toggle="modal" data-bs-target="#copyModal">Copy Character...</a></li>
+            </ul>
+        </div>
+    </li>
+    {% endblock %}
+
+{% block content %}
+
+<div id="character-root">
+
+<div id="character-summary"
+     hx-get="{% url 'character-summary' character.id %}"
+     hx-trigger="load"
+     hx-swap="outerHTML">
+    {% include "character/_character_summary.html" %}
+ </div>
+
+
+{% if not character.campaign %}
+<!-- Set XP/CP Modal -->
+<div class="modal fade" id="setAttrsModal" tabindex="-1" aria-labelledby="setAttrsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="setAttrsLabel">Set Attributes</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id='set-attr' action="{% url 'character-set-attr' character.id %}" method='POST'
+                      hx-post="{% url 'character-set-attr' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
+                {% csrf_token %}
+                <div>
+                    <label for="set-level" class="form-label">Level</label>
+                    <input type="number" class="form-control" id="set-level" name="level"
+                        value="{{ controller.xp_level }}" min="2" max="20">
+                </div>
+                <div>
+                    <label for="set-cp" class="form-label">Freeplay CP</label>
+                    <input type="number" class="form-control" id="set-cp" name="cp"
+                        value="{{ controller.freeplay_cp }}" min="0" max="999">
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form='set-attr'>Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Set Name Modal -->
+<div class="modal fade" id="setNameModal" tabindex="-1" aria-labelledby="setNameLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="setNameLabel">Change Name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id='set-name-form' action="{% url 'character-set-name' character.id %}" method='POST'
+                      hx-post="{% url 'character-set-name' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
+                {% csrf_token %}
+                <div>
+                    <label for="set-name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="set-name" name="name"
+                        value="{{ character.name }}" required>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form='set-name-form'>Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Character Modal -->
+<div class="modal fade" id="deleteCharacterModal" tabindex="-1" aria-labelledby="deleteCharacterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteCharacterLabel">
+                    {% if character.campaign %}
+                    Discard Character
+                    {% else %}
+                    Delete Character
+                    {% endif %}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if character.campaign %}
+                The character "{{ character }}" will be marked discarded.
+                {% else %}
+                The character "{{ character }}" will be permanently deleted. This action cannot be undone.
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'character-delete' character.id %}"
+                      hx-post="{% url 'character-delete' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">{% csrf_token %}
+                    <button id='deleteCharacterButton' type="submit" class="btn btn-danger">
+                        {% if character.campaign %}
+                        Discard "{{ character }}"
+                        {% else %}
+                        Permanently Delete "{{ character }}"
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if undo %}
+<!-- Undo Modal -->
+
+<div class="modal fade" id="undoModal" tabindex="-1" aria-labelledby="undoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="undoLabel">Confirm Undo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ undo }}</p>
+                <p>The last action will be undone. There is no "redo" functionality. Are you sure you want to do this?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'character-undo' character.id %}"
+                      hx-post="{% url 'character-undo' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">{% csrf_token %}
+                    <input type="hidden" name="undo" value="{{ undo.id }}" />
+                    <input type="submit" class="btn btn-danger" value="Undo" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Copy Modal -->
+
+<div class="modal fade" id="copyModal" tabindex="-1" aria-labelledby="copyLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="copyLabel">Copy Character</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'character-copy' character.id %}"
+                  hx-post="{% url 'character-copy' character.id %}" hx-target="#featureModalContent" hx-swap="none" hx-sync="#featureModalContent:queue">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="copyName" class="form-label">Name for copied character</label>
+                        <input class="form-control" id="copyName" name="name" value="Copy of {{character.name}}" required>
+                    </div>
+                    <p>The character "{{character}}" will be copied to Freeplay with its current XP/CP values and any special unlocks intact.</p>
+                    {% if request.user != character.owner %}
+                    <p><strong>Note:</strong> This character doesn't belong to you. If you make a copy, the copy will appear in <em>your</em> account.</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Copy!" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Modal target -->
+<div class="modal fade" id="featureModal" tabindex="-1" aria-labelledby="featureModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" id="featureModalContent">
+            <div id="featureModalSpinner" class="p-2" style="display:none">
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+                    <span>Loading…</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ </div>
+
+{% endblock %}

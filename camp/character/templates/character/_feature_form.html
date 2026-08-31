@@ -1,10 +1,17 @@
-{% extends "character/character_base.html" %}
 {% load crispy_forms_tags %}
 {% load character_sheet %}
-{% load rules %}
 {% load markdown %}
 
-{% block content %}
+<div class="modal-header">
+  <h1 class="modal-title fs-5">{{ feature.display_name }}</h1>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body" style="max-height: 70vh; overflow: auto;">
+
+{% comment %} OOB messages so alerts update during HTMX swaps {% endcomment %}
+{% if request.htmx %}{% include "snippets/messages.html" %}{% endif %}
+
+{# Removed hidden auto-refresh; rely on HX-Trigger "refresh-character" and event-driven summary refresh #}
 
 {% if issues %}
 <!-- Issues -->
@@ -12,7 +19,9 @@
     {% for issue in issues %}
     {% if issue.feature_id %}
     <li class="list-group-item list-group-item-warning">
-        <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issue.feature_id %}">
+        <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issue.feature_id %}"
+           hx-get="{% url 'character-feature-view' character.id issue.feature_id %}?partial=1"
+           hx-target="#featureModalContent" hx-swap="innerHTML">
             {{issue.reason | markdown}}
         </a>
     </li>
@@ -20,24 +29,28 @@
     <li class="list-group-item list-group-item-warning">{{issue.reason | markdown}}</li>
     {% endif %}
     {% endfor %}
-</ul>
+    </ul>
 {% endif %}
 
 {% include "character/card_snippet.html" with card=feature.power_card subcards=feature.sub_cards %}
 
 <div class="container">
     {% if feature.parent %}
-    <p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}">{{ feature.parent.display_name }}</a></p>
+    <p>Part of <a href="{% url 'character-feature-view' character.id feature.parent.id %}"
+                  hx-get="{% url 'character-feature-view' character.id feature.parent.id %}?partial=1"
+                  hx-target="#featureModalContent" hx-swap="innerHTML">{{ feature.parent.display_name }}</a></p>
     {% endif %}
 
     {% if feature.supersedes %}
-    <p>Supersedes <a href="{% url 'character-feature-view' character.id feature.supersedes.id %}">
-        {{ feature.supersedes.display_name}}</a></p>
+    <p>Supersedes <a href="{% url 'character-feature-view' character.id feature.supersedes.id %}"
+                     hx-get="{% url 'character-feature-view' character.id feature.supersedes.id %}?partial=1"
+                     hx-target="#featureModalContent" hx-swap="innerHTML">{{ feature.supersedes.display_name}}</a></p>
     {% endif %}
 
     {% if feature.is_superseded %}
-    <p>Superseded by <a href="{% url 'character-feature-view' character.id feature.superseded_by.id %}">
-        {{ feature.superseded_by.display_name }}</a></p>
+    <p>Superseded by <a href="{% url 'character-feature-view' character.id feature.superseded_by.id %}"
+                        hx-get="{% url 'character-feature-view' character.id feature.superseded_by.id %}?partial=1"
+                        hx-target="#featureModalContent" hx-swap="innerHTML">{{ feature.superseded_by.display_name }}</a></p>
     {% endif %}
 
     {% if purchase_form %}
@@ -47,7 +60,10 @@
 
     {% if feature.should_render %}
         <div class="d-print-none">
-        <form method="post" id="purchaseForm">
+        <form method="post" id="purchaseForm"
+              hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
                 {{ purchase_form | crispy }}
                 {% if purchase_form.show_remove_button %}
@@ -75,7 +91,7 @@
     <div class="d-print-none">
     <h3>Details</h3>
     {% for explanation in explain_ranks %}
-    <p>{{ explanation|feature_markdown:feature_base }}</p>
+    <p>{{ explanation | feature_markdown:feature_base }}</p>
     {% endfor %}
     </div>
     {% endif %}
@@ -86,6 +102,8 @@
     <ul>
     {% for subfeat in feature.granted_features %}
     <li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}"
+           hx-get="{% url 'character-feature-view' character.id subfeat.full_id %}?partial=1"
+           hx-target="#featureModalContent" hx-swap="innerHTML"
            data-bs-toggle="tooltip"
            data-bs-html="true"
            data-bs-placement="top"
@@ -114,6 +132,8 @@
     <ul>
     {% for subfeat, amount in feature.discounted_features %}
     <li><a href="{% url 'character-feature-view' character.id subfeat.full_id %}"
+           hx-get="{% url 'character-feature-view' character.id subfeat.full_id %}?partial=1"
+           hx-target="#featureModalContent" hx-swap="innerHTML"
            data-bs-toggle="tooltip"
            data-bs-html="true"
            data-bs-placement="top"
@@ -150,13 +170,18 @@
         {% endif %}
         {% if choice.taken %}
         <h4 class="d-print-none">Selected Choices</h4>
-        <form method="post">
+        <form method="post"
+              hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
             <input type="hidden" name="unchoose" value="1">
             <input type="hidden" name="choice" value="{{choice.id}}">
             <ul>
                 {% for f, name in choice.taken.items %}
                 <li><a href="{% url 'character-feature-view' character.id f %}"
+                       hx-get="{% url 'character-feature-view' character.id f %}?partial=1"
+                       hx-target="#featureModalContent" hx-swap="innerHTML"
                        data-bs-toggle="tooltip"
                        data-bs-html="true"
                        data-bs-placement="top"
@@ -189,7 +214,10 @@
         </form>
         {% endif %}
         {% if choice.available %}
-        <form method="post" class="d-print-none">
+        <form method="post" class="d-print-none"
+              hx-post="{% url 'character-feature-view' character.id feature.full_id %}"
+              hx-target="#featureModalContent" hx-swap="innerHTML"
+              hx-sync="#featureModalContent:queue">
             {% csrf_token %}
             {{ choice | crispy }}
             <button type="submit" name="choice" value="{{choice.id}}" class="btn btn-primary">Choose this option</button>
@@ -204,6 +232,8 @@
         {% for f in subfeatures %}
         <li class="list-group-item">
             <a href="{% url 'character-feature-view' character.id f.full_id %}"
+               hx-get="{% url 'character-feature-view' character.id f.full_id %}?partial=1"
+               hx-target="#featureModalContent" hx-swap="innerHTML"
                data-bs-toggle="tooltip"
                data-bs-html="true"
                data-bs-placement="top"
@@ -226,12 +256,13 @@
                 <span class="badge bg-{{level}}">{{badge}}</span>
                 {% endfor %}
             </a>
-            {# Yeah I guess subfeatures could have subfeatures... #}
             {% if f.subfeatures %}
             <ul>
                 {% for sf in f.subfeatures %}
                 <li>
                     <a href="{% url 'character-feature-view' character.id sf.full_id%}"
+                       hx-get="{% url 'character-feature-view' character.id sf.full_id%}?partial=1"
+                       hx-target="#featureModalContent" hx-swap="innerHTML"
                        data-bs-toggle="tooltip"
                        data-bs-html="true"
                        data-bs-placement="top"
@@ -274,6 +305,8 @@
             {% for f in group.available %}
                 <li class="list-group-item">
                     <a href="{% url 'character-feature-view' character.id f.full_id%}"
+                       hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
+                       hx-target="#featureModalContent" hx-swap="innerHTML"
                        data-bs-toggle="tooltip"
                        data-bs-html="true"
                        data-bs-placement="top"
@@ -319,6 +352,8 @@
                         {% for f in available %}
                         <li class="list-group-item">
                             <a href="{% url 'character-feature-view' character.id f.full_id%}"
+                               hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
+                               hx-target="#featureModalContent" hx-swap="innerHTML"
                                data-bs-toggle="tooltip"
                                data-bs-html="true"
                                data-bs-placement="top"
@@ -351,37 +386,51 @@
         {% endif %}
     {% endfor %}
 
-    <a role="button" class="btn btn-secondary d-print-none" href="{% url 'character-detail' character.id %}">Back to {{character}}</a>
 </div>
 
-{% endblock %}
+</div>
 
-{% block javascript %}
 <script>
-    /* If we have both radio buttons and a freeform option, disable the freeform option unless the "Other" radio button is selected. */
-    const other_radio = document.querySelector('input[type="radio"][name="option"][value="__other__"]');
-    const option_freeform = document.querySelector("#id_option_freeform");
-    if (other_radio && option_freeform) {
-        if (other_radio.checked) {
-            option_freeform.disabled = false;
-            option_freeform.required = true;
-        } else {
-            option_freeform.disabled = true;
-            option_freeform.required = false;
-        }
-        other_radio.addEventListener("change", function() {
-            if (other_radio.checked) {
-                option_freeform.disabled = false;
-                option_freeform.required = true;
-            }
-        });
-        document.querySelectorAll('input[type="radio"][name="option"]:not([value="__other__"])').forEach(function(radio) {
-            radio.addEventListener("change", function() {
-                option_freeform.disabled = true;
-                option_freeform.required = false;
-                option_freeform.value = "";
-            });
-        });
-    }
+// Enable/disable freeform option field based on "Other" selection
+htmx.onLoad(function() {
+  const otherRadio = document.querySelector('input[type="radio"][name="option"][value="__other__"]');
+  const optionFreeform = document.querySelector('#id_option_freeform');
+  if (!otherRadio || !optionFreeform) { return; }
+  function update() {
+    const isOther = otherRadio.checked;
+    optionFreeform.disabled = !isOther;
+    optionFreeform.required = isOther;
+    if (!isOther) { optionFreeform.value = ''; }
+  }
+  update();
+  otherRadio.addEventListener('change', update);
+  document.querySelectorAll('input[type="radio"][name="option"]:not([value="__other__"])')
+    .forEach(function(r) { r.addEventListener('change', update); });
+});
+
+// Rewrite relative links in Details markdown to feature links and enable HTMX modal navigation
+htmx.onLoad(function(elt) {
+  const container = elt.querySelector ? (elt.querySelector('#featureModalContent') || elt) : document;
+  const anchors = container.querySelectorAll('a[href]');
+  const characterId = '{{ character.id }}';
+  anchors.forEach(function(a) {
+    const href = a.getAttribute('href');
+    if (!href) { return; }
+    // Skip absolute, protocol, and hash links
+    if (href.startsWith('/') || href.startsWith('http') || href.startsWith('#')) { return; }
+    // Convert relative feature id links (e.g., "rogue" or "class.rogue") into absolute feature URLs
+    const absolute = `/character/${characterId}/f/${href}`;
+    a.setAttribute('href', absolute);
+  });
+  // Enhance all internal feature links to load inside the modal via HTMX
+  container.querySelectorAll('a[href^="/character/"]').forEach(function(a) {
+    const url = a.getAttribute('href');
+    a.setAttribute('hx-get', url + '?partial=1');
+    a.setAttribute('hx-target', '#featureModalContent');
+    a.setAttribute('hx-swap', 'innerHTML');
+    a.setAttribute('hx-sync', '#featureModalContent:queue');
+    // throttle clicks but allow normal navigation timing for responsiveness
+    a.setAttribute('hx-trigger', 'click throttle:150ms');
+  });
+});
 </script>
-{% endblock %}

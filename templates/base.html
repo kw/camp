@@ -112,17 +112,16 @@
     </nav>
   </header>
 
-  {% if messages %}
   <div id="messages" class="d-print-none">
-    {% for message in messages %}
-      <div class="alert alert-{{message.level_tag}} alert-dismissible fade show" role="alert">
-        {{message}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-    </ul>
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{message.level_tag}} alert-dismissible fade show" role="alert">
+          {{message}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
-  {% endif %}
 
   <div id="htmx-alert" hidden class="alert alert-warning sticky-top d-print-none"></div>
 
@@ -153,9 +152,62 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" integrity="sha384-BxpSbjbDhVKwnC1UfcjsNEuMuxg4af5IXOaSi1Iq5rASQ/9a7uslhEXbP9UI/fXo" crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
   <script>
-    htmx.onLoad(function installTooltips() {
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    function hideAllTooltips() {
+      document.querySelectorAll('[data-bs-title]').forEach(function(el){
+        const instance = bootstrap.Tooltip.getInstance(el);
+        if (instance) { instance.hide(); }
+      });
+    }
+
+    function disposeTooltips(root) {
+      const scope = root || document;
+      scope.querySelectorAll('[data-bs-title]').forEach(function(el){
+        const instance = bootstrap.Tooltip.getInstance(el);
+        if (instance) { instance.dispose(); }
+      });
+      // Fallback: remove any stray tooltip elements left in the DOM
+      document.querySelectorAll('.tooltip').forEach(function(t){
+        if (t && t.parentElement) { t.parentElement.removeChild(t); }
+      });
+    }
+
+    htmx.onLoad(function(elt) {
+      const root = elt && elt.querySelector ? elt : document;
+      const tooltipTriggerList = root.querySelectorAll('[data-bs-title]');
+      const tooltipList = [...tooltipTriggerList].map(function(el){
+        return new bootstrap.Tooltip(el, { trigger: 'hover', container: 'body' });
+      });
+    });
+
+    // On refresh-character, just hide tooltips; summary updates listen on their own
+    document.body.addEventListener('refresh-character', function() {
+      hideAllTooltips();
+    });
+
+    // Ensure any tooltip is hidden when its trigger is clicked (e.g., opening a modal)
+    document.body.addEventListener('click', function(evt) {
+      const trigger = evt.target.closest('[data-bs-title]');
+      if (trigger) {
+        const instance = bootstrap.Tooltip.getInstance(trigger);
+        if (instance) { instance.hide(); }
+      }
+    });
+
+    // Hide tooltips when any Bootstrap modal is about to show
+    document.body.addEventListener('show.bs.modal', function(evt){
+      // Dismiss any currently open modal to avoid stacking focus issues
+      const openModalEl = document.querySelector('.modal.show');
+      if (openModalEl && openModalEl !== evt.target) {
+        const instance = bootstrap.Modal.getInstance(openModalEl) || new bootstrap.Modal(openModalEl);
+        instance.hide();
+      }
+      hideAllTooltips();
+    });
+
+    // Dispose tooltips when a Bootstrap modal is fully hidden
+    document.body.addEventListener('hidden.bs.modal', function(evt){
+      const modal = evt.target;
+      disposeTooltips(modal);
     });
 
     document.body.addEventListener('htmx:afterRequest', function (evt) {
@@ -175,6 +227,25 @@
           // Unspecified failure, usually caused by network error
           console.error("Unexpected htmx error", evt.detail);
       }
+  });
+
+  // Prevent stale HTMX responses from swapping into the DOM after navigation
+  document.body.addEventListener('htmx:beforeSwap', function (evt) {
+    const target = evt.detail && evt.detail.target;
+    if (target) {
+      // Dispose tooltips in the region about to be swapped
+      disposeTooltips(target);
+    }
+    if (target && !document.body.contains(target)) {
+      evt.preventDefault();
+    }
+  });
+
+  // After swap, ensure no stray tooltip remnants remain
+  document.body.addEventListener('htmx:afterSwap', function(){
+    document.querySelectorAll('.tooltip').forEach(function(t){
+      if (t && t.parentElement) { t.parentElement.removeChild(t); }
+    });
   });
 
   {% if debug %}

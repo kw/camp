@@ -1,0 +1,269 @@
+{% load character_sheet %}
+{% load markdown %}
+
+<div id="character-summary"
+     hx-get="{% url 'character-summary' character.id %}"
+     hx-trigger="refresh-character from:body"
+     hx-swap="outerHTML">
+
+{% comment %} OOB messages so alerts update during HTMX swaps {% endcomment %}
+{% if request.htmx %}{% include "snippets/messages.html" %}{% endif %}
+
+{% if issues|length == 1 %}
+<!-- Single Issue -->
+<ul class="list-group">
+    {% if issues.0.feature_id %}
+    <li class="list-group-item list-group-item-warning">
+        <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issues.0.feature_id %}"
+           hx-get="{% url 'character-feature-view' character.id issues.0.feature_id %}?partial=1"
+           hx-target="#featureModalContent" hx-swap="innerHTML"
+           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal">
+            {{issues.0.reason | markdown}}
+        </a>
+    </li>
+    {% else %}
+    <li class="list-group-item list-group-item-warning">{{issues.0.reason | markdown}}</li>
+    {% endif %}
+    </ul>
+{% elif issues %}
+<!-- Issue Accordian -->
+<div class="accordion" id="issueAccordian">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIssues"
+                aria-expanded="false" aria-controls="collapseIssues">
+                {{issues|length}} issues detected.
+            </button>
+        </h2>
+        <div id="collapseIssues" class="accordion-collapse collapse" data-bs-parent="#issueAccordian">
+            <div class="accordion-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for issue in issues %}
+                    {% if issue.feature_id %}
+                    <li class="list-group-item list-group-item-warning">
+                        <a class="list-group-item-action" href="{% url 'character-feature-view' character.id issue.feature_id %}"
+                           hx-get="{% url 'character-feature-view' character.id issue.feature_id %}?partial=1"
+                           hx-target="#featureModalContent" hx-swap="innerHTML"
+                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal">
+                            {{issue.reason | markdown}}
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item list-group-item-warning">{{issue.reason | markdown}}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+{% endif %}
+
+<!-- Existing Feature Cards -->
+<div class="row row-cols-auto">
+{% for group in feature_groups %}
+    <div class="card col avoidbreak {% if not group.taken %}d-print-none{% endif %}">
+        <div class="card-body">
+            <h2 class="card-title">
+                {{ group.name }}
+                {% if group.has_available %}
+                <a class="icon-link icon-link-hover link-success d-print-none" href="#" role="button"
+                    data-bs-toggle="modal" data-bs-target="#newFeatureModal_{{group.type|slugify}}" data-bs-dismiss="modal"
+                    aria-expanded="false" aria-controls="newFeatureModal_{{group.type|slugify}}">
+                    <i class="bi bi-plus-circle"></i>
+                </a>
+                {% endif %}
+            </h2>
+            {% if group.explain_list %}
+            <ul class="d-print-none list-group">
+            {% for text in group.explain_list %}
+                <li class="list-group-item">{{ text }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="row row-cols-auto">
+                {% for f in group.taken %}
+                    <div class="col card">
+                        <a href="{% url 'character-feature-view' character.id f.full_id %}"
+                           hx-get="{% url 'character-feature-view' character.id f.full_id %}?partial=1"
+                           hx-target="#featureModalContent" hx-swap="innerHTML"
+                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
+                           data-bs-html="true"
+                           data-bs-placement="top"
+                           data-bs-custom-class="skill-tooltip"
+                           data-bs-title="
+                           <div class='tooltip-content'>
+                             <strong>{{ f.display_name }}</strong>
+                             {% if f.purchase_cost_string %}
+                             <br><strong>Cost:</strong> {{ f.purchase_cost_string }}
+                             {% endif %}
+                             {% if f.power_card and f.power_card.effect %}
+                             <br><strong>Effect:</strong> {{ f.power_card.effect }}
+                             {% endif %}
+                             {% if f.power_card and f.power_card.description %}
+                             <br><strong>Description:</strong> {{ f.power_card.description|truncatechars:200 }}
+                             {% endif %}
+                           </div>">
+                            {% name_without_tags f group.type %}
+                            {% for level, badge in f.badges %}
+                            <span class="badge bg-{{level}} d-print-none">{{badge}}</span>
+                            {% endfor %}
+                        </a>
+                        {% if f.subfeatures %}
+                        <ul>
+                            {% for sf in f.subfeatures %}
+                            <li>
+                                <a href="{% url 'character-feature-view' character.id sf.full_id%}"
+                                   hx-get="{% url 'character-feature-view' character.id sf.full_id%}?partial=1"
+                                   hx-target="#featureModalContent" hx-swap="innerHTML"
+                                   data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
+                                   data-bs-html="true"
+                                   data-bs-placement="top"
+                                   data-bs-custom-class="skill-tooltip"
+                                   data-bs-title="
+                                   <div class='tooltip-content'>
+                                     <strong>{{ sf.display_name }}</strong>
+                                     {% if sf.purchase_cost_string %}
+                                     <br><strong>Cost:</strong> {{ sf.purchase_cost_string }}
+                                     {% endif %}
+                                     {% if sf.power_card and sf.power_card.effect %}
+                                     <br><strong>Effect:</strong> {{ sf.power_card.effect }}
+                                     {% endif %}
+                                     {% if sf.power_card and sf.power_card.description %}
+                                     <br><strong>Description:</strong> {{ sf.power_card.description|truncatechars:200 }}
+                                     {% endif %}
+                                   </div>">
+                                    {% name_without_tags sf f.id %}
+                                    {% for level, badge in sf.badges %}
+                                    <span class="badge bg-{{level}} d-print-none">{{badge}}</span>
+                                    {% endfor %}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+
+<!-- Add Feature Modals -->
+{% for group in feature_groups %}
+{% if group.has_available %}
+<div class="modal fade" id="newFeatureModal_{{group.type|slugify}}" tabindex="-1" aria-labelledby="newFeatureModalLabel_{{group.type|slugify}}" aria-hidden="true" hx-preserve>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="newFeatureModalLabel_{{group.type|slugify}}">Add New {{group.name}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if group.explain %}
+                <p>{{ group.explain }}</p>
+                {% endif %}
+                {% if group.available %}
+                <ul class="list-group list-group-flush">
+                    {% for f in group.available %}
+                        <li class="list-group-item">
+                            <a href="{% url 'character-feature-view' character.id f.full_id%}"
+                               hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
+                               hx-target="#featureModalContent" hx-swap="innerHTML"
+                               data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
+                               data-bs-html="true"
+                               data-bs-placement="top"
+                               data-bs-custom-class="skill-tooltip"
+                               data-bs-title="
+                               <div class='tooltip-content'>
+                                 <strong>{{ f.display_name }}</strong>
+                                 {% if f.purchase_cost_string %}
+                                 <br><strong>Cost:</strong> {{ f.purchase_cost_string }}
+                                 {% endif %}
+                                 {% if f.power_card and f.power_card.effect %}
+                                 <br><strong>Effect:</strong> {{ f.power_card.effect }}
+                                 {% endif %}
+                                 {% if f.power_card and f.power_card.description %}
+                                 <br><strong>Description:</strong> {{ f.power_card.description|truncatechars:200 }}
+                                 {% endif %}
+                               </div>">
+                                {% name_without_tags f group.type %}
+                                {% if f.purchase_cost_string %}
+                                ({{ f.purchase_cost_string }})
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="accordion" id="availableAccordian-{{group.type}}">
+                {% for category, available in group.available_categories.items %}
+                    {% if group.need_collapse %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{group.type}}-{{category|slugify}}" aria-expanded="false" aria-controls="collapse-{{category|slugify}}">
+                            {{category}}
+                            </button>
+                        </h2>
+                        <div id="collapse-{{group.type}}-{{category|slugify}}" class="accordion-collapse collapse"
+                            data-bs-parent="#availableAccordian-{{group.type}}">
+                            <div class="accordion-body">
+                    {% endif %}
+                                <ul class="list-group list-group-flush">
+                                    {% if available.0.explain_category_group %}
+                                    <li class="list-group-item">
+                                        {{ available.0.explain_category_group }}
+                                    </li>
+                                    {% endif %}
+                                    {% for f in available %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'character-feature-view' character.id f.full_id%}"
+                                           hx-get="{% url 'character-feature-view' character.id f.full_id%}?partial=1"
+                                           hx-target="#featureModalContent" hx-swap="innerHTML"
+                                           data-bs-toggle="modal" data-bs-target="#featureModal" data-bs-dismiss="modal"
+                                           data-bs-html="true"
+                                           data-bs-placement="top"
+                                           data-bs-custom-class="skill-tooltip"
+                                           data-bs-title="
+                                           <div class='tooltip-content'>
+                                             <strong>{{ f.display_name }}</strong>
+                                             {% if f.purchase_cost_string %}
+                                             <br><strong>Cost:</strong> {{ f.purchase_cost_string }}
+                                             {% endif %}
+                                             {% if f.power_card and f.power_card.effect %}
+                                             <br><strong>Effect:</strong> {{ f.power_card.effect }}
+                                             {% endif %}
+                                             {% if f.power_card and f.power_card.description %}
+                                             <br><strong>Description:</strong> {{ f.power_card.description|truncatechars:200 }}
+                                             {% endif %}
+                                           </div>">
+                                            {% name_without_tags f group.type f.category_tags %}
+                                            {% if f.purchase_cost_string %}
+                                            ({{ f.purchase_cost_string }})
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                    {% if group.need_collapse %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endif %}
+{% endfor %}
+
+</div>

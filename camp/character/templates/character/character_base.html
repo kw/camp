@@ -7,19 +7,19 @@
 {% endblock %}
 
 {% block body_title %}
-<div class="{% if request.resolver_match.url_name != 'character-detail' %}d-print-none {% endif %}">
+<div class="{% if request.resolver_match.url_name != 'character-detail' and request.resolver_match.url_name != 'character-detail-beta' %}d-print-none {% endif %}">
 <a
   class="{% if character.is_discarded %}link-danger{% else %}link-body-emphasis{% endif %}
         link-underline-opacity-0 link-underline-opacity-100-hover"
   href="{% url 'character-detail' character.id %}">
     {{ character }}
     </a>
-<div>
+</div>
 {% endblock %}
 
 {% block precontent %}
 
-<div class="{% if request.resolver_match.url_name != 'character-detail' %}d-print-none{% endif %}">
+<div class="{% if request.resolver_match.url_name != 'character-detail' and request.resolver_match.url_name != 'character-detail-beta' %}d-print-none{% endif %}">
 <h4>{% if character.campaign %}
     Campaign: {{character.campaign}}
     {% else %}
@@ -82,6 +82,13 @@
     <li class="list-group-item"><span class="align-middle">LP: {% get 'lp' %}</span></li>
     <li class="list-group-item"><span class="align-middle">Spikes: {% get 'spikes' %}</span></li>
     {% block extra_header_bar %}{% endblock %}
+    <li class="list-group-item d-print-none">
+        {% if request.resolver_match.url_name == 'character-detail-beta' %}
+        <a class="link-body-emphasis" href="{% url 'character-detail' character.id %}">Switch to classic</a>
+        {% else %}
+        <a class="link-body-emphasis" href="{% url 'character-detail-beta' character.id %}">Try responsive editor (beta)</a>
+        {% endif %}
+    </li>
     <li class="list-group-item d-print-none"><span class="align-middle">
         <a role="button" class="link-light link-underline-opacity-0" href="#" onclick="print()">
             <i class="bi bi-printer"></i></a></span>

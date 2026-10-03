@@ -201,7 +201,9 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="event",
             constraint=models.CheckConstraint(
-                check=models.Q(("event_end_date__gte", models.F("event_start_date"))),
+                condition=models.Q(
+                    ("event_end_date__gte", models.F("event_start_date"))
+                ),
                 name="end_date_gte_start",
                 violation_error_message="End date must not be before start date.",
             ),

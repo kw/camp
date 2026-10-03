@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="event",
             constraint=models.CheckConstraint(
-                check=models.Q(("logistics_periods__gte", Decimal("0"))),
+                condition=models.Q(("logistics_periods__gte", Decimal("0"))),
                 name="logistics_periods_nonneg",
                 violation_error_message="Number of logistics periods must be non-negative.",
             ),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="event",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     ("daygame_logistics_periods__lte", models.F("logistics_periods"))
                 ),
                 name="daygame_reward",

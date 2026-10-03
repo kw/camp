@@ -270,22 +270,22 @@ class Event(RulesModel):
             models.CheckConstraint(
                 name="end_date_gte_start",
                 violation_error_message="End date must not be before start date.",
-                check=Q(event_end_date__gte=F("event_start_date")),
+                condition=Q(event_end_date__gte=F("event_start_date")),
             ),
             models.CheckConstraint(
                 name="logistics_periods_nonneg",
                 violation_error_message="Number of logistics periods must be non-negative.",
-                check=Q(logistics_periods__gte=Decimal(0)),
+                condition=Q(logistics_periods__gte=Decimal(0)),
             ),
             models.CheckConstraint(
                 name="daygame_reward",
                 violation_error_message="Daygame logistics reward must not be greater than the normal one.",
-                check=Q(daygame_logistics_periods__lte=F("logistics_periods")),
+                condition=Q(daygame_logistics_periods__lte=F("logistics_periods")),
             ),
             models.CheckConstraint(
                 name="daygame_periods_nonneg",
                 violation_error_message="Number of daygame logistics periods must be non-negative.",
-                check=Q(daygame_logistics_periods__gte=Decimal(0)),
+                condition=Q(daygame_logistics_periods__gte=Decimal(0)),
             ),
         ]
 

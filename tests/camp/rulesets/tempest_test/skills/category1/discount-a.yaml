@@ -1,0 +1,6 @@
+name: Discount A
+cost: 0
+discounts:
+  discounted-skill: 1
+description: >
+  Discounts `Discount Skill` by 1 per rank.

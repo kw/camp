@@ -1,0 +1,5 @@
+name: Grants Basic Skill
+cost: 4
+grants: basic-skill:5
+description: >
+  Grants 5 ranks of Basic Skill at a slight discount.

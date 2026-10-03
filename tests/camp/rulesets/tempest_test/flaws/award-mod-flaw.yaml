@@ -1,0 +1,4 @@
+name: Award Mod
+award: 2
+award_mods:
+  basic-flaw: -1

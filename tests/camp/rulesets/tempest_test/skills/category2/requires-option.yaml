@@ -1,0 +1,11 @@
+name: Requires Option
+option:
+  values: [One, Two, Three]
+  requires:
+    One: basic-skill
+    Two: basic-skill:2
+    Three: basic-skill:3
+cost: 1
+description: >
+  This skill can be purchased multiple times, each with a different
+  text option from a specific list. The options each have a specific requirement.

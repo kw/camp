@@ -1,0 +1,5 @@
+name: Phase
+cost: 2
+description: |
+  If your event falls on a full moon, +1 spike damage.
+  If it falls on a new moon, you can go Insubstantial once per Long Rest.

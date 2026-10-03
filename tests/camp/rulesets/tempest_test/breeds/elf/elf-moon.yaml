@@ -1,0 +1,7 @@
+type: subbreed
+parent: elf
+name: Moon
+short_description: You get the picture
+description: |
+  They prefer the moon. But the moon is up as often during the daytime as the night,
+  so don't just assume they're nocturnal. They are though.

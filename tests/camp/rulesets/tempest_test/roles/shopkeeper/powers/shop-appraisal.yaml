@@ -1,0 +1,7 @@
+name: Shop Appraisal
+level: basic
+cost: 2
+description: |
+  While at your shop, you may cross-reference a plot-provided price sheet to determine an appropriate price for an item.
+  The indicated price is an average; if you were buying or selling the item, you would likely want to give a lower or higher
+  number to the asker. You are not obligated to tell them the listed number.

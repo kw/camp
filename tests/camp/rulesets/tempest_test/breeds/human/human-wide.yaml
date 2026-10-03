@@ -1,0 +1,6 @@
+type: subbreed
+parent: human
+name: Wide
+short_description: Wide humans.
+description: |
+  Wide man.

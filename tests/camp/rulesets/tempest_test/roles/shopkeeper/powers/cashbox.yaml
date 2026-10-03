@@ -1,0 +1,6 @@
+name: Cashbox
+level: bonus
+cost: 3
+description: |
+  You may designate a particular box as being immune to Shatter and unable to be moved.
+  Only you or those you designate may open the box. Only Wealth may be placed inside.

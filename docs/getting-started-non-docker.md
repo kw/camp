@@ -12,8 +12,7 @@ work to try out the Docker instructions.
 
 ### Requirements
 
-- Python 3.12
-- [Poetry](https://python-poetry.org/docs/#installation) package manager
+- [uv](https://docs.astral.sh/uv/) package manager
 - **Mac**
   - X Code, possibly Homebrew
 - **Windows**
@@ -25,28 +24,21 @@ To install the project's development requirements, visit this repo in
 your shell and run:
 
 ```sh
-poetry install
+uv sync
 ```
 
-Or, if there's a problem finding the poetry executable, you could try:
+The commands after this assume that either you or your IDE runs:
 
 ```sh
-python3 -m poetry install
+source .venv/bin/activate
 ```
 
-Once your poetry environment is installed, use:
-
-```sh
-eval $(poetry env activate)
-```
-
-To work inside the virtual environment. For more information on what this means,
-see https://python-poetry.org/docs/cli/#shell.
+in your terminal. Alternatively, you can run `uv run <command>` to skip this.
 
 #### Pre-commit
 
 Pre-commit checks are handles by the [`pre-commit`](https://pre-commit.com/)
-tool. The tool should already be installed in your poetry environment, but to
+tool. The tool should already be installed in your UV environment, but to
 automatically run it on commit, you must hook it into your local repository:
 
 ```sh
@@ -70,8 +62,7 @@ to start. The rest of this document assumes some familiarity.
 
 #### Create or upgrade the database
 
-Once inside your `poetry shell`, you should be able to perform the initial Django
-migration to create a local database file by running:
+You should be able to perform the initial Django migration to create a local database file by running:
 
 ```sh
 ./manage.py migrate

@@ -39,7 +39,7 @@ dependencies = [
 dev = [
   "ipython~=8.2",
   "pre-commit",
-  "pytest>=7.1,<8",
+  "pytest>=9.0.3,<10",
   "pytest-django>=4.8.0,<5",
 ]
 

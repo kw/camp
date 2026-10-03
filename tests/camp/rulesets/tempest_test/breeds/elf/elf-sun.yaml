@@ -1,0 +1,6 @@
+type: subbreed
+parent: elf
+name: Sun
+short_description: Sun Elf
+description: |
+  They like sunbathing.

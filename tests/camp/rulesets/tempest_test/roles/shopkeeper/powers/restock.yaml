@@ -1,0 +1,9 @@
+name: Restock
+level: basic
+cost: 3
+incant: "Hey get me more X from the back"
+call: "Instruction to Marshal: Bring me more wares to sell"
+description: |
+  You're a busy shopkeep, you can't be expected to run a shop without help. When you run out
+  of an item that a PC wants to buy, you may instruct a marshal to bring more wares. If they don't
+  bring what the PC wanted, you simply don't have it to sell.

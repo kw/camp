@@ -1,0 +1,5 @@
+name: Maximum Ranks
+cost: 2
+requires: basic-skill<3
+description: >
+  Depends on no more than two ranks of one skill.

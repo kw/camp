@@ -1,0 +1,6 @@
+name: Grants Bonus LP
+cost: 3
+grants:
+  lp: 2
+description: >
+  Increases life points by 2.

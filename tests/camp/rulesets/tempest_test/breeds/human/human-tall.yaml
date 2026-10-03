@@ -1,0 +1,6 @@
+type: subbreed
+parent: human
+name: Tall
+short_description: Tall humans
+description: |
+  They bigger than other humans.

@@ -22,7 +22,6 @@ def game():
     )
 
 
-@pytest.mark.django_db
 @pytest.fixture
 def campaign(game):
     return Campaign.objects.create(

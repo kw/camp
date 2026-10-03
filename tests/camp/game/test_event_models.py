@@ -38,7 +38,6 @@ def chapter(game):
     )
 
 
-@pytest.mark.django_db
 @pytest.fixture
 def campaign(game):
     return Campaign.objects.create(
@@ -48,7 +47,6 @@ def campaign(game):
     )
 
 
-@pytest.mark.django_db
 @pytest.fixture
 def event(chapter, campaign):
     return Event.objects.create(
@@ -60,7 +58,6 @@ def event(chapter, campaign):
     )
 
 
-@pytest.mark.django_db
 @pytest.fixture
 def event2(chapter, campaign):
     return Event.objects.create(

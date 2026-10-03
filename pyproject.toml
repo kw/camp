@@ -36,12 +36,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-  "ipython~=8.2",
-  "pre-commit",
-  "pytest>=7.1,<8",
-  "pytest-django>=4.8.0,<5",
-]
+dev = ["ipython~=8.2", "pre-commit", "pytest>=9,<10", "pytest-django>=4.8.0,<5"]
 
 [tool.uv]
 default-groups = "all"

@@ -24,8 +24,8 @@ repos:
         args: ["--django"]
       - id: pretty-format-json
         args: ["--autofix"]
-  - repo: https://github.com/psf/black
-    rev: 26.5.1
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.10.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
@@ -42,6 +42,6 @@ repos:
       - id: bandit
         args: ["-c", "bandit.yaml"]
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.12.22
+    rev: 0.12.23
     hooks:
       - id: uv-lock
